@@ -8,7 +8,7 @@ async function updateBlock({ block, data }, req) {
   await canUserPerformAction(
     req,
     `UPDATE_${block.type.toUpperCase()}`,
-    block.owner || block.id
+    block.id
   );
 
   block.updatedAt = Date.now();

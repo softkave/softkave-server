@@ -7,7 +7,21 @@
     "start": "nodemon src/index.js localhost 8080"
   },
   "dependencies": {
-    "mongoose": "5.4.10"
+    "mongoose": "5.4.10",
+    "argon2": "^0.19.2",
+    "async-validator": "^1.8.2",
+    "aws-sdk": "^2.243.1",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-graphql": "^0.6.12",
+    "express-jwt": "^5.3.1",
+    "graphql": "^0.13.2",
+    "jsonwebtoken": "^8.2.1",
+    "uuid": "^3.3.2",
+    "validator": "^10.4.0",
+    "winston": "^3.0.0",
+    "winston-transport": "^4.2.0"
   },
   "devDependencies": {
     "nodemon": "1.18.4"

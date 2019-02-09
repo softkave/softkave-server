@@ -1,7 +1,6 @@
 const blockModel = require("../mongo/block");
 const { validateBlock } = require("./validator");
 const { canUserPerformAction } = require("../user/canUserPerformAction");
-const getUserFromReq = require("../getUserFromReq");
 const deleteUserPermission = require("../user/deleteUserPermission");
 
 async function deleteBlock({ block }, req) {
@@ -19,11 +18,8 @@ async function deleteBlock({ block }, req) {
     })
     .exec();
 
-  const user = await getUserFromReq(req);
-  if (!block.owner || block.owner === block.id) {
-    // TODO: scrub user collection for unreferenced permissions
-    await deleteUserPermission(user, block.id);
-  }
+  // TODO: scrub user collection for unreferenced permissions
+  await deleteUserPermission(req, block.id);
 }
 
 module.exports = deleteBlock;

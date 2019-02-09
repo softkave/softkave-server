@@ -6,10 +6,6 @@ async function addBlockToDb(block, req) {
   block.createdBy = user.id;
   block.createdAt = Date.now();
   let newBlock = new blockModel.model(block);
-  if (block.type === "root" || block.type === "org") {
-    block.owner = block._id;
-  }
-
   newBlock = await newBlock.save();
   if (block.permission) {
     try {

@@ -4,7 +4,7 @@ const collaborationRequestModel = require("../mongo/collaboration-request");
 
 async function getBlockCollabRequests({ block }, req) {
   await validateBlock(block);
-  await canUserPerformAction(req, "READ_COLLABORATION_REQUESTS", block.id);
+  await canUserPerformAction(req, "READ_COLLABORATION-REQUESTS", block.id);
   let requests = await collaborationRequestModel.model
     .find({
       "from.blockId": block.id

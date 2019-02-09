@@ -8,6 +8,7 @@ const {
   mongoIdDescriptor,
   makeDescriptorFieldsRequired
 } = require("../validation-utils");
+const { blockTypesObj } = require("./utils");
 
 const aclDescriptor = {
   action: {
@@ -334,8 +335,22 @@ async function validateBlock(block) {
   return await asyncBlockValidator(block);
 }
 
+function validateBlockId(blockId, fieldName) {
+  if (!isMongoId(blockId)) {
+    throw new RequestError(fieldName || "blockId", "value is invalid");
+  }
+}
+
+function validateBlockType(type, fieldName) {
+  if (!blockTypesObj[type]) {
+    throw new RequestError(fieldName || "blockType", "is not valid type");
+  }
+}
+
 module.exports = {
   validateBlockAdd,
   validateBlock,
-  validateNewCollaborators
+  validateNewCollaborators,
+  validateBlockId,
+  validateBlockType
 };

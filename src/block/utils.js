@@ -27,6 +27,14 @@ function isParentInBlock(block, parentId) {
 }
 
 const blockTypes = ["group", "org", "project", "task", "root"];
+const blockTypesObj = {
+  group: 1,
+  org: 1,
+  project: 1,
+  task: 1,
+  root: 1
+};
+
 const defaultRoles = [];
 const defaultAcl = [];
 
@@ -37,5 +45,6 @@ module.exports = {
   isParentInBlock,
   blockTypes,
   defaultAcl,
-  defaultRoles
+  defaultRoles,
+  blockTypesObj
 };

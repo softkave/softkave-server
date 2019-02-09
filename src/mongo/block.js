@@ -1,21 +1,27 @@
 const mongoose = require("mongoose");
 const { connection } = require("./connection");
 const { makeModel } = require("./makeModel");
-const { dataSchema } = require("./arbitrary-data");
+const { historySchema } = require("./utils");
 
-const blockCollaboratorsDataSchema = {
+const blockTaskCollaboratorsDataSchema = {
   userId: mongoose.Schema.Types.ObjectId,
-  data: dataSchema
+  // data: dataSchema,
+  completedAt: Number,
+  assignedAt: Number,
+  assignedBy: mongoose.Schema.Types.ObjectId,
+  expectedEndAt: Number
 };
 
 const blockAclSchema = {
   action: String,
-  level: Number
+  level: Number,
+  history: [historySchema]
 };
 
-const blockRolesSchema = {
+const blockRoleSchema = {
   label: String,
-  level: Number
+  level: Number,
+  history: [historySchema]
 };
 
 const blockSchema = {
@@ -31,13 +37,13 @@ const blockSchema = {
   color: String,
   updatedAt: Number,
   type: { type: String, index: true },
-  owner: { type: mongoose.SchemaTypes.ObjectId, index: true },
+  // owner: { type: mongoose.SchemaTypes.ObjectId, index: true },
   parents: { type: [mongoose.SchemaTypes.ObjectId], index: true },
-  data: [dataSchema],
+  // data: [dataSchema],
   createdBy: { type: mongoose.SchemaTypes.ObjectId, index: true },
-  collaborators: { type: [blockCollaboratorsDataSchema], index: true },
+  taskCollaborators: { type: [blockTaskCollaboratorsDataSchema], index: true },
   acl: { type: [blockAclSchema], index: true },
-  roles: { type: [blockRolesSchema], index: true },
+  roles: { type: [blockRoleSchema], index: true },
   priority: String
 };
 
