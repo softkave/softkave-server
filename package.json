@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon src/index.js localhost 8080"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "5.4.10"
+  },
   "devDependencies": {
     "nodemon": "1.18.4"
   },

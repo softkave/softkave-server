@@ -1,8 +1,8 @@
 class RequestError extends Error() {
   constructor(field, message) {
+    super(message);
     this.field = field;
-    this.message = message;
-    this.name = 'RequestError';
+    this.name = "RequestError";
   }
 }
 
