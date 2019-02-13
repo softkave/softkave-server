@@ -13,7 +13,7 @@ const { buildSchema } = require("graphql");
 const { utilitySchema } = require("./schema-utils");
 const { blockSchema, blockHandlerGraphql } = require("./block");
 const { userHandlerGraphql, userSchema } = require("./user");
-const collaborationRequestModel = require("../src/mongo/collaboration-request");
+const collaborationRequestModel = require("../src/mongo/collaboration-request").model;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {

@@ -32,12 +32,12 @@ const blockSchema = `
   }
 
   type Role {
-    role: String,
+    label: String
     level: String
   }
 
   input RoleInput {
-    role: String!
+    label: String!
     level: String!
   }
 
@@ -110,13 +110,6 @@ const blockSchema = `
     roles: [RoleInput]
   }
 
-  enum BlockTypes {
-    task
-    project
-    group
-    org
-  }
-
   type CollabRequestFrom {
     userId: String
     name: String
@@ -177,23 +170,21 @@ const blockSchema = `
     updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : SingleBlockOpResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getPermissionBlocks: MultipleBlocksOpResponse
-    getBlockChildren (block: BlockParamInput!, type: [BlockTypes!]) : MultipleBlocksOpResponse
-    collaborator {
-      addCollaborator (
-        block: BlockParamInput!, 
-        collaborators: [AddCollaboratorInput!]!
-      ) : ErrorOnlyResponse
-      updateCollaborator (
-        block: BlockParamInput!, 
-        collaborator: String!, data: UpdateCollaboratorInput!
-      ) : ErrorOnlyResponse
-      removeCollaborator (
-        block: BlockParamInput!, 
-        collaborator: String!
-      ) : ErrorOnlyResponse
-      getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
-      getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
-    }
+    getBlockChildren (block: BlockParamInput!, type: [String!]) : MultipleBlocksOpResponse
+    addCollaborator (
+      block: BlockParamInput!, 
+      collaborators: [AddCollaboratorInput!]!
+    ) : ErrorOnlyResponse
+    # updateCollaborator (
+    #   block: BlockParamInput!, 
+    #   collaborator: String!, data: UpdateCollaboratorInput!
+    # ) : ErrorOnlyResponse
+    # removeCollaborator (
+    #   block: BlockParamInput!, 
+    #   collaborator: String!
+    # ) : ErrorOnlyResponse
+    getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
+    getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
   }
 `;
 

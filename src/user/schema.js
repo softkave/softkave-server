@@ -56,11 +56,6 @@ const userSchema = `
     readAt: Float
   }
 
-  enum CollaborationResponseEnum {
-    accepted
-    declined
-  }
-
   type UserQuery {
     userExists (email: String!) : Boolean
     signup (user: UserSignupInput!) : UserSignupResult
@@ -70,7 +65,7 @@ const userSchema = `
     updateUser (data: UpdateUserInput!): ErrorOnlyResponse
     changePasswordWithToken (password: String!) : UserQueryResult
     getCollaborationRequests: GetCollabRequestsResponse
-    respondToCollaborationRequest (id: String!, response: CollaborationResponseEnum!): SingleBlockOpResponse
+    # respondToCollaborationRequest (id: String!, response: CollaborationResponseEnum!): SingleBlockOpResponse
     updateCollaborationRequest (id: String!, data: UpdateCollabRequestInput): ErrorOnlyResponse
   }
 `;
