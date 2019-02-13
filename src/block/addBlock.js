@@ -1,5 +1,5 @@
 const { validateBlockAdd } = require("./validator");
-const { canUserPerformAction } = require("./canUserPerformAction");
+const { canUserPerformAction } = require("../user/canUserPerformAction");
 const getUserFromReq = require("../getUserFromReq");
 const addBlockToDb = require("./addBlockToDb");
 

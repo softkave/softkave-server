@@ -12,25 +12,25 @@ const userDescriptor = {
     pattern: passwordPattern,
     message: "password is invalid."
   },
-  permission: [
-    {
-      type: "object",
-      fields: {
-        role: roleDescriptor.role,
-        level: roleDescriptor.level,
-        assignedAt: {
-          type: "number"
-        },
-        assignedBy: mongoIdDescriptor,
-        type: blockDescriptor.type,
-        blockId: mongoIdDescriptor
-      }
-    }
-  ]
+  // permission: [
+  //   {
+  //     type: "object",
+  //     fields: {
+  //       role: roleDescriptor.label,
+  //       level: roleDescriptor.level,
+  //       assignedAt: {
+  //         type: "number"
+  //       },
+  //       assignedBy: mongoIdDescriptor,
+  //       type: blockDescriptor.type,
+  //       blockId: mongoIdDescriptor
+  //     }
+  //   }
+  // ]
 };
 
 const userValidator = new asyncValidator(userDescriptor);
-const validateUser = util.promisify(userValidator);
+const validateUser = util.promisify(userValidator.validate.bind(userValidator));
 
 module.exports = {
   userDescriptor,

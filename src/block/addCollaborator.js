@@ -10,13 +10,13 @@ async function addCollaborator({ block, collaborators }, req) {
   await validateBlock(block);
   await validateNewCollaborators(collaborators);
   const collaboratorsEmailArr = [];
-  const actionsArr = [];
+  // const actionsArr = [];
   collaborators.forEach(c => {
     collaboratorsEmailArr.push(c.email);
-    actionsArr.push(`ADD_${c.role.toUpperCase()}`);
+    // actionsArr.push(`ADD_${c.role.toUpperCase()}`);
   });
 
-  await canUserPerformAction(req, actionsArr, block.owner);
+  await canUserPerformAction(req, "SEND_COLLABORATION-REQUEST", block.id);
   let existingCollaborationRequests = await collaborationRequestModel.model
     .find(
       {
@@ -30,29 +30,39 @@ async function addCollaborator({ block, collaborators }, req) {
 
   let errors = null;
   if (existingCollaborationRequests.length > 0) {
-    errors = existingCollaborationRequests.map(request => {
-      return new RequestError(
-        request.to.email,
-        `a request has been sent to this email on ${request.createdAt}`
-      );
-    });
+    throw new RequestError(
+      "error", 
+      existingCollaborationRequests.map(e => e.to.email).join(" ") 
+      + " - the above emails have been sent collaboration requests already"
+    );
+
+    // errors = existingCollaborationRequests.map(request => {
+    //   return new RequestError(
+    //     request.to.email,
+    //     `a request has been sent to this email on ${request.createdAt}`
+    //   );
+    // });
   }
 
-  if (errors.length > 0) {
-    throw errors;
-  }
+  // if (errors.length > 0) {
+  //   throw errors;
+  // }
 
   let user = await getUserFromReq(req);
   let ownerBlock = await blockModel.model
-    .findOne({ _id: block.owner }, "roles")
+    .findOne({ _id: block.id }, "roles")
     .lean()
     .exec();
   let blockRolesMap = {};
   ownerBlock.roles.forEach(role => {
-    blockRolesMap[role.role] = role;
+    blockRolesMap[role.label] = role;
   });
 
   let collaborationRequests = collaborators.map(c => {
+    if (!blockRolesMap[c.role]) {
+      throw new RequestError("error", `role ${c.role} does not exist`);
+    }
+
     let notificationBody = `
       You have been invited by ${user.name} to collaborate in ${block.name}
       with the role ${c.role}.

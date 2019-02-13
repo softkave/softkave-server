@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { connection } = require("./connection");
-const { makeModel } = require("./makeModel");
+const makeModel = require("./makeModel");
 const { historySchema } = require("./utils");
 
 const blockTaskCollaboratorsDataSchema = {
@@ -38,7 +38,7 @@ const blockSchema = {
   updatedAt: Number,
   type: { type: String, index: true },
   // owner: { type: mongoose.SchemaTypes.ObjectId, index: true },
-  parents: { type: [mongoose.SchemaTypes.ObjectId], index: true },
+  parents: { type: [String], index: true },
   // data: [dataSchema],
   createdBy: { type: mongoose.SchemaTypes.ObjectId, index: true },
   taskCollaborators: { type: [blockTaskCollaboratorsDataSchema], index: true },

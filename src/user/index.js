@@ -1,9 +1,9 @@
 const signup = require("./signup");
 const login = require("./login");
-const changePassword = require("./change-password");
-const forgotPassword = require("./forgot-password");
-const userExists = require("./user-exists");
-const updateUser = require("./update-user");
+const changePassword = require("./changePassword");
+const forgotPassword = require("./forgotPassword");
+const userExists = require("./userExists");
+const updateUser = require("./updateUser");
 const { wrapField } = require("../utils");
 const userSchema = require("./schema");
 const getCollaborationRequests = require("./getCollaborationRequests");

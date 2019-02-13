@@ -1,5 +1,5 @@
 const { connection } = require("./connection");
-const { makeModel } = require("./make-model");
+const makeModel = require("./makeModel");
 const mongoose = require("mongoose");
 const { blockPermissionSchema } = require("./block-permission");
 

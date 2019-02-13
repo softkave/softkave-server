@@ -1,5 +1,5 @@
 const argon2 = require("argon2");
-const newToken = require("./new-token");
+const newToken = require("./newToken");
 const userModel = require("../mongo/user");
 const { addEntryToPasswordDateLog } = require("./utils");
 const { validateUser } = require("./validator");

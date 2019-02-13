@@ -1,5 +1,5 @@
 const { validateBlock } = require("./validator");
-const canUserPerformAction = require("./canUserPerformAction");
+const canUserPerformAction = require("../user/canUserPerformAction");
 const userModel = require("../mongo/user");
 const updateUserPermission = require("../user/updateUserPermission");
 const { RequestError } = require("../error");

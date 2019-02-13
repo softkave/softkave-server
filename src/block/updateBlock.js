@@ -1,6 +1,6 @@
 const blockModel = require("../mongo/block");
 const { validateBlock } = require("./validator");
-const { canUserPerformAction } = require("./canUserPerformAction");
+const { canUserPerformAction } = require("../user/canUserPerformAction");
 
 async function updateBlock({ block, data }, req) {
   await validateBlock(block);

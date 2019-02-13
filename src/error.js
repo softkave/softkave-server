@@ -1,4 +1,4 @@
-class RequestError extends Error() {
+class RequestError extends Error {
   constructor(field, message) {
     super(message);
     this.field = field;

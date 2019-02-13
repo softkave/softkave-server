@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { connection } = require("./mongo/connection");
 const userModel = require("./mongo/user").model;
 const blockModel = require("./mongo/block").model;
@@ -6,13 +8,17 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const graphqlHTTP = require("express-graphql");
 const expressJwt = require("express-jwt");
-const { JWT_SECRET } = require("./res/jwt-secret");
 const path = require("path");
 const { buildSchema } = require("graphql");
 const { utilitySchema } = require("./schema-utils");
 const { blockSchema, blockHandlerGraphql } = require("./block");
 const { userHandlerGraphql, userSchema } = require("./user");
 const collaborationRequestModel = require("../src/mongo/collaboration-request");
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET not present");
+}
 
 const rootSchema = buildSchema(`
   ${utilitySchema}

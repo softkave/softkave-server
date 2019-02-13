@@ -55,7 +55,7 @@ const blockSchema = `
     parents: [String]
     data: [BlockData]
     createdBy: String
-    owner: String
+    # owner: String
     collaborators: [BlockCollaboratorData]
     acl: [AclItem]
     roles: [Role]
@@ -78,6 +78,7 @@ const blockSchema = `
 
   input AddBlockInput {
     name: String
+    id: String
     description: String
     expectedEndAt: Float
     completedAt: Float
@@ -90,7 +91,7 @@ const blockSchema = `
     acl: [AclItemInput!]
     roles: [RoleInput!]
     permission: UserPermissionInput
-    owner: String!
+    # owner: String!
     priority: String
   }
 
@@ -167,7 +168,7 @@ const blockSchema = `
 
   input BlockParamInput {
     type: String!
-    owner: String!
+    # owner: String!
     id: String!
   }
 

@@ -23,7 +23,7 @@ const aclDescriptor = {
 };
 
 const roleDescriptor = {
-  role: {
+  label: {
     type: "string",
     max: 50,
     message: "value is invalid."
@@ -195,7 +195,7 @@ const blockValidator = new asyncValidator(blockDescriptor, {
   firstFields: true
 });
 
-const asyncBlockValidator = util.promisify(blockValidator);
+const asyncBlockValidator = util.promisify(blockValidator.validate.bind(blockValidator));
 const requiredAddTaskFields = ["description", "type", "data"];
 const addTaskDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
@@ -206,7 +206,7 @@ const addTaskValidator = new asyncValidator(addTaskDescriptor, {
   firstFields: true
 });
 
-const asyncAddTaskValidator = util.promisify(addTaskValidator);
+const asyncAddTaskValidator = util.promisify(addTaskValidator.validate.bind(addTaskValidator));
 const requiredAddGroupFields = ["name", "color", "type"];
 const addGroupDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
@@ -217,7 +217,10 @@ const addGroupValidator = new asyncValidator(addGroupDescriptor, {
   firstFields: true
 });
 
-const asyncAddGroupValidator = util.promisify(addGroupValidator);
+const asyncAddGroupValidator = util.promisify(
+  addGroupValidator.validate.bind(addGroupValidator)
+);
+
 const requiredAddProjectFields = ["name", "color", "type"];
 const addProjectDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
@@ -228,7 +231,10 @@ const addProjectValidator = new asyncValidator(addProjectDescriptor, {
   firstFields: true
 });
 
-const asyncAddProjectValidator = util.promisify(addProjectValidator);
+const asyncAddProjectValidator = util.promisify(
+  addProjectValidator.validate.bind(addProjectValidator)
+);
+
 const requiredAddOrgFields = [
   "name",
   "color",
@@ -247,7 +253,9 @@ const addOrgValidator = new asyncValidator(addOrgDescriptor, {
   firstFields: true
 });
 
-const asyncAddOrgValidator = util.promisify(addOrgValidator.validate);
+const asyncAddOrgValidator = util.promisify(
+  addOrgValidator.validate.bind(addOrgValidator)
+);
 
 // Collaborator validators
 const newCollaboratorDescriptor = {
@@ -305,7 +313,7 @@ const newCollaboratorsArrValidator = new asyncValidator(
 );
 
 const asyncNewCollaboratorsArrValidator = util.promisify(
-  newCollaboratorsArrValidator.validate
+  newCollaboratorsArrValidator.validate.bind(newCollaboratorsArrValidator)
 );
 
 async function validateNewCollaborators(data) {
@@ -352,5 +360,6 @@ module.exports = {
   validateBlock,
   validateNewCollaborators,
   validateBlockId,
-  validateBlockType
+  validateBlockType,
+  roleDescriptor
 };
