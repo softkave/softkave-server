@@ -45,28 +45,26 @@ const userSchema = `
     errors: [Error]
   }
 
-  type UserSignupResult {
-    user: User
-    token: String
-    errors: [Error]
-    rootBlock: Block
-  }
-
   input UpdateCollabRequestInput {
     readAt: Float
   }
 
+  type UserExistsResult {
+    errors: [Error]
+    userExists: Boolean
+  }
+
   type UserQuery {
-    userExists (email: String!) : Boolean
-    signup (user: UserSignupInput!) : UserSignupResult
+    #userExists (email: String!) : UserExistsResult
+    signup (user: UserSignupInput!) : UserQueryResult
     login (user: UserLoginInput!) : UserQueryResult
     forgotPassword (email: String!) : ErrorOnlyResponse
     changePassword (password: String!) : UserQueryResult
     updateUser (data: UpdateUserInput!): ErrorOnlyResponse
     changePasswordWithToken (password: String!) : UserQueryResult
     getCollaborationRequests: GetCollabRequestsResponse
-    # respondToCollaborationRequest (id: String!, response: CollaborationResponseEnum!): SingleBlockOpResponse
-    updateCollaborationRequest (id: String!, data: UpdateCollabRequestInput): ErrorOnlyResponse
+    respondToCollaborationRequest (id: String!, response: String!): SingleBlockOpResponse
+    updateCollaborationRequest (id: String!, data: UpdateCollabRequestInput!): ErrorOnlyResponse
   }
 `;
 

@@ -23,7 +23,7 @@ const aclDescriptor = {
 };
 
 const roleDescriptor = {
-  label: {
+  role: {
     type: "string",
     max: 50,
     message: "value is invalid."

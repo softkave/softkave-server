@@ -19,7 +19,7 @@ const blockAclSchema = {
 };
 
 const blockRoleSchema = {
-  label: String,
+  role: String,
   level: Number,
   history: [historySchema]
 };

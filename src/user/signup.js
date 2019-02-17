@@ -17,9 +17,10 @@ async function addRootBlock(newUser, req) {
     color: null
   };
 
+  await addBlockTodDb(rootBlock, req);
+
   return {
-    permission,
-    block: await addBlockTodDb(rootBlock, req)
+    permission
   };
 }
 
@@ -32,14 +33,12 @@ async function signup({ user }, req) {
     newUser = await newUser.save();
     req.user = newUser;
     req.fetchedUser = newUser;
-    const { block, permission } = await addRootBlock(newUser, req);
-    newUser.rootBlock = block._id;
+    const { permission } = await addRootBlock(newUser, req);
     newUser.permissions.push(permission);
     await newUser.save();
     return {
       user: newUser,
-      token: newToken(newUser),
-      rootBlock: block
+      token: newToken(newUser)
     };
   } catch (error) {
     if (error.code === 11000) {

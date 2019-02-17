@@ -16,7 +16,7 @@ const userDescriptor = {
   //   {
   //     type: "object",
   //     fields: {
-  //       role: roleDescriptor.label,
+  //       role: roleDescriptor.role,
   //       level: roleDescriptor.level,
   //       assignedAt: {
   //         type: "number"

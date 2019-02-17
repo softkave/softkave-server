@@ -19,11 +19,9 @@ const userHandlerGraphql = {
   changePassword: wrapField(changePassword),
   updateUser: wrapField(updateUser),
   changePasswordWithToken: wrapField(changePasswordWithToken),
-  collaborationRequest: {
-    updateCollaborationRequest: wrapField(updateCollaborationRequest),
-    respondToCollaborationRequest: wrapField(respondToCollaborationRequest),
-    getCollaborationRequests: wrapField(getCollaborationRequests)
-  }
+  updateCollaborationRequest: wrapField(updateCollaborationRequest),
+  respondToCollaborationRequest: wrapField(respondToCollaborationRequest),
+  getCollaborationRequests: wrapField(getCollaborationRequests)
 };
 
 module.exports = {

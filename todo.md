@@ -7,6 +7,7 @@
 1. check to see which is faster in querying arrays, querying in db or array looping
 2. figure out where block.owner should be added
 3. write scripts to clean permissions to blocks that have been deleted
+4. change password mutation should ask for current password
 
 features
 1. bots. 

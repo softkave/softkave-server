@@ -32,12 +32,12 @@ const blockSchema = `
   }
 
   type Role {
-    label: String
+    role: String
     level: String
   }
 
   input RoleInput {
-    label: String!
+    role: String!
     level: String!
   }
 
@@ -140,6 +140,7 @@ const blockSchema = `
   }
 
   type Collaborator {
+    _id: String
     name: String
     email: String
     permissions: UserPermission
@@ -170,8 +171,10 @@ const blockSchema = `
     updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : SingleBlockOpResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getPermissionBlocks: MultipleBlocksOpResponse
-    getBlockChildren (block: BlockParamInput!, type: [String!]) : MultipleBlocksOpResponse
-    addCollaborator (
+    #getBlockChildren (block: BlockParamInput!, type: [String!]) : MultipleBlocksOpResponse
+    getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
+    getBlockChildren (block: BlockParamInput!, types: [String!]) : MultipleBlocksOpResponse
+    addCollaborators (
       block: BlockParamInput!, 
       collaborators: [AddCollaboratorInput!]!
     ) : ErrorOnlyResponse

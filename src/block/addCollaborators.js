@@ -55,7 +55,7 @@ async function addCollaborator({ block, collaborators }, req) {
     .exec();
   let blockRolesMap = {};
   ownerBlock.roles.forEach(role => {
-    blockRolesMap[role.label] = role;
+    blockRolesMap[role.role] = role;
   });
 
   let collaborationRequests = collaborators.map(c => {
