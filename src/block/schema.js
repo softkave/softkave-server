@@ -171,7 +171,6 @@ const blockSchema = `
     updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : SingleBlockOpResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getPermissionBlocks: MultipleBlocksOpResponse
-    #getBlockChildren (block: BlockParamInput!, type: [String!]) : MultipleBlocksOpResponse
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (block: BlockParamInput!, types: [String!]) : MultipleBlocksOpResponse
     addCollaborators (
@@ -188,6 +187,9 @@ const blockSchema = `
     # ) : ErrorOnlyResponse
     getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
     getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
+    toggleTask
+    updateRoles
+    updateAcl
   }
 `;
 

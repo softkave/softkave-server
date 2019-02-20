@@ -8,6 +8,8 @@
 2. figure out where block.owner should be added
 3. write scripts to clean permissions to blocks that have been deleted
 4. change password mutation should ask for current password
+- set up prettier or airbnb style guide
+- use rbac for roles (role to user, role to permission | action, role to block, etc)
 
 features
 1. bots. 

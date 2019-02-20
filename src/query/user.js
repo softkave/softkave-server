@@ -1,4 +1,6 @@
-const { blockFragment } = require("./block");
+const {
+  blockFragment
+} = require("./block");
 
 const userExistsQuery = `
   query UserExistsQuery (email: String!) {
@@ -112,7 +114,7 @@ const changePasswordWithTokenMutation = `
     $password: String!
   ) {
     user {
-      changePassword (password: $password) {
+      changePasswordWithToken(password: $password) {
         ...userQueryResult
       }
     }
