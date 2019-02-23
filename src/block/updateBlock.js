@@ -1,21 +1,26 @@
 const blockModel = require("../mongo/block");
 const { validateBlock } = require("./validator");
-const { canUserPerformAction } = require("../user/canUserPerformAction");
+const findUserPermission = require("../user/findUserPermission");
+const { RequestError } = require("../error");
 
 async function updateBlock({ block, data }, req) {
-  await validateBlock(block);
-  await validateBlock(data);
-  await canUserPerformAction(
-    req,
-    `UPDATE_${block.type.toUpperCase()}`,
-    block.id
+  // await validateBlock(block);
+  // await validateBlock(data);
+
+  const role = await findUserPermission(req, block.id);
+  data.updatedAt = Date.now();
+  let result = await blockModel.model.findOneAndUpdate(
+    {
+      _id: block.id,
+      acl: { $elemMatch: { action: "UPDATE", level: { $lte: role.level } } }
+    },
+    data,
+    { fields: "_id" }
   );
 
-  block.updatedAt = Date.now();
-  await blockModel
-    .newModel()
-    .updateOne({ _id: block.id }, data)
-    .exec();
+  if (!result || !result._id) {
+    throw new RequestError("error", "permission denied");
+  }
 }
 
 module.exports = updateBlock;

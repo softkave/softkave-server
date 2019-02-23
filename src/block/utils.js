@@ -12,6 +12,14 @@ function blockHasParents(block) {
   return false;
 }
 
+function getParentsLength(block) {
+  if (blockHasParents(block)) {
+    return block.parents.length;
+  }
+
+  return 0;
+}
+
 function getRootParentId(block) {
   if (blockHasParents(block)) {
     return block.parents[0];
@@ -46,5 +54,6 @@ module.exports = {
   blockTypes,
   defaultAcl,
   defaultRoles,
-  blockTypesObj
+  blockTypesObj,
+  getParentsLength
 };

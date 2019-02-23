@@ -187,7 +187,7 @@ const blockSchema = `
     # ) : ErrorOnlyResponse
     getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
     getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
-    toggleTask
+    toggleTask (block: BlockParamInput!, data: Boolean!)
     updateRoles
     updateAcl
   }

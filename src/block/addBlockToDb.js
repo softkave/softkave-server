@@ -1,14 +1,21 @@
 const blockModel = require("../mongo/block");
 const { RequestError } = require("../error");
 const addUserPermission = require("../user/addUserPermission");
+const getUserFromReq = require("../getUserFromReq");
 
 async function addBlockToDb(block, req) {
-  if (await blockModel.model.findOne({ _id: block.id }, "_id").lean().exec()) {
+  if (
+    await blockModel.model
+      .findOne({ _id: block.id }, "_id")
+      .lean()
+      .exec()
+  ) {
     console.log(`block with same id - ${block.id}`);
-    throw new RequestError("error", "server error");
+    throw new RequestError("block", "resolve");
   }
 
-  block.createdBy = user.id;
+  const user = await getUserFromReq(req);
+  block.createdBy = user._id;
   block._id = block.id;
   block.createdAt = Date.now();
   let newBlock = new blockModel.model(block);
@@ -19,7 +26,7 @@ async function addBlockToDb(block, req) {
     } catch (error) {
       console.error(error);
       blockModel.model.deleteOne({ _id: newBlock._id }).exec();
-      throw new RequestError("error", "an error occurred.");
+      throw new RequestError("error", "server error.");
     }
   }
 

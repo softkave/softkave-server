@@ -1,14 +1,16 @@
 const blockModel = require("../mongo/block");
 const { validateBlock } = require("./validator");
-const { canUserPerformAction } = require("../user/canUserPerformAction");
+const canUserPerformAction = require("./canUserPerformAction");
 const deleteUserPermission = require("../user/deleteUserPermission");
+const findUserPermission = require("../user/findUserPermission");
 
 async function deleteBlock({ block }, req) {
+  // validate block
   await validateBlock(block);
   await canUserPerformAction(
-    req,
-    `DELETE_${block.type.toUpperCase()}`,
-    block.owner || block.id
+    block.id,
+    `DELETE`,
+    await findUserPermission(req, block.id)
   );
 
   await blockModel.model

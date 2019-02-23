@@ -16,9 +16,13 @@ const schema = {
   to: {
     email: { type: String, index: true }
   },
-  response: String,
-  respondedAt: Number,
-  permission: [blockPermissionSchema]
+  // response: String,
+  // respondedAt: Number,
+  // permission: [blockPermissionSchema],
+  // updatedAt: Number,
+  // status: String, // Pending | Revoked | Accepted | Rejected | Expired
+  expiresAt: Number,
+  statusHistory: [{ status: String, date: Number }]
 };
 
 const collaborationRequestModel = makeModel(

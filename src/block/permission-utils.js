@@ -11,15 +11,11 @@ function getPermissionByBlockId(permissions, blockId) {
   return permissions.find(p => p.blockId === blockId);
 }
 
-function getPermissionByParentId(permissions, parentId) {
-  return permissions.find(p => p.parentId === parentId);
-}
-
-function getPermissionObjByBlockIds(permissions, blockIds) {
+function getPermissionObjByBlockIds(permissions, blocks) {
   let result = {};
   let blockIdMap = {};
-  blockIds.forEach(b => {
-    blockIdMap[b] = 1;
+  blocks.forEach(b => {
+    blockIdMap[b.id] = 1;
   });
 
   permissions.forEach(p => {
@@ -34,6 +30,5 @@ function getPermissionObjByBlockIds(permissions, blockIds) {
 module.export = {
   getPermissionQuery,
   getPermissionByBlockId,
-  getPermissionObjByBlockIds,
-  getPermissionByParentId
+  getPermissionObjByBlockIds
 };

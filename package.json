@@ -21,6 +21,7 @@
     "express-graphql": "0.6.12",
     "express-jwt": "5.3.1",
     "graphql": "0.13.2",
+    "joi": "14.3.1",
     "jsonwebtoken": "8.4.0",
     "mongoose": "5.4.10",
     "uuid": "3.3.2",

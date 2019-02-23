@@ -40,6 +40,10 @@ function validateMongoId(id) {
   }
 }
 
+function joiMongoIdValidator(value, ()) {
+
+}
+
 module.exports = {
   passwordPattern,
   mongoIdDescriptor,
