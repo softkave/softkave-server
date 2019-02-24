@@ -8,13 +8,19 @@ const {
   mongoIdDescriptor,
   makeDescriptorFieldsRequired
 } = require("../validation-utils");
-const { blockTypesObj } = require("./utils");
+const { blockTypesObj, blockTypes } = require("./utils");
+const { actionsMap, actions } = require("./actions");
 
 const aclDescriptor = {
   action: {
     type: "string",
-    max: 50,
-    message: "value is invalid"
+    validator(rule, val, cb) {
+      if (!actionsMap(val)) {
+        cb("action is invalid");
+      } else {
+        cb();
+      }
+    }
   },
   level: {
     type: "number",
@@ -29,12 +35,46 @@ const roleDescriptor = {
     message: "value is invalid."
   },
   level: {
-    type: "number"
+    type: "number",
+    message: "value is invalid."
+  }
+};
+
+const arbitraryDataDescriptor = {
+  dataType: {
+    type: "string",
+    max: 50,
+    message: "value is invalid."
+  },
+  data: {
+    type: "string",
+    max: 250,
+    message: "value is invalid."
+  }
+};
+
+const taskCollaboratorsDescriptor = {
+  type: "object",
+  fields: {
+    userId: mongoIdDescriptor,
+    // data: dataSchema,
+    completedAt: { type: "number" },
+    assignedAt: { type: "number" },
+    assignedBy: mongoIdDescriptor,
+    expectedEndAt: { type: "number" }
   }
 };
 
 const aclValidator = new asyncValidator(aclDescriptor, { firstFields: true });
 const roleValidator = new asyncValidator(roleDescriptor, { firstFields: true });
+const arbitraryDataValidator = new asyncValidator(arbitraryDataDescriptor, {
+  firstFields: true
+});
+
+const taskCollaboratorsValidator = new asyncValidator(
+  taskCollaboratorsDescriptor,
+  { firstFields: true }
+);
 
 const blockDescriptor = {
   name: [
@@ -59,12 +99,12 @@ const blockDescriptor = {
       message: "value is invalid."
     }
   ],
-  completedAt: [
-    {
-      type: "number",
-      message: "value is invalid."
-    }
-  ],
+  // completedAt: [
+  //   {
+  //     type: "number",
+  //     message: "value is invalid."
+  //   }
+  // ],
   color: [
     {
       validator: (rule, value) => {
@@ -75,7 +115,7 @@ const blockDescriptor = {
   type: [
     {
       type: "enum",
-      enum: ["org", "project", "group", "task"],
+      enum: blockTypes,
       message: "value is invalid."
     }
   ],
@@ -86,7 +126,7 @@ const blockDescriptor = {
       message: "value is invalid.",
       validator: function(rule, value, cb) {
         let existingParents = {};
-        let errorExist = value.some((parent, i) => {
+        value.some((parent, i) => {
           if (existingParents[value]) {
             cb("parent already exist in set.");
             return true;
@@ -96,62 +136,40 @@ const blockDescriptor = {
           }
 
           existingParents[value] = value;
+          if (i === value.length - 1) {
+            cb();
+          }
+
           return false;
         });
-
-        if (!errorExist) {
-          cb();
-        }
       }
-    }
-  ],
-  data: [
-    {
-      type: "object",
-      fields: {
-        dataType: {
-          type: "string",
-          max: 50,
-          message: "value is invalid."
-        },
-        data: {
-          type: "string",
-          max: 250,
-          message: "value is invalid."
-        }
-      },
-      message: "value is invalid."
     }
   ],
   acl: [
     {
       type: "array",
-      max: 40,
+      max: actions.length,
       message: "value is invalid.",
       validator: function(rule, value, cb) {
         let existingAcl = {};
-        let errorExist = false;
-        errorExist = value.some((aclItem, i) => {
-          if (existingAcl[aclItem.action]) {
-            cb("action already exist in set.");
-            errorExist = true;
-            return true;
-          }
+        let errors = [];
+        value.forEach((aclItem, i) => {
+          aclValidator.validate(aclItem, (err, fields) => {
+            if (err) {
+              errors.push(`acl data at index ${i} is invalid`);
+            } else {
+              if (existingAcl[aclItem.action]) {
+                errors.push(`acl data at index ${i} is invalid`);
+              }
 
-          existingAcl[aclItem.action] = aclItem;
-          aclValidator.validate(aclItem, (errors, fields) => {
-            if (errors) {
-              cb(`acl data at index ${i} is invalid`);
-              errorExist = true;
+              existingAcl[aclItem.action] = aclItem;
+            }
+
+            if (i === value.length - 1) {
+              cb(errors.length > 0 ? errors : null);
             }
           });
-
-          return errorExist;
         });
-
-        if (!errorExist) {
-          cb();
-        }
       }
     }
   ],
@@ -162,41 +180,78 @@ const blockDescriptor = {
       message: "value is invalid.",
       validator: function(rule, value, cb) {
         let existingRoles = {};
-        let errorExist = false;
-        value.some((role, i) => {
-          if (existingRoles[role.role]) {
-            cb("role with the same name already exist.");
-            errorExist = true;
-            return true;
-          }
-
-          existingRoles[role.role] = role;
-          roleValidator.validate(role, (errors, fields) => {
-            if (errors) {
+        let errors = [];
+        value.forEach((role, i) => {
+          roleValidator.validate(role, (err, fields) => {
+            if (err) {
               cb(`role data at index ${i} is invalid`);
-              errorExist = true;
+            } else {
+              if (existingRoles[role.role]) {
+                errors.push("role with the same name already exist");
+              }
+
+              existingRoles[role.role] = role;
+            }
+
+            if (i === value.length - 1) {
+              cb(errors.length > 0 ? errors : null);
             }
           });
-
-          return errorExist;
         });
-
-        if (!errorExist) {
-          cb();
-        }
       }
     }
   ],
   permission: userDescriptor.permission,
-  id: mongoIdDescriptor
+  id: mongoIdDescriptor,
+  priority: {
+    type: "enum",
+    enum: ["not important", "important", "very important"],
+    message: "value is invalid"
+  },
+  taskCollaborators: [
+    {
+      type: "array",
+      max: 20,
+      validator(rule, value, cb) {
+        let existingCollaborators = {};
+        let errors = [];
+        value.forEach((c, i) => {
+          taskCollaboratorsValidator.validate(c, (err, fields) => {
+            if (err) {
+              cb(`data at index ${i} is invalid`);
+            } else {
+              if (existingCollaborators[c.userId]) {
+                cb("duplicate collaborator");
+              }
+
+              existingCollaborators[c.userId] = c;
+            }
+
+            if (i === value.length - 1) {
+              cb(errors.length > 0 ? errors : null);
+            }
+          });
+        });
+      }
+    }
+  ]
 };
 
 const blockValidator = new asyncValidator(blockDescriptor, {
   firstFields: true
 });
 
-const asyncBlockValidator = util.promisify(blockValidator.validate.bind(blockValidator));
-const requiredAddTaskFields = ["description", "type", "data"];
+const asyncBlockValidator = util.promisify(
+  blockValidator.validate.bind(blockValidator)
+);
+
+const requiredAddTaskFields = [
+  "description",
+  "type",
+  "priority",
+  "acl",
+  "parents"
+];
 const addTaskDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
   requiredAddTaskFields
@@ -206,8 +261,10 @@ const addTaskValidator = new asyncValidator(addTaskDescriptor, {
   firstFields: true
 });
 
-const asyncAddTaskValidator = util.promisify(addTaskValidator.validate.bind(addTaskValidator));
-const requiredAddGroupFields = ["name", "color", "type"];
+const asyncAddTaskValidator = util.promisify(
+  addTaskValidator.validate.bind(addTaskValidator)
+);
+const requiredAddGroupFields = ["name", "color", "type", "acl", "parents"];
 const addGroupDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
   requiredAddGroupFields
@@ -221,7 +278,7 @@ const asyncAddGroupValidator = util.promisify(
   addGroupValidator.validate.bind(addGroupValidator)
 );
 
-const requiredAddProjectFields = ["name", "color", "type"];
+const requiredAddProjectFields = ["name", "color", "type", "acl", "parents"];
 const addProjectDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
   requiredAddProjectFields
@@ -263,9 +320,9 @@ const newCollaboratorDescriptor = {
     type: "email",
     message: "value is invalid."
   },
-  role: {
-    type: "string",
-    max: 50,
+  body: blockDescriptor.description,
+  expiresAt: {
+    type: "number",
     message: "value is invalid."
   }
 };
@@ -277,32 +334,28 @@ const newCollaboratorValidator = new asyncValidator(newCollaboratorDescriptor, {
 const newCollaboratorsArrDescriptor = {
   data: {
     type: "array",
-    max: 10,
-    message: "value is invalid.",
+    max: 20,
+    message: "value is invalid",
     validator: function(rule, value, cb) {
       let existingCollaborators = {};
-      let errorExist = false;
-      value.some((val, i) => {
-        if (existingCollaborators[val.email]) {
-          cb("collaborator email already exist in set.");
-          errorExist = true;
-          return true;
-        }
+      let errors = [];
+      value.forEach((val, i) => {
+        newCollaboratorValidator.validate(val, (err, fields) => {
+          if (err) {
+            errors.push(`collaborators data at index ${i} is invalid`);
+          } else {
+            if (existingCollaborators[val.email]) {
+              errors.push("collaborator email already exist in set");
+            }
 
-        existingCollaborators[val.email] = val;
-        newCollaboratorValidator.validate(val, (errors, fields) => {
-          if (errors) {
-            cb(`collaborators data at index ${i} is invalid`);
-            errorExist = true;
+            existingCollaborators[val.email] = val;
+          }
+
+          if (i === value.length - 1) {
+            cb(errors.length > 0 ? errors : null);
           }
         });
-
-        return errorExist;
       });
-
-      if (!errorExist) {
-        cb();
-      }
     }
   }
 };

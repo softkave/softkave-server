@@ -1,37 +1,27 @@
-const { validateBlock } = require("./validator");
-const canUserPerformAction = require("../user/canUserPerformAction");
+const { validateBlock, validateNewCollaborators } = require("./validator");
+const canUserPerformAction = require("./canUserPerformAction");
+const findUserPermission = require("../user/findUserPermission");
 const userModel = require("../mongo/user");
-const deleteUserPermission = require("../user/deleteUserPermission");
-const { RequestError } = require("../error");
 
 async function removeCollaborator({ block, collaborator }, req) {
-  await validateBlock(block);
-  // const collaboratorData = await userModel.model
-  //   .findOne(
-  //     {
-  //       _id: collaborator.id,
-  //       permissions: { $elemMatch: { blockId: block.owner } }
-  //     },
-  //     "permissions"
-  //   )
-  //   .lean()
-  //   .exec();
+  // await validateBlock(block);
+  // await validateNewCollaborators(collaborators);
 
-  // if (!collaboratorData) {
-  //   throw new RequestError("error", "collaborator does not exist.");
-  // }
+  const userRole = await findUserPermission(req, block.id);
+  await canUserPerformAction(block.id, "REMOVE_COLLABORATOR", userRole);
+  await userModel.model
+    .updateOne(
+      {
+        _id: collaborator._id,
+        permissions: { $elemMatch: { blockId: block.id } }
+      },
+      {
+        $pull: { "permissions.blockId": block.id }
+      }
+    )
+    .exec();
 
-  // const collaboratorPermission = collaboratorData.permissions.find(
-  //   permission => permission.blockId === block.owner
-  // );
-
-  await canUserPerformAction(
-    req,
-    `REMOVE_COLLABORATOR`,
-    block.id
-  );
-
-  await deleteUserPermission(collaborator, block.id);
+  // send notification to the collaborator
 }
 
 module.exports = removeCollaborator;

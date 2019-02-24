@@ -22,7 +22,8 @@ const schema = {
   // updatedAt: Number,
   // status: String, // Pending | Revoked | Accepted | Rejected | Expired
   expiresAt: Number,
-  statusHistory: [{ status: String, date: Number }]
+  statusHistory: [{ status: String, date: Number }],
+  sentEmailHistory: [{ date: Number }]
 };
 
 const collaborationRequestModel = makeModel(

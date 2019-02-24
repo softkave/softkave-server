@@ -1,3 +1,5 @@
+const { arrToMap } = require("../utils");
+
 const primaryActions = ["READ", "UPDATE", "DELETE"];
 
 const orgActions = [
@@ -17,14 +19,29 @@ const collaborationActions = [
   "SEND_REQUEST",
   "UPDATE_REQUEST",
   "READ_REQUESTS",
+  "REVOKE_REQUEST",
   "CREATE_ROLE",
-  "UPDATE_ROLE",
+  "UPDATE_ROLES",
   "DELETE_ROLE",
   // "READ_ROLES",
-  "UPDATE_ACL",
-  "DELETE_ACL"
-  // "READ_COLLABORATORS"
+  "UPDATE_ACL"
+  // "REMOVE_COLLABORATOR",
+  // "READ_COLLABORATORS",
+  // "READ_BENCH",
+  // "ASSIGN_ROLE",
+  // "REVOKE_ROLE",
 ];
+
+const actions = [
+  ...primaryActions,
+  ...taskActions,
+  ...groupActions,
+  ...orgActions,
+  ...collaborationActions,
+  ...projectActions
+];
+
+const actionsMap = arrToMap(actions);
 
 module.exports = {
   primaryActions,
@@ -32,5 +49,7 @@ module.exports = {
   groupActions,
   collaborationActions,
   orgActions,
-  projectActions
+  projectActions,
+  actions,
+  actionsMap
 };

@@ -32,7 +32,7 @@ const blockSchema = {
   },
   description: { type: String, trim: true },
   expectedEndAt: Number,
-  completedAt: Number,
+  // completedAt: Number,
   createdAt: { type: Number, default: Date.now },
   color: String,
   updatedAt: Number,

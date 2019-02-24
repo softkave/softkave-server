@@ -7,7 +7,7 @@ const blockParamInput = joi.object().keys({
   id: joi.string()
 });
 
-const block = joi.object().keys({
+const createBlockInput = joi.object().keys({
   name: joi.string(),
   description: joi.string(),
   expectedEndAt: joi.number(),
@@ -24,7 +24,7 @@ const block = joi.object().keys({
   priority: joi.string()
 });
 
-const block = joi.object().keys({
+const updateBlockInput = joi.object().keys({
   name: joi.string(),
   description: joi.string(),
   expectedEndAt: joi.number(),
@@ -40,3 +40,8 @@ const block = joi.object().keys({
   roles: joi.array(),
   priority: joi.string()
 });
+
+const roleInput = null;
+const aclInput = null;
+const requestInput = null;
+const addCollaboratorInput = null;

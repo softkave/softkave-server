@@ -34,6 +34,17 @@ function wrapField(func) {
   };
 }
 
+function arrToMap(arr) {
+  let result = {};
+
+  arr.forEach(item => {
+    result[item] = 1;
+  });
+
+  return result;
+}
+
 module.exports = {
-  wrapField
+  wrapField,
+  arrToMap
 };

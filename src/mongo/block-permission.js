@@ -5,8 +5,8 @@ const blockPermissionSchema = {
   role: String,
   level: Number,
   type: String,
-  blockId: mongoose.Schema.Types.ObjectId,
-  history: [historySchema],
+  blockId: mongoose.Schema.Types.ObjectId
+  // history: [historySchema],
   // parentBlockId: mongoose.Schema.Types.ObjectId
 };
 

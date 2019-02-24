@@ -7,13 +7,15 @@ async function canUserPerformAction(
   userRole,
   projection = ""
 ) {
-  let result = await blockModel.model.findOne(
-    {
-      _id: blockId,
-      acl: { $elemMatch: { action, level: { $lte: userRole.level } } }
-    },
-    "_id " + projection
-  );
+  let result = await blockModel.model
+    .findOne(
+      {
+        _id: blockId,
+        acl: { $elemMatch: { action, level: { $lte: userRole.level } } }
+      },
+      "_id " + projection
+    )
+    .exec();
 
   if (!result) {
     throw new RequestError("error", "permission denied");

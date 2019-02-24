@@ -34,17 +34,32 @@ function isParentInBlock(block, parentId) {
   return false;
 }
 
-const blockTypes = ["group", "org", "project", "task", "root"];
+const blockTypes = ["group", "org", "project", "task", "root", "info-card"];
 const blockTypesObj = {
   group: 1,
   org: 1,
   project: 1,
   task: 1,
-  root: 1
+  root: 1,
+  "info-card": 1,
+  "landing-page": 1
 };
 
-const defaultRoles = [];
-const defaultAcl = [];
+const blockTypeToChildrenMap = {
+  org: { project: 1, group: 1, task: 1 },
+  group: { project: 1, task: 1 },
+  project: { group: 1, task: 1 }
+};
+
+function canBlockBeAChildOf(block, child) {
+  let possibleChildren = blockTypeToChildrenMap[block.type];
+
+  if (possibleChildren) {
+    return !!possibleChildren[child.type];
+  }
+
+  return false;
+}
 
 module.exports = {
   getImmediateParentId,
@@ -52,8 +67,7 @@ module.exports = {
   getRootParentId,
   isParentInBlock,
   blockTypes,
-  defaultAcl,
-  defaultRoles,
   blockTypesObj,
-  getParentsLength
+  getParentsLength,
+  canBlockBeAChildOf
 };
