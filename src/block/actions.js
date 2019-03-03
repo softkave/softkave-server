@@ -11,7 +11,10 @@ const orgActions = [
 
 const projectActions = ["CREATE_GROUP", "CREATE_TASK", "CREATE_INFO_CARD"];
 
-const taskActions = ["TOGGLE"];
+const taskActions = [
+  "TOGGLE"
+  // "ASSIGN_TASK", "UNASSIGN_TASK"
+];
 
 const groupActions = ["CREATE_PROJECT", "CREATE_TASK", "CREATE_INFO_CARD"];
 

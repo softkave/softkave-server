@@ -4,10 +4,11 @@ const findUserPermission = require("../user/findUserPermission");
 const { RequestError } = require("../error");
 const blockModel = require("../mongo/block");
 const { getPermissionQuery } = require("./permission-utils");
+const { validateBlock } = require("./validator");
 
 async function updateRoles({ block, roles }, req) {
-  // validate block & acl
-
+  await validateBlock(block);
+  await validateBlock({ roles });
   const role = await findUserPermission(req, block.id);
   let labels = [];
   let push = [];

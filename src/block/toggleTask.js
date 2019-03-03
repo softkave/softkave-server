@@ -5,8 +5,7 @@ const getUserFromReq = require("../getUserFromReq");
 const { RequestError } = require("../error");
 
 async function toggleTask({ block, data }, req) {
-  // await validateBlock(block);
-
+  await validateBlock(block);
   const user = await getUserFromReq(req);
   const role = await findUserPermission(req, block.id);
 

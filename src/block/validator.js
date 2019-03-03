@@ -6,7 +6,9 @@ const { userDescriptor } = require("../user/validator");
 const { RequestError } = require("../error");
 const {
   mongoIdDescriptor,
-  makeDescriptorFieldsRequired
+  makeDescriptorFieldsRequired,
+  trimInput,
+  makeArrTrim
 } = require("../validation-utils");
 const { blockTypesObj, blockTypes } = require("./utils");
 const { actionsMap, actions } = require("./actions");
@@ -14,6 +16,7 @@ const { actionsMap, actions } = require("./actions");
 const aclDescriptor = {
   action: {
     type: "string",
+    transform: trimInput,
     validator(rule, val, cb) {
       if (!actionsMap(val)) {
         cb("action is invalid");
@@ -31,6 +34,7 @@ const aclDescriptor = {
 const roleDescriptor = {
   role: {
     type: "string",
+    transform: trimInput,
     max: 50,
     message: "value is invalid."
   },
@@ -43,6 +47,7 @@ const roleDescriptor = {
 const arbitraryDataDescriptor = {
   dataType: {
     type: "string",
+    transform: trimInput,
     max: 50,
     message: "value is invalid."
   },
@@ -67,6 +72,7 @@ const taskCollaboratorsDescriptor = {
 
 const aclValidator = new asyncValidator(aclDescriptor, { firstFields: true });
 const roleValidator = new asyncValidator(roleDescriptor, { firstFields: true });
+const validateRole = util.promisify(roleValidator.validate.bind(roleValidator));
 const arbitraryDataValidator = new asyncValidator(arbitraryDataDescriptor, {
   firstFields: true
 });
@@ -80,6 +86,7 @@ const blockDescriptor = {
   name: [
     {
       type: "string",
+      transform: trimInput,
       max: 50,
       pattern: /\w/,
       message: "value is invalid."
@@ -115,6 +122,7 @@ const blockDescriptor = {
   type: [
     {
       type: "enum",
+      transform: trimInput,
       enum: blockTypes,
       message: "value is invalid."
     }
@@ -124,6 +132,7 @@ const blockDescriptor = {
       type: "array",
       max: 10,
       message: "value is invalid.",
+      transform: makeArrTrim(),
       validator: function(rule, value, cb) {
         let existingParents = {};
         value.some((parent, i) => {
@@ -148,6 +157,7 @@ const blockDescriptor = {
   acl: [
     {
       type: "array",
+      // transform: makeArrTrim("action"),
       max: actions.length,
       message: "value is invalid.",
       validator: function(rule, value, cb) {
@@ -176,6 +186,7 @@ const blockDescriptor = {
   roles: [
     {
       type: "array",
+      // transform: makeArrTrim("role"),
       max: 10,
       message: "value is invalid.",
       validator: function(rule, value, cb) {
@@ -205,6 +216,7 @@ const blockDescriptor = {
   id: mongoIdDescriptor,
   priority: {
     type: "enum",
+    transform: trimInput,
     enum: ["not important", "important", "very important"],
     message: "value is invalid"
   },
@@ -318,6 +330,7 @@ const asyncAddOrgValidator = util.promisify(
 const newCollaboratorDescriptor = {
   email: {
     type: "email",
+    transform: trimInput,
     message: "value is invalid."
   },
   body: blockDescriptor.description,
@@ -414,5 +427,6 @@ module.exports = {
   validateNewCollaborators,
   validateBlockId,
   validateBlockType,
-  roleDescriptor
+  roleDescriptor,
+  validateRole
 };

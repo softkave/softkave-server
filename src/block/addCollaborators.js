@@ -7,8 +7,8 @@ const getUserFromReq = require("../getUserFromReq");
 const findUserPermission = require("../user/findUserPermission");
 
 async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
-  // await validateBlock(block);
-  // await validateNewCollaborators(collaborators);
+  await validateBlock(block);
+  await validateNewCollaborators(collaborators);
 
   const role = await findUserPermission(req, block.id);
   await canUserPerformAction(block.id, "SEND_REQUEST", role);

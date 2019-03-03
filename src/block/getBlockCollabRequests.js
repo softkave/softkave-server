@@ -4,7 +4,7 @@ const collaborationRequestModel = require("../mongo/collaboration-request");
 const findUserPermission = require("../user/findUserPermission");
 
 async function getBlockCollabRequests({ block }, req) {
-  // await validateBlock(block);
+  await validateBlock(block);
 
   const role = await findUserPermission(req, block.id);
   await canUserPerformAction(block.id, "READ_REQUESTS", role);

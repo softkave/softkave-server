@@ -4,9 +4,8 @@ const findUserPermission = require("../user/findUserPermission");
 const { RequestError } = require("../error");
 
 async function updateBlock({ block, data }, req) {
-  // await validateBlock(block);
-  // await validateBlock(data);
-
+  await validateBlock(block);
+  await validateBlock(data);
   const role = await findUserPermission(req, block.id);
   data.updatedAt = Date.now();
   let result = await blockModel.model.findOneAndUpdate(

@@ -4,20 +4,28 @@ const {
   getPermissionObjByBlockIds
 } = require("./permission-utils");
 const getUserFromReq = require("../getUserFromReq");
-const { validateBlock } = require("./validator");
 const { RequestError } = require("../error");
+const { validateUUID } = require("../validation-utils");
 
 async function getBlocks({ blocks }, req) {
   if (blocks.length > 50) {
     throw new RequestError("blocks", "maximum length exceeded");
   }
 
-  // blocks should be an array of ids
+  // TODO: blocks should be an array of ids
+  let existingIds = {};
   const blockIds = [];
   blocks.forEach(block => {
-    // validateBlock(block);
-    blockIds.push(block.id);
+    validateUUID(block.id);
+
+    if (!existingIds[block.id]) {
+      blockIds.push(block.id);
+      existingIds[block.id] = 1;
+    }
   });
+
+  // to free memory
+  existingIds = null;
 
   const user = await getUserFromReq(req);
   const permissions = getPermissionObjByBlockIds(user.permissions, blocks);

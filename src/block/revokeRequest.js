@@ -1,19 +1,20 @@
 const collaborationRequestModel = require("../mongo/collaboration-request");
-const { validateBlock, validateNewCollaborators } = require("./validator");
+const { validateBlock } = require("./validator");
 const { RequestError } = require("../error");
 const canUserPerformAction = require("./canUserPerformAction");
 const findUserPermission = require("../user/findUserPermission");
+const { validateUUID } = require("../validation-utils");
 
-async function revokeRequest({ block, request, body, expiresAt }, req) {
-  // await validateBlock(block);
-  // await validateNewCollaborators(collaborators);
+async function revokeRequest({ block, request }, req) {
+  await validateBlock(block);
+  validateUUID(request);
 
   const role = await findUserPermission(req, block.id);
   await canUserPerformAction(block.id, "REVOKE_REQUEST", role);
   let r = await collaborationRequestModel.model
     .findOneAndUpdate(
       {
-        _id: request.id
+        _id: request
       },
       { $push: { statusHistory: { status: "revoked", date: Date.now() } } },
       { fields: "_id" }

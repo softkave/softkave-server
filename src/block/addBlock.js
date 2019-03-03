@@ -6,7 +6,7 @@ const { getImmediateParentId } = require("./utils");
 const findUserPermission = require("../user/findUserPermission");
 
 async function addBlock({ block }, req) {
-  // await validateBlockAdd(block);
+  await validateBlockAdd(block);
   const user = await getUserFromReq(req);
 
   if (block.permission && (block.type === "org" || block.type === "root")) {

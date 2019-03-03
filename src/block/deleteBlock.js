@@ -5,7 +5,6 @@ const deleteUserPermission = require("../user/deleteUserPermission");
 const findUserPermission = require("../user/findUserPermission");
 
 async function deleteBlock({ block }, req) {
-  // validate block
   await validateBlock(block);
   await canUserPerformAction(
     block.id,

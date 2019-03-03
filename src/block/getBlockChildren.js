@@ -2,9 +2,25 @@ const blockModel = require("../mongo/block");
 const { blockTypes, getParentsLength } = require("./utils");
 const findUserPermission = require("../user/findUserPermission");
 const canUserPerformAction = require("./canUserPerformAction");
+const { RequestError } = require("../error");
 
 async function getBlockChildren({ block, types }, req) {
-  // validate if block types are unique
+  if (types.length > blockTypes.length) {
+    throw new RequestError("types", "maximum length exceeded");
+  }
+
+  let existingTypes = {};
+  types = types.filter(type => {
+    if (!existingTypes[type]) {
+      existingTypes[type] = 1;
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  // to free memory
+  existingTypes = null;
 
   const role = await findUserPermission(req, block.id);
   const parentBlock = await canUserPerformAction(

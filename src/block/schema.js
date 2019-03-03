@@ -9,16 +9,20 @@ const blockSchema = `
     data: String!
   }
 
-  type BlockCollaboratorData {
+  type BlockTaskCollaboratorData {
     userId: String
     data: String
     addedAt: Float
+    assignedBy: String
+    assignedAt: Number
   }
 
-  input BlockCollaboratorDataInput {
+  input BlockTaskCollaboratorDataInput {
     userId: String!
     data: String
     addedAt: Float
+    assignedBy: String
+    assignedAt: Number
   }
 
   type AclItem {
@@ -56,7 +60,7 @@ const blockSchema = `
     data: [BlockData]
     createdBy: String
     # owner: String
-    collaborators: [BlockCollaboratorData]
+    taskCollaborators: [BlockCollaboratorData]
     acl: [AclItem]
     roles: [Role]
     priority: String
@@ -82,17 +86,15 @@ const blockSchema = `
     description: String
     expectedEndAt: Float
     completedAt: Float
-    #createdAt: Float
     color: String
     type: String!
     parents: [String!]
     data: [BlockDataInput!]
-    #createdBy: String
     acl: [AclItemInput!]
     roles: [RoleInput!]
     permission: UserPermissionInput
-    # owner: String!
     priority: String
+    taskCollaborators: [BlockCollaboratorData]
   }
 
   input UpdateBlockInput {
@@ -105,9 +107,9 @@ const blockSchema = `
     #updatedAt: Float
     #parents: [String]
     data: [BlockDataInput]
-    #createdBy: String
     acl: [AclItemInput]
     roles: [RoleInput]
+    taskCollaborators: [BlockCollaboratorData]
   }
 
   type CollabRequestFrom {
@@ -115,10 +117,12 @@ const blockSchema = `
     name: String
     blockId: String
     blockName: String
+    blockType: String
   }
 
   type CollabRequestTo {
     email: String
+    userId: String
   }
 
   type CollabRequest {
@@ -131,7 +135,7 @@ const blockSchema = `
     to: [CollabRequestTo],
     response: String,
     respondedAt: Float,
-    permission: UserPermission
+    # permission: UserPermission
   }
 
   type GetCollabRequestsResponse {
@@ -141,9 +145,10 @@ const blockSchema = `
 
   type Collaborator {
     _id: String
+    id: String
     name: String
     email: String
-    permissions: UserPermission
+    permissions: [UserPermission]
   }
 
   type GetCollaboratorsResponse {
@@ -154,42 +159,40 @@ const blockSchema = `
   input AddCollaboratorInput {
     email: String!
     role: String!
-  }
-
-  input UpdateCollaboratorInput {
-    role: String!
+    body: String
+    expiresAt: Float
   }
 
   input BlockParamInput {
-    type: String!
-    # owner: String!
     id: String!
   }
 
   type BlockQuery {
-    addBlock (block: AddBlockInput!) : SingleBlockOpResponse
-    updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : SingleBlockOpResponse
+    addBlock (block: AddBlockInput!) : ErrorOnlyResponse
+    updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : ErrorOnlyResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getPermissionBlocks: MultipleBlocksOpResponse
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (block: BlockParamInput!, types: [String!]) : MultipleBlocksOpResponse
     addCollaborators (
       block: BlockParamInput!, 
-      collaborators: [AddCollaboratorInput!]!
+      collaborators: [AddCollaboratorInput!]!,
+      body: String,
+      expiresAt: Float
     ) : ErrorOnlyResponse
-    # updateCollaborator (
-    #   block: BlockParamInput!, 
-    #   collaborator: String!, data: UpdateCollaboratorInput!
-    # ) : ErrorOnlyResponse
-    # removeCollaborator (
-    #   block: BlockParamInput!, 
-    #   collaborator: String!
-    # ) : ErrorOnlyResponse
+    removeCollaborator (
+      block: BlockParamInput!, 
+      collaborator: String!
+    ) : ErrorOnlyResponse
     getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
     getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
-    toggleTask (block: BlockParamInput!, data: Boolean!)
-    updateRoles
-    updateAcl
+    toggleTask (block: BlockParamInput!, data: Boolean!) : ErrorOnlyResponse
+    updateRoles (block: BlockParamInput!, roles: [RoleInput!]!) : ErrorOnlyResponse
+    updateAcl (block: BlockParamInput!, acl: [AclItemInput!]!) : ErrorOnlyResponse
+    assignRole (block: BlockParamInput!, collaborator: String!, role: RoleInput!) : ErrorOnlyResponse
+    revokeRequest (block: BlockParamInput!, request: String!) : ErrorOnlyResponse
+    # assignTask
+    # unassignTask
   }
 `;
 

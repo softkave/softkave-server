@@ -26,7 +26,7 @@ const schema = {
   type: String,
   statusHistory: [{ status: String, date: Number }],
   sentEmailHistory: [{ date: Number }],
-  thread: [{ id: mongoose.SchemaTypes.ObjectId }]
+  root: String
 };
 
 const collaborationRequestModel = makeModel(
