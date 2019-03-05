@@ -1,9 +1,13 @@
-const { validateBlock } = require("./validator");
+const {
+  validateBlock
+} = require("./validator");
 const canUserPerformAction = require("./canUserPerformAction");
-const collaborationRequestModel = require("../mongo/collaboration-request");
+const collaborationRequestModel = require("../mongo/notification");
 const findUserPermission = require("../user/findUserPermission");
 
-async function getBlockCollabRequests({ block }, req) {
+async function getBlockCollabRequests({
+  block
+}, req) {
   await validateBlock(block);
 
   const role = await findUserPermission(req, block.id);

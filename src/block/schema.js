@@ -14,7 +14,7 @@ const blockSchema = `
     data: String
     addedAt: Float
     assignedBy: String
-    assignedAt: Number
+    assignedAt: Float
   }
 
   input BlockTaskCollaboratorDataInput {
@@ -22,7 +22,7 @@ const blockSchema = `
     data: String
     addedAt: Float
     assignedBy: String
-    assignedAt: Number
+    assignedAt: Float
   }
 
   type AclItem {
@@ -60,7 +60,7 @@ const blockSchema = `
     data: [BlockData]
     createdBy: String
     # owner: String
-    taskCollaborators: [BlockCollaboratorData]
+    taskCollaborators: [BlockTaskCollaboratorData]
     acl: [AclItem]
     roles: [Role]
     priority: String
@@ -94,7 +94,7 @@ const blockSchema = `
     roles: [RoleInput!]
     permission: UserPermissionInput
     priority: String
-    taskCollaborators: [BlockCollaboratorData]
+    taskCollaborators: [BlockTaskCollaboratorDataInput]
   }
 
   input UpdateBlockInput {
@@ -109,7 +109,7 @@ const blockSchema = `
     data: [BlockDataInput]
     acl: [AclItemInput]
     roles: [RoleInput]
-    taskCollaborators: [BlockCollaboratorData]
+    taskCollaborators: [BlockTaskCollaboratorDataInput]
   }
 
   type CollabRequestFrom {

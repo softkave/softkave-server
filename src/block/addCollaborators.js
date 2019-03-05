@@ -1,12 +1,22 @@
-const collaborationRequestModel = require("../mongo/collaboration-request");
+const collaborationRequestModel = require("../mongo/notification");
 const sendCollabReqEmail = require("./sendCollabReqEmail");
-const { validateBlock, validateNewCollaborators } = require("./validator");
-const { RequestError } = require("../error");
+const {
+  validateBlock,
+  validateNewCollaborators
+} = require("./validator");
+const {
+  RequestError
+} = require("../error");
 const canUserPerformAction = require("./canUserPerformAction");
 const getUserFromReq = require("../getUserFromReq");
 const findUserPermission = require("../user/findUserPermission");
 
-async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
+async function addCollaborator({
+  block,
+  collaborators,
+  body,
+  expiresAt
+}, req) {
   await validateBlock(block);
   await validateNewCollaborators(collaborators);
 
@@ -17,9 +27,10 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
   });
 
   let existingCollaborationRequests = await collaborationRequestModel.model
-    .find(
-      {
-        "to.email": { $in: collaboratorsEmailArr },
+    .find({
+        "to.email": {
+          $in: collaboratorsEmailArr
+        },
         "from.blockId": block.id
       },
       "to.email createdAt"
@@ -31,7 +42,7 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
     throw new RequestError(
       "error",
       existingCollaborationRequests.map(e => e.to.email).join(" ") +
-        " - the above emails have been sent collaboration requests already"
+      " - the above emails have been sent collaboration requests already"
     );
   }
 
@@ -56,13 +67,12 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
       to: {
         email: c.email
       },
+      type: "collab-req",
       expiresAt: c.expiresAt || expiresAt || null,
-      statusHistory: [
-        {
-          status: "pending",
-          date: Date.now()
-        }
-      ]
+      statusHistory: [{
+        status: "pending",
+        date: Date.now()
+      }]
     };
   });
 
@@ -85,10 +95,15 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
         const request = collaborationRequests[i];
         collaborationRequestModel
           .newModel()
-          .updateOne(
-            { _id: request._id },
-            { $push: { sentEmailHistory: { date: Date.now() } } }
-          )
+          .updateOne({
+            _id: request._id
+          }, {
+            $push: {
+              sentEmailHistory: {
+                date: Date.now()
+              }
+            }
+          })
           .exec();
       } catch (error) {
         console.error(error);

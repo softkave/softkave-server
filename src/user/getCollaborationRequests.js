@@ -1,14 +1,18 @@
 const getUserFromReq = require("../getUserFromReq");
-const collaborationRequestModel = require("../mongo/collaboration-request");
+const collaborationRequestModel = require("../mongo/notification");
 
 async function getCollaborationRequests(nullArg, req) {
   const user = await getUserFromReq(req);
   const requests = await collaborationRequestModel.model
-    .find({ "to.email": user.email })
+    .find({
+      "to.email": user.email
+    })
     .lean()
     .exec();
 
-  return { requests };
+  return {
+    requests
+  };
 }
 
 module.exports = getCollaborationRequests;
