@@ -4,7 +4,9 @@ const changePassword = require("./changePassword");
 const forgotPassword = require("./forgotPassword");
 const userExists = require("./userExists");
 const updateUser = require("./updateUser");
-const { wrapField } = require("../utils");
+const {
+  wrapField
+} = require("../utils");
 const userSchema = require("./schema");
 const getCollaborationRequests = require("./getCollaborationRequests");
 const respondToCollaborationRequest = require("./respondToCollaborationRequest");

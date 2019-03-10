@@ -1,39 +1,35 @@
 const blockModel = require("../mongo/block");
 const {
-  getPermissionQuery,
-  getPermissionObjByBlockIds
-} = require("./permission-utils");
-const getUserFromReq = require("../getUserFromReq");
-const { RequestError } = require("../error");
-const { validateUUID } = require("../validation-utils");
+  RequestError
+} = require("../error");
+const {
+  validateUUID
+} = require("../validation-utils");
+const {
+  indexArr
+} = require("../utils");
+const findUserRole = require("../user/findUserRole");
 
-async function getBlocks({ blocks }, req) {
+async function getBlocks({
+  blocks
+}, req) {
   if (blocks.length > 50) {
     throw new RequestError("blocks", "maximum length exceeded");
   }
 
   // TODO: blocks should be an array of ids
-  let existingIds = {};
-  const blockIds = [];
-  blocks.forEach(block => {
+  let blockMap = indexArr(blocks, block => {
     validateUUID(block.id);
-
-    if (!existingIds[block.id]) {
-      blockIds.push(block.id);
-      existingIds[block.id] = 1;
-    }
+    return block.id;
   });
 
-  // to free memory
-  existingIds = null;
-
-  const user = await getUserFromReq(req);
-  const permissions = getPermissionObjByBlockIds(user.permissions, blocks);
-  let queries = blocks.map(block => {
-    const action = `READ`;
+  let blockIds = Object.keys(blockMap);
+  let queries = blockIds.map(block => {
+    const role = await findUserRole(req, block.id);
     return {
       _id: block.id,
-      acl: getPermissionQuery(action, permissions[block.id])
+      "acl.action": "READ",
+      "acl.roles": role.role
     };
   });
 

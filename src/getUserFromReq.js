@@ -1,12 +1,14 @@
 const userModel = require("./mongo/user").model;
-const { RequestError } = require("./error");
+const {
+  RequestError
+} = require("./error");
 
-async function getUserFromReq(req /*, additionalQuery, refetch*/) {
+async function getUserFromReq(req /*, additionalQuery, refetch*/ ) {
   if (!req.user || !req.user.id) {
-    throw new RequestError("user", "invalid credentials.");
+    throw new RequestError("user", "invalid credentials");
   }
 
-  if (req.fetchedUser /*&& !refetch*/) {
+  if (req.fetchedUser /*&& !refetch*/ ) {
     return req.fetchedUser;
   }
 

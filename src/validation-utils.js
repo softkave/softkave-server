@@ -1,26 +1,31 @@
 const isMongoId = require("validator/lib/isMongoId");
-const { RequestError } = require("./error");
+const {
+  RequestError
+} = require("./error");
+const isUUID = require("validator/lib/isUUID");
 
 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
-const mongoIdDescriptor = [
-  {
-    transform: trimInput,
-    validator: (rule, value, cb) => {
-      if (!isMongoId(value)) {
-        cb("value is invalid.");
-      } else {
-        cb();
-      }
+const stringPattern = /^[\w ]*$/;
+
+const mongoIdDescriptor = [{
+  transform: trimInput,
+  validator: (rule, value, cb) => {
+    if (!isMongoId(value)) {
+      cb("value is invalid.");
+    } else {
+      cb();
     }
   }
-];
+}];
 
 function makeDescriptorFieldsRequired(descriptor, fields = []) {
   fields.forEach(field => {
     let rule = descriptor[field];
 
     if (rule) {
-      let replaceRule = [{ required: true }];
+      let replaceRule = [{
+        required: true
+      }];
 
       if (Array.isArray(rule)) {
         replaceRule = replaceRule.concat(rule);
@@ -35,13 +40,14 @@ function makeDescriptorFieldsRequired(descriptor, fields = []) {
   return descriptor;
 }
 
-function validateMongoId(id) {
+function validateMongoId(id, field = "error", message = "id is invalid") {
   if (!isMongoId(id)) {
-    throw new RequestError("error", "id is invalid");
+    throw new RequestError(field, message);
   }
 }
 
 function trimInput(input) {
+  input = JSON.stringify(input);
   return input.trim();
 }
 
@@ -71,7 +77,7 @@ function makeArrTrim(field) {
     field = [field];
   }
 
-  return function(arr) {
+  return function (arr) {
     arr.map(item => {
       if (field) {
         field.forEach(key => {
@@ -89,7 +95,7 @@ function makeArrTrim(field) {
 
 function promisifyValidator(validator) {
   let validateFunc = validator.validate.bind(validator);
-  return function(...arg) {
+  return function (...arg) {
     return new Promise((resolve, reject) => {
       validateFunc(...arg, (err, fields) => {
         if (err) {
@@ -102,7 +108,28 @@ function promisifyValidator(validator) {
   };
 }
 
-function validateUUID(id) {}
+function validateUUID(id, field = "error", message = "id is invalid") {
+  if (!isUUID(id)) {
+    throw new RequestError(field, message);
+  }
+}
+
+const uuidDescriptor = [{
+  transform: trimInput,
+  validator: (rule, value, cb) => {
+    if (!isUUID(value)) {
+      cb("value is invalid.");
+    } else {
+      cb();
+    }
+  }
+}];
+
+function validateString(str, field = "error", message = "id is invalid") {
+  if (!stringPattern.test(str)) {
+    throw new RequestError(field, message);
+  }
+}
 
 module.exports = {
   passwordPattern,
@@ -113,5 +140,8 @@ module.exports = {
   addTrimToDescriptor,
   makeArrTrim,
   promisifyValidator,
-  validateUUID
+  validateUUID,
+  stringPattern,
+  uuidDescriptor,
+  validateString
 };

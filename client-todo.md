@@ -27,6 +27,7 @@ features
 - allow chat in requests
 - notify requester when request has been responded
 - keep the history of all updates
+- [ ] user must be able read a task to be assigned
 
 marketing
 

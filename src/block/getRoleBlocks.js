@@ -1,12 +1,14 @@
 const blockModel = require("../mongo/block");
 const getUserFromReq = require("../getUserFromReq");
 
-async function getPermissionBlocks(nullArg, req) {
+async function getRoleBlocks(nullArg, req) {
   const user = await getUserFromReq(req);
-  let blockIdArr = user.permissions.map(permission => permission.blockId);
+  let blockIdArr = user.roles.map(role => role.blockId);
   let blocks = await blockModel.model
     .find({
-      _id: { $in: blockIdArr }
+      _id: {
+        $in: blockIdArr
+      }
     })
     .lean()
     .exec();
@@ -16,4 +18,4 @@ async function getPermissionBlocks(nullArg, req) {
   };
 }
 
-module.exports = getPermissionBlocks;
+module.exports = getRoleBlocks;

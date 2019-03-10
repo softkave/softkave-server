@@ -9,7 +9,6 @@ const {
 } = require("../error");
 const canUserPerformAction = require("./canUserPerformAction");
 const getUserFromReq = require("../getUserFromReq");
-const findUserPermission = require("../user/findUserPermission");
 
 async function addCollaborator({
   block,
@@ -19,22 +18,20 @@ async function addCollaborator({
 }, req) {
   await validateBlock(block);
   await validateNewCollaborators(collaborators);
-
-  const role = await findUserPermission(req, block.id);
-  await canUserPerformAction(block.id, "SEND_REQUEST", role);
+  await canUserPerformAction(req, block, "SEND_REQUEST");
   const collaboratorsEmailArr = collaborators.map(c => {
     return c.email;
   });
 
+  const existingCollabReqQuery = {
+    "to.email": {
+      $in: collaboratorsEmailArr
+    },
+    "from.blockId": block.id
+  };
+
   let existingCollaborationRequests = await collaborationRequestModel.model
-    .find({
-        "to.email": {
-          $in: collaboratorsEmailArr
-        },
-        "from.blockId": block.id
-      },
-      "to.email createdAt"
-    )
+    .find(existingCollabReqQuery, "to.email createdAt")
     .lean()
     .exec();
 
@@ -56,6 +53,7 @@ async function addCollaborator({
     `;
 
     return {
+      _id: c.id,
       from: {
         userId: user.id,
         name: user.name,
@@ -78,9 +76,8 @@ async function addCollaborator({
 
   await collaborationRequestModel.model.insertMany(collaborationRequests);
 
+  // TODO:
   // maybe deffer sending email till end of day
-  // maybe add sent field to request to resend failed sent request
-  // maybe wait for requests to be sent before returning, and notifying user fo failed attempts
 
   sendEmails();
 

@@ -1,5 +1,6 @@
-const { ses } = require("../res/ses");
 const querystring = require("querystring");
+const aws = require("../res/aws");
+const ses = new aws.SES();
 
 const appName = "Softkave";
 const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
@@ -9,6 +10,7 @@ async function sendChangePasswordEmail(emailAddress, query) {
   let verifyLink = `${clientDomain}/change-password?${querystring.stringify(
     query
   )}`;
+
   let emailData = `
     <!DOCTYPE html>
     <html lang="en-US">

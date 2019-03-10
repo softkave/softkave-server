@@ -2,17 +2,14 @@ const {
   validateBlock
 } = require("./validator");
 const canUserPerformAction = require("./canUserPerformAction");
-const collaborationRequestModel = require("../mongo/notification");
-const findUserPermission = require("../user/findUserPermission");
+const notificationModel = require("../mongo/notification");
 
 async function getBlockCollabRequests({
   block
 }, req) {
   await validateBlock(block);
-
-  const role = await findUserPermission(req, block.id);
-  await canUserPerformAction(block.id, "READ_REQUESTS", role);
-  let requests = await collaborationRequestModel.model
+  await canUserPerformAction(req, block, "READ_REQUESTS");
+  let requests = await notificationModel.model
     .find({
       "from.blockId": block.id
     })

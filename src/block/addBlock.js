@@ -1,27 +1,38 @@
-const { validateBlockAdd } = require("./validator");
-const getUserFromReq = require("../getUserFromReq");
+const {
+  validateBlockAdd
+} = require("./validator");
 const addBlockToDb = require("./addBlockToDb");
 const canUserPerformAction = require("./canUserPerformAction");
-const { getImmediateParentId } = require("./utils");
-const findUserPermission = require("../user/findUserPermission");
+const {
+  getImmediateParentId
+} = require("./utils");
+const {
+  trimObject
+} = require("../utils");
 
-async function addBlock({ block }, req) {
+async function addBlock({
+  block
+}, req) {
   await validateBlockAdd(block);
-  const user = await getUserFromReq(req);
+  trimObject(block, {
+    "description": true
+  });
 
-  if (block.permission && (block.type === "org" || block.type === "root")) {
-    return { block: await addBlockToDb(block, user) };
+  if (block.type === "org") {
+    let result = await addBlockToDb(block, req);
+    return {
+      block: result
+    };
   }
 
-  // todo: make sure block has parents in validation because it's not org or root
   const immediateParentId = getImmediateParentId(block);
-  await canUserPerformAction(
-    immediateParentId,
-    "CREATE_" + block.type.toUpperCase(),
-    await findUserPermission(req, immediateParentId)
-  );
+  await canUserPerformAction(req, {
+    id: immediateParentId
+  }, "CREATE_" + block.type.toUpperCase());
 
-  return { block: await addBlockToDb(block, user) };
+  return {
+    block: await addBlockToDb(block, req)
+  };
 }
 
 module.exports = addBlock;

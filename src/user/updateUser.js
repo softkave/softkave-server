@@ -1,11 +1,24 @@
-const { checkUser } = require("../utils");
+const {
+  checkUser
+} = require("../utils");
 const userModel = require("../mongo/user");
-const { RequestError } = require("../error");
+const {
+  RequestError
+} = require("../error");
+const {
+  trimObject
+} = require("../utils");
 
-async function updateUser({ data }, req) {
+async function updateUser({
+  data
+}, req) {
   await checkUser(req);
+  trimObject(data);
+
   let user = userModel.model
-    .findOneAndUpdate({ _id: req.user._id }, data, {
+    .findOneAndUpdate({
+      _id: req.user._id
+    }, data, {
       lean: true,
       fields: "_id"
     })

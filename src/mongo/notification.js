@@ -1,39 +1,84 @@
-const { connection } = require("./connection");
+const {
+  connection
+} = require("./connection");
 const makeModel = require("./makeModel");
 const mongoose = require("mongoose");
 
 const schema = {
   from: {
-    userId: mongoose.SchemaTypes.ObjectId,
-    name: String,
-    blockId: { type: String, index: true },
-    blockName: String,
-    blockType: String
+    type: {
+      userId: mongoose.SchemaTypes.ObjectId,
+      name: {
+        type: String,
+        trim: true
+      },
+      blockId: {
+        type: String,
+        trim: true
+      },
+      blockName: {
+        type: String,
+        trim: true,
+        lowercase: true
+      },
+      blockType: {
+        type: String,
+        trim: true,
+        lowercase: true
+      }
+    },
+    index: true
   },
-  createdAt: { type: Number, default: Date.now },
+  createdAt: {
+    type: Number,
+    default: Date.now
+  },
   body: String,
   readAt: Number,
   to: {
-    email: { type: String, index: true },
-    userId: mongoose.SchemaTypes.ObjectId
+    type: {
+      email: {
+        type: String,
+        trim: true,
+        lowercase: true
+      },
+      userId: mongoose.SchemaTypes.ObjectId
+    },
+    index: true
   },
   // response: String,
   // respondedAt: Number,
-  // permission: [blockPermissionSchema],
+  // role: [blockRoleSchema],
   // updatedAt: Number,
   // status: String, // Pending | Revoked | Accepted | Rejected | Expired
   expiresAt: Number,
-  type: String,
-  statusHistory: [{ status: String, date: Number }],
-  sentEmailHistory: [{ date: Number }],
-  root: String
+  type: {
+    type: String,
+    trim: true,
+    lowercase: true,
+  },
+  statusHistory: [{
+    status: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+    date: Number
+  }],
+  sentEmailHistory: [{
+    date: Number
+  }],
+  root: {
+    type: String,
+    trim: true
+  }
 };
 
-const collaborationRequestModel = makeModel(
+const notificationModel = makeModel(
   connection,
   schema,
   "notification",
   "notifications"
 );
 
-module.exports = collaborationRequestModel;
+module.exports = notificationModel;

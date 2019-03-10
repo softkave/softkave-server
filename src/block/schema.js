@@ -27,22 +27,22 @@ const blockSchema = `
 
   type AclItem {
     action: String
-    level: Float
+    roles: [String]
   }
 
   input AclItemInput {
     action: String!
-    level: Float!
+    roles: [String]
   }
 
   type Role {
     role: String
-    level: String
+    hierarchy: Float
   }
 
   input RoleInput {
     role: String!
-    level: String!
+    hierarchy: Float!
   }
 
   type Block {
@@ -92,7 +92,7 @@ const blockSchema = `
     data: [BlockDataInput!]
     acl: [AclItemInput!]
     roles: [RoleInput!]
-    permission: UserPermissionInput
+    role: UserRoleInput
     priority: String
     taskCollaborators: [BlockTaskCollaboratorDataInput]
   }
@@ -135,7 +135,8 @@ const blockSchema = `
     to: [CollabRequestTo],
     response: String,
     respondedAt: Float,
-    # permission: UserPermission
+    type: String,
+    # role: UserRole
   }
 
   type GetCollabRequestsResponse {
@@ -148,7 +149,7 @@ const blockSchema = `
     id: String
     name: String
     email: String
-    permissions: [UserPermission]
+    roles: [UserRole]
   }
 
   type GetCollaboratorsResponse {
@@ -158,9 +159,9 @@ const blockSchema = `
 
   input AddCollaboratorInput {
     email: String!
-    role: String!
     body: String
     expiresAt: Float
+    id: String!
   }
 
   input BlockParamInput {
@@ -171,7 +172,7 @@ const blockSchema = `
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
     updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : ErrorOnlyResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
-    getPermissionBlocks: MultipleBlocksOpResponse
+    getRoleBlocks: MultipleBlocksOpResponse
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (block: BlockParamInput!, types: [String!]) : MultipleBlocksOpResponse
     addCollaborators (

@@ -1,16 +1,29 @@
 const argon2 = require("argon2");
 const newToken = require("./newToken");
 const userModel = require("../mongo/user");
-const { addEntryToPasswordDateLog } = require("./utils");
-const { validateUser } = require("./validator");
+const {
+  addEntryToPasswordDateLog
+} = require("./utils");
+const {
+  validateUser
+} = require("./validator");
 const getUserFromReq = require("../getUserFromReq");
-const { RequestError } = require("../error");
+const {
+  RequestError
+} = require("../error");
 
-async function changePassword({ password }, req) {
+async function changePassword({
+  password
+}, req) {
   const user = await getUserFromReq(req);
-  await validateUser({ password });
+  password = password.trim();
+  await validateUser({
+    password
+  });
   const userData = await userModel.model
-    .findOne({ email: user.email })
+    .findOne({
+      email: user.email
+    })
     .lean()
     .exec();
 

@@ -1,262 +1,269 @@
-const isMongoId = require("validator/lib/isMongoId");
+// const isMongoId = require("validator/lib/isMongoId");
 const isHexColor = require("validator/lib/isHexColor");
 const asyncValidator = require("async-validator");
-const util = require("util");
-const { userDescriptor } = require("../user/validator");
-const { RequestError } = require("../error");
+const {
+  RequestError
+} = require("../error");
 const {
   mongoIdDescriptor,
   makeDescriptorFieldsRequired,
   trimInput,
-  makeArrTrim
+  stringPattern,
+  promisifyValidator,
+  validateUUID,
+  uuidDescriptor,
+  validateString
 } = require("../validation-utils");
-const { blockTypesObj, blockTypes } = require("./utils");
-const { actionsMap, actions } = require("./actions");
+const {
+  blockTypesObj,
+  blockTypes
+} = require("./utils");
+const {
+  actionsMap,
+  actions,
+  taskActionsMap,
+  groupActionsMap,
+  projectActionsMap,
+  orgActionsMap
+} = require("./actions");
+const {
+  indexArr
+} = require("../utils");
 
+const defaultErrorMessage = defaultErrorMessage;
 const aclDescriptor = {
   action: {
     type: "string",
     transform: trimInput,
     validator(rule, val, cb) {
-      if (!actionsMap(val)) {
+      if (!actionsMap[val]) {
         cb("action is invalid");
       } else {
         cb();
       }
     }
   },
-  level: {
-    type: "number",
-    message: "value is invalid."
+  roles: {
+    type: "array",
+    message: defaultErrorMessage,
+    transform(value) {
+      if (Array.isArray(value)) {
+        let map = {};
+        value.forEach(role => {
+          map[trimInput(role)] = true;
+        });
+
+        return Object.keys(map);
+      }
+
+      throw new RequestError("roles", defaultErrorMessage);
+    },
+    validator(value) {
+      value.forEach(role => {
+        if (!stringPattern.test(role)) {
+          throw new RequestError("roles", defaultErrorMessage);
+        }
+      });
+    }
   }
 };
 
 const roleDescriptor = {
   role: {
     type: "string",
+    pattern: stringPattern,
     transform: trimInput,
     max: 50,
-    message: "value is invalid."
+    message: defaultErrorMessage
   },
-  level: {
+  hierarchy: {
     type: "number",
-    message: "value is invalid."
+    message: defaultErrorMessage
   }
 };
 
 const arbitraryDataDescriptor = {
   dataType: {
     type: "string",
+    pattern: stringPattern,
     transform: trimInput,
     max: 50,
-    message: "value is invalid."
+    message: defaultErrorMessage
   },
   data: {
     type: "string",
     max: 250,
-    message: "value is invalid."
+    message: defaultErrorMessage
   }
 };
 
 const taskCollaboratorsDescriptor = {
-  type: "object",
-  fields: {
-    userId: mongoIdDescriptor,
-    // data: dataSchema,
-    completedAt: { type: "number" },
-    assignedAt: { type: "number" },
-    assignedBy: mongoIdDescriptor,
-    expectedEndAt: { type: "number" }
+  userId: mongoIdDescriptor,
+  completedAt: {
+    type: "number",
+    message: defaultErrorMessage
+  },
+  assignedAt: {
+    type: "number",
+    message: defaultErrorMessage
+  },
+  assignedBy: mongoIdDescriptor,
+  expectedEndAt: {
+    type: "number",
+    message: defaultErrorMessage
   }
 };
 
-const aclValidator = new asyncValidator(aclDescriptor, { firstFields: true });
-const roleValidator = new asyncValidator(roleDescriptor, { firstFields: true });
-const validateRole = util.promisify(roleValidator.validate.bind(roleValidator));
+const aclValidator = new asyncValidator(aclDescriptor, {
+  firstFields: true
+});
+
+const validateAcl = promisifyValidator(aclValidator);
+const roleValidator = new asyncValidator(roleDescriptor, {
+  firstFields: true
+});
+
+const validateRole = promisifyValidator(roleValidator);
 const arbitraryDataValidator = new asyncValidator(arbitraryDataDescriptor, {
   firstFields: true
 });
 
+const validateArbitraryData = promisifyValidator(arbitraryDataValidator);
+
 const taskCollaboratorsValidator = new asyncValidator(
-  taskCollaboratorsDescriptor,
-  { firstFields: true }
+  taskCollaboratorsDescriptor, {
+    firstFields: true
+  }
 );
 
+const validateTaskCollaborator = promisifyValidator(taskCollaboratorsValidator);
+
 const blockDescriptor = {
-  name: [
-    {
-      type: "string",
-      transform: trimInput,
-      max: 50,
-      pattern: /\w/,
-      message: "value is invalid."
+  name: [{
+    type: "string",
+    transform: trimInput,
+    max: 50,
+    pattern: stringPattern,
+    message: defaultErrorMessage
+  }],
+  description: [{
+    type: "string",
+    max: 250,
+    pattern: stringPattern,
+    message: defaultErrorMessage
+  }],
+  expectedEndAt: [{
+    type: "number",
+    message: defaultErrorMessage
+  }],
+  completedAt: [{
+    type: "number",
+    message: defaultErrorMessage
+  }],
+  color: [{
+    validator: (rule, value) => {
+      if (!isHexColor(value)) throw new Error("only hex colors are allowed");
     }
-  ],
-  description: [
-    {
-      type: "string",
-      max: 250,
-      pattern: /\w/,
-      message: "value is invalid."
-    }
-  ],
-  expectedEndAt: [
-    {
-      type: "number",
-      message: "value is invalid."
-    }
-  ],
-  // completedAt: [
-  //   {
-  //     type: "number",
-  //     message: "value is invalid."
-  //   }
-  // ],
-  color: [
-    {
-      validator: (rule, value) => {
-        if (!isHexColor(value)) throw new Error("only hex colors are allowed.");
-      }
-    }
-  ],
-  type: [
-    {
-      type: "enum",
-      transform: trimInput,
-      enum: blockTypes,
-      message: "value is invalid."
-    }
-  ],
-  parents: [
-    {
-      type: "array",
-      max: 10,
-      message: "value is invalid.",
-      transform: makeArrTrim(),
-      validator: function(rule, value, cb) {
-        let existingParents = {};
-        value.some((parent, i) => {
-          if (existingParents[value]) {
-            cb("parent already exist in set.");
-            return true;
-          } else if (!isMongoId(parent)) {
-            cb(`parent data at index ${i} is invalid.`);
-            return true;
-          }
-
-          existingParents[value] = value;
-          if (i === value.length - 1) {
-            cb();
-          }
-
-          return false;
+  }],
+  type: [{
+    type: "enum",
+    transform: trimInput,
+    enum: blockTypes,
+    message: defaultErrorMessage
+  }],
+  parents: [{
+    type: "array",
+    max: 10,
+    message: defaultErrorMessage,
+    transform(value) {
+      if (Array.isArray(value)) {
+        let map = {};
+        value.forEach(parent => {
+          map[trimInput(parent)] = true;
         });
+
+        return Object.keys(map);
       }
+
+      throw new RequestError("parents", defaultErrorMessage);
+    },
+    validator: function (rule, value, cb) {
+      value.forEach(async (parent) => {
+        await validateString(parent);
+      });
+
+      cb();
     }
-  ],
-  acl: [
-    {
-      type: "array",
-      // transform: makeArrTrim("action"),
-      max: actions.length,
-      message: "value is invalid.",
-      validator: function(rule, value, cb) {
-        let existingAcl = {};
-        let errors = [];
-        value.forEach((aclItem, i) => {
-          aclValidator.validate(aclItem, (err, fields) => {
-            if (err) {
-              errors.push(`acl data at index ${i} is invalid`);
-            } else {
-              if (existingAcl[aclItem.action]) {
-                errors.push(`acl data at index ${i} is invalid`);
-              }
+  }],
+  acl: [{
+    type: "array",
+    transform(value) {
+      if (Array.isArray(value)) {
+        let actionsMap = indexArr(value, item => item.action);
+        return Object.values(actionsMap);
+      }
 
-              existingAcl[aclItem.action] = aclItem;
-            }
+      throw new RequestError("acl", defaultErrorMessage);
+    },
+    max: actions.length,
+    message: defaultErrorMessage,
+    validator: function (rule, value, cb) {
+      value.forEach(async (aclItem, i) => {
+        await validateAcl(aclItem);
+      });
 
-            if (i === value.length - 1) {
-              cb(errors.length > 0 ? errors : null);
-            }
-          });
+      cb();
+    }
+  }],
+  roles: [{
+    type: "array",
+    transform() {
+      if (Array.isArray(value)) {
+        let map = {};
+        value.forEach(role => {
+          map[trimInput(role)] = true;
         });
-      }
-    }
-  ],
-  roles: [
-    {
-      type: "array",
-      // transform: makeArrTrim("role"),
-      max: 10,
-      message: "value is invalid.",
-      validator: function(rule, value, cb) {
-        let existingRoles = {};
-        let errors = [];
-        value.forEach((role, i) => {
-          roleValidator.validate(role, (err, fields) => {
-            if (err) {
-              cb(`role data at index ${i} is invalid`);
-            } else {
-              if (existingRoles[role.role]) {
-                errors.push("role with the same name already exist");
-              }
 
-              existingRoles[role.role] = role;
-            }
-
-            if (i === value.length - 1) {
-              cb(errors.length > 0 ? errors : null);
-            }
-          });
-        });
+        return Object.keys(map);
       }
+
+      throw new RequestError("roles", defaultErrorMessage);
+    },
+    max: 15,
+    message: defaultErrorMessage,
+    validator: function (rule, value, cb) {
+      value.forEach(async (role) => {
+        await validateRole(role);
+      });
+
+      cb();
     }
-  ],
-  permission: userDescriptor.permission,
-  id: mongoIdDescriptor,
+  }],
+  id: uuidDescriptor,
   priority: {
     type: "enum",
     transform: trimInput,
     enum: ["not important", "important", "very important"],
-    message: "value is invalid"
+    message: defaultErrorMessage
   },
-  taskCollaborators: [
-    {
-      type: "array",
-      max: 20,
-      validator(rule, value, cb) {
-        let existingCollaborators = {};
-        let errors = [];
-        value.forEach((c, i) => {
-          taskCollaboratorsValidator.validate(c, (err, fields) => {
-            if (err) {
-              cb(`data at index ${i} is invalid`);
-            } else {
-              if (existingCollaborators[c.userId]) {
-                cb("duplicate collaborator");
-              }
+  taskCollaborators: [{
+    type: "array",
+    max: 25,
+    validator(rule, value, cb) {
+      value.forEach(async (c) => {
+        await validateTaskCollaborator(c);
+      });
 
-              existingCollaborators[c.userId] = c;
-            }
-
-            if (i === value.length - 1) {
-              cb(errors.length > 0 ? errors : null);
-            }
-          });
-        });
-      }
+      cb();
     }
-  ]
+  }]
 };
 
 const blockValidator = new asyncValidator(blockDescriptor, {
   firstFields: true
 });
 
-const asyncBlockValidator = util.promisify(
-  blockValidator.validate.bind(blockValidator)
-);
-
+const asyncBlockValidator = promisifyValidator(blockValidator);
 const requiredAddTaskFields = [
   "description",
   "type",
@@ -264,6 +271,7 @@ const requiredAddTaskFields = [
   "acl",
   "parents"
 ];
+
 const addTaskDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
   requiredAddTaskFields
@@ -273,9 +281,8 @@ const addTaskValidator = new asyncValidator(addTaskDescriptor, {
   firstFields: true
 });
 
-const asyncAddTaskValidator = util.promisify(
-  addTaskValidator.validate.bind(addTaskValidator)
-);
+const asyncAddTaskValidator = promisifyValidator(addTaskValidator);
+
 const requiredAddGroupFields = ["name", "color", "type", "acl", "parents"];
 const addGroupDescriptor = makeDescriptorFieldsRequired(
   blockDescriptor,
@@ -286,9 +293,7 @@ const addGroupValidator = new asyncValidator(addGroupDescriptor, {
   firstFields: true
 });
 
-const asyncAddGroupValidator = util.promisify(
-  addGroupValidator.validate.bind(addGroupValidator)
-);
+const asyncAddGroupValidator = promisifyValidator(addGroupValidator);
 
 const requiredAddProjectFields = ["name", "color", "type", "acl", "parents"];
 const addProjectDescriptor = makeDescriptorFieldsRequired(
@@ -300,9 +305,7 @@ const addProjectValidator = new asyncValidator(addProjectDescriptor, {
   firstFields: true
 });
 
-const asyncAddProjectValidator = util.promisify(
-  addProjectValidator.validate.bind(addProjectValidator)
-);
+const asyncAddProjectValidator = promisifyValidator(addProjectValidator);
 
 const requiredAddOrgFields = [
   "name",
@@ -310,7 +313,7 @@ const requiredAddOrgFields = [
   "type",
   "acl",
   "roles",
-  "permission"
+  "role"
 ];
 
 const addOrgDescriptor = makeDescriptorFieldsRequired(
@@ -322,21 +325,20 @@ const addOrgValidator = new asyncValidator(addOrgDescriptor, {
   firstFields: true
 });
 
-const asyncAddOrgValidator = util.promisify(
-  addOrgValidator.validate.bind(addOrgValidator)
-);
+const asyncAddOrgValidator = promisifyValidator(addOrgValidator);
 
 // Collaborator validators
 const newCollaboratorDescriptor = {
+  id: uuidDescriptor,
   email: {
     type: "email",
     transform: trimInput,
-    message: "value is invalid."
+    message: defaultErrorMessage
   },
   body: blockDescriptor.description,
   expiresAt: {
     type: "number",
-    message: "value is invalid."
+    message: defaultErrorMessage
   }
 };
 
@@ -344,80 +346,113 @@ const newCollaboratorValidator = new asyncValidator(newCollaboratorDescriptor, {
   firstFields: true
 });
 
+const validateNewCollaborator = promisifyValidator(newCollaboratorValidator);
 const newCollaboratorsArrDescriptor = {
   data: {
     type: "array",
     max: 20,
-    message: "value is invalid",
-    validator: function(rule, value, cb) {
-      let existingCollaborators = {};
-      let errors = [];
-      value.forEach((val, i) => {
-        newCollaboratorValidator.validate(val, (err, fields) => {
-          if (err) {
-            errors.push(`collaborators data at index ${i} is invalid`);
-          } else {
-            if (existingCollaborators[val.email]) {
-              errors.push("collaborator email already exist in set");
-            }
-
-            existingCollaborators[val.email] = val;
-          }
-
-          if (i === value.length - 1) {
-            cb(errors.length > 0 ? errors : null);
-          }
-        });
+    message: defaultErrorMessage,
+    validator: function (rule, value, cb) {
+      value.forEach(async (val) => {
+        await validateNewCollaborator(val);
       });
+
+      cb();
     }
   }
 };
 
 const newCollaboratorsArrValidator = new asyncValidator(
-  newCollaboratorsArrDescriptor,
-  { firstFields: true }
+  newCollaboratorsArrDescriptor, {
+    firstFields: true
+  }
 );
 
-const asyncNewCollaboratorsArrValidator = util.promisify(
-  newCollaboratorsArrValidator.validate.bind(newCollaboratorsArrValidator)
-);
+const asyncNewCollaboratorsArrValidator = promisifyValidator(newCollaboratorsArrValidator);
 
 async function validateNewCollaborators(data) {
-  return await asyncNewCollaboratorsArrValidator({ data });
+  return await asyncNewCollaboratorsArrValidator({
+    data
+  });
+}
+
+function validateBlockAcl(block) {
+  let checkIn = null;
+
+  switch (block.type) {
+    case "org":
+      checkIn = orgActionsMap;
+      break;
+
+    case "project":
+      checkIn = projectActionsMap;
+      break;
+
+    case "group":
+      checkIn = groupActionsMap;
+      break;
+
+    case "task":
+      checkIn = taskActionsMap;
+      break;
+
+    default:
+      throw new RequestError("type", "block type is invalid");
+  }
+
+  block.acl.forEach(acl => {
+    if (!checkIn[acl.action]) {
+      throw new RequestError("acl", `type ${acl.action} in invalid`);
+    }
+  });
+
+  return true;
 }
 
 async function validateBlockAdd(block) {
   switch (block.type) {
     case "org":
-      return await asyncAddOrgValidator(block);
+      if (!block.role) {
+        throw new RequestError("role", "role is empty");
+      }
+
+      await asyncAddOrgValidator(block);
+      break;
 
     case "project":
-      return await asyncAddProjectValidator(block);
+      await asyncAddProjectValidator(block);
+      break;
 
     case "group":
-      return await asyncAddGroupValidator(block);
+      await asyncAddGroupValidator(block);
+      break;
 
     case "task":
-      return await asyncAddTaskValidator(block);
+      await asyncAddTaskValidator(block);
+      break;
 
     default:
       throw new RequestError("error", "block type is invalid");
   }
+
+  return validateBlockAcl(block);
 }
 
 async function validateBlock(block) {
   return await asyncBlockValidator(block);
 }
 
-function validateBlockId(blockId, fieldName) {
-  if (!isMongoId(blockId)) {
-    throw new RequestError(fieldName || "blockId", "value is invalid");
-  }
+function validateBlockId(blockId, fieldName, message) {
+  // if (!isMongoId(blockId)) {
+  //   throw new RequestError(fieldName || "blockId", defaultErrorMessage);
+  // }
+
+  return validateUUID(blockId, fieldName, message);
 }
 
 function validateBlockType(type, fieldName) {
   if (!blockTypesObj[type]) {
-    throw new RequestError(fieldName || "blockType", "is not valid type");
+    throw new RequestError(fieldName || "type", "is not valid type");
   }
 }
 
@@ -428,5 +463,8 @@ module.exports = {
   validateBlockId,
   validateBlockType,
   roleDescriptor,
-  validateRole
+  validateRole,
+  validateBlockAcl,
+  validateBlock,
+  validateArbitraryData
 };

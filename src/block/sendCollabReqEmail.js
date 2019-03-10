@@ -1,4 +1,5 @@
-const ses = require("../res/ses");
+const aws = require("../res/aws");
+const ses = new aws.SES();
 
 const appName = "Softkave";
 const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";

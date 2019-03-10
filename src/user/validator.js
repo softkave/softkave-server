@@ -1,36 +1,31 @@
-const util = require("util");
 const asyncValidator = require("async-validator");
-const { blockDescriptor, roleDescriptor } = require("../block/validator");
-const { passwordPattern, mongoIdDescriptor } = require("../validation-utils");
+const {
+  passwordPattern,
+  promisifyValidator,
+  trimInput
+} = require("../validation-utils");
 //const isMobilePhone = require('validator/lib/isMobilePhone');
 
 const userDescriptor = {
-  name: { type: "string", message: "name is invalid" },
-  email: { type: "string", message: "email is invalid" },
+  name: {
+    type: "string",
+    message: "name is invalid",
+    transform: trimInput
+  },
+  email: {
+    type: "email",
+    message: "email is invalid"
+  },
   password: {
     type: "string",
     pattern: passwordPattern,
-    message: "password is invalid."
-  },
-  // permission: [
-  //   {
-  //     type: "object",
-  //     fields: {
-  //       role: roleDescriptor.role,
-  //       level: roleDescriptor.level,
-  //       assignedAt: {
-  //         type: "number"
-  //       },
-  //       assignedBy: mongoIdDescriptor,
-  //       type: blockDescriptor.type,
-  //       blockId: mongoIdDescriptor
-  //     }
-  //   }
-  // ]
+    message: "password is invalid.",
+    transform: trimInput
+  }
 };
 
 const userValidator = new asyncValidator(userDescriptor);
-const validateUser = util.promisify(userValidator.validate.bind(userValidator));
+const validateUser = promisifyValidator(userValidator);
 
 module.exports = {
   userDescriptor,

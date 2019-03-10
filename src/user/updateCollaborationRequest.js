@@ -1,19 +1,27 @@
 const getUserFromReq = require("../getUserFromReq");
-const collaborationRequestModel = require("../mongo/collaboration-request");
-const { RequestError } = require("../error");
-const { validateMongoId } = require("../validation-utils");
+const notificationModel = require("../mongo/notification");
+const {
+  RequestError
+} = require("../error");
+const {
+  validateUUID
+} = require("../validation-utils");
 
-async function updateCollaborationRequest({ id, data }, req) {
-  validateMongoId(id);
+async function updateCollaborationRequest({
+  id,
+  data
+}, req) {
+  validateUUID(id);
   const user = await getUserFromReq(req);
-  let notification = await collaborationRequestModel.model
-    .findOneAndUpdate(
-      {
+  let notification = await notificationModel.model
+    .findOneAndUpdate({
         _id: id,
         "to.email": user.email
       },
-      data,
-      { lean: true, fields: "_id" }
+      data, {
+        lean: true,
+        fields: "_id"
+      }
     )
     .exec();
 

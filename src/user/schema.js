@@ -1,5 +1,5 @@
 const userSchema = `
-  type UserPermission {
+  type UserRole {
     role: String
     level: Int
     assignedAt: Float
@@ -8,7 +8,7 @@ const userSchema = `
     blockId: String
   }
 
-  input UserPermissionInput {
+  input UserRoleInput {
     role: String!
     level: Int!
   }
@@ -20,7 +20,7 @@ const userSchema = `
     email: String
     createdAt: Float
     lastNotificationCheckTime: Float
-    permissions: [UserPermission]
+    roles: [UserRole]
   }
 
   input UserSignupInput {

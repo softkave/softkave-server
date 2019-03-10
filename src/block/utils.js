@@ -45,22 +45,6 @@ const blockTypesObj = {
   "landing-page": 1
 };
 
-const blockTypeToChildrenMap = {
-  org: { project: 1, group: 1, task: 1 },
-  group: { project: 1, task: 1 },
-  project: { group: 1, task: 1 }
-};
-
-function canBlockBeAChildOf(block, child) {
-  let possibleChildren = blockTypeToChildrenMap[block.type];
-
-  if (possibleChildren) {
-    return !!possibleChildren[child.type];
-  }
-
-  return false;
-}
-
 module.exports = {
   getImmediateParentId,
   blockHasParents,
@@ -68,6 +52,5 @@ module.exports = {
   isParentInBlock,
   blockTypes,
   blockTypesObj,
-  getParentsLength,
-  canBlockBeAChildOf
+  getParentsLength
 };

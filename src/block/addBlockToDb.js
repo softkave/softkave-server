@@ -1,36 +1,43 @@
 const blockModel = require("../mongo/block");
-const { RequestError } = require("../error");
-const addUserPermission = require("../user/addUserPermission");
+const {
+  RequestError
+} = require("../error");
+const addUserRole = require("../user/addUserRole");
 const getUserFromReq = require("../getUserFromReq");
 
 async function addBlockToDb(block, req) {
-  if (
-    await blockModel.model
-      .findOne({ _id: block.id }, "_id")
-      .lean()
-      .exec()
-  ) {
-    console.log(`block with same id - ${block.id}`);
-    throw new RequestError("block", "resolve");
-  }
+  try {
+    const user = await getUserFromReq(req);
+    block.createdBy = user._id;
+    block._id = block.id;
+    block.createdAt = Date.now();
+    let newBlock = new blockModel.model(block);
+    newBlock = await newBlock.save();
 
-  const user = await getUserFromReq(req);
-  block.createdBy = user._id;
-  block._id = block.id;
-  block.createdAt = Date.now();
-  let newBlock = new blockModel.model(block);
-  newBlock = await newBlock.save();
-  if (block.permission) {
-    try {
-      await addUserPermission(req, block.permission);
-    } catch (error) {
-      console.error(error);
-      blockModel.model.deleteOne({ _id: newBlock._id }).exec();
-      throw new RequestError("error", "server error.");
+    if (block.role) {
+      try {
+        await addUserRole(req, block.role, block);
+      } catch (error) {
+        console.error(error);
+
+        // TODO: clean unreferenced blocks (blocks with no users)
+        blockModel.model.deleteOne({
+          _id: newBlock._id
+        }).exec().catch(err => console.error(err));
+
+        throw new RequestError("error", "server error");
+      }
     }
-  }
 
-  return newBlock;
+    return newBlock;
+  } catch (error) {
+    if (error.code === 11000) {
+      console.log(`block with same id - ${block.id}`);
+      throw new RequestError("id-conflict", "");
+    }
+
+    throw error;
+  }
 }
 
 module.exports = addBlockToDb;
