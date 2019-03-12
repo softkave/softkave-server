@@ -28,9 +28,9 @@ const rootBlockAcl = orgActions.map(action => {
   }
 });
 
-async function addRootBlock(newUser, req) {
+async function addRootBlock(user, req) {
   let rootBlock = {
-    name: `root_${user.name}`,
+    name: `root_${user._id}`,
     createdAt: Date.now(),
     color: randomColor(),
     type: "root",

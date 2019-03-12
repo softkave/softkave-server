@@ -21,10 +21,22 @@ async function updateBlock({
 
   if (data.acl) {
     actions.push("UPDATE_ACL");
+    data.acl = data.acl.map(item => {
+      return {
+        action: item.action,
+        roles: Array.isArray(item.roles) ? item.roles.map(role => role.toLowerCase()) : null
+      };
+    });
   }
 
   if (data.roles) {
     actions.push("UPDATE_ROLES");
+    data.roles = data.roles.map(role => {
+      return {
+        role: role.role.toLowerCase(),
+        hierarchy: role.hierarchy
+      };
+    });
   }
 
   await canUserPerformAction(req, block, actions);

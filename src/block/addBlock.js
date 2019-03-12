@@ -7,7 +7,8 @@ const {
   getImmediateParentId
 } = require("./utils");
 const {
-  trimObject
+  trimObject,
+  lowerCaseObject
 } = require("../utils");
 
 async function addBlock({
@@ -17,6 +18,8 @@ async function addBlock({
   trimObject(block, {
     "description": true
   });
+
+  // lowerCaseObject()
 
   if (block.type === "org") {
     let result = await addBlockToDb(block, req);

@@ -30,7 +30,7 @@ const {
   indexArr
 } = require("../utils");
 
-const defaultErrorMessage = defaultErrorMessage;
+const defaultErrorMessage = "value is invalid";
 const aclDescriptor = {
   action: {
     type: "string",

@@ -24,6 +24,7 @@ async function updateRoles({
   let labels = [];
   let push = [];
   roles.forEach(item => {
+    item.role = item.role.toLowerCase();
     labels.push(item.role);
     push.push(item);
   });

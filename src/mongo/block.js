@@ -26,12 +26,9 @@ const blockAclSchema = {
 
 const blockRoleSchema = {
   role: {
-    type: {
-      type: String,
-      trim: true,
-      lowercase: true
-    },
-    index: true
+    type: String,
+    trim: true,
+    lowercase: true,
   },
   hierarchy: Number
 };

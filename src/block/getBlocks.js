@@ -23,15 +23,17 @@ async function getBlocks({
     return block.id;
   });
 
+  // TODO: fix, this will only work for blocks that have roles
+  // see if you can use canUserPerformAction
   let blockIds = Object.keys(blockMap);
-  let queries = blockIds.map(block => {
+  let queries = await Promise.all(blockIds.map(async block => {
     const role = await findUserRole(req, block.id);
     return {
       _id: block.id,
       "acl.action": "READ",
       "acl.roles": role.role
     };
-  });
+  }));
 
   let query = {
     $or: queries

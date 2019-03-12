@@ -39,6 +39,8 @@ async function assignRole({
     throw new RequestError("error", "role does not exist");
   }
 
+  role = savedRole;
+
   const user = await getUserFromReq(req);
   let c = await userModel.model
     .findOneAndUpdate({

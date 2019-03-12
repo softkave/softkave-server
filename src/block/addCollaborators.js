@@ -18,9 +18,9 @@ async function addCollaborator({
 }, req) {
   await validateBlock(block);
   await validateNewCollaborators(collaborators);
-  await canUserPerformAction(req, block, "SEND_REQUEST");
+  block = await canUserPerformAction(req, block, "SEND_REQUEST");
   const collaboratorsEmailArr = collaborators.map(c => {
-    return c.email;
+    return c.email.toLowerCase();
   });
 
   const existingCollabReqQuery = {
@@ -63,7 +63,7 @@ async function addCollaborator({
       createdAt: Date.now(),
       body: notificationBody,
       to: {
-        email: c.email
+        email: c.email.toLowerCase()
       },
       type: "collab-req",
       expiresAt: c.expiresAt || expiresAt || null,

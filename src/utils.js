@@ -92,10 +92,27 @@ function trimObject(obj, exclude = {}) {
   return obj;
 }
 
+function lowerCaseObject(obj, include = {}) {
+  for (const key in obj) {
+    let value = obj[key];
+
+    if (include[key]) {
+      if (typeof value === "string") {
+        obj[key] = value.toLowerCase()
+      } else if (typeof value === "object") {
+        obj[key] = lowerCaseObject(value);
+      }
+    }
+  }
+
+  return obj;
+}
+
 module.exports = {
   wrapField,
   arrToMap,
   indexArr,
   objValuesToArray,
-  trimObject
+  trimObject,
+  lowerCaseObject
 };

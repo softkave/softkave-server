@@ -19,6 +19,7 @@ async function updateAcl({
   let push = [];
   acl.forEach(item => {
     trimObject(item);
+    item.roles = Array.isArray(item.roles) ? item.roles.map(role => role.toLowerCase()) : null;
     actions.push(item.action);
     push.push(item);
   });

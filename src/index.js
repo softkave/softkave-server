@@ -25,7 +25,7 @@ const {
   userHandlerGraphql,
   userSchema
 } = require("./user");
-const collaborationRequestModel = require("../src/mongo/collaboration-request")
+const notificationModel = require("../src/mongo/notification")
   .model;
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -122,7 +122,7 @@ app.use(function (err, req, res, next) {
 connection.once("open", async () => {
   await userModel.init();
   await blockModel.init();
-  await collaborationRequestModel.init();
+  await notificationModel.init();
 
   app.listen(port, () => {
     console.log("server started");
