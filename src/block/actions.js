@@ -18,42 +18,46 @@ const collaborationActions = [
 ];
 
 const taskActions = [
-  ...primaryActions,
   "TOGGLE_TASK",
   "ASSIGN_TASK",
   "UNASSIGN_TASK",
-
+  "READ_TASK",
+  "UPDATE_TASK",
+  "DELETE_TASK"
 ];
 
 const projectActions = [
   ...taskActions,
   ...collaborationActions,
   "CREATE_TASK",
-  "READ_TASK",
-  "DELETE_TASK",
-  "UPDATE_TASK",
   "CREATE_GROUP",
   "READ_GROUP",
   "DELETE_GROUP",
-  "UPDATE_GROUP"
+  "UPDATE_GROUP",
+  "READ_PROJECT",
+  "DELETE_PROJECT",
+  "UPDATE_PROJECT"
 ];
 
 const groupActions = [
   ...taskActions,
   ...collaborationActions,
   "CREATE_TASK",
-  "READ_TASK",
-  "DELETE_TASK",
-  "UPDATE_TASK",
   "CREATE_PROJECT",
   "READ_PROJECT",
   "DELETE_PROJECT",
-  "UPDATE_PROJECT"
+  "UPDATE_PROJECT",
+  "READ_GROUP",
+  "DELETE_GROUP",
+  "UPDATE_GROUP",
 ];
 
 const orgActions = [
   ...groupActions,
   "CREATE_GROUP",
+  "UPDATE_ORG",
+  "DELETE_ORG",
+  "READ_ORG"
 ];
 
 const actions = [...orgActions, "CREATE_ORG"];
