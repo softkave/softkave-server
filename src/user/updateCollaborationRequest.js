@@ -11,7 +11,7 @@ async function updateCollaborationRequest({
   id,
   data
 }, req) {
-  validateUUID(id);
+  // validateUUID(id);
   const user = await getUserFromReq(req);
   let notification = await notificationModel.model
     .findOneAndUpdate({

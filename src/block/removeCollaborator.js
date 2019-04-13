@@ -1,14 +1,23 @@
-const { validateBlock } = require("./validator");
+const {
+  validateBlock
+} = require("./validator");
 const canUserPerformAction = require("./canUserPerformAction");
 const userModel = require("../mongo/user");
-const { validateUUID } = require("../validation-utils");
+const {
+  validateUUID
+} = require("../validation-utils");
 const getUserFromReq = require("../getUserFromReq");
 const notificationModel = require("../mongo/notification");
-const { RequestError } = require("../error");
+const {
+  RequestError
+} = require("../error");
 
-async function removeCollaborator({ block, collaborator }, req) {
-  await validateBlock(block);
-  validateUUID(collaborator);
+async function removeCollaborator({
+  block,
+  collaborator
+}, req) {
+  // await validateBlock(block);
+  // validateUUID(collaborator);
   let ownerBlock = await canUserPerformAction(
     req,
     block,
@@ -17,24 +26,20 @@ async function removeCollaborator({ block, collaborator }, req) {
   );
 
   let c = await userModel.model
-    .findOneAndUpdate(
-      {
-        _id: collaborator,
-        roles: {
-          $elemMatch: {
-            blockId: block.id
-          }
+    .findOneAndUpdate({
+      _id: collaborator,
+      roles: {
+        $elemMatch: {
+          blockId: block.id
         }
-      },
-      {
-        $pull: {
-          "roles.blockId": block.id
-        }
-      },
-      {
-        fields: "_id email name"
       }
-    )
+    }, {
+      $pull: {
+        "roles.blockId": block.id
+      }
+    }, {
+      fields: "_id email name"
+    })
     .exec();
 
   if (!c) {

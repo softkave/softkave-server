@@ -14,8 +14,8 @@ async function revokeRequest({
   block,
   request
 }, req) {
-  await validateBlock(block);
-  validateUUID(request);
+  // await validateBlock(block);
+  // validateUUID(request);
 
   await canUserPerformAction(req, block, "REVOKE_REQUEST");
   let notification = await notificationModel.model

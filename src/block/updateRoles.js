@@ -11,10 +11,10 @@ async function updateRoles({
   block,
   roles
 }, req) {
-  await validateBlock(block);
-  await validateBlock({
-    roles
-  });
+  // await validateBlock(block);
+  // await validateBlock({
+  //   roles
+  // });
 
   trimObject(data, {
     "description": true

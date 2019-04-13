@@ -21,9 +21,9 @@ async function assignRole({
   collaborator,
   role
 }, req) {
-  await validateBlock(block);
-  await validateMongoId(collaborator);
-  await validateRole(role);
+  // await validateBlock(block);
+  // await validateMongoId(collaborator);
+  // await validateRole(role);
   trimObject(role);
 
   let ownerBlock = await canUserPerformAction(req, block, "ASSIGN_ROLE", "roles type name");

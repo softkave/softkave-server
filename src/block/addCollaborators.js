@@ -16,8 +16,8 @@ async function addCollaborator({
   body,
   expiresAt
 }, req) {
-  await validateBlock(block);
-  await validateNewCollaborators(collaborators);
+  // await validateBlock(block);
+  // await validateNewCollaborators(collaborators);
   block = await canUserPerformAction(req, block, "SEND_REQUEST");
   const collaboratorsEmailArr = collaborators.map(c => {
     return c.email.toLowerCase();

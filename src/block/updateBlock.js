@@ -11,8 +11,8 @@ async function updateBlock({
   block,
   data
 }, req) {
-  await validateBlock(block);
-  await validateBlock(data);
+  // await validateBlock(block);
+  // await validateBlock(data);
   trimObject(data, {
     "description": true
   });

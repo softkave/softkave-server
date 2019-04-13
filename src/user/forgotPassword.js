@@ -14,9 +14,9 @@ const {
 async function forgotPassword({
   email
 }) {
-  await validateUser({
-    email
-  });
+  // await validateUser({
+  //   email
+  // });
 
   const user = await userModel.model
     .findOne({

@@ -50,7 +50,7 @@ async function addRootBlock(user, req) {
 async function signup({
   user
 }, req) {
-  await validateUser(user);
+  // await validateUser(user);
   trimObject(user);
 
   try {

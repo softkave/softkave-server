@@ -11,7 +11,7 @@ async function respondToCollaborationRequest({
   id,
   response
 }, req) {
-  await validateUUID(id);
+  // await validateUUID(id);
   response = response.trim().toLowerCase();
   let user = await getUserFromReq(req);
   let request = await notificationModel.model

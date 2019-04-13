@@ -9,7 +9,7 @@ async function toggleTask({
   block,
   data
 }, req) {
-  await validateBlock(block);
+  // await validateBlock(block);
   const user = await getUserFromReq(req);
   await canUserPerformAction(req, block, "TOGGLE_TASK");
   await blockModel.model.updateOne({

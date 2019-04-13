@@ -14,7 +14,7 @@ const {
 async function addBlock({
   block
 }, req) {
-  await validateBlockAdd(block);
+  // await validateBlockAdd(block);
   trimObject(block, {
     "description": true
   });

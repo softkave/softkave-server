@@ -17,9 +17,9 @@ async function changePassword({
 }, req) {
   const user = await getUserFromReq(req);
   password = password.trim();
-  await validateUser({
-    password
-  });
+  // await validateUser({
+  //   password
+  // });
   const userData = await userModel.model
     .findOne({
       email: user.email

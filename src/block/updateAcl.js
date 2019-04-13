@@ -3,16 +3,18 @@ const blockModel = require("../mongo/block");
 const {
   validateBlock
 } = require("./validator");
-const { trimObject } = require("../utils");
+const {
+  trimObject
+} = require("../utils");
 
 async function updateAcl({
   block,
   acl
 }, req) {
-  await validateBlock(block);
-  await validateBlock({
-    acl
-  });
+  // await validateBlock(block);
+  // await validateBlock({
+  //   acl
+  // });
 
   await canUserPerformAction(req, block, "UPDATE_ACL");
   let actions = [];

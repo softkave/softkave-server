@@ -5,7 +5,7 @@ function getImmediateParentId(block) {
 }
 
 function blockHasParents(block) {
-  if (Array.isArray(block.parents) && block.parents.length > 0) {
+  if (block && Array.isArray(block.parents) && block.parents.length > 0) {
     return true;
   }
 

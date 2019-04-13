@@ -8,7 +8,7 @@ const userModel = require("../mongo/user");
 async function deleteBlock({
   block
 }, req) {
-  await validateBlock(block);
+  // await validateBlock(block);
   await canUserPerformAction(req, block, "DELETE");
 
   let blockChildrenWithRoles = await blockModel.find({

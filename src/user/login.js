@@ -14,7 +14,7 @@ const {
 async function login({
   user
 }) {
-  await validateUser(user);
+  // await validateUser(user);
   trimObject(user);
 
   const userData = await userModel.model

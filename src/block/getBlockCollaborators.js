@@ -7,7 +7,7 @@ const userModel = require("../mongo/user");
 async function getBlockCollaborators({
   block
 }, req) {
-  await validateBlock(block);
+  // await validateBlock(block);
 
   // it validates if user can read block, hence collaborators
   await findUserRole(req, block.id);

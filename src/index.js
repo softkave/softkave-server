@@ -1,4 +1,10 @@
-require("dotenv").config();
+const path = require("path");
+
+// require("dotenv").config({
+//   path: path.resolve(__filename, "../.env.development")
+// });
+
+// console.log(path.resolve(__filename, "../.env.development"));
 
 const {
   connection
@@ -10,7 +16,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const graphqlHTTP = require("express-graphql");
 const expressJwt = require("express-jwt");
-const path = require("path");
 const {
   buildSchema
 } = require("graphql");
@@ -118,6 +123,8 @@ app.use(function (err, req, res, next) {
 // app.get("/*", function (req, res) {
 //   res.sendFile(path.join(__dirname, "../build", "index.html"));
 // });
+
+console.log("SOFTKAVE");
 
 connection.once("open", async () => {
   await userModel.init();

@@ -5,7 +5,7 @@ const {
 const addUserRole = require("../user/addUserRole");
 const getUserFromReq = require("../getUserFromReq");
 const {
-  getParentLength
+  getParentsLength
 } = require("./utils");
 
 async function addBlockToDb(block, req) {
@@ -15,9 +15,13 @@ async function addBlockToDb(block, req) {
       type: block.type,
       parents: {
         $all: block.parents,
-        $size: getParentLength(block.parents)
+        $size: getParentsLength(block)
       }
     };
+
+    if (block.id) {
+      blockExistQuery._id = block.id;
+    }
 
     let blockExists = await blockModel.model.findOne(blockExistQuery, "_id").exec();
 
@@ -27,7 +31,11 @@ async function addBlockToDb(block, req) {
 
     const user = await getUserFromReq(req);
     block.createdBy = user._id;
-    block._id = block.id;
+
+    if (block.id) {
+      block._id = block.id;
+    }
+
     block.createdAt = Date.now();
     let newBlock = new blockModel.model(block);
     newBlock = await newBlock.save();

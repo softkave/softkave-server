@@ -19,7 +19,7 @@ async function getBlocks({
 
   // TODO: blocks should be an array of ids
   let blockMap = indexArr(blocks, block => {
-    validateUUID(block.id);
+    // validateUUID(block.id);
     return block.id;
   });
 
