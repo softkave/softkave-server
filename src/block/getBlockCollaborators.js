@@ -1,25 +1,19 @@
-const {
-  validateBlock
-} = require("./validator");
-const findUserRole = require("../user/findUserRole");
 const userModel = require("../mongo/user");
+const canReadBlock = require("./canReadBlock");
+const blockModel = require("../mongo/block");
 
-async function getBlockCollaborators({
-  block
-}, req) {
-  // await validateBlock(block);
-
-  // it validates if user can read block, hence collaborators
-  await findUserRole(req, block.id);
+async function getBlockCollaborators({ block }, req) {
+  block = await blockModel.model
+    .findOne({ customId: block.customId })
+    .lean()
+    .exec();
+  await canReadBlock(req, block);
   let collaborators = await userModel.model
-    .find({
-        roles: {
-          $elemMatch: {
-            blockId: block.id
-          }
-        }
+    .find(
+      {
+        orgs: block.customId
       },
-      "name email createdAt roles"
+      "name email createdAt customId"
     )
     .lean()
     .exec();

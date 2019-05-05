@@ -35,15 +35,6 @@ function isParentInBlock(block, parentId) {
 }
 
 const blockTypes = ["group", "org", "project", "task", "root", "info-card"];
-const blockTypesObj = {
-  group: 1,
-  org: 1,
-  project: 1,
-  task: 1,
-  root: 1,
-  "info-card": 1,
-  "landing-page": 1
-};
 
 module.exports = {
   getImmediateParentId,
@@ -51,6 +42,5 @@ module.exports = {
   getRootParentId,
   isParentInBlock,
   blockTypes,
-  blockTypesObj,
   getParentsLength
 };

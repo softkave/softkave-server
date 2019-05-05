@@ -1,25 +1,14 @@
 const argon2 = require("argon2");
 const newToken = require("./newToken");
 const userModel = require("../mongo/user");
-const {
-  addEntryToPasswordDateLog
-} = require("./utils");
-const {
-  validateUser
-} = require("./validator");
+const { addEntryToPasswordDateLog } = require("./utils");
 const getUserFromReq = require("../getUserFromReq");
-const {
-  RequestError
-} = require("../error");
+const { RequestError } = require("../error");
+const { validatePassword } = require("./validate");
 
-async function changePassword({
-  password
-}, req) {
+async function changePassword({ password }, req) {
+  const passwordValue = validatePassword(password);
   const user = await getUserFromReq(req);
-  password = password.trim();
-  // await validateUser({
-  //   password
-  // });
   const userData = await userModel.model
     .findOne({
       email: user.email
@@ -28,10 +17,10 @@ async function changePassword({
     .exec();
 
   if (!userData) {
-    throw new RequestError("error", "user does not exist.");
+    throw new RequestError("error", "user does not exist");
   }
 
-  userData.hash = await argon2.hash(password);
+  userData.hash = await argon2.hash(passwordValue);
   userData.changePasswordHistory = addEntryToPasswordDateLog(
     user.changePasswordHistory
   );

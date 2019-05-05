@@ -1,57 +1,20 @@
 const blockModel = require("../mongo/block");
-const {
-  validateBlock
-} = require("./validator");
-const canUserPerformAction = require("./canUserPerformAction");
-const userModel = require("../mongo/user");
+const canReadBlock = require("./canReadBlock");
+const getUserFromReq = require("../getUserFromReq");
+const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
 
-async function deleteBlock({
-  block
-}, req) {
-  // await validateBlock(block);
-  await canUserPerformAction(req, block, "DELETE");
-
-  let blockChildrenWithRoles = await blockModel.find({
-    parents: block.id,
-    roles: {
-      $size: {
-        $gt: 0
-      }
-    }
-  }, "_id").exec();
-
-  let blockChildrenIdArr = blockChildrenWithRoles.map(b => b._id);
+async function deleteBlock({ block }, req) {
+  block = await blockModel.model.findOne({ customId: block.customId });
+  await canReadBlock(req, block);
   await blockModel.model
     .deleteMany({
-      _id: block.id,
-      parents: block.id
+      $or: [{ customId: block.customId }, { parents: block.customId }]
     })
     .exec();
 
-  let roleBlockIds = blockChildrenIdArr;
-  roleBlockIds.push(block.id);
-
-  // TODO: scrub user collection for unreferenced roles
-  userModel.model.findAndUpdate({
-    roles: {
-      $elemMatch: {
-        blockId: {
-          $in: roleBlockIds
-        }
-      }
-    }
-  }, {
-    $pull: {
-      blockId: {
-        $in: roleBlockIds
-      }
-    }
-  }).exec().catch(err => {
-    console.log("delete roles ---");
-    console.error(err);
-    console.dir(roleBlockIds);
-    console.log("delete roles ---");
-  })
+  // TODO: scrub user collection for unreferenced orgIds
+  const user = await getUserFromReq(req);
+  await deleteOrgIdFromUser(user, block.customId);
 }
 
 module.exports = deleteBlock;

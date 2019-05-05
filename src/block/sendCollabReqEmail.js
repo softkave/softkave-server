@@ -36,7 +36,7 @@ async function sendCollabReqEmail(email, userName, blockName) {
         <p>
           ${body}
           <br ><br >
-          Or you can click below
+          Or you can copy the following link, and visit in your browser
           <br >
           <a href="${verifyLink}">
             ${verifyLink}

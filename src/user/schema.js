@@ -1,26 +1,10 @@
 const userSchema = `
-  type UserRole {
-    role: String
-    level: Int
-    assignedAt: Float
-    assignedBy: String
-    type: String
-    blockId: String
-  }
-
-  input UserRoleInput {
-    role: String!
-    level: Int!
-  }
-
   type User {
-    id: String
-    _id: String
+    customId: String
     name: String
     email: String
     createdAt: Float
     lastNotificationCheckTime: Float
-    roles: [UserRole]
   }
 
   input UserSignupInput {
@@ -29,12 +13,7 @@ const userSchema = `
     password: String!
   }
 
-  input UserLoginInput {
-    email: String!
-    password: String!
-  }
-
-  input UpdateUserInput {
+  input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
   }
@@ -45,7 +24,7 @@ const userSchema = `
     errors: [Error]
   }
 
-  input UpdateCollabRequestInput {
+  input UpdateCollaborationRequestInput {
     readAt: Float
   }
 
@@ -54,17 +33,26 @@ const userSchema = `
     userExists: Boolean
   }
 
+  type RCR {
+    errors: [Error]
+    block: Block
+  }
+
   type UserQuery {
-    #userExists (email: String!) : UserExistsResult
+    userExists (email: String!) : UserExistsResult
     signup (user: UserSignupInput!) : UserQueryResult
-    login (user: UserLoginInput!) : UserQueryResult
+    login (email: String!, password: String!) : UserQueryResult
     forgotPassword (email: String!) : ErrorOnlyResponse
     changePassword (password: String!) : UserQueryResult
-    updateUser (data: UpdateUserInput!): ErrorOnlyResponse
+    updateUser (data: UserUpdateInput!): ErrorOnlyResponse
     changePasswordWithToken (password: String!) : UserQueryResult
-    getCollaborationRequests: GetCollabRequestsResponse
-    respondToCollaborationRequest (id: String!, response: String!): SingleBlockOpResponse
-    updateCollaborationRequest (id: String!, data: UpdateCollabRequestInput!): ErrorOnlyResponse
+    getCollaborationRequests: GetCollaborationRequestsResponse
+    respondToCollaborationRequest (customId: String!, response: String!): RCR
+    updateCollaborationRequest (
+      customId: String!, 
+      data: UpdateCollaborationRequestInput!
+    ): ErrorOnlyResponse
+    getUserData: UserQueryResult
   }
 `;
 

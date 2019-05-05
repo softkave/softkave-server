@@ -1,94 +1,45 @@
 const userModel = require("../mongo/user");
 const argon2 = require("argon2");
 const newToken = require("./newToken");
-const {
-  validateUser
-} = require("./validator");
-const addBlockTodDb = require("../block/addBlockToDb");
-const randomColor = require("randomcolor");
-const {
-  orgActions
-} = require("../block/actions")
-const {
-  trimObject
-} = require("../utils");
+const { validateUserSignupData: validateUser } = require("./validate");
+const userExists = require("./userExists");
+const { RequestError } = require("../error");
+const createRootBlock = require("../block/createRootBlock");
+const uuid = require("uuid/v4");
 
-const rootBlockRoles = [{
-  role: "admin",
-  hierarchy: 1
-}, {
-  role: "public",
-  hierarchy: 0
-}];
+async function signup({ user }, req) {
+  // let value = validateUser(user);
+  let value = user;
+  const userExistsResult = await userExists(value.email);
 
-const rootBlockAcl = orgActions.map(action => {
-  return {
-    action,
-    roles: ["admin"]
+  if (!!userExistsResult && userExistsResult.userExists) {
+    throw new RequestError("email", "email address is not available");
   }
-});
-
-async function addRootBlock(user, req) {
-  let rootBlock = {
-    name: `root_${user._id}`,
-    createdAt: Date.now(),
-    color: randomColor(),
-    type: "root",
-    createdBy: user._id,
-    acl: rootBlockAcl,
-    roles: rootBlockRoles,
-    role: rootBlockRoles[0]
-  };
-
-  await addBlockTodDb(rootBlock, req);
-
-  return {
-    role: role
-  };
-}
-
-async function signup({
-  user
-}, req) {
-  // await validateUser(user);
-  trimObject(user);
 
   try {
-    user.email = user.email.toLowerCase();
-    user.hash = await argon2.hash(user.password);
+    value.hash = await argon2.hash(value.password);
+    value.customId = uuid();
+    delete value.password;
     let newUser = new userModel.model(user);
     newUser = await newUser.save();
 
     // for getUserFromReq, it caches user data in fetchedUser
-    req.user = newUser;
     req.fetchedUser = newUser;
+    await createRootBlock(newUser, req);
 
-    const {
-      role
-    } = await addRootBlock(newUser, req);
-    newUser.roles.push(role);
-    await newUser.save();
     return {
       user: newUser,
       token: newToken(newUser)
     };
   } catch (error) {
+    // adding a user fails with code 11000 if unique fields in this case email exists
     if (error.code === 11000) {
-      return {
-        errors: [{
-          field: "email",
-          message: "email address is not available."
-        }]
-      };
+      throw new RequestError("email", "email address is not available");
     }
 
+    // to know what kind of error
     console.error(error);
-    return {
-      errors: [{
-        field: "error",
-        message: "server error"
-      }]
-    };
+    throw new RequestError("error", "server error");
   }
 }
 

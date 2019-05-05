@@ -1,30 +1,28 @@
 const blockModel = require("../mongo/block");
-const {
-  validateBlock
-} = require("./validator");
 const getUserFromReq = require("../getUserFromReq");
-const canUserPerformAction = require("./canUserPerformAction");
+const canReadBlock = require("./canReadBlock");
 
-async function toggleTask({
-  block,
-  data
-}, req) {
-  // await validateBlock(block);
+async function toggleTask({ block, data }, req) {
   const user = await getUserFromReq(req);
-  await canUserPerformAction(req, block, "TOGGLE_TASK");
-  await blockModel.model.updateOne({
-    _id: block.id,
-    type: "task",
-    taskCollaborators: {
-      $elemMatch: {
-        userId: user._id
+  block = await blockModel.model.findOne({ customId: block.customId });
+  await canReadBlock(req, block);
+  await blockModel.model.updateOne(
+    {
+      customId: block.customId,
+      type: "task",
+      taskCollaborators: {
+        $elemMatch: {
+          userId: user.customId
+        }
       }
+    },
+    {
+      "taskCollaborators.$.completedAt": data ? Date.now() : null
+    },
+    {
+      fields: "customId"
     }
-  }, {
-    "taskCollaborators.$.completedAt": data ? Date.now() : null
-  }, {
-    fields: "_id"
-  });
+  );
 }
 
 module.exports = toggleTask;

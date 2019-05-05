@@ -1,31 +1,25 @@
-const {
-  checkUser
-} = require("../utils");
 const userModel = require("../mongo/user");
-const {
-  RequestError
-} = require("../error");
-const {
-  trimObject
-} = require("../utils");
+const { RequestError } = require("../error");
+const { validateUserUpdateData } = require("./validate");
 
-async function updateUser({
-  data
-}, req) {
-  await checkUser(req);
-  trimObject(data);
+async function updateUser({ data }, req) {
+  const userData = validateUserUpdateData(data);
 
   let user = userModel.model
-    .findOneAndUpdate({
-      _id: req.user._id
-    }, data, {
-      lean: true,
-      fields: "_id"
-    })
+    .findOneAndUpdate(
+      {
+        customId: req.user.customId
+      },
+      userData,
+      {
+        lean: true,
+        fields: "customId"
+      }
+    )
     .exec();
 
-  if (!user) {
-    throw new RequestError("error", "user does not exist.");
+  if (!!!user) {
+    throw new RequestError("error", "user does not exist");
   }
 }
 

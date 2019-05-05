@@ -1,147 +1,35 @@
-const isMongoId = require("validator/lib/isMongoId");
-const {
-  RequestError
-} = require("./error");
-const isUUID = require("validator/lib/isUUID");
+const Joi = require("joi");
+const { validate } = require("./joi-utils");
 
-const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
-const stringPattern = /^[\w ]*$/;
+module.exports = exports;
 
-const mongoIdDescriptor = [{
-  transform: trimInput,
-  validator: (rule, value, cb) => {
-    if (!isMongoId(value)) {
-      cb("value is invalid.");
-    } else {
-      cb();
-    }
-  }
-}];
+exports.passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
+exports.stringPattern = /^[\w ]*$/;
 
-function makeDescriptorFieldsRequired(descriptor, fields = []) {
-  fields.forEach(field => {
-    let rule = descriptor[field];
+// exports.makeMinLengthErrorMessage = function makeMinLengthErrorMessage(
+//   field,
+//   length,
+//   type = "character(s)"
+// ) {
+//   `minimum of ${length} ${type} required for ${field}`;
+// };
 
-    if (rule) {
-      let replaceRule = [{
-        required: true
-      }];
+// exports.makeMaxLengthErrorMessage = function makeMaxLengthErrorMessage(
+//   field,
+//   length,
+//   type = "character(s)"
+// ) {
+//   return `maximum of ${length} ${type} expected for ${field}`;
+// };
 
-      if (Array.isArray(rule)) {
-        replaceRule = replaceRule.concat(rule);
-      } else {
-        replaceRule.push(rule);
-      }
+// exports.makeRequiredErrorMessage = function makeRequiredErrorMessage(field) {
+//   return `${field} is required`;
+// };
 
-      descriptor[field] = replaceRule;
-    }
-  });
+const uuidSchema = Joi.string().guid();
 
-  return descriptor;
-}
-
-function validateMongoId(id, field = "error", message = "id is invalid") {
-  if (!isMongoId(id)) {
-    throw new RequestError(field, message);
-  }
-}
-
-function trimInput(input) {
-  input = JSON.stringify(input);
-  return input.trim();
-}
-
-function addTrimToDescriptor(descriptor = {}) {
-  Object.keys(descriptor, rule => {
-    if (rule.type === "string") {
-      if (!rule.transform) {
-        rule.transform = trimInput;
-      } else {
-        const existingTransformer = rule.transform;
-        rule.transform = ruleTransform;
-
-        function ruleTransform(val) {
-          let result = existingTransformer(val);
-          result = trimInput(val);
-          return result;
-        }
-      }
-    }
-  });
-
-  return descriptor;
-}
-
-function makeArrTrim(field) {
-  if (field && !Array.isArray(field)) {
-    field = [field];
-  }
-
-  return function (arr) {
-    arr.map(item => {
-      if (field) {
-        field.forEach(key => {
-          let val = item[key];
-          item[key] = trimInput(val);
-        });
-      } else {
-        item = trimInput(item);
-      }
-
-      return item;
-    });
-  };
-}
-
-function promisifyValidator(validator) {
-  let validateFunc = validator.validate.bind(validator);
-  return function (...arg) {
-    return new Promise((resolve, reject) => {
-      validateFunc(...arg, (err, fields) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  };
-}
-
-function validateUUID(id, field = "error", message = "id is invalid") {
-  if (!isUUID(id)) {
-    throw new RequestError(field, message);
-  }
-}
-
-const uuidDescriptor = [{
-  transform: trimInput,
-  validator: (rule, value, cb) => {
-    if (!isUUID(value)) {
-      cb("value is invalid.");
-    } else {
-      cb();
-    }
-  }
-}];
-
-function validateString(str, field = "error", message = "id is invalid") {
-  if (!stringPattern.test(str)) {
-    throw new RequestError(field, message);
-  }
-}
-
-module.exports = {
-  passwordPattern,
-  mongoIdDescriptor,
-  makeDescriptorFieldsRequired,
-  validateMongoId,
-  trimInput,
-  addTrimToDescriptor,
-  makeArrTrim,
-  promisifyValidator,
-  validateUUID,
-  stringPattern,
-  uuidDescriptor,
-  validateString
+exports.uuidSchema = uuidSchema;
+exports.validateUUID = function validateUUID(uuid) {
+  const value = validate(uuid, uuidSchema);
+  return value.trim();
 };

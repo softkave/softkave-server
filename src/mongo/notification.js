@@ -1,30 +1,23 @@
-const {
-  connection
-} = require("./connection");
+const { connection } = require("./connection");
 const makeModel = require("./makeModel");
 const mongoose = require("mongoose");
 
 const schema = {
+  customId: { type: String, index: true },
   from: {
     type: {
-      userId: mongoose.SchemaTypes.ObjectId,
+      userId: String,
       name: {
-        type: String,
-        trim: true
+        type: String
       },
       blockId: {
-        type: String,
-        trim: true
+        type: String
       },
       blockName: {
-        type: String,
-        trim: true,
-        lowercase: true
+        type: String
       },
       blockType: {
-        type: String,
-        trim: true,
-        lowercase: true
+        type: String
       }
     },
     index: true
@@ -38,39 +31,33 @@ const schema = {
   to: {
     type: {
       email: {
-        type: String,
-        trim: true,
-        lowercase: true
+        type: String
       },
-      userId: mongoose.SchemaTypes.ObjectId
+      userId: String
     },
     index: true
   },
-  // response: String,
-  // respondedAt: Number,
-  // role: [blockRoleSchema],
-  // updatedAt: Number,
-  // status: String, // Pending | Revoked | Accepted | Rejected | Expired
   expiresAt: Number,
   type: {
-    type: String,
-    trim: true,
-    lowercase: true,
+    type: String
   },
-  statusHistory: [{
-    status: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
-    date: Number
-  }],
-  sentEmailHistory: [{
-    date: Number
-  }],
+
+  // status: pending | revoked | accepted | rejected | expired
+  statusHistory: [
+    {
+      status: {
+        type: String
+      },
+      date: Number
+    }
+  ],
+  sentEmailHistory: [
+    {
+      date: Number
+    }
+  ],
   root: {
-    type: String,
-    trim: true
+    type: String
   }
 };
 

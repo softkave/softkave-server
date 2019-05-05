@@ -1,17 +1,13 @@
-const {
-  validateBlock
-} = require("./validator");
-const canUserPerformAction = require("./canUserPerformAction");
 const notificationModel = require("../mongo/notification");
+const canReadBlock = require("./canReadBlock");
+const blockModel = require("../mongo/block");
 
-async function getBlockCollabRequests({
-  block
-}, req) {
-  // await validateBlock(block);
-  await canUserPerformAction(req, block, "READ_REQUESTS");
+async function getBlockCollabRequests({ block }, req) {
+  block = await blockModel.model.findOne({ customId: block.customId });
+  await canReadBlock(req, block);
   let requests = await notificationModel.model
     .find({
-      "from.blockId": block.id
+      "from.blockId": block.customId
     })
     .lean()
     .exec();

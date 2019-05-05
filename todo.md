@@ -73,3 +73,5 @@ fix
 3. make task collaborators and collaboratorsList into objects to make AssignCollab run faster
 4. check out clearing queued task ops
 5. fix updating lastNotificationCheckTime
+
+- see if you can use generic messages for all error fields to reduce runtime memory footprint

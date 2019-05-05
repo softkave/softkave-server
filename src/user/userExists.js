@@ -1,17 +1,24 @@
 const userModel = require("../mongo/user");
+const { validateEmail } = require("./validate");
 
-async function userExists({
-  email
-}) {
+async function userExists({ email }) {
+  // let value = validateEmail(email);
+  let value = email;
   const user = await userModel.model
-    .findOne({
-      email: email.trim().toLowerCase()
-    }, "_id", {
-      lean: true
-    })
+    .findOne(
+      {
+        email: value
+      },
+      "customId",
+      {
+        lean: true
+      }
+    )
     .exec();
 
-  return !!user;
+  return {
+    userExists: !!user
+  };
 }
 
 module.exports = userExists;

@@ -4,7 +4,7 @@ const isHexColor = require("validator/lib/isHexColor");
 const { RequestError } = require("../error");
 
 const blockParamInput = joi.object().keys({
-  id: joi.string()
+  customId: joi.string()
 });
 
 const createBlockInput = joi.object().keys({
@@ -19,8 +19,6 @@ const createBlockInput = joi.object().keys({
   parents: joi.array(),
   createdBy: joi.string(),
   taskCollaborators: joi.array(),
-  acl: joi.array(),
-  roles: joi.array(),
   priority: joi.string()
 });
 
@@ -36,12 +34,8 @@ const updateBlockInput = joi.object().keys({
   parents: joi.array(),
   createdBy: joi.string(),
   taskCollaborators: joi.array(),
-  acl: joi.array(),
-  roles: joi.array(),
   priority: joi.string()
 });
 
-const roleInput = null;
-const aclInput = null;
 const requestInput = null;
 const addCollaboratorInput = null;

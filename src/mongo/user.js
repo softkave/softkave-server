@@ -1,41 +1,16 @@
-const {
-  connection
-} = require("./connection");
+const { connection } = require("./connection");
 const makeModel = require("./makeModel");
 const mongoose = require("mongoose");
 
-const userRoleSchema = {
-  role: {
-    type: String,
-    trim: true,
-    lowercase: true
-  },
-  blockId: {
-    type: String,
-    trim: true
-  },
-  hierarchy: Number,
-  assignedBy: mongoose.Schema.Types.ObjectId,
-  assignedAt: Number,
-  type: {
-    type: String,
-    trim: true,
-    lowercase: true
-  }
-};
-
 const userSchema = {
+  customId: { type: String, index: true },
   name: {
-    type: String,
-    trim: true,
-    // lowercase: true
+    type: String
   },
   email: {
     type: String,
     unique: true,
-    index: true,
-    trim: true,
-    lowercase: true
+    index: true
   },
   hash: {
     type: String,
@@ -48,10 +23,8 @@ const userSchema = {
   forgotPasswordHistory: [Number],
   changePasswordHistory: [Number],
   lastNotificationCheckTime: Number,
-  roles: {
-    type: [userRoleSchema],
-    index: true
-  }
+  rootBlockId: String,
+  orgs: [String]
 };
 
 let userModel = makeModel(connection, userSchema, "user", "users");

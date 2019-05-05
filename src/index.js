@@ -1,14 +1,5 @@
 const path = require("path");
-
-// require("dotenv").config({
-//   path: path.resolve(__filename, "../.env.development")
-// });
-
-// console.log(path.resolve(__filename, "../.env.development"));
-
-const {
-  connection
-} = require("./mongo/connection");
+const { connection } = require("./mongo/connection");
 const userModel = require("./mongo/user").model;
 const blockModel = require("./mongo/block").model;
 const express = require("express");
@@ -16,24 +7,14 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const graphqlHTTP = require("express-graphql");
 const expressJwt = require("express-jwt");
-const {
-  buildSchema
-} = require("graphql");
-const {
-  utilitySchema
-} = require("./schema-utils");
-const {
-  blockSchema,
-  blockHandlerGraphql
-} = require("./block");
-const {
-  userHandlerGraphql,
-  userSchema
-} = require("./user");
-const notificationModel = require("../src/mongo/notification")
-  .model;
+const { buildSchema } = require("graphql");
+const { utilitySchema } = require("./schema-utils");
+const { blockSchema, blockHandlerGraphql } = require("./block");
+const { userHandlerGraphql, userSchema } = require("./user");
+const notificationModel = require("../src/mongo/notification").model;
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET not present");
 }
@@ -67,8 +48,9 @@ const corsOption = {
 };
 
 app.use(cors(corsOption));
+
 if (process.env.NODE_ENV !== "development") {
-  app.use(function (req, res, next) {
+  app.use(function(req, res, next) {
     if (req.headers["x-forwarded-proto"] !== "https") {
       return res.redirect(["https://", req.get("Host"), req.url].join(""));
     }
@@ -79,6 +61,13 @@ if (process.env.NODE_ENV !== "development") {
 
 app.use(express.static(path.join(__dirname, "../build")));
 app.use(
+  expressJwt({
+    secret: JWT_SECRET,
+    credentialsRequired: false
+  })
+);
+
+app.use(
   "/graphql",
   graphqlHTTP({
     schema: rootSchema,
@@ -88,32 +77,30 @@ app.use(
 );
 
 // app.use(express.static(path.join(__dirname, "./src/html-test/")));
-app.use(bodyParser.json({
-  type: "application/json"
-}));
 app.use(
-  expressJwt({
-    secret: JWT_SECRET,
-    credentialsRequired: false
+  bodyParser.json({
+    type: "application/json"
   })
 );
 
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   if (err.name === "UnauthorizedError") {
-    res
-      .status(200)
-      .send({
-        errors: [{
+    res.status(200).send({
+      errors: [
+        {
           field: "user",
           message: "invalid credentials"
-        }]
-      });
+        }
+      ]
+    });
   } else {
     res.status(401).send({
-      errors: [{
-        field: "error",
-        message: "server error"
-      }]
+      errors: [
+        {
+          field: "error",
+          message: "server error"
+        }
+      ]
     });
   }
 
@@ -134,6 +121,5 @@ connection.once("open", async () => {
   app.listen(port, () => {
     console.log("server started");
     console.log("port: " + port);
-    // console.dir(process.env);
   });
 });

@@ -1,31 +1,25 @@
 const getUserFromReq = require("../getUserFromReq");
 const notificationModel = require("../mongo/notification");
-const {
-  RequestError
-} = require("../error");
-const {
-  validateUUID
-} = require("../validation-utils");
+const { RequestError } = require("../error");
+const { validateUUID } = require("../validation-utils");
 
-async function updateCollaborationRequest({
-  id,
-  data
-}, req) {
-  // validateUUID(id);
+async function updateCollaborationRequest({ customId, data }, req) {
   const user = await getUserFromReq(req);
   let notification = await notificationModel.model
-    .findOneAndUpdate({
-        _id: id,
+    .findOneAndUpdate(
+      {
+        customId: customId,
         "to.email": user.email
       },
-      data, {
+      data,
+      {
         lean: true,
-        fields: "_id"
+        fields: "customId"
       }
     )
     .exec();
 
-  if (!notification) {
+  if (!!!notification) {
     throw new RequestError("error", "notification does not exist");
   }
 }

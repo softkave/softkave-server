@@ -1,27 +1,19 @@
 const userModel = require("../mongo/user");
 const sendChangePasswordEmail = require("./sendChangePasswordEmail");
-const {
-  addEntryToPasswordDateLog
-} = require("./utils");
+const { addEntryToPasswordDateLog } = require("./utils");
 const newToken = require("./newToken");
-const {
-  validateUser
-} = require("./validator");
-const {
-  RequestError
-} = require("../error");
+const { RequestError } = require("../error");
+const { validateEmail } = require("./validate");
 
-async function forgotPassword({
-  email
-}) {
-  // await validateUser({
-  //   email
-  // });
-
+async function forgotPassword({ email }) {
+  const emailValue = validateEmail(email);
   const user = await userModel.model
-    .findOne({
-      email: email.trim().toLowerCase()
-    }, "email forgotPasswordHistory")
+    .findOne(
+      {
+        email: emailValue
+      },
+      "email forgotPasswordHistory"
+    )
     .lean()
     .exec();
 

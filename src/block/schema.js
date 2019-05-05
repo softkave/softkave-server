@@ -1,68 +1,30 @@
 const blockSchema = `
-  type BlockData {
-    dataType: String
-    data: String
-  }
-
-  input BlockDataInput {
-    dataType: String!
-    data: String!
-  }
-
   type BlockTaskCollaboratorData {
     userId: String
-    data: String
-    addedAt: Float
+    completedAt: Float
     assignedBy: String
     assignedAt: Float
   }
 
   input BlockTaskCollaboratorDataInput {
     userId: String!
-    data: String
-    addedAt: Float
+    completedAt: Float
     assignedBy: String
     assignedAt: Float
   }
 
-  type AclItem {
-    action: String
-    roles: [String]
-  }
-
-  input AclItemInput {
-    action: String!
-    roles: [String]
-  }
-
-  type Role {
-    role: String
-    hierarchy: Float
-  }
-
-  input RoleInput {
-    role: String!
-    hierarchy: Float!
-  }
-
   type Block {
-    _id: String
-    id: String
+    customId: String
     name: String
     description: String
     expectedEndAt: Float
-    completedAt: Float
     createdAt: Float
     color: String
     updatedAt: Float
     type: String
     parents: [String]
-    data: [BlockData]
     createdBy: String
-    # owner: String
     taskCollaborators: [BlockTaskCollaboratorData]
-    acl: [AclItem]
-    roles: [Role]
     priority: String
   }
 
@@ -82,17 +44,12 @@ const blockSchema = `
 
   input AddBlockInput {
     name: String
-    id: String
+    customId: String
     description: String
     expectedEndAt: Float
-    completedAt: Float
     color: String
     type: String!
     parents: [String!]
-    data: [BlockDataInput!]
-    acl: [AclItemInput!]
-    roles: [RoleInput!]
-    role: UserRoleInput
     priority: String
     taskCollaborators: [BlockTaskCollaboratorDataInput]
   }
@@ -101,14 +58,8 @@ const blockSchema = `
     name: String
     description: String
     expectedEndAt: Float
-    completedAt: Float
     color: String
     priority: String
-    #updatedAt: Float
-    #parents: [String]
-    data: [BlockDataInput]
-    acl: [AclItemInput]
-    roles: [RoleInput]
     taskCollaborators: [BlockTaskCollaboratorDataInput]
   }
 
@@ -125,35 +76,41 @@ const blockSchema = `
     userId: String
   }
 
+  type CollabRequestStatusHistory {
+    status: String
+    date: Float
+  }
+
+  type CollabRequestEmailHistory {
+    date: Float
+  }
+
   type CollabRequest {
-    _id: String
-    id: String
-    from: [CollabRequestFrom]
+    customId: String
+    from: CollabRequestFrom
     createdAt: Float
     body: String
     readAt: Float
-    to: [CollabRequestTo],
-    response: String,
-    respondedAt: Float,
-    type: String,
-    # role: UserRole
+    to: CollabRequestTo
+    statusHistory: [CollabRequestStatusHistory]
+    sentEmailHistory: [CollabRequestEmailHistory]
+    type: String
+    root: String
   }
 
-  type GetCollabRequestsResponse {
+  type GetCollaborationRequestsResponse {
     errors: [Error]
     requests: [CollabRequest]
   }
 
   type Collaborator {
-    _id: String
-    id: String
+    customId: String
     name: String
     email: String
-    roles: [UserRole]
   }
 
   type GetCollaboratorsResponse {
-    error: [Error]
+    errors: [Error]
     collaborators: [Collaborator]
   }
 
@@ -161,11 +118,11 @@ const blockSchema = `
     email: String!
     body: String
     expiresAt: Float
-    id: String!
+    customId: String
   }
 
   input BlockParamInput {
-    id: String!
+    customId: String
   }
 
   type BlockQuery {
@@ -186,14 +143,10 @@ const blockSchema = `
       collaborator: String!
     ) : ErrorOnlyResponse
     getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
-    getCollabRequests (block: BlockParamInput!) : GetCollabRequestsResponse
+    getCollabRequests (block: BlockParamInput!) : GetCollaborationRequestsResponse
     toggleTask (block: BlockParamInput!, data: Boolean!) : ErrorOnlyResponse
-    updateRoles (block: BlockParamInput!, roles: [RoleInput!]!) : ErrorOnlyResponse
-    updateAcl (block: BlockParamInput!, acl: [AclItemInput!]!) : ErrorOnlyResponse
-    assignRole (block: BlockParamInput!, collaborator: String!, role: RoleInput!) : ErrorOnlyResponse
     revokeRequest (block: BlockParamInput!, request: String!) : ErrorOnlyResponse
-    # assignTask
-    # unassignTask
+    createRootBlock: SingleBlockOpResponse
   }
 `;
 

@@ -1,9 +1,7 @@
-const {
-  trimInput
-} = require("./validation-utils");
+const set = require("lodash/set");
 
 function wrapField(func) {
-  return async function (...args) {
+  return async function(...args) {
     try {
       return await func(...args);
     } catch (error) {
@@ -17,19 +15,23 @@ function wrapField(func) {
         };
       } else if (error.name || error.code || error.message) {
         return {
-          errors: [{
-            field: error.field || "error",
-            message: error.message || "server error"
-          }]
+          errors: [
+            {
+              field: error.field || "error",
+              message: error.message || "server error"
+            }
+          ]
         };
       } else if (error.errors) {
         return error;
       } else {
         return {
-          errors: [{
-            field: "error",
-            message: "server error"
-          }]
+          errors: [
+            {
+              field: "error",
+              message: "server error"
+            }
+          ]
         };
       }
     }
@@ -38,16 +40,6 @@ function wrapField(func) {
 
 function defaultArrToMapIndexer(item) {
   return item;
-}
-
-function arrToMap(arr) {
-  let result = {};
-
-  arr.forEach(item => {
-    result[item] = 1;
-  });
-
-  return result;
 }
 
 function indexArr(arr, indexer = defaultArrToMapIndexer) {
@@ -61,58 +53,58 @@ function indexArr(arr, indexer = defaultArrToMapIndexer) {
   return result;
 }
 
-function objValuesToArray(obj) {
-  if (Object.values) {
-    return Object.values(obj);
-  }
+function transformPaths(data, paths) {
+  function op(x, options) {
+    if (x) {
+      x = String(x);
 
-  let result = [];
-
-  for (const key in obj) {
-    let value = obj[key];
-    result.push(value);
-  }
-
-  return result;
-}
-
-function trimObject(obj, exclude = {}) {
-  for (const key in obj) {
-    let value = obj[key];
-
-    if (!exclude[key]) {
-      if (typeof value === "string") {
-        obj[key] = trimInput(value);
-      } else if (typeof value === "object") {
-        obj[key] = trimObject(value);
+      if (!!options.trim) {
+        x = x.trim();
       }
+
+      if (!!options.lowercase) {
+        x = x.toLowerCase();
+      }
+    }
+
+    return x;
+  }
+
+  function next(x, splitPath, index, cb, builtPath = "", options, data) {
+    if (index < splitPath.length) {
+      if (x) {
+        if (Array.isArray(x)) {
+          x.forEach((xData, i) => {
+            builtPath = builtPath + "." + i;
+            next(xData, splitPath, index, cb, builtPath, options, data);
+          });
+        } else {
+          const path = splitPath[index];
+          builtPath = builtPath + "." + path;
+          next(x[path], splitPath, index + 1, cb, builtPath, options, data);
+        }
+      } else {
+        cb();
+      }
+    } else {
+      cb(builtPath, x, options, data);
     }
   }
 
-  return obj;
-}
-
-function lowerCaseObject(obj, include = {}) {
-  for (const key in obj) {
-    let value = obj[key];
-
-    if (include[key]) {
-      if (typeof value === "string") {
-        obj[key] = value.toLowerCase()
-      } else if (typeof value === "object") {
-        obj[key] = lowerCaseObject(value);
-      }
-    }
+  function applyOp(path, x, options, data) {
+    const value = op(x, options);
+    set(data, path, value);
   }
 
-  return obj;
+  Object.keys(paths).forEach(path => {
+    const options = paths[path];
+    const splitPath = path.split(".");
+    next(data, splitPath, 0, applyOp, "", options, data);
+  });
 }
 
 module.exports = {
   wrapField,
-  arrToMap,
   indexArr,
-  objValuesToArray,
-  trimObject,
-  lowerCaseObject
+  transformPaths
 };

@@ -1,44 +1,19 @@
-const {
-  validateBlock
-} = require("./validator");
-const canUserPerformAction = require("./canUserPerformAction");
 const userModel = require("../mongo/user");
-const {
-  validateUUID
-} = require("../validation-utils");
 const getUserFromReq = require("../getUserFromReq");
 const notificationModel = require("../mongo/notification");
-const {
-  RequestError
-} = require("../error");
+const { RequestError } = require("../error");
+const blockModel = require("../mongo/block");
+const uuid = require("uuid/v4");
+const canReadBlock = require("./canReadBlock");
+const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
 
-async function removeCollaborator({
-  block,
-  collaborator
-}, req) {
-  // await validateBlock(block);
-  // validateUUID(collaborator);
-  let ownerBlock = await canUserPerformAction(
-    req,
-    block,
-    "REMOVE_COLLABORATOR",
-    "type name"
-  );
+async function removeCollaborator({ block, collaborator }, req) {
+  let ownerBlock = await blockModel.model.findOne({ customId: block.customId });
+  await canReadBlock(req, ownerBlock);
 
   let c = await userModel.model
-    .findOneAndUpdate({
-      _id: collaborator,
-      roles: {
-        $elemMatch: {
-          blockId: block.id
-        }
-      }
-    }, {
-      $pull: {
-        "roles.blockId": block.id
-      }
-    }, {
-      fields: "_id email name"
+    .findOne({
+      customId: collaborator
     })
     .exec();
 
@@ -46,15 +21,17 @@ async function removeCollaborator({
     throw new RequestError("error", "collaborator does not exist");
   }
 
+  const user = await getUserFromReq(req);
+  await deleteOrgIdFromUser(user, block.customId);
   sendNotification();
 
   async function sendNotification() {
-    const user = await getUserFromReq(req);
     let notification = new notificationModel.model({
+      customId: uuid(),
       from: {
-        userId: user._id,
+        userId: user.customId,
         name: user.name,
-        blockId: ownerBlock.id,
+        blockId: ownerBlock.customId,
         blockName: ownerBlock.name,
         blockType: ownerBlock.type
       },
@@ -68,7 +45,7 @@ async function removeCollaborator({
       `,
       to: {
         email: c.email,
-        userId: c._id
+        userId: c.customId
       },
       type: "remove_collaborator"
     });

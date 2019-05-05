@@ -1,41 +1,36 @@
 const notificationModel = require("../mongo/notification");
-const {
-  validateBlock
-} = require("./validator");
-const {
-  RequestError
-} = require("../error");
-const canUserPerformAction = require("./canUserPerformAction");
-const {
-  validateUUID
-} = require("../validation-utils");
+const { RequestError } = require("../error");
+const canReadBlock = require("./canReadBlock");
 
-async function revokeRequest({
-  block,
-  request
-}, req) {
-  // await validateBlock(block);
-  // validateUUID(request);
-
-  await canUserPerformAction(req, block, "REVOKE_REQUEST");
+async function revokeRequest({ block, request }, req) {
+  block = await blockModel.model.findOne({ customId: block.customId });
+  await canReadBlock(req, block);
   let notification = await notificationModel.model
-    .findOneAndUpdate({
-      _id: request
-    }, {
-      $push: {
-        statusHistory: {
-          status: "revoked",
-          date: Date.now()
+    .findOneAndUpdate(
+      {
+        customId: request,
+        "statusHistory.status": { $not: { $in: ["accepted", "declined"] } }
+      },
+      {
+        $push: {
+          statusHistory: {
+            status: "revoked",
+            date: Date.now()
+          }
         }
+      },
+      {
+        fields: "customId"
       }
-    }, {
-      fields: "_id"
-    })
+    )
     .lean()
     .exec();
 
   if (!notification) {
-    throw new RequestError("error", "request does not exist");
+    throw new RequestError(
+      "error",
+      "request does not exist, or request has been accepted or declined"
+    );
   }
 }
 

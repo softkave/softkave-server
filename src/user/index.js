@@ -4,14 +4,13 @@ const changePassword = require("./changePassword");
 const forgotPassword = require("./forgotPassword");
 const userExists = require("./userExists");
 const updateUser = require("./updateUser");
-const {
-  wrapField
-} = require("../utils");
-const userSchema = require("./schema");
 const getCollaborationRequests = require("./getCollaborationRequests");
 const respondToCollaborationRequest = require("./respondToCollaborationRequest");
 const updateCollaborationRequest = require("./updateCollaborationRequest");
 const changePasswordWithToken = require("./changePasswordWithToken");
+const getUserData = require("./getUserData");
+const { wrapField } = require("../utils");
+const userSchema = require("./schema");
 
 const userHandlerGraphql = {
   userExists: wrapField(userExists),
@@ -23,7 +22,8 @@ const userHandlerGraphql = {
   changePasswordWithToken: wrapField(changePasswordWithToken),
   updateCollaborationRequest: wrapField(updateCollaborationRequest),
   respondToCollaborationRequest: wrapField(respondToCollaborationRequest),
-  getCollaborationRequests: wrapField(getCollaborationRequests)
+  getCollaborationRequests: wrapField(getCollaborationRequests),
+  getUserData: wrapField(getUserData)
 };
 
 module.exports = {

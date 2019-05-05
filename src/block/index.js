@@ -1,6 +1,4 @@
-const {
-  wrapField
-} = require("../utils");
+const { wrapField } = require("../utils");
 const addBlock = require("./addBlock");
 const updateBlock = require("./updateBlock");
 const deleteBlock = require("./deleteBlock");
@@ -9,20 +7,16 @@ const getBlockCollaborators = require("./getBlockCollaborators");
 const addCollaborators = require("./addCollaborators");
 const removeCollaborator = require("./removeCollaborator");
 const getBlockCollabRequests = require("./getBlockCollabRequests");
-const getBlocks = require("./getBlocks");
 const getRoleBlocks = require("./getRoleBlocks");
 const toggleTask = require("./toggleTask");
-const updateRoles = require("./updateRoles");
-const updateAcl = require("./updateAcl");
 const revokeRequest = require("./revokeRequest");
-const assignRole = require("./assignRole");
+const createRootBlock = require("./createRootBlock");
 const blockSchema = require("./schema");
 
 let blockHandlerGraphql = {
   addBlock: wrapField(addBlock),
   updateBlock: wrapField(updateBlock),
   deleteBlock: wrapField(deleteBlock),
-  getBlocks: wrapField(getBlocks),
   getBlockChildren: wrapField(getBlockChildren),
   addCollaborators: wrapField(addCollaborators),
   removeCollaborator: wrapField(removeCollaborator),
@@ -30,10 +24,8 @@ let blockHandlerGraphql = {
   getCollabRequests: wrapField(getBlockCollabRequests),
   getRoleBlocks: wrapField(getRoleBlocks),
   toggleTask: wrapField(toggleTask),
-  updateRoles: wrapField(updateRoles),
-  updateAcl: wrapField(updateAcl),
   revokeRequest: wrapField(revokeRequest),
-  assignRole: wrapField(assignRole)
+  createRootBlock: wrapField(createRootBlock)
 };
 
 module.exports = {
