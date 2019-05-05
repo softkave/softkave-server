@@ -76,7 +76,6 @@ app.use(
   })
 );
 
-// app.use(express.static(path.join(__dirname, "./src/html-test/")));
 app.use(
   bodyParser.json({
     type: "application/json"
@@ -107,9 +106,9 @@ app.use(function(err, req, res, next) {
   console.error(err);
 });
 
-// app.get("/*", function (req, res) {
-//   res.sendFile(path.join(__dirname, "../build", "index.html"));
-// });
+app.get("/*", function(req, res) {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
 
 console.log("SOFTKAVE");
 
