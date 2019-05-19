@@ -1,4 +1,4 @@
-const set = require("lodash/set");
+const { extractError } = require("./error");
 
 function wrapField(func) {
   return async function(...args) {
@@ -11,7 +11,7 @@ function wrapField(func) {
 
       if (Array.isArray(error)) {
         return {
-          errors: error
+          errors: extractError(error)
         };
       } else if (error.name || error.code || error.message) {
         return {
@@ -53,58 +53,7 @@ function indexArr(arr, indexer = defaultArrToMapIndexer) {
   return result;
 }
 
-function transformPaths(data, paths) {
-  function op(x, options) {
-    if (x) {
-      x = String(x);
-
-      if (!!options.trim) {
-        x = x.trim();
-      }
-
-      if (!!options.lowercase) {
-        x = x.toLowerCase();
-      }
-    }
-
-    return x;
-  }
-
-  function next(x, splitPath, index, cb, builtPath = "", options, data) {
-    if (index < splitPath.length) {
-      if (x) {
-        if (Array.isArray(x)) {
-          x.forEach((xData, i) => {
-            builtPath = builtPath + "." + i;
-            next(xData, splitPath, index, cb, builtPath, options, data);
-          });
-        } else {
-          const path = splitPath[index];
-          builtPath = builtPath + "." + path;
-          next(x[path], splitPath, index + 1, cb, builtPath, options, data);
-        }
-      } else {
-        cb();
-      }
-    } else {
-      cb(builtPath, x, options, data);
-    }
-  }
-
-  function applyOp(path, x, options, data) {
-    const value = op(x, options);
-    set(data, path, value);
-  }
-
-  Object.keys(paths).forEach(path => {
-    const options = paths[path];
-    const splitPath = path.split(".");
-    next(data, splitPath, 0, applyOp, "", options, data);
-  });
-}
-
 module.exports = {
   wrapField,
-  indexArr,
-  transformPaths
+  indexArr
 };

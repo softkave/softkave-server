@@ -22,7 +22,7 @@ function minErrorMessage(error) {
     return defaultErrorMessage();
   }
 
-  return `${label} length must be at least ${min} character(s) long`;
+  return `data must be at least ${min} in length`;
 }
 
 function maxErrorMessage(error) {
@@ -35,20 +35,41 @@ function maxErrorMessage(error) {
     return defaultErrorMessage();
   }
 
-  return `${label} length must be less than or equal to ${max} character(s) long`;
+  return `data must be less than ${max}`;
+}
+
+function uniqueErrorMessage() {
+  return "data is not unique";
+}
+
+function emailErrorMessage() {
+  return "input is not a valid email address";
 }
 
 const errorMessages = {
   "any.required": requiredErrorMessage,
   "any.empty": requiredErrorMessage,
+  "any.allowOnly": defaultErrorMessage,
+  "string.base": defaultErrorMessage,
   "string.min": minErrorMessage,
   "string.max": maxErrorMessage,
   "string.regex.base": defaultErrorMessage,
-  "string.email": null
+  "string.email": emailErrorMessage,
+  "string.guid": defaultErrorMessage,
+  "number.base": defaultErrorMessage,
+  "number.min": minErrorMessage,
+  "number.max": maxErrorMessage,
+  "array.base": defaultErrorMessage,
+  "array.unique": uniqueErrorMessage,
+  "array.min": minErrorMessage,
+  "array.max": maxErrorMessage
 };
 
 exports.validate = function validate(data, schema) {
-  const { error, value } = Joi.validate(data, schema);
+  const { error, value } = Joi.validate(data, schema, {
+    abortEarly: false,
+    convert: true
+  });
 
   if (error) {
     let errMessages = [];
@@ -66,7 +87,8 @@ exports.validate = function validate(data, schema) {
       errMessages.push(new RequestError(path, defaultErrorMessage()));
     }
 
-    throw errMessages;
+    console.log(errMessages);
+    throw errMessages[0];
   }
 
   return value;

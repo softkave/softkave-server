@@ -34,13 +34,10 @@ function isParentInBlock(block, parentId) {
   return false;
 }
 
-const blockTypes = ["group", "org", "project", "task", "root", "info-card"];
-
 module.exports = {
   getImmediateParentId,
   blockHasParents,
   getRootParentId,
   isParentInBlock,
-  blockTypes,
   getParentsLength
 };

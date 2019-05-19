@@ -1,16 +1,15 @@
 const userModel = require("../mongo/user");
 const argon2 = require("argon2");
 const newToken = require("./newToken");
-const { validateUserSignupData: validateUser } = require("./validate");
+const { validateUserSignupData: validateUser } = require("./validation");
 const userExists = require("./userExists");
 const { RequestError } = require("../error");
 const createRootBlock = require("../block/createRootBlock");
 const uuid = require("uuid/v4");
 
 async function signup({ user }, req) {
-  // let value = validateUser(user);
-  let value = user;
-  const userExistsResult = await userExists(value.email);
+  let value = validateUser(user);
+  const userExistsResult = await userExists(value);
 
   if (!!userExistsResult && userExistsResult.userExists) {
     throw new RequestError("email", "email address is not available");
@@ -20,7 +19,7 @@ async function signup({ user }, req) {
     value.hash = await argon2.hash(value.password);
     value.customId = uuid();
     delete value.password;
-    let newUser = new userModel.model(user);
+    let newUser = new userModel.model(value);
     newUser = await newUser.save();
 
     // for getUserFromReq, it caches user data in fetchedUser
@@ -37,7 +36,7 @@ async function signup({ user }, req) {
       throw new RequestError("email", "email address is not available");
     }
 
-    // to know what kind of error
+    // to know what kind of error in console logs
     console.error(error);
     throw new RequestError("error", "server error");
   }

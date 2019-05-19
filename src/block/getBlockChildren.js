@@ -1,11 +1,16 @@
 const blockModel = require("../mongo/block");
-const { blockTypes, getParentsLength } = require("./utils");
-const { RequestError } = require("../error");
+const { getParentsLength } = require("./utils");
 const canReadBlock = require("./canReadBlock");
+const { validateBlockParam, validateBlockTypes } = require("./validation");
+const { blockTypes } = require("./constants");
 
 async function getBlockChildren({ block, types }, req) {
-  if (types && types.length > blockTypes.length) {
-    throw new RequestError("params.types", "maximum length exceeded");
+  block = validateBlockParam(block);
+
+  if (types) {
+    types = validateBlockTypes(types);
+  } else {
+    types = blockTypes;
   }
 
   let parentBlock = await blockModel.model.findOne({
@@ -18,7 +23,7 @@ async function getBlockChildren({ block, types }, req) {
       $size: getParentsLength(parentBlock) + 1,
       $eq: parentBlock.customId
     },
-    type: { $in: types || blockTypes }
+    type: { $in: types }
   });
 
   return {

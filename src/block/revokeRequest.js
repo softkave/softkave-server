@@ -1,10 +1,15 @@
 const notificationModel = require("../mongo/notification");
 const { RequestError } = require("../error");
 const canReadBlock = require("./canReadBlock");
+const { validateBlockParam } = require("./validation");
+const { validateUUID } = require("../validation-utils");
 
 async function revokeRequest({ block, request }, req) {
+  block = validateBlockParam(block);
+  request = validateUUID(request);
   block = await blockModel.model.findOne({ customId: block.customId });
   await canReadBlock(req, block);
+
   let notification = await notificationModel.model
     .findOneAndUpdate(
       {

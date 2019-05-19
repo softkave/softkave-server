@@ -135,8 +135,8 @@ const blockSchema = `
     addCollaborators (
       block: BlockParamInput!, 
       collaborators: [AddCollaboratorInput!]!,
-      body: String,
-      expiresAt: Float
+      # body: String,
+      # expiresAt: Float
     ) : ErrorOnlyResponse
     removeCollaborator (
       block: BlockParamInput!, 

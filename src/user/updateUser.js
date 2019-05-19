@@ -1,9 +1,9 @@
 const userModel = require("../mongo/user");
 const { RequestError } = require("../error");
-const { validateUserUpdateData } = require("./validate");
+const { validateUpdateUserData } = require("./validation");
 
 async function updateUser({ data }, req) {
-  const userData = validateUserUpdateData(data);
+  const userData = validateUpdateUserData(data);
 
   let user = userModel.model
     .findOneAndUpdate(

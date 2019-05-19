@@ -1,12 +1,13 @@
 const argon2 = require("argon2");
 const newToken = require("./newToken");
 const userModel = require("../mongo/user");
-const { validatePassword, validateEmail } = require("./validate");
+const { validatePassword, validateEmail } = require("./validation");
 const { RequestError } = require("../error");
 
 async function login({ email, password }) {
-  // const emailValue = validateEmail(email);
-  // const passwordValue = validatePassword(password);
+  email = validateEmail(email);
+  password = validatePassword(password);
+
   const userData = await userModel.model
     .findOne({
       email

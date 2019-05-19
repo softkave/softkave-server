@@ -6,8 +6,13 @@ const blockModel = require("../mongo/block");
 const uuid = require("uuid/v4");
 const canReadBlock = require("./canReadBlock");
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
+const { validateBlockParam } = require("./validation");
+const { validateUUID } = require("../validation-utils");
 
 async function removeCollaborator({ block, collaborator }, req) {
+  block = validateBlockParam(block);
+  collaborator = validateUUID(collaborator);
+
   let ownerBlock = await blockModel.model.findOne({ customId: block.customId });
   await canReadBlock(req, ownerBlock);
 

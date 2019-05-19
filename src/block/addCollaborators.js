@@ -4,10 +4,15 @@ const { RequestError } = require("../error");
 const getUserFromReq = require("../getUserFromReq");
 const blockModel = require("../mongo/block");
 const canReadBlock = require("./canReadBlock");
+const { validateAddCollaboratorParams } = require("./validation");
 
-async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
+async function addCollaborator(params, req) {
+  params = validateAddCollaboratorParams(params);
+
+  let { block, collaborators } = params;
   block = await blockModel.model.findOne({ customId: block.customId });
   await canReadBlock(req, block);
+
   const collaboratorsEmailArr = collaborators.map(c => {
     return c.email.toLowerCase();
   });
@@ -36,7 +41,6 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
   let collaborationRequests = collaborators.map(c => {
     let notificationBody =
       c.body ||
-      body ||
       `
       You have been invited by ${user.name} to collaborate in ${block.name}.
     `;
@@ -55,7 +59,7 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
         email: c.email.toLowerCase()
       },
       type: "collab-req",
-      expiresAt: c.expiresAt || expiresAt || null,
+      expiresAt: c.expiresAt || null,
       statusHistory: [
         {
           status: "pending",
@@ -72,7 +76,13 @@ async function addCollaborator({ block, collaborators, body, expiresAt }, req) {
 
   function sendEmails(collaborationRequests) {
     let emailPromises = collaborationRequests.map(col => {
-      return sendCollabReqEmail(col.to.email, user.name, block.name);
+      return sendCollabReqEmail(
+        col.to.email,
+        user.name,
+        block.name,
+        col.body,
+        col.expiresAt
+      );
     });
 
     // TODO: Resend collab requests that have not been sent

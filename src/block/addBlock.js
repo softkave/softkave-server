@@ -4,8 +4,11 @@ const { RequestError } = require("../error");
 const addOrgIdToUser = require("../user/addOrgIdToUser");
 const blockModel = require("../mongo/block");
 const canReadBlock = require("./canReadBlock");
+const { validateBlock } = require("./validation");
 
 async function addBlock({ block }, req) {
+  block = validateBlock(block);
+
   if (block.type === "root") {
     throw new RequestError("error", "invalid block type");
   }
@@ -32,6 +35,7 @@ async function addBlock({ block }, req) {
     .findOne({ customId: rootParentId })
     .lean()
     .exec();
+
   await canReadBlock(req, rootParent);
 
   return {

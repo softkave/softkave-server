@@ -1,7 +1,6 @@
 const addBlockTodDb = require("../block/addBlockToDb");
 const randomColor = require("randomcolor");
 const uuid = require("uuid/v4");
-const getUserFromReq = require("../getUserFromReq");
 
 // TODO: look for users that have no root block and create one for them
 async function createRootBlock(user, req) {

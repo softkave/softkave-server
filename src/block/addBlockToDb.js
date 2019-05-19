@@ -11,16 +11,17 @@ async function addBlockToDb(block, req) {
     };
 
     if (block.customId) {
-      blockExistQuery.customId = block.customId;
+      // blockExistQuery.customId = block.customId;
     } else {
       throw new RequestError("error", "no id present");
     }
 
     if (block.parents) {
-      blockExistQuery.parents = {
-        $all: block.parents,
-        $size: getParentsLength(block)
-      };
+      blockExistQuery.parents = block.parents;
+      // {
+      //   $all: block.parents,
+      //   $size: getParentsLength(block)
+      // };
     }
 
     let blockExists = await blockModel.model

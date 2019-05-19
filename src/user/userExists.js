@@ -1,9 +1,8 @@
 const userModel = require("../mongo/user");
-const { validateEmail } = require("./validate");
+const { validateEmail } = require("./validation");
 
 async function userExists({ email }) {
-  // let value = validateEmail(email);
-  let value = email;
+  let value = validateEmail(email);
   const user = await userModel.model
     .findOne(
       {

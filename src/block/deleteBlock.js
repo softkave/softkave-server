@@ -2,8 +2,10 @@ const blockModel = require("../mongo/block");
 const canReadBlock = require("./canReadBlock");
 const getUserFromReq = require("../getUserFromReq");
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
+const { validateBlockParam } = require("./validation");
 
 async function deleteBlock({ block }, req) {
+  block = validateBlockParam(block);
   block = await blockModel.model.findOne({ customId: block.customId });
   await canReadBlock(req, block);
   await blockModel.model

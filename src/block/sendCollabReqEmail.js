@@ -1,53 +1,35 @@
 const aws = require("../res/aws");
+const {
+  collaborationRequestHTML,
+  collaborationRequestText,
+  collaborationRequestMailTitle
+} = require("../html/collaboration-request");
+const { clientDomain } = require("../res/app");
+
 const ses = new aws.SES();
 
-const appName = "Softkave";
-const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
+async function sendCollabReqEmail(
+  email,
+  userName,
+  blockName,
+  message,
+  expires
+) {
+  const signupLink = `${clientDomain}/signup`;
+  const loginLink = `${clientDomain}/login`;
+  const contentParams = {
+    message,
+    signupLink,
+    loginLink,
+    expiration: expires,
+    fromOrg: blockName,
+    fromUser: userName
+  };
 
-async function sendCollabReqEmail(email, userName, blockName) {
-  let title = "Collaboration Request";
-  let verifyLink = `${clientDomain}`;
-  let body = `
-    You have a new collaboration request from ${userName} of ${blockName}. 
-    To respond, login to your Softkave account if you have one, or signup if don't 
-    by visiting the following link in your browser. Thank you! 
-    - ${verifyLink}
-  `;
+  const htmlContent = collaborationRequestHTML(contentParams);
+  const textContent = collaborationRequestText(contentParams);
 
-  let emailData = `
-    <!DOCTYPE html>
-    <html lang="en-US">
-      <head>
-        <meta charset="utf-8">
-        <meta name="author" content="Abayomi Akintomide" >
-        <title>${title}</title>
-        <style>
-          * {color: #222;}
-          a {color: rgb(66, 133, 244);}
-          .app-name {font-size: 1em; margin: 0.5em 0; font-weight: bold;}
-          .mail-title {font-size: 2em;}
-        </style>
-      </head>
-      <body>
-        <header>
-          <h1 className="app-name"><a href="${clientDomain}">${appName}</a></h1>
-          <h2 className="mail-title">${title}</h2>
-        </header>
-        <p>
-          ${body}
-          <br ><br >
-          Or you can copy the following link, and visit in your browser
-          <br >
-          <a href="${verifyLink}">
-            ${verifyLink}
-          </a> 
-        </p>
-        <footer>&copy; ${appName}</footer>
-      </body>
-    </html>
-  `;
-
-  let result = await ses
+  const result = await ses
     .sendEmail({
       Destination: {
         ToAddresses: [email]
@@ -56,18 +38,16 @@ async function sendCollabReqEmail(email, userName, blockName) {
       Message: {
         Subject: {
           Charset: "UTF-8",
-          Data: title
+          Data: collaborationRequestMailTitle
         },
         Body: {
           Html: {
             Charset: "UTF-8",
-            Data: emailData
+            Data: htmlContent
           },
           Text: {
             Charset: "UTF-8",
-            Data: `
-            ${body} 
-          `
+            Data: textContent
           }
         }
       }

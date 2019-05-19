@@ -4,7 +4,7 @@ const userModel = require("../mongo/user");
 const { addEntryToPasswordDateLog } = require("./utils");
 const getUserFromReq = require("../getUserFromReq");
 const { RequestError } = require("../error");
-const { validatePassword } = require("./validate");
+const { validatePassword } = require("./validation");
 
 async function changePassword({ password }, req) {
   const passwordValue = validatePassword(password);

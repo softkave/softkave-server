@@ -1,12 +1,16 @@
 const getUserFromReq = require("../getUserFromReq");
 const notificationModel = require("../mongo/notification");
 const { RequestError } = require("../error");
-const { validateUUID } = require("../validation-utils");
 const blockModel = require("../mongo/block");
 const addOrgIdToUser = require("./addOrgIdToUser");
+const { validateRespondToCollaborationRequest } = require("./validation");
 
-async function respondToCollaborationRequest({ customId, response }, req) {
-  response = response.trim().toLowerCase();
+async function respondToCollaborationRequest(params, req) {
+  params = await validateRespondToCollaborationRequest(params);
+
+  let { customId, response } = params;
+  response = response.toLowerCase();
+
   const acceptableResponses = {
     accepted: true,
     declined: true

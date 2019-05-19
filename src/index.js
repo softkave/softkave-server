@@ -12,6 +12,11 @@ const { utilitySchema } = require("./schema-utils");
 const { blockSchema, blockHandlerGraphql } = require("./block");
 const { userHandlerGraphql, userSchema } = require("./user");
 const notificationModel = require("../src/mongo/notification").model;
+const {
+  credentialsExpiredError,
+  serverError,
+  invalidCredentialsError
+} = require("./error");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -85,21 +90,15 @@ app.use(
 app.use(function(err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     res.status(200).send({
-      errors: [
-        {
-          field: "user",
-          message: "invalid credentials"
-        }
-      ]
+      errors: [invalidCredentialsError]
+    });
+  } else if (err.name === "TokenExpiredError") {
+    res.status(200).send({
+      errors: [credentialsExpiredError]
     });
   } else {
-    res.status(401).send({
-      errors: [
-        {
-          field: "error",
-          message: "server error"
-        }
-      ]
+    res.status(500).send({
+      errors: [serverError]
     });
   }
 

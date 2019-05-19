@@ -1,6 +1,5 @@
 const { connection } = require("./connection");
 const makeModel = require("./makeModel");
-const mongoose = require("mongoose");
 
 const userSchema = {
   customId: { type: String, index: true },
