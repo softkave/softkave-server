@@ -48,7 +48,7 @@ const root = {
 let app = express();
 const port = process.env.PORT || 5000;
 const corsOption = {
-  origin: [/^*.softkave.com*$/],
+  // origin: [/*/],
   optionsSuccessStatus: 200
 };
 
