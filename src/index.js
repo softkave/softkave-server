@@ -64,7 +64,7 @@ if (process.env.NODE_ENV !== "development") {
   });
 }
 
-app.use(express.static(path.join(__dirname, "../public")));
+// app.use(express.static(path.join(__dirname, "../public")));
 app.use(
   expressJwt({
     secret: JWT_SECRET,
@@ -105,9 +105,9 @@ app.use(function(err, req, res, next) {
   console.error(err);
 });
 
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
-});
+// app.get("/*", function(req, res) {
+//   res.sendFile(path.join(__dirname, "../public", "index.html"));
+// });
 
 console.log("SOFTKAVE");
 
