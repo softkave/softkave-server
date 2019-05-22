@@ -1,6 +1,5 @@
 const { connection } = require("./connection");
-const makeModel = require("./makeModel");
-const mongoose = require("mongoose");
+const MongoModel = require("./MongoModel");
 
 const schema = {
   customId: { type: String, index: true },
@@ -61,11 +60,11 @@ const schema = {
   }
 };
 
-const notificationModel = makeModel(
+const notificationModel = new MongoModel({
   connection,
-  schema,
-  "notification",
-  "notifications"
-);
+  rawSchema: schema,
+  modelName: "notification",
+  collectionName: "notifications"
+});
 
 module.exports = notificationModel;

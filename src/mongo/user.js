@@ -1,5 +1,5 @@
 const { connection } = require("./connection");
-const makeModel = require("./makeModel");
+const MongoModel = require("./MongoModel");
 
 const userSchema = {
   customId: { type: String, index: true },
@@ -26,5 +26,11 @@ const userSchema = {
   orgs: [String]
 };
 
-let userModel = makeModel(connection, userSchema, "user", "users");
+let userModel = new MongoModel({
+  connection,
+  rawSchema: userSchema,
+  modelName: "user",
+  collectionName: "users"
+});
+
 module.exports = userModel;

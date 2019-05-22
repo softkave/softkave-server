@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
 const { connection } = require("./connection");
-const makeModel = require("./makeModel");
+const MongoModel = require("./MongoModel");
 
 const blockTaskCollaboratorsDataSchema = {
   userId: String,
@@ -52,4 +51,9 @@ const blockSchema = {
   }
 };
 
-module.exports = makeModel(connection, blockSchema, "block", "blocks");
+module.exports = new MongoModel({
+  connection,
+  rawSchema: blockSchema,
+  modelName: "block",
+  collectionName: "blocks"
+});
