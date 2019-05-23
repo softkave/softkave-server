@@ -7,13 +7,9 @@ const { validateEmail } = require("./validation");
 async function forgotPassword({ email, userModel }) {
   const emailValue = validateEmail(email);
   const user = await userModel.model
-    .findOne(
-      {
-        email: emailValue
-      },
-      "email forgotPasswordHistory"
-    )
-    .lean()
+    .findOne({
+      email: emailValue
+    })
     .exec();
 
   if (!user) {
@@ -23,7 +19,7 @@ async function forgotPassword({ email, userModel }) {
   const expirationDuration = "1 day";
   const token = newToken(user, {
     domain: "change-password",
-    exp: expirationDuration
+    expiresIn: expirationDuration
   });
 
   await sendChangePasswordEmail({

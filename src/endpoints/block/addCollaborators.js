@@ -15,8 +15,10 @@ async function addCollaborator({
 }) {
   block = validateBlock(block);
   collaborators = validateAddCollaboratorCollaborators(collaborators);
-  collaborators = validateAddCollaboratorParams;
-  block = await blockModel.model.findOne({ customId: block.customId });
+  block = await blockModel.model
+    .findOne({ customId: block.customId })
+    .lean()
+    .exec();
   await canReadBlock({ block, user });
 
   const collaboratorsEmailArr = collaborators.map(c => {

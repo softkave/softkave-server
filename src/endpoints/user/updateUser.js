@@ -1,13 +1,13 @@
 const { RequestError } = require("../../utils/error");
 const { validateUpdateUserData } = require("./validation");
 
-async function updateUser({ data, userModel }, req) {
+async function updateUser({ data, userModel, user }) {
   const userData = validateUpdateUserData(data);
 
   let user = userModel.model
     .findOneAndUpdate(
       {
-        customId: req.user.customId
+        customId: user.customId
       },
       userData,
       {

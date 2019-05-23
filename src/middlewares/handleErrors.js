@@ -2,7 +2,7 @@ const {
   credentialsExpiredError,
   serverError,
   invalidCredentialsError
-} = require("./utils/error");
+} = require("../utils/error");
 
 function handleErrors(err, req, res) {
   if (err.name === "UnauthorizedError") {

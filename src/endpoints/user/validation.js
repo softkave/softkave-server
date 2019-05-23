@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const trim = require("validator/lib/trim");
-const { passwordPattern, uuidSchema } = require("../../utils/validation-utils");
+const { passwordPattern } = require("../../utils/validation-utils");
 const {
   minNameLength,
   maxNameLength,
@@ -41,13 +41,10 @@ const updateUserSchema = Joi.object().keys({
   lastNotificationCheckTime: Joi.number().required()
 });
 
-const respondToCollaborationRequestSchema = Joi.object().keys({
-  response: Joi.string()
-    .trim(true)
-    .lowercase()
-    .valid(["accepted", "declined"]),
-  customId: uuidSchema
-});
+const collaborationRequestResponseSchema = Joi.string()
+  .trim(true)
+  .lowercase()
+  .valid(["accepted", "declined"]);
 
 const collaborationRequestSchema = Joi.object().keys({
   readAt: Joi.number()
@@ -91,14 +88,14 @@ exports.validateUpdateUserData = function validateUpdateUserData(data) {
   return value;
 };
 
-exports.validateRespondToCollaborationRequest = function validateRespondToCollaborationRequest(
-  params
-) {
-  return validate(params, respondToCollaborationRequestSchema);
-};
-
 exports.validateCollaborationRequest = function validateCollaborationRequest(
   request
 ) {
   return validate(request, collaborationRequestSchema);
+};
+
+exports.validateCollaborationRequestResponse = function validateCollaborationRequest(
+  response
+) {
+  return validate(response, collaborationRequestResponseSchema);
 };

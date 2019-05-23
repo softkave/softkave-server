@@ -10,7 +10,7 @@
       "name": "nodemon",
       "runtimeExecutable": "nodemon",
       "program": "${workspaceFolder}/src/index.js",
-      "envFile": "${workspaceFolder}/.env.development",
+      "envFile": "${workspaceFolder}/.env",
       "restart": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

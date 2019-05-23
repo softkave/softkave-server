@@ -10,7 +10,11 @@ const updateCollaborationRequest = require("./updateCollaborationRequest");
 const changePasswordWithToken = require("./changePasswordWithToken");
 const getUserData = require("./getUserData");
 const userSchema = require("./schema");
-const { wrapGraphQLOperation, insertUserCredentials } = require("../utils");
+const {
+  wrapGraphQLOperation,
+  insertUserCredentials,
+  insertChangePasswordCredentials
+} = require("../utils");
 
 class UserOperations {
   constructor({ userModel, notificationModel }) {
@@ -33,7 +37,8 @@ class UserOperations {
     );
     this.changePasswordWithToken = wrapGraphQLOperation(
       changePasswordWithToken,
-      staticParams
+      staticParams,
+      [insertChangePasswordCredentials]
     );
     this.updateCollaborationRequest = wrapGraphQLOperation(
       updateCollaborationRequest,

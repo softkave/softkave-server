@@ -20,7 +20,7 @@ async function signup({ user, userModel }) {
     delete value.password;
     let newUser = new userModel.model(value);
     newUser = await newUser.save();
-    await createRootBlock({ user });
+    await createRootBlock({ user: newUser });
 
     return {
       user: newUser,

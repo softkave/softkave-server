@@ -1,4 +1,4 @@
-const { RequestError } = require("../error");
+const { RequestError } = require("../../utils/error");
 const canReadBlock = require("./canReadBlock");
 const { validateBlockParam } = require("./validation");
 const { validateUUID } = require("../../utils/validation-utils");

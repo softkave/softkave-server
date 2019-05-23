@@ -42,12 +42,14 @@ function wrapGraphQLOperation(func, staticParams, inserts = []) {
   const wrappedFunc = wrapGraphQLOperationForErrors(func);
   return async function(params, req) {
     const initialParams = { ...staticParams, ...params, req };
-    const insertData = inserts.reduce((accumulator, current) => {
-      const result = await current(accumulator);
-      return { ...accumulator, ...result }
-    }, initialParams);
+    let reducedParams = initialParams;
 
-    return wrappedFunc({ ...initialParams, ...insertData });
+    for (let insertFunc of inserts) {
+      const result = await insertFunc(reducedParams);
+      reducedParams = { ...reducedParams, ...result };
+    }
+
+    return wrappedFunc({ ...initialParams, ...reducedParams });
   };
 }
 
@@ -57,8 +59,15 @@ async function insertUserCredentials({ req }) {
   return { tokenData, user };
 }
 
+async function insertChangePasswordCredentials({ req }) {
+  const tokenData = req.user;
+  const user = await getUserFromReq(req, "change-password");
+  return { tokenData, user };
+}
+
 module.exports = {
   wrapGraphQLOperation,
   wrapGraphQLOperationForErrors,
-  insertUserCredentials
+  insertUserCredentials,
+  insertChangePasswordCredentials
 };

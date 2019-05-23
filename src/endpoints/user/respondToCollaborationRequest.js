@@ -1,5 +1,7 @@
 const { RequestError } = require("../../utils/error");
 const addOrgIdToUser = require("./addOrgIdToUser");
+const { validateUUID } = require("../../utils/validation-utils");
+const { validateCollaborationRequestResponse } = require("./validation");
 
 async function respondToCollaborationRequest({
   customId,
@@ -8,17 +10,8 @@ async function respondToCollaborationRequest({
   user,
   blockModel
 }) {
-  // params = await validateRespondToCollaborationRequest(params);
-  response = response.toLowerCase();
-
-  const acceptableResponses = {
-    accepted: true,
-    declined: true
-  };
-
-  if (!acceptableResponses[response]) {
-    throw new RequestError("error", "error in data");
-  }
+  customId = validateUUID(customId);
+  reponse = validateCollaborationRequestResponse(response);
 
   let request = await notificationModel.model
     .findOneAndUpdate(

@@ -2,7 +2,7 @@ const { connection } = require("./connection");
 const MongoModel = require("./MongoModel");
 
 const userSchema = {
-  customId: { type: String, index: true },
+  customId: { type: String, unique: true },
   name: {
     type: String
   },

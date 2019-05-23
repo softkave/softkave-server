@@ -11,7 +11,11 @@ class MongoModel {
   }
 
   newModel() {
-    return this.connection(this.modelName, this.schema, this.collectionName);
+    return this.connection.model(
+      this.modelName,
+      this.schema,
+      this.collectionName
+    );
   }
 }
 

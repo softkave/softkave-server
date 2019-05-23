@@ -1,12 +1,12 @@
 const { connection } = require("./mongo/connection");
-const userModel = require("./mongo/user").model;
-const blockModel = require("./mongo/block").model;
+const userModel = require("./mongo/user");
+const blockModel = require("./mongo/block");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const graphqlHTTP = require("express-graphql");
 const expressJwt = require("express-jwt");
-const notificationModel = require("../src/mongo/notification").model;
+const notificationModel = require("../src/mongo/notification");
 const { indexSchema, IndexOperations } = require("./endpoints");
 const httpToHttps = require("./middlewares/httpToHttps");
 const handleErrors = require("./middlewares/handleErrors");
@@ -19,11 +19,11 @@ if (!JWT_SECRET) {
 
 let app = express();
 const port = process.env.PORT || 5000;
-const whiteListedCorsOrigins = [/www.softkave.com/];
-const graphiql = false;
+const whiteListedCorsOrigins = [/^https:\/\/www.softkave.com$/];
+let graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
-  whiteListedCorsOrigins.push(/^localhost.*/);
+  whiteListedCorsOrigins.push(/localhost/);
   graphiql = true;
 }
 
@@ -32,12 +32,11 @@ const corsOption = {
   optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOption));
-
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV === "production") {
   app.use(httpToHttps);
 }
 
+app.use(cors(corsOption));
 app.use(
   expressJwt({
     secret: JWT_SECRET,
@@ -67,9 +66,9 @@ app.use(
 app.use(handleErrors);
 
 connection.once("open", async () => {
-  await userModel.init();
-  await blockModel.init();
-  await notificationModel.init();
+  await userModel.model.init();
+  await blockModel.model.init();
+  await notificationModel.model.init();
 
   app.listen(port, () => {
     console.log("SOFTKAVE");

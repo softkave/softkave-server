@@ -2,7 +2,7 @@ const { buildSchema } = require("graphql");
 const { blockSchema, BlockOperations } = require("./block");
 const { userSchema, UserOperations } = require("./user");
 const indexSchema = require("./schema");
-const { utilitySchema } = require("./utils/schema-utils");
+const { utilitySchema } = require("../utils/schema-utils");
 
 class IndexOperations {
   constructor({ blockModel, userModel, notificationModel }) {

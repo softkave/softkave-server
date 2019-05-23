@@ -3,6 +3,7 @@ const { RequestError } = require("../../utils/error");
 const canReadBlock = require("./canReadBlock");
 const { validateBlock } = require("./validation");
 const { blockHasParents } = require("./utils");
+const addOrgIdToUser = require("../user/addOrgIdToUser");
 
 async function addBlock({ blockModel, user, block }) {
   block = validateBlock(block);
@@ -12,11 +13,11 @@ async function addBlock({ blockModel, user, block }) {
   }
 
   if (block.type === "org") {
-    let result = await addBlockToDb(block, req);
+    let result = await addBlockToDb({ block, blockModel, user });
 
     // TODO: scrub for orgs that are not added to user and add or clean them
     // CONT: you can do this when user tries to read them, or add them again
-    await user.addOrgIdToUser({ user, id: result.customId });
+    await addOrgIdToUser({ user, id: result.customId });
     return {
       block: result
     };

@@ -9,7 +9,7 @@ const blockTaskCollaboratorsDataSchema = {
 };
 
 const blockSchema = {
-  customId: { type: String, index: true },
+  customId: { type: String, unique: true },
   name: {
     type: String,
     index: true

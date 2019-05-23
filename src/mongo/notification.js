@@ -2,7 +2,7 @@ const { connection } = require("./connection");
 const MongoModel = require("./MongoModel");
 
 const schema = {
-  customId: { type: String, index: true },
+  customId: { type: String, unique: true },
   from: {
     type: {
       userId: String,

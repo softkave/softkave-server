@@ -3,7 +3,7 @@ const { RequestError } = require("../../utils/error");
 const canReadBlock = require("./canReadBlock");
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
 const { validateBlockParam } = require("./validation");
-const { validateUUID } = require("../validation-utils");
+const { validateUUID } = require("../../utils/validation-utils");
 
 async function removeCollaborator({
   block,
@@ -11,7 +11,6 @@ async function removeCollaborator({
   user,
   blockModel,
   notificationModel,
-  user,
   userModel
 }) {
   block = validateBlockParam(block);
