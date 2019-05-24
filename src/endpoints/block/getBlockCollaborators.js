@@ -1,7 +1,7 @@
 const canReadBlock = require("./canReadBlock");
 const { validateBlockParam } = require("./validation");
 
-async function getBlockCollaborators({ block, blockModel, userModel }) {
+async function getBlockCollaborators({ block, blockModel, user, userModel }) {
   block = validateBlockParam(block);
   block = await blockModel.model
     .findOne({ customId: block.customId })

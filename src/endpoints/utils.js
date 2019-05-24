@@ -14,6 +14,11 @@ function wrapGraphQLOperationForErrors(func) {
           errors: extractError(error)
         };
       } else if (error.name || error.code || error.message) {
+        // TODO: remove in favor of detailed logging
+        if (error.field === "error") {
+          console.error(error);
+        }
+
         return {
           errors: [
             {
