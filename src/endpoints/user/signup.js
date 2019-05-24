@@ -6,9 +6,9 @@ const { RequestError } = require("../../utils/error");
 const createRootBlock = require("../block/createRootBlock");
 const uuid = require("uuid/v4");
 
-async function signup({ user, userModel }) {
+async function signup({ user, userModel, blockModel }) {
   let value = validateUserSignupData(user);
-  const userExistsResult = await userExists(value);
+  const userExistsResult = await userExists({ userModel, email: user.email });
 
   if (!!userExistsResult && userExistsResult.userExists) {
     throw new RequestError("email", "email address is not available");
@@ -20,7 +20,7 @@ async function signup({ user, userModel }) {
     delete value.password;
     let newUser = new userModel.model(value);
     newUser = await newUser.save();
-    await createRootBlock({ user: newUser });
+    await createRootBlock({ blockModel, user: newUser });
 
     return {
       user: newUser,
