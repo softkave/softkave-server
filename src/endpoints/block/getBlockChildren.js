@@ -3,7 +3,7 @@ const canReadBlock = require("./canReadBlock");
 const { validateBlockParam, validateBlockTypes } = require("./validation");
 const { blockTypes } = require("./constants");
 
-async function getBlockChildren({ block, types, blockModel }) {
+async function getBlockChildren({ block, types, user }) {
   block = validateBlockParam(block);
 
   if (types) {
