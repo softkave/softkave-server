@@ -17,8 +17,7 @@ const {
 } = require("../utils");
 
 class UserOperations {
-  constructor({ userModel, notificationModel }) {
-    const staticParams = { userModel, notificationModel };
+  constructor(staticParams) {
     const insertFuncs = [insertUserCredentials];
 
     this.userExists = wrapGraphQLOperation(userExists, staticParams);

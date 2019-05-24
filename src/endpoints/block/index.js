@@ -14,12 +14,7 @@ const blockSchema = require("./schema");
 const { wrapGraphQLOperation, insertUserCredentials } = require("../utils");
 
 class BlockOperations {
-  constructor({ blockModel, notificationModel, userModel }) {
-    const staticParams = {
-      blockModel,
-      notificationModel,
-      userModel
-    };
+  constructor(staticParams) {
     const insertFuncs = [insertUserCredentials];
 
     this.addBlock = wrapGraphQLOperation(addBlock, staticParams, insertFuncs);
