@@ -47,7 +47,7 @@ async function respondToCollaborationRequest({
       .lean()
       .exec();
 
-    await addOrgIdToUser(user, block.customId);
+    await addOrgIdToUser({ user, id: block.customId });
     return { block };
   }
 }

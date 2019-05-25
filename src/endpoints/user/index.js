@@ -47,7 +47,6 @@ class UserOperations {
     this.respondToCollaborationRequest = wrapGraphQLOperation(
       respondToCollaborationRequest,
       staticParams,
-      insertFuncs,
       insertFuncs
     );
     this.getCollaborationRequests = wrapGraphQLOperation(
