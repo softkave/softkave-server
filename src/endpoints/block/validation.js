@@ -57,7 +57,8 @@ const blockSchema = Joi.object().keys({
   taskCollaborators: taskCollaboratorsSchema,
   priority: Joi.string()
     .lowercase()
-    .valid(constants.priorityValues)
+    .valid(constants.priorityValues),
+  position: Joi.number().min(0)
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({

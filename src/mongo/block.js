@@ -48,7 +48,8 @@ const blockSchema = {
   },
   priority: {
     type: String
-  }
+  },
+  position: Number
 };
 
 module.exports = new MongoModel({
