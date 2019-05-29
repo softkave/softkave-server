@@ -8,8 +8,8 @@
 
 html {
   
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 10%;
+  margin-right: 10%;
   font-family:sans-serif;
   line-height:1.15;
   -webkit-text-size-adjust:100%;
@@ -23,8 +23,8 @@ html {
 }
 
 body {
-
-  margin:5%;
+  align-content: center;
+  margin-top:5%;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-size:1rem;
   font-weight:400;
@@ -34,6 +34,8 @@ body {
   background-color:#fff;
 }
 body .sk-header-2{
+  padding: 2%;
+  border-radius: 5px;
   background-color: #ddd;
 }
 .float-left {
@@ -41,7 +43,7 @@ body .sk-header-2{
 }
 
 .clear{
-  margin-top: 5%
+  margin-top: 2%
 }
 /* .clear-side{
   margin-right: 2%;
