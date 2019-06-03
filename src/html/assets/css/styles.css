@@ -8,8 +8,8 @@
 
 html {
   
-  margin-left: 10%;
-  margin-right: 10%;
+  /* margin-left: 10%;
+  margin-right: 10%; */
   font-family:sans-serif;
   line-height:1.15;
   -webkit-text-size-adjust:100%;
@@ -20,6 +20,10 @@ html {
 
 .float-none {
   float:none!important;
+  text-align: left;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-top: 24px;
 }
 
 body {
@@ -36,7 +40,7 @@ body {
 body .sk-header-2{
   padding: 2%;
   border-radius: 5px;
-  background-color: #ddd;
+  background-color: #eee;
 }
 .float-left {
   float:left!important;
@@ -45,13 +49,20 @@ body .sk-header-2{
 .clear{
   margin-top: 2%
 }
-/* .clear-side{
-  margin-right: 2%;
-} */
+.clear-side{
+ margin-top: 2%;
+} 
 
 img {
   vertical-align: auto;
   border-style:none;
+}
+.line{
+  clear: both;
+  margin: 4% auto;
+  width: 90%;
+  height: 2px;
+  background-color: #e3e9e9;
 }
 
 
