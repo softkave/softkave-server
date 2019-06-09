@@ -1,6 +1,9 @@
 const Joi = require("joi");
 const trim = require("validator/lib/trim");
-const { passwordPattern } = require("../../utils/validation-utils");
+const {
+  passwordPattern,
+  hexColorRegEx
+} = require("../../utils/validation-utils");
 const {
   minNameLength,
   maxNameLength,
@@ -33,7 +36,11 @@ const nameSchema = Joi.string()
 const userSignupSchema = Joi.object().keys({
   name: nameSchema,
   password: passwordSchema,
-  email: emailSchema
+  email: emailSchema,
+  color: Joi.string()
+    .trim(true)
+    .lowercase()
+    .regex(hexColorRegEx)
 });
 
 const updateUserSchema = Joi.object().keys({

@@ -5,12 +5,14 @@ const userSchema = `
     email: String
     createdAt: Float
     lastNotificationCheckTime: Float
+    color: String
   }
 
   input UserSignupInput {
     name: String!
     email: String!
     password: String!
+    color: String!
   }
 
   input UserUpdateInput {
