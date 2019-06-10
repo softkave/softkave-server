@@ -1,29 +1,69 @@
 const { appName } = require("../res/app");
 
 const styles = `
-  html,
-  body {
-    height: 100%;
-  }
+*{
+  margin: 0;
+  padding: 0;
+}
+.d-table {
+  display:table!important;
+}
 
-  body {
-    font-family: "Karla", sans-serif;
-    font-size: 14px;
-    color: #555;
-    margin: 0;
-  }
+html {
+  font-family:sans-serif;
+  line-height:1.15;
+  -webkit-text-size-adjust:100%;
+  -ms-text-size-adjust:100%;
+  -ms-overflow-style:scrollbar;
+  -webkit-tap-highlight-color:transparent;
+}
 
-  .sk-app-name,
-  .sk-link {
-    color: rgb(66, 133, 244);
-  }
+.float-none {
+  float:none!important;
+  text-align: left;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-top: 24px;
+}
 
-  .sk-mail-main {
-    max-width: 700px;
-    padding: 24px 0;
-    box-sizing: border-box;
-    margin: auto;
-  }
+body {
+  align-content: center;
+  margin-top:5%;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size:1rem;
+  font-weight:400;
+  line-height:1.5;
+  color:#212529;
+  text-align:center;
+  background-color:#fff;
+}
+body .sk-header-2{
+  padding: 2%;
+  border-radius: 5px;
+  background-color: #eee;
+}
+.float-left {
+  float:left!important;
+}
+
+.clear{
+  margin-top: 2%
+}
+.clear-side{
+ margin-top: 2%;
+} 
+
+img {
+  vertical-align: auto;
+  border-style:none;
+}
+.line{
+  clear: both;
+  margin: 4% auto;
+  width: 90%;
+  height: 2px;
+  background-color: #e3e9e9;
+}
 `;
 
 function html(content) {
@@ -34,21 +74,41 @@ function html(content) {
         <meta charset="utf-8" />
         <title>${appName}</title>
         <link
-          href="https://fonts.googleapis.com/css?family=Karla"
           rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
         <style>${styles}</style>
       </head>
       <body>
-        <div class="sk-mail-main">
-          <div class="sk-header">
-          <h1 class="sk-app-name">${appName}</h1>
+          <div class="">
+            <img class="" src="assets/img/test.png" />
+            <div class="clear-side"></div>
+            <i
+              class="fa fa-facebook-f "
+              style="font-size:24px;height:auto;margin:24px;"
+            ></i>
+            <i
+              class="fa fa-instagram "
+              style="font-size:24px;height:auto;margin:24px;"
+            ></i>
+            <i
+              class="fa fa-twitter "
+              style="font-size:24px;height:auto;margin:24px;"
+            ></i>
           </div>
+          <div class="clear"></div>
           ${content}
-          <div class="sk-footer">
-            &copy; ${appName}
-          </div>
-        </div>
+          <p
+            style="text-align: center; margin: 18px 0; color: #333; font-weight: bold;"
+          >
+            © Softkave<br />
+          </p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
       </body>
     </html>
   `;
