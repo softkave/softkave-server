@@ -26,7 +26,9 @@ const blockSchema = `
     createdBy: String
     taskCollaborators: [BlockTaskCollaboratorData]
     priority: String
-    position: Integer
+    position: Float
+    positionTimestamp: Float
+    # children: [String]
   }
 
   type BlockResponse {
@@ -53,7 +55,9 @@ const blockSchema = `
     parents: [String!]
     priority: String
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    position: Integer
+    position: Float
+    positionTimestamp: Float
+    # children: [String]
   }
 
   input UpdateBlockInput {
@@ -63,8 +67,10 @@ const blockSchema = `
     color: String
     priority: String
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    position: Integer
+    position: Float
+    positionTimestamp: Float
     parents: [String!]
+    # children: [String]
   }
 
   type CollabRequestFrom {

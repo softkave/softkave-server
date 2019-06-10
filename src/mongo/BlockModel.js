@@ -1,4 +1,3 @@
-const { connection } = require("./connection");
 const MongoModel = require("./MongoModel");
 
 const blockTaskCollaboratorsDataSchema = {
@@ -49,12 +48,19 @@ const blockSchema = {
   priority: {
     type: String
   },
-  position: Number
+  position: Number,
+  positionTimestamp: Number
 };
 
-module.exports = new MongoModel({
-  connection,
-  rawSchema: blockSchema,
-  modelName: "block",
-  collectionName: "blocks"
-});
+class BlockModel extends MongoModel {
+  constructor({ connection }) {
+    super({
+      connection,
+      rawSchema: blockSchema,
+      modelName: "block",
+      collectionName: "blocks"
+    });
+  }
+}
+
+module.exports = BlockModel;

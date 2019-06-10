@@ -1,7 +1,6 @@
-const userModel = require("../mongo/user").model;
 const { RequestError } = require("./error");
 
-async function getUserFromReq(req, domain = "login") {
+async function getUserFromReq({ req, domain = "login", userModel }) {
   if (req.fetchedUser) {
     return req.fetchedUser;
   }

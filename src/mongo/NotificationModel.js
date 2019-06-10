@@ -1,4 +1,3 @@
-const { connection } = require("./connection");
 const MongoModel = require("./MongoModel");
 
 const schema = {
@@ -60,11 +59,15 @@ const schema = {
   }
 };
 
-const notificationModel = new MongoModel({
-  connection,
-  rawSchema: schema,
-  modelName: "notification",
-  collectionName: "notifications"
-});
+class NotificationModel extends MongoModel {
+  constructor({ connection }) {
+    super({
+      connection,
+      rawSchema: schema,
+      modelName: "notification",
+      collectionName: "notifications"
+    });
+  }
+}
 
-module.exports = notificationModel;
+module.exports = NotificationModel;

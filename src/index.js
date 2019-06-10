@@ -1,15 +1,20 @@
-const { connection } = require("./mongo/connection");
-const userModel = require("./mongo/user");
-const blockModel = require("./mongo/block");
+const { connection } = require("./mongo/defaultConnection");
+const UserModel = require("./mongo/UserModel");
+const BlockModel = require("./mongo/BlockModel");
+const NotificationModel = require("../src/mongo/NotificationModel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const graphqlHTTP = require("express-graphql");
 const expressJwt = require("express-jwt");
-const notificationModel = require("../src/mongo/notification");
+
 const { indexSchema, IndexOperations } = require("./endpoints");
 const httpToHttps = require("./middlewares/httpToHttps");
 const handleErrors = require("./middlewares/handleErrors");
+
+const userModel = new UserModel({ connection });
+const blockModel = new BlockModel({ connection });
+const notificationModel = new NotificationModel({ connection });
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -65,7 +70,7 @@ app.use(
 
 app.use(handleErrors);
 
-connection.once("open", async () => {
+connection.wait().then(async () => {
   await userModel.model.init();
   await blockModel.model.init();
   await notificationModel.model.init();
