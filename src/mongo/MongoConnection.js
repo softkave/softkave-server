@@ -1,24 +1,22 @@
 const mongoose = require("mongoose");
 
-class Status {
-  static READY = "READY";
-  static ERROR = "ERROR";
-  static CONNECTING = "CONNECTING";
-}
+const Status = {
+  READY: "READY",
+  ERROR: "ERROR",
+  CONNECTING: "CONNECTING"
+};
 
 class MongoConnection {
-  static Status = Status;
-
   constructor(uri, options) {
     this.connection = mongoose.createConnection(uri, options);
     this.status = Status.CONNECTING;
     this.error = null;
-    this.statusPromise = Promise((resolve, reject) => {
-      connection.once("open", () => {
+    this.statusPromise = new Promise((resolve, reject) => {
+      this.connection.once("open", () => {
         resolve(this);
       });
 
-      connection.on("error", error => {
+      this.connection.on("error", error => {
         reject(error);
       });
     });

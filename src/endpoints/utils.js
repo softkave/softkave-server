@@ -58,7 +58,8 @@ function wrapGraphQLOperation(func, staticParams, inserts = []) {
   };
 }
 
-async function insertUserCredentials({ req, userModel }) {
+async function insertUserCredentials(params) {
+  const { req, userModel } = params;
   const tokenData = req.user;
   const user = await getUserFromReq({ req, userModel });
   return { tokenData, user };

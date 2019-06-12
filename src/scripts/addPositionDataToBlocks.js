@@ -1,11 +1,28 @@
 const randomColor = require("randomcolor");
-const blockModel = require("../mongo/BlockModel");
+const BlockModel = require("../mongo/BlockModel");
+
+const blockModel = new BlockModel({ connection: null });
+
+async function check() {
+  const count = await blockModel.model
+    .count({
+      $or: [{ position: null }, { positionTimestamp: null }, { color: null }]
+    })
+    .exec();
+
+  if (count > 0) {
+    return false;
+  }
+
+  return true;
+}
 
 async function addPositionDataToBlocks() {
   let limit = 50;
   let blocks = [];
   let lastTimestamp = Date.now();
   let sum = 0;
+
   console.log("script started");
   console.log("-- script name: addPositionDataToBlocks");
 
@@ -30,7 +47,7 @@ async function addPositionDataToBlocks() {
       .limit(limit)
       .exec();
 
-    blocks.foreach(block => {
+    blocks.forEach(block => {
       let update = {};
       if (!block.color) {
         update.color = randomColor();
@@ -61,6 +78,12 @@ async function addPositionDataToBlocks() {
       sum += blocks.length;
     }
   } while (blocks.length > 0);
+
+  if (await check()) {
+    console.log("-- update successful");
+  } else {
+    console.log("-- update failed: missed some documents");
+  }
 
   console.log(`-- updated ${sum} documents`);
   console.log("script complete");

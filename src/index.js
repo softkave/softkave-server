@@ -12,9 +12,11 @@ const { indexSchema, IndexOperations } = require("./endpoints");
 const httpToHttps = require("./middlewares/httpToHttps");
 const handleErrors = require("./middlewares/handleErrors");
 
-const userModel = new UserModel({ connection });
-const blockModel = new BlockModel({ connection });
-const notificationModel = new NotificationModel({ connection });
+const userModel = new UserModel({ connection: connection.getConnection() });
+const blockModel = new BlockModel({ connection: connection.getConnection() });
+const notificationModel = new NotificationModel({
+  connection: connection.getConnection()
+});
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

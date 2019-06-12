@@ -1,13 +1,24 @@
 const randomColor = require("randomcolor");
 const UserModel = require("../mongo/UserModel");
 
-const userModel = new UserModel({});
+const userModel = new UserModel({ connection: null });
+
+async function check() {
+  const count = await userModel.model.count({ color: null }).exec();
+
+  if (count > 0) {
+    return false;
+  }
+
+  return true;
+}
 
 async function addColorAvatarToUsers() {
   let limit = 50;
   let users = [];
   let lastTimestamp = Date.now();
   let sum = 0;
+
   console.log("script started");
   console.log("-- script name: addColorAvatarToUsers");
 
@@ -18,7 +29,7 @@ async function addColorAvatarToUsers() {
       .limit(limit)
       .exec();
 
-    users.foreach(user => {
+    users.forEach(user => {
       if (!user.color) {
         bulkUpdateData.push({
           updateOne: {
@@ -38,6 +49,12 @@ async function addColorAvatarToUsers() {
       sum += users.length;
     }
   } while (users.length > 0);
+
+  if (await check()) {
+    console.log("-- update successful");
+  } else {
+    console.log("-- update failed: missed some documents");
+  }
 
   console.log(`-- updated ${sum} documents`);
   console.log("script complete");
