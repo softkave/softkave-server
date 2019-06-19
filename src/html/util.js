@@ -1,4 +1,4 @@
-const { appName } = require("../res/app");
+// const { appName } = require("../res/app");
 
 const styles = `
 *{
@@ -85,9 +85,10 @@ function html(content) {
       </head>
       <body>
           <div class="">
-            <img class="" src="assets/img/test.png" />
+            <!-- <img class="" src="assets/img/test.png" /> -->
+            <h1>Softkave</h1>
             <div class="clear-side"></div>
-            <i
+            <!-- <i
               class="fa fa-facebook-f "
               style="font-size:24px;height:auto;margin:24px;"
             ></i>
@@ -98,14 +99,14 @@ function html(content) {
             <i
               class="fa fa-twitter "
               style="font-size:24px;height:auto;margin:24px;"
-            ></i>
+            ></i> -->
           </div>
           <div class="clear"></div>
           ${content}
           <p
             style="text-align: center; margin: 18px 0; color: #333; font-weight: bold;"
           >
-            © Softkave<br />
+            &copy; Softkave<br />
           </p>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>

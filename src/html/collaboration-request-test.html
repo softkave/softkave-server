@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./test-utils.js"></script>
+    <script src="../res/app.js"></script>
+    <script src="util.js"></script>
+    <script src="./collaboration-request.js"></script>
+  </head>
+  <body>
+    <script>
+      window.document.body.onload = function() {
+        var content = collaborationRequestHTML({
+          signupLink: "www.softkave.com/signup",
+          loginLink: "www.softkave.com/login",
+          fromUser: "Ajayo Solomon",
+          fromOrg: "Softkave",
+          message: "Holla there, how are you...",
+          expiration: "1 month"
+        });
+
+        insertHTML(content);
+      };
+    </script>
+  </body>
+</html>
