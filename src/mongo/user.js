@@ -23,7 +23,8 @@ const userSchema = {
   changePasswordHistory: [Number],
   lastNotificationCheckTime: Number,
   rootBlockId: String,
-  orgs: [String]
+  orgs: [String],
+  color: String
 };
 
 let userModel = new MongoModel({
