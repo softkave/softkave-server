@@ -49,7 +49,12 @@ const blockSchema = {
     type: String
   },
   position: Number,
-  positionTimestamp: Number
+  positionTimestamp: Number,
+  tasks: [String],
+  groups: [String],
+  projects: [String],
+  groupTaskContext: [String],
+  groupProjectContext: [String]
 };
 
 class BlockModel extends MongoModel {

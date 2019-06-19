@@ -2,7 +2,7 @@ const addBlockToDb = require("./addBlockToDb");
 const { RequestError } = require("../../utils/error");
 const canReadBlock = require("./canReadBlock");
 const { validateBlock } = require("./validation");
-const { blockHasParents } = require("./utils");
+const { blockHasParents, getImmediateParentId } = require("./utils");
 const addOrgIdToUser = require("../user/addOrgIdToUser");
 
 async function addBlock({ blockModel, user, block }) {
@@ -34,9 +34,23 @@ async function addBlock({ blockModel, user, block }) {
     .exec();
 
   await canReadBlock({ user, block: rootParent });
+  block = await addBlockToDb({ block, blockModel, user });
+  const pluralizedType = `${block.type}s`;
+  const update = {
+    [pluralizedType]: block.customId
+  };
+
+  if (block.type === "group") {
+    update.groupTaskContext = block.customId;
+    update.groupProjectContext = block.customId;
+  }
+
+  await blockModel.model
+    .updateOne({ customId: getImmediateParentId(block) }, { $addToSet: update })
+    .exec();
 
   return {
-    block: await addBlockToDb({ block, blockModel, user })
+    block
   };
 }
 

@@ -33,7 +33,11 @@ const nameSchema = Joi.string()
 const userSignupSchema = Joi.object().keys({
   name: nameSchema,
   password: passwordSchema,
-  email: emailSchema
+  email: emailSchema,
+  color: Joi.string()
+    .trim(true)
+    .lowercase()
+    .regex(/#([a-f0-9]{3}|[a-f0-9]{4}(?:[a-f0-9]{2}){0,2})\b/)
 });
 
 const updateUserSchema = Joi.object().keys({

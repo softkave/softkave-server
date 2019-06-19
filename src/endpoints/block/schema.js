@@ -28,7 +28,11 @@ const blockSchema = `
     priority: String
     position: Float
     positionTimestamp: Float
-    # children: [String]
+    groups: [String]
+    projects: [String]
+    tasks: [String]
+    groupTaskContext: [String]
+    groupProjectContext: [String]
   }
 
   type BlockResponse {
@@ -57,7 +61,11 @@ const blockSchema = `
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     position: Float
     positionTimestamp: Float
-    # children: [String]
+    groups: [String]
+    projects: [String]
+    tasks: [String]
+    groupTaskContext: [String]
+    groupProjectContext: [String]
   }
 
   input UpdateBlockInput {
@@ -70,7 +78,11 @@ const blockSchema = `
     position: Float
     positionTimestamp: Float
     parents: [String!]
-    # children: [String]
+    groups: [String]
+    projects: [String]
+    tasks: [String]
+    groupTaskContext: [String]
+    groupProjectContext: [String]
   }
 
   type CollabRequestFrom {
@@ -137,11 +149,17 @@ const blockSchema = `
 
   type BlockQuery {
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
-    updateBlock (block: BlockParamInput!, data: UpdateBlockInput!) : ErrorOnlyResponse
+    updateBlock (
+      block: BlockParamInput!, 
+      data: UpdateBlockInput!
+    ) : ErrorOnlyResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getRoleBlocks: MultipleBlocksOpResponse
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
-    getBlockChildren (block: BlockParamInput!, types: [String!]) : MultipleBlocksOpResponse
+    getBlockChildren (
+      block: BlockParamInput!, 
+      types: [String!]
+    ) : MultipleBlocksOpResponse
     addCollaborators (
       block: BlockParamInput!, 
       collaborators: [AddCollaboratorInput!]!,
@@ -157,6 +175,15 @@ const blockSchema = `
     toggleTask (block: BlockParamInput!, data: Boolean!) : ErrorOnlyResponse
     revokeRequest (block: BlockParamInput!, request: String!) : ErrorOnlyResponse
     createRootBlock: SingleBlockOpResponse
+    dragAndDrop (
+      sourceBlock: BlockParamInput!,
+      draggedBlock: BlockParamInput!,
+      destinationBlock: BlockParamInput,
+      dropPosition: Float!,
+      blockPosition: Float!,
+      draggedBlockType: String!,
+      groupContext: String!
+    ): ErrorOnlyResponse
   }
 `;
 

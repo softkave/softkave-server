@@ -10,6 +10,7 @@ const getRoleBlocks = require("./getRoleBlocks");
 const toggleTask = require("./toggleTask");
 const revokeRequest = require("./revokeRequest");
 const createRootBlock = require("./createRootBlock");
+const dragAndDrop = require("./dragAndDrop");
 const blockSchema = require("./schema");
 const { wrapGraphQLOperation, insertUserCredentials } = require("../utils");
 
@@ -70,6 +71,11 @@ class BlockOperations {
     );
     this.createRootBlock = wrapGraphQLOperation(
       createRootBlock,
+      staticParams,
+      insertFuncs
+    );
+    this.dragAndDrop = wrapGraphQLOperation(
+      dragAndDrop,
       staticParams,
       insertFuncs
     );
