@@ -1,5 +1,4 @@
 const { html } = require("./util");
-const { appName } = require("../res/app");
 
 const collaborationRequestMailTitle = `Collaboration Request Notification`;
 
@@ -12,28 +11,45 @@ function collaborationRequestHTML({
   expiration
 }) {
   const content = `
-    <div class="sk-main">
-      <h2 class="sk-main-title">${collaborationRequestMailTitle}</h2>
-      <p class="sk-paragraph">
-        You have a new collaboration request from ${fromUser} of
-        ${fromOrg}.
+  <div
+    id=""
+    class="sk-header-2"
+    style="text-align: center; padding: 24px;     padding-top: 40px;
+    padding-bottom: 48px; border-radius: 0;"
+  >
+    <h4
+      class="text-center text-secondary"
+      style="margin: auto; max-width: 500px; color: #333 !important;"
+    >
+    ${collaborationRequestMailTitle}<br />
+    </h4>
+    <div class="line"></div>
+    <div
+      class="float-none"
+      style="margin: auto;  color: #222;   line-height: 32px; max-width: 500px;"
+    >
+      <p>
+        You have a new collaboration request from
+        <b>${fromUser}</b> of
+        <b>${fromOrg}</b>
+        .<br />
       </p>
-      <p class="sk-paragraph">
-        ${message ? message : ""}
-        <br />
-        ${expiration ? `This request expires: ${expiration}.` : ""}
+      <p>
+      ${message ? message : ""}<br />
       </p>
-      <p class="sk-paragraph">
-        To respond to this request,
+      <p style="margin-bottom: 0;">
+        ${expiration ? `This request expires: ${expiration}.` : ""}<br />
+        To respond,<br />
+        Login to your account
+        <a href="${loginLink}">here</a>
+      
         <br />
-        <a class="sk-link" href="${loginLink}">login</a>
-        ( <a class="sk-link" href="${loginLink}">${loginLink}</a> ) to
-        your <span>${appName}</span> account if you have one, OR
-        <a class="sk-link" href="${signupLink}">signup here</a>
-        ( <a class="sk-link" href="${signupLink}">${signupLink}</a> ) if
-        you don't.
+        OR signup if you don't have one,
+        <a href="${signupLink}">here</a
+        >&nbsp;
       </p>
     </div>
+  </div>
   `;
 
   return html(content);

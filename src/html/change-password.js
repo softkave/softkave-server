@@ -4,23 +4,40 @@ const changePasswordMailTitle = `Change Password`;
 
 function changePasswordHTML({ link, expiration }) {
   const content = `
-    <div class="sk-main">
-      <h2 class="sk-main-title">${changePasswordMailTitle}</h2>
-      <p class="sk-paragraph">
-        Click <a class="sk-link" href="${link}">here</a> to change your password, OR
+  <div
+    id=""
+    class="sk-header-2"
+    style="text-align: center; padding: 24px;     padding-top: 40px;
+    padding-bottom: 48px; border-radius: 0;"
+  >
+    <h4
+      class="text-center text-secondary"
+      style="margin: auto; max-width: 500px; color: #333 !important;"
+    >
+    ${changePasswordMailTitle}<br />
+    </h4>
+    <div class="line"></div>
+    <div
+      class="float-none"
+      style="margin: auto;  color: #222;   line-height: 32px; max-width: 500px;"
+    >
+      <p>
+        Click <a href="${link}">here</a> to change your password, OR
         <br />
         Copy this link -
-        <a class="sk-link" href="${link}">${link}</a>
+        <a href="${link}">${link}</a>
         - and visit in your browser.
       </p>
-      <p class="sk-paragraph">
-        This link expires: ${expiration}.<br />
+      <p>
+        This link expires after ${expiration}.<br />
         If you did not request a change of password, please ignore this
         mail.<br />
         Also, do not share this link with anybody, as they will be able to
-        change your password through it.
+        change your password through it
       </p>
+    
     </div>
+  </div>
   `;
 
   return html(content);
