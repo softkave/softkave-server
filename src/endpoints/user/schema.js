@@ -12,6 +12,7 @@ const userSchema = `
     name: String!
     email: String!
     password: String!
+    color: String!
   }
 
   input UserUpdateInput {
