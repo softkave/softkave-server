@@ -1,4 +1,3 @@
-const { connection } = require("./connection");
 const MongoModel = require("./MongoModel");
 
 const userSchema = {
@@ -27,11 +26,15 @@ const userSchema = {
   color: String
 };
 
-let userModel = new MongoModel({
-  connection,
-  rawSchema: userSchema,
-  modelName: "user",
-  collectionName: "users"
-});
+class UserModel extends MongoModel {
+  constructor({ connection }) {
+    super({
+      connection,
+      rawSchema: userSchema,
+      modelName: "user",
+      collectionName: "users"
+    });
+  }
+}
 
-module.exports = userModel;
+module.exports = UserModel;

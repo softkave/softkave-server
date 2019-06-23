@@ -1,7 +1,6 @@
-const userModel = require("../mongo/user").model;
 const { RequestError } = require("./error");
 
-async function getUserFromReq(req, domain = "login") {
+async function getUserFromReq({ req, userModel, domain = "login" }) {
   if (req.fetchedUser) {
     return req.fetchedUser;
   }
@@ -17,7 +16,7 @@ async function getUserFromReq(req, domain = "login") {
   };
 
   // TODO: transform _id to id in all db fetch
-  user = await userModel.findOne(query).exec();
+  user = await userModel.model.findOne(query).exec();
 
   if (!user) {
     throw new RequestError("error", "permission denied");

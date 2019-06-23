@@ -26,6 +26,11 @@ const blockTypeSchema = Joi.string()
   .lowercase()
   .valid(constants.blockTypes);
 
+const blockChildrenSchema = Joi.array()
+  .items(uuidSchema)
+  .unique()
+  .max(constants.maxChildrenCount);
+
 const blockSchema = Joi.object().keys({
   customId: uuidSchema,
   name: Joi.string()
@@ -46,9 +51,7 @@ const blockSchema = Joi.object().keys({
     .lowercase()
     .regex(hexColorRegEx),
   updatedAt: Joi.number(),
-  type: Joi.string()
-    .lowercase()
-    .valid(constants.blockTypes),
+  type: blockTypeSchema,
   parents: Joi.array()
     .items(uuidSchema)
     .unique()
@@ -57,7 +60,14 @@ const blockSchema = Joi.object().keys({
   taskCollaborators: taskCollaboratorsSchema,
   priority: Joi.string()
     .lowercase()
-    .valid(constants.priorityValues)
+    .valid(constants.priorityValues),
+  position: Joi.number().min(0),
+  positionTimestamp: Joi.number().min(0),
+  tasks: blockChildrenSchema,
+  groups: blockChildrenSchema,
+  projects: blockChildrenSchema,
+  groupTaskContext: blockChildrenSchema,
+  groupProjectContext: blockChildrenSchema
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({
@@ -83,8 +93,21 @@ const blockTypesSchema = Joi.array()
   .unique()
   .items(blockTypeSchema);
 
+const groupContextSchema = Joi.string()
+  .lowercase()
+  .valid(constants.groupContexts);
+
+const groupContextArraySchema = Joi.array()
+  .max(constants.groupContexts.length)
+  .unique()
+  .items(groupContextSchema);
+
 exports.validateBlock = function validateBlock(block) {
   return validate(block, blockSchema);
+};
+
+exports.validateGroupContexts = function validateGroupContexts(contexts) {
+  return validate(contexts, groupContextArraySchema);
 };
 
 exports.validateTaskCollaborators = function validateTaskCollaborators(

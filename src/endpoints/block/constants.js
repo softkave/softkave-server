@@ -12,6 +12,8 @@ exports.minAddCollaboratorBodyMessageLength = 0;
 exports.maxAddCollaboratorBodyMessageLength = 500;
 exports.minAddCollaboratorValuesLength = 0;
 exports.maxAddCollaboratorValuesLength = 10;
+exports.maxChildrenCount = 100;
 
 exports.blockTypes = ["group", "org", "project", "task", "root", "info-card"];
 exports.priorityValues = ["not important", "important", "very important"];
+exports.groupContexts = ["groupTaskContext", "groupProjectContext"];
