@@ -175,14 +175,14 @@ const blockSchema = `
     toggleTask (block: BlockParamInput!, data: Boolean!) : ErrorOnlyResponse
     revokeRequest (block: BlockParamInput!, request: String!) : ErrorOnlyResponse
     createRootBlock: SingleBlockOpResponse
-    dragAndDrop (
+    transferBlock (
       sourceBlock: BlockParamInput!,
       draggedBlock: BlockParamInput!,
       destinationBlock: BlockParamInput,
       dropPosition: Float!,
       blockPosition: Float!,
       draggedBlockType: String!,
-      groupContext: String!
+      groupContext: String
     ): ErrorOnlyResponse
   }
 `;
