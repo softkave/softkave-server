@@ -48,6 +48,9 @@ const blockSchema = {
   priority: {
     type: String
   },
+  isBacklog: {
+    type: Boolean
+  },
   position: Number,
   positionTimestamp: Number,
   tasks: [String],

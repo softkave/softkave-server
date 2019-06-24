@@ -3,7 +3,7 @@ const canReadBlock = require("./canReadBlock");
 const { validateBlockParam, validateBlockTypes } = require("./validation");
 const { blockTypes } = require("./constants");
 
-async function getBlockChildren({ block, types, blockModel, user }) {
+async function getBlockChildren({ block, types, blockModel, user, isBacklog }) {
   block = validateBlockParam(block);
 
   if (types) {
@@ -22,7 +22,12 @@ async function getBlockChildren({ block, types, blockModel, user }) {
       $size: getParentsLength(parentBlock) + 1,
       $eq: parentBlock.customId
     },
-    type: { $in: types }
+    type: { 
+      $in: types
+    },
+    isBacklog: { 
+      $isbacklog: isBacklog 
+    }
   });
 
   return {
