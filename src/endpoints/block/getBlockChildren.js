@@ -18,15 +18,13 @@ async function getBlockChildren({ block, types, blockModel, user, isBacklog }) {
 
   await canReadBlock({ user, block: parentBlock });
   const blocks = await blockModel.model.find({
+    isBacklog,
     parents: {
       $size: getParentsLength(parentBlock) + 1,
       $eq: parentBlock.customId
     },
-    type: { 
+    type: {
       $in: types
-    },
-    isBacklog: { 
-      $isbacklog: isBacklog 
     }
   });
 
