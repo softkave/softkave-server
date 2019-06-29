@@ -3,7 +3,7 @@ const canReadBlock = require("./canReadBlock");
 const { validateBlockParam, validateBlockTypes } = require("./validation");
 const { blockTypes } = require("./constants");
 
-async function getBlockChildren({ block, types, blockModel, user }) {
+async function getBlockChildren({ block, types, blockModel, user, isBacklog }) {
   block = validateBlockParam(block);
 
   if (types) {
@@ -18,11 +18,14 @@ async function getBlockChildren({ block, types, blockModel, user }) {
 
   await canReadBlock({ user, block: parentBlock });
   const blocks = await blockModel.model.find({
+    isBacklog,
     parents: {
       $size: getParentsLength(parentBlock) + 1,
       $eq: parentBlock.customId
     },
-    type: { $in: types }
+    type: {
+      $in: types
+    }
   });
 
   return {

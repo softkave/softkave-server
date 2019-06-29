@@ -26,6 +26,7 @@ const blockSchema = `
     createdBy: String
     taskCollaborators: [BlockTaskCollaboratorData]
     priority: String
+    isBacklog: Boolean
     position: Float
     positionTimestamp: Float
     groups: [String]
@@ -58,6 +59,7 @@ const blockSchema = `
     type: String!
     parents: [String!]
     priority: String
+    isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     position: Float
     positionTimestamp: Float
@@ -66,6 +68,7 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+
   }
 
   input UpdateBlockInput {
@@ -74,6 +77,7 @@ const blockSchema = `
     expectedEndAt: Float
     color: String
     priority: String
+    isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     position: Float
     positionTimestamp: Float
@@ -158,7 +162,8 @@ const blockSchema = `
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (
       block: BlockParamInput!, 
-      types: [String!]
+      types: [String!],
+      isBacklog: Boolean
     ) : MultipleBlocksOpResponse
     addCollaborators (
       block: BlockParamInput!, 

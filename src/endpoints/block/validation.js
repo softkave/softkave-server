@@ -67,7 +67,8 @@ const blockSchema = Joi.object().keys({
   groups: blockChildrenSchema,
   projects: blockChildrenSchema,
   groupTaskContext: blockChildrenSchema,
-  groupProjectContext: blockChildrenSchema
+  groupProjectContext: blockChildrenSchema,
+  isBacklog: Joi.boolean()
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({
