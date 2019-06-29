@@ -2,7 +2,7 @@ const { getParentsLength } = require("./utils");
 const { validateBlockTypes } = require("./validation");
 const { constants: blockConstants } = require("./constants");
 
-async function getBlockChildren({ block, types, blockModel }) {
+async function getBlockChildren({ block, types, blockModel, isBacklog }) {
   const parentBlock = block;
 
   if (types) {
@@ -12,11 +12,14 @@ async function getBlockChildren({ block, types, blockModel }) {
   }
 
   const blocks = await blockModel.model.find({
+    isBacklog,
     parents: {
       $size: getParentsLength(parentBlock) + 1,
       $eq: parentBlock.customId
     },
-    type: { $in: types }
+    type: {
+      $in: types
+    }
   });
 
   return {
