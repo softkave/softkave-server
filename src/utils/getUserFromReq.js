@@ -1,12 +1,17 @@
-const { RequestError } = require("./error");
+const { errors } = require("./errorMessages");
+const { constants: jwtConstants } = require("./jwt-constants");
 
-async function getUserFromReq({ req, userModel, domain = "login" }) {
+async function getUserFromReq({
+  req,
+  userModel,
+  domain = jwtConstants.domains.login
+}) {
   if (req.fetchedUser) {
     return req.fetchedUser;
   }
 
   if (!req.user || !req.user.customId || req.user.domain !== domain) {
-    throw new RequestError("system.user", "invalid credentials");
+    throw errors.invalidCredentials;
   }
 
   const userTokenData = req.user;
@@ -19,7 +24,7 @@ async function getUserFromReq({ req, userModel, domain = "login" }) {
   user = await userModel.model.findOne(query).exec();
 
   if (!user) {
-    throw new RequestError("error", "permission denied");
+    throw errors.permissionDenied;
   }
 
   req.user = user;
@@ -29,11 +34,11 @@ async function getUserFromReq({ req, userModel, domain = "login" }) {
     if (Array.isArray(userTokenData.changePasswordHistory)) {
       user.changePasswordHistory.forEach((time, i) => {
         if (time !== userTokenData.changePasswordHistory[i]) {
-          throw new RequestError("system.user", "please login again");
+          throw errors.loginAgain;
         }
       });
     } else {
-      throw new RequestError("system.user", "please login again");
+      throw errors.loginAgain;
     }
   }
 

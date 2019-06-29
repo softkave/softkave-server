@@ -1,19 +1,92 @@
-module.exports = exports;
+const priorityNotImportant = "not important";
+const priorityImportant = "important";
+const priorityVeryImportant = "very important";
 
-exports.minNameLength = 0;
-exports.maxNameLength = 300;
-exports.minDescriptionLength = 0;
-exports.maxDescriptionLength = 1000;
-exports.maxParentsLength = 10;
-exports.minRequiredStringLength = 1;
-exports.minTaskCollaboratorsLength = 0;
-exports.maxTaskCollaboratorsLength = 10;
-exports.minAddCollaboratorBodyMessageLength = 0;
-exports.maxAddCollaboratorBodyMessageLength = 500;
-exports.minAddCollaboratorValuesLength = 0;
-exports.maxAddCollaboratorValuesLength = 10;
-exports.maxChildrenCount = 100;
+const groupTaskContext = "groupTaskContext";
+const groupProjectContext = "groupProjectContext";
 
-exports.blockTypes = ["group", "org", "project", "task", "root", "info-card"];
-exports.priorityValues = ["not important", "important", "very important"];
-exports.groupContexts = ["groupTaskContext", "groupProjectContext"];
+const blockTypeGroup = "group";
+const blockTypeOrg = "org";
+const blockTypeProject = "project";
+const blockTypeRoot = "root";
+const blockTypeTask = "task";
+
+const constants = {
+  minNameLength: 0,
+  maxNameLength: 300,
+  minDescriptionLength: 0,
+  maxDescriptionLength: 1000,
+  maxParentsLength: 10,
+  minRequiredStringLength: 1,
+  minTaskCollaboratorsLength: 0,
+  maxTaskCollaboratorsLength: 10,
+  minAddCollaboratorBodyMessageLength: 0,
+  maxAddCollaboratorBodyMessageLength: 500,
+  minAddCollaboratorValuesLength: 0,
+  maxAddCollaboratorValuesLength: 10,
+  maxChildrenCount: 100,
+  blockTypesArray: [
+    blockTypeGroup,
+    blockTypeOrg,
+    blockTypeProject,
+    blockTypeTask,
+    blockTypeRoot
+  ],
+  priorityValuesArray: [
+    priorityNotImportant,
+    priorityImportant,
+    priorityVeryImportant
+  ],
+  priorityTypes: {
+    [priorityImportant]: priorityImportant,
+    [priorityNotImportant]: priorityNotImportant,
+    [priorityVeryImportant]: priorityVeryImportant
+  },
+  groupContextsArray: [groupTaskContext, groupProjectContext],
+  groupContexts: {
+    groupTaskContext,
+    groupProjectContext
+  },
+  blockTypes: {
+    [blockTypeGroup]: blockTypeGroup,
+    [blockTypeOrg]: blockTypeOrg,
+    [blockTypeProject]: blockTypeProject,
+    [blockTypeRoot]: blockTypeRoot,
+    [blockTypeTask]: blockTypeTask
+  }
+};
+
+const blockTaskCollaboratorFieldNames = {
+  userId: "userId",
+  completedAt: "completedAt",
+  assignedAt: "assignedAt",
+  assignedBy: "assignedBy"
+};
+
+const blockFieldNames = {
+  customId: "customId",
+  name: "name",
+  description: "description",
+  expectedEndAt: "expectedEndAt",
+  createdAt: "createdAt",
+  color: "color",
+  updatedAt: "updatedAt",
+  type: "type",
+  parents: "parents",
+  createdBy: "createdBy",
+  taskCollaborators: "taskCollaborators",
+  priority: "priority",
+  position: "position",
+  positionTimestamp: "positionTimestamp",
+  groups: "groups",
+  projects: "projects",
+  tasks: "tasks",
+  groupTaskContext: "groupTaskContext",
+  groupProjectContext: "groupProjectContext"
+};
+
+module.exports = {
+  constants,
+  blockFieldNames,
+  blockTaskCollaboratorFieldNames
+};

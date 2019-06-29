@@ -1,14 +1,10 @@
-const canReadBlock = require("./canReadBlock");
-const { validateBlockParam } = require("./validation");
+const { constants: blockConstants } = require("./constants");
 
 async function toggleTask({ block, data, blockModel, user }) {
-  block = validateBlockParam(block);
-  block = await blockModel.model.findOne({ customId: block.customId });
-  await canReadBlock({ user, block });
   await blockModel.model.updateOne(
     {
       customId: block.customId,
-      type: "task",
+      type: blockConstants.blockTypes.task,
       taskCollaborators: {
         $elemMatch: {
           userId: user.customId

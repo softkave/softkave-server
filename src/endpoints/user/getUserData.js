@@ -1,9 +1,9 @@
 const newToken = require("./newToken");
-const { RequestError } = require("../../utils/error");
+const { errors: userErrors } = require("../../utils/userErrorMessages");
 
 async function getUserData({ user }) {
   if (!user) {
-    throw new RequestError("error", "user does not exist");
+    throw userErrors.userDoesNotExist;
   }
 
   return { user, token: newToken(user) };

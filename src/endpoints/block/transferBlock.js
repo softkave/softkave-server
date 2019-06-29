@@ -1,23 +1,24 @@
 const canReadMultipleBlocks = require("./canReadMultipleBlocks");
-const { RequestError } = require("../../utils/error");
+const { errors: blockErrors } = require("../../utils/blockErrorMessages");
 const {
   validateBlockParam,
   validateBlockTypes,
   validateGroupContexts
 } = require("./validation");
+const { constants: blockConstants } = require("./constants");
 
-function getIndex(list, id) {
+function getIndex(list, id, notFoundError) {
   const idIndex = list.indexOf(id);
 
   if (idIndex === -1) {
-    throw new RequestError("error", "id not found");
+    throw notFoundError;
   }
 
   return idIndex;
 }
 
-function move(list, id, dropPosition) {
-  const idIndex = getIndex(list, id);
+function move(list, id, dropPosition, notFoundError) {
+  const idIndex = getIndex(list, id, notFoundError);
   list = [...list];
   list.splice(idIndex, 1);
   list.splice(dropPosition, 0, id);
@@ -31,8 +32,8 @@ function move(list, id, dropPosition) {
 //   return list;
 // }
 
-function remove(list, id) {
-  const idIndex = getIndex(list, id);
+function remove(list, id, notFoundError) {
+  const idIndex = getIndex(list, id, notFoundError);
   list = [...list];
   list.splice(idIndex, 1);
   return list;
@@ -103,48 +104,57 @@ async function transferBlock({
     }
   });
 
-  if (
-    !draggedBlock ||
-    !sourceBlock ||
-    (sourceBlock.customId !== destinationBlock.customId && !destinationBlock)
-  ) {
-    throw new RequestError("error", "some blocks are missing");
+  if (!draggedBlock) {
+    throw blockErrors.transferDraggedBlockMissing;
+  }
+
+  if (!sourceBlock) {
+    throw blockErrors.transferSourceBlockMissing;
+  }
+
+  if (sourceBlock.customId !== destinationBlock.customId && !destinationBlock) {
+    throw blockErrors.transferDestinationBlockMissing;
   }
 
   await canReadMultipleBlocks({ blocks, user });
   const pushUpdates = [];
   const pluralizedType = `${draggedBlock.type}s`;
 
-  if (draggedBlock.type === "group") {
+  if (draggedBlock.type === blockConstants.blockTypes.group) {
     const sourceBlockUpdates = {};
 
     if (groupContext) {
       sourceBlockUpdates[groupContext] = move(
         sourceBlock[groupContext],
         draggedBlock.customId,
-        dropPosition
+        dropPosition,
+        blockErrors.transferDraggedBlockNotFoundInParent
       );
     } else {
-      const groupTaskContext = `groupTaskContext`;
-      const groupProjectContext = `groupProjectContext`;
+      const groupTaskContext = blockConstants.groupContexts.groupTaskContext;
+      const groupProjectContext =
+        blockConstants.groupContexts.groupProjectContext;
 
       sourceBlockUpdates[groupTaskContext] = move(
         sourceBlock[groupTaskContext],
         draggedBlock.customId,
-        dropPosition
+        dropPosition,
+        blockErrors.transferDraggedBlockNotFoundInParent
       );
 
       sourceBlockUpdates[groupProjectContext] = move(
         sourceBlock[groupProjectContext],
         draggedBlock.customId,
-        dropPosition
+        dropPosition,
+        blockErrors.transferDraggedBlockNotFoundInParent
       );
     }
 
     sourceBlockUpdates[pluralizedType] = move(
       sourceBlock[pluralizedType],
       draggedBlock.customId,
-      dropPosition
+      dropPosition,
+      blockErrors.transferDraggedBlockNotFoundInParent
     );
 
     pushUpdates.push({
@@ -159,7 +169,8 @@ async function transferBlock({
     sourceBlockUpdates[pluralizedType] = move(
       sourceBlock[pluralizedType],
       draggedBlock.customId,
-      dropPosition
+      dropPosition,
+      blockErrors.transferDraggedBlockNotFoundInParent
     );
 
     pushUpdates.push({
@@ -174,12 +185,14 @@ async function transferBlock({
     const destinationBlockUpdates = {};
     const sourceParentIndex = getIndex(
       draggedBlock.parents,
-      sourceBlock.customId
+      sourceBlock.customId,
+      blockErrors.transferDraggedBlockNotFoundInParent
     );
 
     sourceBlockUpdates[pluralizedType] = remove(
       sourceBlock[pluralizedType],
-      draggedBlock.customId
+      draggedBlock.customId,
+      blockErrors.transferDraggedBlockNotFoundInParent
     );
 
     destinationBlockUpdates[pluralizedType] = add(

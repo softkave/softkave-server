@@ -26,13 +26,16 @@ const userSchema = {
   color: String
 };
 
+const modelName = "user";
+const collectionName = "users";
+
 class UserModel extends MongoModel {
   constructor({ connection }) {
     super({
       connection,
-      rawSchema: userSchema,
-      modelName: "user",
-      collectionName: "users"
+      modelName,
+      collectionName,
+      rawSchema: userSchema
     });
   }
 }

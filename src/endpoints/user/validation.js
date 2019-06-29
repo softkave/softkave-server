@@ -1,18 +1,9 @@
 const Joi = require("joi");
 const trim = require("validator/lib/trim");
-const {
-  passwordPattern,
-  hexColorRegEx
-} = require("../../utils/validation-utils");
-const {
-  minNameLength,
-  maxNameLength,
-  minPasswordLength,
-  maxPasswordLength
-} = require("./constants");
-const { validate } = require("../../utils/joi-utils");
 
-module.exports = exports;
+const { regEx } = require("../../utils/validation-utils");
+const { constants: userConstants } = require("./constants");
+const { validate } = require("../../utils/joi-utils");
 
 const emailSchema = Joi.string()
   .required()
@@ -23,15 +14,15 @@ const emailSchema = Joi.string()
 const passwordSchema = Joi.string()
   .required()
   .trim(true)
-  .min(minPasswordLength)
-  .max(maxPasswordLength)
-  .regex(passwordPattern);
+  .min(userConstants.minPasswordLength)
+  .max(userConstants.maxPasswordLength)
+  .regex(regEx.passwordPattern);
 
 const nameSchema = Joi.string()
   .required()
   .trim(true)
-  .min(minNameLength)
-  .max(maxNameLength);
+  .min(userConstants.minNameLength)
+  .max(userConstants.maxNameLength);
 
 const userSignupSchema = Joi.object().keys({
   name: nameSchema,
@@ -40,7 +31,7 @@ const userSignupSchema = Joi.object().keys({
   color: Joi.string()
     .trim(true)
     .lowercase()
-    .regex(hexColorRegEx)
+    .regex(regEx.hexColorRegEx)
 });
 
 const updateUserSchema = Joi.object().keys({
@@ -57,7 +48,7 @@ const collaborationRequestSchema = Joi.object().keys({
   readAt: Joi.number()
 });
 
-exports.trimUserData = function trimUserData(data) {
+function trimUserData(data) {
   const trimmedData = {};
 
   if (data.name) {
@@ -73,36 +64,42 @@ exports.trimUserData = function trimUserData(data) {
   }
 
   return trimmedData;
-};
+}
 
-exports.validateUserSignupData = function validateUserSignupData(data) {
+function validateUserSignupData(data) {
   const value = validate(data, userSignupSchema);
   return value;
-};
+}
 
-exports.validateEmail = function validateEmail(email) {
+function validateEmail(email) {
   const value = validate(email, emailSchema);
   return value;
-};
+}
 
-exports.validatePassword = function validatePassword(password) {
+function validatePassword(password) {
   const value = validate(password, passwordSchema);
   return value;
-};
+}
 
-exports.validateUpdateUserData = function validateUpdateUserData(data) {
+function validateUpdateUserData(data) {
   const value = validate(data, updateUserSchema);
   return value;
-};
+}
 
-exports.validateCollaborationRequest = function validateCollaborationRequest(
-  request
-) {
+function validateCollaborationRequest(request) {
   return validate(request, collaborationRequestSchema);
-};
+}
 
-exports.validateCollaborationRequestResponse = function validateCollaborationRequest(
-  response
-) {
+function validateCollaborationRequestResponse(response) {
   return validate(response, collaborationRequestResponseSchema);
+}
+
+module.exports = {
+  validateCollaborationRequest,
+  validatePassword,
+  validateEmail,
+  validateUpdateUserData,
+  validateUserSignupData,
+  validateCollaborationRequestResponse,
+  trimUserData
 };

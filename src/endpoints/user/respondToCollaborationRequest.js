@@ -1,7 +1,12 @@
-const { RequestError } = require("../../utils/error");
+const {
+  errors: notificationErrors
+} = require("../../utils/notificationErrorMessages");
 const addOrgIdToUser = require("./addOrgIdToUser");
-const { validateUUID } = require("../../utils/validation-utils");
+const { validators } = require("../../utils/validation-utils");
 const { validateCollaborationRequestResponse } = require("./validation");
+const {
+  constants: notificationConstants
+} = require("../notification/constants");
 
 async function respondToCollaborationRequest({
   customId,
@@ -10,7 +15,7 @@ async function respondToCollaborationRequest({
   user,
   blockModel
 }) {
-  customId = validateUUID(customId);
+  customId = validators.validateUUID(customId);
   reponse = validateCollaborationRequestResponse(response);
 
   let request = await notificationModel.model
@@ -19,7 +24,13 @@ async function respondToCollaborationRequest({
         customId: customId,
         "to.email": user.email,
         "statusHistory.status": {
-          $not: { $in: ["accepted", "declined", "revoked"] }
+          $not: {
+            $in: [
+              notificationConstants.collaborationRequestStatusTypes.accepted,
+              notificationConstants.collaborationRequestStatusTypes.declined,
+              notificationConstants.collaborationRequestStatusTypes.revoked
+            ]
+          }
         }
       },
       {
@@ -38,10 +49,12 @@ async function respondToCollaborationRequest({
     .exec();
 
   if (!!!request) {
-    throw new RequestError("error", "request does not exist");
+    throw notificationErrors.requestDoesNotExist;
   }
 
-  if (response === "accepted") {
+  if (
+    response === notificationConstants.collaborationRequestStatusTypes.accepted
+  ) {
     const block = await blockModel.model
       .findOne({ customId: request.from.blockId })
       .lean()

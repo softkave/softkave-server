@@ -1,8 +1,11 @@
 const sendChangePasswordEmail = require("./sendChangePasswordEmail");
 const { addEntryToPasswordDateLog } = require("./utils");
 const newToken = require("./newToken");
-const { RequestError } = require("../../utils/error");
 const { validateEmail } = require("./validation");
+const { errors: userErrors } = require("../../utils/userErrorMessages");
+const { constants: jwtConstants } = require("../../utils/jwt-constants");
+
+const linkExpirationDuration = "1 day";
 
 async function forgotPassword({ email, userModel }) {
   const emailValue = validateEmail(email);
@@ -13,12 +16,12 @@ async function forgotPassword({ email, userModel }) {
     .exec();
 
   if (!user) {
-    throw new RequestError("error", "user does not exist");
+    throw userErrors.userDoesNotExist;
   }
 
-  const expirationDuration = "1 day";
+  const expirationDuration = linkExpirationDuration;
   const token = newToken(user, {
-    domain: "change-password",
+    domain: jwtConstants.domains.changePassword,
     expiresIn: expirationDuration
   });
 

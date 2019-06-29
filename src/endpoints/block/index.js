@@ -11,73 +11,106 @@ const toggleTask = require("./toggleTask");
 const revokeRequest = require("./revokeRequest");
 const createRootBlock = require("./createRootBlock");
 const transferBlock = require("./transferBlock");
+const getBlock = require("./getBlock");
 const blockSchema = require("./schema");
 const { wrapGraphQLOperation, insertUserCredentials } = require("../utils");
 
+async function getRequestBlock(arg) {
+  const block = await getBlock({
+    ...arg,
+    isRequired: true,
+    checkPermission: true
+  });
+
+  return {
+    ...arg,
+    block
+  };
+}
+
 class BlockOperations {
   constructor(staticParams) {
-    const insertFuncs = [insertUserCredentials];
+    const defaultMiddlewares = [insertUserCredentials];
+    const endpointsWithBlockParamMiddlewares = [
+      ...defaultMiddlewares,
+      getRequestBlock
+    ];
 
-    this.addBlock = wrapGraphQLOperation(addBlock, staticParams, insertFuncs);
+    this.addBlock = wrapGraphQLOperation(
+      addBlock,
+      staticParams,
+      defaultMiddlewares
+    );
     this.updateBlock = wrapGraphQLOperation(
       updateBlock,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.deleteBlock = wrapGraphQLOperation(
       deleteBlock,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.getBlockChildren = wrapGraphQLOperation(
       getBlockChildren,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.addCollaborators = wrapGraphQLOperation(
       addCollaborators,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.removeCollaborator = wrapGraphQLOperation(
       removeCollaborator,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.getCollaborators = wrapGraphQLOperation(
       getBlockCollaborators,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.getCollabRequests = wrapGraphQLOperation(
       getBlockCollabRequests,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.getRoleBlocks = wrapGraphQLOperation(
       getRoleBlocks,
       staticParams,
-      insertFuncs
+      defaultMiddlewares
     );
+
     this.toggleTask = wrapGraphQLOperation(
       toggleTask,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.revokeRequest = wrapGraphQLOperation(
       revokeRequest,
       staticParams,
-      insertFuncs
+      endpointsWithBlockParamMiddlewares
     );
+
     this.createRootBlock = wrapGraphQLOperation(
       createRootBlock,
       staticParams,
-      insertFuncs
+      defaultMiddlewares
     );
+
     this.transferBlock = wrapGraphQLOperation(
       transferBlock,
       staticParams,
-      insertFuncs
+      defaultMiddlewares
     );
   }
 }

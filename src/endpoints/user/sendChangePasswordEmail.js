@@ -1,5 +1,7 @@
 const querystring = require("querystring");
+
 const aws = require("../../res/aws");
+const { appInfo } = require("../../res/app");
 const {
   changePasswordHTML,
   changePasswordText,
@@ -7,10 +9,11 @@ const {
 } = require("../../html/change-password");
 
 const ses = new aws.SES();
-const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
+const clientDomain = appInfo.clientDomain;
+const changePasswordRoute = "/change-password";
 
 async function sendChangePasswordEmail({ emailAddress, query, expiration }) {
-  const link = `${clientDomain}/change-password?${querystring.stringify(
+  const link = `${clientDomain}${changePasswordRoute}?${querystring.stringify(
     query
   )}`;
 
@@ -22,19 +25,19 @@ async function sendChangePasswordEmail({ emailAddress, query, expiration }) {
       Destination: {
         ToAddresses: [emailAddress]
       },
-      Source: "softkave@softkave.com",
+      Source: appInfo.defaultEmailSender,
       Message: {
         Subject: {
-          Charset: "UTF-8",
+          Charset: appInfo.defaultEmailEncoding,
           Data: changePasswordMailTitle
         },
         Body: {
           Html: {
-            Charset: "UTF-8",
+            Charset: appInfo.defaultEmailEncoding,
             Data: htmlContent
           },
           Text: {
-            Charset: "UTF-8",
+            Charset: appInfo.defaultEmailEncoding,
             Data: textContent
           }
         }

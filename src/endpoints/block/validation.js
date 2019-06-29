@@ -1,45 +1,46 @@
 const Joi = require("joi");
-const { uuidSchema, hexColorRegEx } = require("../../utils/validation-utils");
-const constants = require("./constants");
+
+const { joiSchemas, regEx } = require("../../utils/validation-utils");
+const { constants: blockConstants } = require("./constants");
 const { validate } = require("../../utils/joi-utils");
 
 module.exports = exports;
 
 const blockParamSchema = Joi.object().keys({
-  customId: uuidSchema
+  customId: joiSchemas.uuidSchema
 });
 
 const taskCollaboratorSchema = Joi.object().keys({
-  userId: uuidSchema,
+  userId: joiSchemas.uuidSchema,
   completedAt: Joi.number(),
-  assignedBy: uuidSchema,
+  assignedBy: joiSchemas.uuidSchema,
   assignedAt: Joi.number()
 });
 
 const taskCollaboratorsSchema = Joi.array()
-  .min(constants.minTaskCollaboratorsLength)
-  .max(constants.maxTaskCollaboratorsLength)
+  .min(blockConstants.minTaskCollaboratorsLength)
+  .max(blockConstants.maxTaskCollaboratorsLength)
   .unique("email")
   .items(taskCollaboratorSchema);
 
 const blockTypeSchema = Joi.string()
   .lowercase()
-  .valid(constants.blockTypes);
+  .valid(blockConstants.blockTypesArray);
 
 const blockChildrenSchema = Joi.array()
-  .items(uuidSchema)
+  .items(joiSchemas.uuidSchema)
   .unique()
-  .max(constants.maxChildrenCount);
+  .max(blockConstants.maxChildrenCount);
 
 const blockSchema = Joi.object().keys({
-  customId: uuidSchema,
+  customId: joiSchemas.uuidSchema,
   name: Joi.string()
     .trim(true)
-    .min(constants.minNameLength)
-    .max(constants.maxNameLength),
+    .min(blockConstants.minNameLength)
+    .max(blockConstants.maxNameLength),
   description: Joi.string()
-    .min(constants.minDescriptionLength)
-    .max(constants.maxDescriptionLength)
+    .min(blockConstants.minDescriptionLength)
+    .max(blockConstants.maxDescriptionLength)
     .when("type", {
       is: "task",
       then: Joi.required()
@@ -49,18 +50,18 @@ const blockSchema = Joi.object().keys({
   color: Joi.string()
     .trim(true)
     .lowercase()
-    .regex(hexColorRegEx),
+    .regex(regEx.hexColorRegEx),
   updatedAt: Joi.number(),
   type: blockTypeSchema,
   parents: Joi.array()
-    .items(uuidSchema)
+    .items(joiSchemas.uuidSchema)
     .unique()
-    .max(constants.maxParentsLength),
-  createdBy: uuidSchema,
+    .max(blockConstants.maxParentsLength),
+  createdBy: joiSchemas.uuidSchema,
   taskCollaborators: taskCollaboratorsSchema,
   priority: Joi.string()
     .lowercase()
-    .valid(constants.priorityValues),
+    .valid(blockConstants.priorityValuesArray),
   position: Joi.number().min(0),
   positionTimestamp: Joi.number().min(0),
   tasks: blockChildrenSchema,
@@ -77,28 +78,28 @@ const addCollaboratorCollaboratorSchema = Joi.object().keys({
     .email()
     .lowercase(),
   body: Joi.string()
-    .min(constants.minAddCollaboratorBodyMessageLength)
-    .max(constants.maxAddCollaboratorBodyMessageLength),
+    .min(blockConstants.minAddCollaboratorBodyMessageLength)
+    .max(blockConstants.maxAddCollaboratorBodyMessageLength),
   expiresAt: Joi.number(),
-  customId: uuidSchema
+  customId: joiSchemas.uuidSchema
 });
 
 const addCollaboratorCollaboratorsSchema = Joi.array()
   .items(addCollaboratorCollaboratorSchema)
-  .min(constants.minAddCollaboratorValuesLength)
-  .max(constants.maxAddCollaboratorValuesLength);
+  .min(blockConstants.minAddCollaboratorValuesLength)
+  .max(blockConstants.maxAddCollaboratorValuesLength);
 
 const blockTypesSchema = Joi.array()
-  .max(constants.blockTypes.length)
+  .max(blockConstants.blockTypesArray.length)
   .unique()
   .items(blockTypeSchema);
 
 const groupContextSchema = Joi.string()
   .lowercase()
-  .valid(constants.groupContexts);
+  .valid(blockConstants.groupContextsArray);
 
 const groupContextArraySchema = Joi.array()
-  .max(constants.groupContexts.length)
+  .max(blockConstants.groupContextsArray.length)
   .unique()
   .items(groupContextSchema);
 

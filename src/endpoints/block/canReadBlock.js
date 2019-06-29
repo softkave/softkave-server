@@ -1,4 +1,5 @@
-const { RequestError } = require("../../utils/error");
+const { errors: userErrors } = require("../../utils/userErrorMessages");
+const { constants: blockConstants } = require("./constants");
 
 async function canReadBlock({ block, user }) {
   if (user.rootBlockId === block.customId) {
@@ -7,7 +8,7 @@ async function canReadBlock({ block, user }) {
 
   let orgId = null;
 
-  if (block.type === "org") {
+  if (block.type === blockConstants.blockTypes.org) {
     orgId = block.customId;
   } else if (Array.isArray(block.parents) && block.parents.length > 0) {
     orgId = block.parents[0];
@@ -19,7 +20,7 @@ async function canReadBlock({ block, user }) {
     }
   }
 
-  throw new RequestError("error", "invalid access");
+  throw userErrors.permissionDenied;
 }
 
 module.exports = canReadBlock;

@@ -1,23 +1,31 @@
 const MongoModel = require("./MongoModel");
 
+const notificationFromSchema = {
+  userId: String,
+  name: String,
+  blockId: String,
+  blockName: String,
+  blockType: String
+};
+
+const notificationToSchema = {
+  email: String,
+  userId: String
+};
+
+const notificationStatusHistorySchema = {
+  status: String,
+  date: Number
+};
+
+const notificationSentEmailHistorySchema = {
+  date: Number
+};
+
 const schema = {
   customId: { type: String, unique: true },
   from: {
-    type: {
-      userId: String,
-      name: {
-        type: String
-      },
-      blockId: {
-        type: String
-      },
-      blockName: {
-        type: String
-      },
-      blockType: {
-        type: String
-      }
-    },
+    type: notificationFromSchema,
     index: true
   },
   createdAt: {
@@ -27,45 +35,28 @@ const schema = {
   body: String,
   readAt: Number,
   to: {
-    type: {
-      email: {
-        type: String
-      },
-      userId: String
-    },
+    type: notificationToSchema,
     index: true
   },
   expiresAt: Number,
-  type: {
-    type: String
-  },
+  type: String,
 
   // status: pending | revoked | accepted | rejected | expired
-  statusHistory: [
-    {
-      status: {
-        type: String
-      },
-      date: Number
-    }
-  ],
-  sentEmailHistory: [
-    {
-      date: Number
-    }
-  ],
-  root: {
-    type: String
-  }
+  statusHistory: [notificationStatusHistorySchema],
+  sentEmailHistory: [notificationSentEmailHistorySchema],
+  root: String
 };
+
+const modelName = "notification";
+const collectionName = "notifications";
 
 class NotificationModel extends MongoModel {
   constructor({ connection }) {
     super({
       connection,
-      rawSchema: schema,
-      modelName: "notification",
-      collectionName: "notifications"
+      modelName,
+      collectionName,
+      rawSchema: schema
     });
   }
 }

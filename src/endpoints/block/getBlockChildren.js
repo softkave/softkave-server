@@ -1,22 +1,16 @@
 const { getParentsLength } = require("./utils");
-const canReadBlock = require("./canReadBlock");
-const { validateBlockParam, validateBlockTypes } = require("./validation");
-const { blockTypes } = require("./constants");
+const { validateBlockTypes } = require("./validation");
+const { constants: blockConstants } = require("./constants");
 
-async function getBlockChildren({ block, types, blockModel, user }) {
-  block = validateBlockParam(block);
+async function getBlockChildren({ block, types, blockModel }) {
+  const parentBlock = block;
 
   if (types) {
     types = validateBlockTypes(types);
   } else {
-    types = blockTypes;
+    types = blockConstants.blockTypesArray;
   }
 
-  let parentBlock = await blockModel.model.findOne({
-    customId: block.customId
-  });
-
-  await canReadBlock({ user, block: parentBlock });
   const blocks = await blockModel.model.find({
     parents: {
       $size: getParentsLength(parentBlock) + 1,

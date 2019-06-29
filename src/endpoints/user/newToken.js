@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 
+const { constants: jwtConstants } = require("../../utils/jwt-constants");
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 function newToken(user, additionalInfo) {
@@ -8,7 +10,7 @@ function newToken(user, additionalInfo) {
       customId: user.customId,
       email: user.email,
       changePasswordHistory: user.changePasswordHistory,
-      domain: "login",
+      domain: jwtConstants.domains.login,
       ...additionalInfo
     },
     JWT_SECRET

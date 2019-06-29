@@ -1,28 +1,24 @@
 const sendCollabReqEmail = require("./sendCollabReqEmail");
 const { RequestError } = require("../../utils/error");
-const canReadBlock = require("./canReadBlock");
 const {
-  validateBlock,
-  validateAddCollaboratorCollaborators
-} = require("./validation");
+  errorMessages: notificationErrorMessages,
+  errorFields: notificationErrorFields
+} = require("../../utils/notificationErrorMessages");
+const { validateAddCollaboratorCollaborators } = require("./validation");
+const {
+  constants: notificationConstants
+} = require("../notification/constants");
 
 async function addCollaborator({
   block,
   collaborators,
   user,
-  notificationModel,
-  blockModel
+  notificationModel
 }) {
-  block = validateBlock(block);
   collaborators = validateAddCollaboratorCollaborators(collaborators);
-  block = await blockModel.model
-    .findOne({ customId: block.customId })
-    .lean()
-    .exec();
-  await canReadBlock({ block, user });
 
-  const collaboratorsEmailArr = collaborators.map(c => {
-    return c.email.toLowerCase();
+  const collaboratorsEmailArr = collaborators.map(collaborator => {
+    return collaborator.email.toLowerCase();
   });
 
   const existingCollabReqQuery = {
@@ -38,22 +34,27 @@ async function addCollaborator({
     .exec();
 
   if (existingCollaborationRequests.length > 0) {
-    const errors = existingCollaborationRequests.map(c => {
-      return new RequestError("system.request-sent", c.to.email);
+    const errors = existingCollaborationRequests.map(request => {
+      return new RequestError(
+        `${notificationErrorFields.requestHasBeenSentBefore}.${
+          request.to.email
+        }`,
+        notificationErrorMessages.requestHasBeenSentBefore
+      );
     });
 
     throw errors;
   }
 
-  let collaborationRequests = collaborators.map(c => {
+  let collaborationRequests = collaborators.map(request => {
     let notificationBody =
-      c.body ||
+      request.body ||
       `
       You have been invited by ${user.name} to collaborate in ${block.name}.
     `;
 
     return {
-      customId: c.customId,
+      customId: request.customId,
       from: {
         userId: user.customId,
         name: user.name,
@@ -63,13 +64,13 @@ async function addCollaborator({
       createdAt: Date.now(),
       body: notificationBody,
       to: {
-        email: c.email.toLowerCase()
+        email: request.email.toLowerCase()
       },
-      type: "collab-req",
-      expiresAt: c.expiresAt || null,
+      type: notificationConstants,
+      expiresAt: request.expiresAt || null,
       statusHistory: [
         {
-          status: "pending",
+          status: notificationConstants.collaborationRequestStatusTypes.pending,
           date: Date.now()
         }
       ]
@@ -82,17 +83,17 @@ async function addCollaborator({
   sendEmails(collaborationRequests);
 
   function sendEmails(collaborationRequests) {
-    let emailPromises = collaborationRequests.map(col => {
+    let emailPromises = collaborationRequests.map(request => {
       return sendCollabReqEmail({
-        email: col.to.email,
+        email: request.to.email,
         userName: user.name,
         blockName: block.name,
-        message: col.body,
-        expires: col.expiresAt
+        message: request.body,
+        expires: request.expiresAt
       });
     });
 
-    // TODO: Resend collab requests that have not been sent
+    // TODO: Resend collaboration requests that have not been sent or that failed
     emailPromises.forEach(async (promise, i) => {
       try {
         await promise;

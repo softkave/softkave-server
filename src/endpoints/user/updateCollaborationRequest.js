@@ -1,6 +1,8 @@
-const { RequestError } = require("../../utils/error");
-const { validateUUID } = require("../../utils/validation-utils");
+const { validators } = require("../../utils/validation-utils");
 const { validateCollaborationRequest } = require("./validation");
+const {
+  errors: notificationErrors
+} = require("../../utils/notificationErrorMessages");
 
 async function updateCollaborationRequest({
   customId,
@@ -8,7 +10,7 @@ async function updateCollaborationRequest({
   user,
   notificationModel
 }) {
-  customId = validateUUID(customId);
+  customId = validators.validateUUID(customId);
   data = validateCollaborationRequest(data);
   let notification = await notificationModel.model
     .findOneAndUpdate(
@@ -25,7 +27,7 @@ async function updateCollaborationRequest({
     .exec();
 
   if (!!!notification) {
-    throw new RequestError("error", "notification does not exist");
+    throw notificationErrors.requestDoesNotExist;
   }
 }
 
