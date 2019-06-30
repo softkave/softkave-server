@@ -29,7 +29,9 @@ const constants = {
     expired: collaborationRequestExpired,
     pending: collaborationRequestPending,
     revoked: collaborationRequestRevoked
-  }
+  },
+  minAddCollaboratorBodyMessageLength: 0,
+  maxAddCollaboratorBodyMessageLength: 500
 };
 
 const notificationFromFieldNames = {

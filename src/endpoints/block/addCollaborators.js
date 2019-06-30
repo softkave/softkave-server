@@ -9,6 +9,19 @@ const {
   constants: notificationConstants
 } = require("../notification/constants");
 
+function isRequestAccepted(request) {
+  if (Array.isArray(request.statusHistory)) {
+    return !!request.statusHistory.find(status => {
+      return (
+        status.status ===
+        notificationConstants.collaborationRequestStatusTypes.accepted
+      );
+    });
+  }
+
+  return false;
+}
+
 async function addCollaborator({
   block,
   collaborators,
@@ -35,12 +48,21 @@ async function addCollaborator({
 
   if (existingCollaborationRequests.length > 0) {
     const errors = existingCollaborationRequests.map(request => {
-      return new RequestError(
-        `${notificationErrorFields.requestHasBeenSentBefore}.${
-          request.to.email
-        }`,
-        notificationErrorMessages.requestHasBeenSentBefore
-      );
+      if (isRequestAccepted(request)) {
+        return new RequestError(
+          `${notificationErrorFields.sendingRequestToAnExistingCollaborator}.${
+            request.to.email
+          }`,
+          notificationErrorMessages.sendingRequestToAnExistingCollaborator
+        );
+      } else {
+        return new RequestError(
+          `${notificationErrorFields.requestHasBeenSentBefore}.${
+            request.to.email
+          }`,
+          notificationErrorMessages.requestHasBeenSentBefore
+        );
+      }
     });
 
     throw errors;

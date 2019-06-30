@@ -12,7 +12,7 @@ const pathPath = "details.0.path";
 
 function validate(data, schema) {
   const { error, value } = Joi.validate(data, schema, {
-    // abortEarly: false,
+    abortEarly: false,
     convert: true
   });
 

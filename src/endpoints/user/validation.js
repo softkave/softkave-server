@@ -31,7 +31,7 @@ const userSignupSchema = Joi.object().keys({
   color: Joi.string()
     .trim(true)
     .lowercase()
-    .regex(regEx.hexColorRegEx)
+    .regex(regEx.hexColorPattern)
 });
 
 const updateUserSchema = Joi.object().keys({

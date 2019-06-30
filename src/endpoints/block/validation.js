@@ -3,6 +3,9 @@ const Joi = require("joi");
 const { joiSchemas, regEx } = require("../../utils/validation-utils");
 const { constants: blockConstants } = require("./constants");
 const { validate } = require("../../utils/joi-utils");
+const {
+  constants: notificationConstants
+} = require("../notification/constants");
 
 module.exports = exports;
 
@@ -50,7 +53,7 @@ const blockSchema = Joi.object().keys({
   color: Joi.string()
     .trim(true)
     .lowercase()
-    .regex(regEx.hexColorRegEx),
+    .regex(regEx.hexColorPattern),
   updatedAt: Joi.number(),
   type: blockTypeSchema,
   parents: Joi.array()
@@ -79,8 +82,8 @@ const addCollaboratorCollaboratorSchema = Joi.object().keys({
     .email()
     .lowercase(),
   body: Joi.string()
-    .min(blockConstants.minAddCollaboratorBodyMessageLength)
-    .max(blockConstants.maxAddCollaboratorBodyMessageLength),
+    .min(notificationConstants.minAddCollaboratorBodyMessageLength)
+    .max(notificationConstants.maxAddCollaboratorBodyMessageLength),
   expiresAt: Joi.number(),
   customId: joiSchemas.uuidSchema
 });

@@ -20,8 +20,6 @@ const constants = {
   minRequiredStringLength: 1,
   minTaskCollaboratorsLength: 0,
   maxTaskCollaboratorsLength: 10,
-  minAddCollaboratorBodyMessageLength: 0,
-  maxAddCollaboratorBodyMessageLength: 500,
   minAddCollaboratorValuesLength: 0,
   maxAddCollaboratorValuesLength: 10,
   maxChildrenCount: 100,

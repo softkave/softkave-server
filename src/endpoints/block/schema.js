@@ -52,7 +52,7 @@ const blockSchema = `
 
   input AddBlockInput {
     name: String
-    customId: String
+    customId: String!
     description: String
     expectedEndAt: Float
     color: String
@@ -144,11 +144,11 @@ const blockSchema = `
     email: String!
     body: String
     expiresAt: Float
-    customId: String
+    customId: String!
   }
 
   input BlockParamInput {
-    customId: String
+    customId: String!
   }
 
   type BlockQuery {

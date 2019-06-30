@@ -26,11 +26,7 @@ const blockSchema = {
     index: true
   },
   parents: {
-    type: [
-      {
-        type: String
-      }
-    ],
+    type: [String],
     index: true
   },
   createdBy: {

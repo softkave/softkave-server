@@ -1,4 +1,6 @@
 const {
+  getErrorMessageWithMax,
+  getErrorMessageWithMin,
   errorMessages: validationErrorMessages
 } = require("./validationErrorMessages");
 const { errorMessages: userErrorMessages } = require("./userErrorMessages");
@@ -14,7 +16,7 @@ function getRequiredErrorMessage() {
   return validationErrorMessages.requiredError;
 }
 
-function getMinErrorMessage(error) {
+function getMinErrorMessage(error, type) {
   const min = get(error, limitPath);
   const label = get(error, labelPath);
 
@@ -22,10 +24,10 @@ function getMinErrorMessage(error) {
     return getDataInvalidErrorMessage();
   }
 
-  return `Input must be at least ${min} in length`;
+  return getErrorMessageWithMin(min, type);
 }
 
-function getMaxErrorMessage(error) {
+function getMaxErrorMessage(error, type) {
   const max = get(error, limitPath);
   const label = get(error, labelPath);
 
@@ -33,7 +35,7 @@ function getMaxErrorMessage(error) {
     return getDataInvalidErrorMessage();
   }
 
-  return `Input must be less than ${max}`;
+  return getErrorMessageWithMax(max, type);
 }
 
 function getUniqueErrorMessage() {
@@ -47,20 +49,20 @@ function getEmailErrorMessage() {
 const joiErrorMessages = {
   "any.required": getRequiredErrorMessage,
   "any.empty": getRequiredErrorMessage,
-  "any.allowOnly": getDefaultErrorMessage,
-  "string.base": getDefaultErrorMessage,
-  "string.min": getMinErrorMessage,
-  "string.max": getMaxErrorMessage,
-  "string.regex.base": getDefaultErrorMessage,
+  "any.allowOnly": getDataInvalidErrorMessage,
+  "string.base": getDataInvalidErrorMessage,
+  "string.min": error => getMinErrorMessage(error, "string"),
+  "string.max": error => getMaxErrorMessage(error, "string"),
+  "string.regex.base": getDataInvalidErrorMessage,
   "string.email": getEmailErrorMessage,
-  "string.guid": getDefaultErrorMessage,
-  "number.base": getDefaultErrorMessage,
-  "number.min": getMinErrorMessage,
-  "number.max": getMaxErrorMessage,
-  "array.base": getDefaultErrorMessage,
+  "string.guid": getDataInvalidErrorMessage,
+  "number.base": getDataInvalidErrorMessage,
+  "number.min": error => getMinErrorMessage(error, "number"),
+  "number.max": error => getMaxErrorMessage(error, "number"),
+  "array.base": getDataInvalidErrorMessage,
   "array.unique": getUniqueErrorMessage,
-  "array.min": getMinErrorMessage,
-  "array.max": getMaxErrorMessage
+  "array.min": error => getMinErrorMessage(error, "array"),
+  "array.max": error => getMaxErrorMessage(error, "array")
 };
 
 module.exports = { joiErrorMessages };
