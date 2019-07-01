@@ -5,6 +5,12 @@ const blockTaskCollaboratorsDataSchema = {
   completedAt: Number,
   assignedAt: Number,
   assignedBy: String
+}; 
+
+const linkedBlocks = {
+  blockId: String,
+  reason: String,
+  createdAt: Date
 };
 
 const blockSchema = {
@@ -36,6 +42,9 @@ const blockSchema = {
   taskCollaborators: {
     type: [blockTaskCollaboratorsDataSchema],
     index: true
+  },
+  linkedTasks:{
+    type:[linkedBlocks],
   },
   priority: String,
   isBacklog: Boolean,
