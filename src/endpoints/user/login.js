@@ -1,7 +1,8 @@
 const argon2 = require("argon2");
+
 const newToken = require("./newToken");
 const { validatePassword, validateEmail } = require("./validation");
-const { RequestError } = require("../../utils/error");
+const { errors: userErrors } = require("../../utils/userErrorMessages");
 
 async function login({ email, password, userModel }) {
   email = validateEmail(email);
@@ -15,7 +16,7 @@ async function login({ email, password, userModel }) {
     .exec();
 
   if (!userData || !(await argon2.verify(userData.hash, password))) {
-    throw new RequestError("error", "invalid email or password");
+    throw userErrors.invalidLoginCredentials;
   }
 
   return {

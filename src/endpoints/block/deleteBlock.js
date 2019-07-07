@@ -1,12 +1,8 @@
-const canReadBlock = require("./canReadBlock");
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
-const { validateBlockParam } = require("./validation");
 const { getImmediateParentId } = require("./utils");
+const { constants: blockConstants } = require("./constants");
 
 async function deleteBlock({ block, blockModel, user }) {
-  block = validateBlockParam(block);
-  block = await blockModel.model.findOne({ customId: block.customId });
-  await canReadBlock({ block, user });
   await blockModel.model
     .deleteMany({
       $or: [{ customId: block.customId }, { parents: block.customId }]
@@ -18,7 +14,7 @@ async function deleteBlock({ block, blockModel, user }) {
     [pluralizedType]: block.customId
   };
 
-  if (block.type === "group") {
+  if (block.type === blockConstants.blockTypes.group) {
     update.groupTaskContext = block.customId;
     update.groupProjectContext = block.customId;
   }

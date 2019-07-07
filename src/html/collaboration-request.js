@@ -17,12 +17,12 @@ function collaborationRequestHTML({
     style="text-align: center; padding: 24px;     padding-top: 40px;
     padding-bottom: 48px; border-radius: 0;"
   >
-    <h4
+    <!--<h4
       class="text-center text-secondary"
       style="margin: auto; max-width: 500px; color: #333 !important;"
     >
     ${collaborationRequestMailTitle}<br />
-    </h4>
+    </h4>-->
     <div class="line"></div>
     <div
       class="float-none"

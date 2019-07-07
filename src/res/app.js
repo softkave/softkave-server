@@ -1,7 +1,10 @@
-const appName = "Softkave";
-const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
+const appInfo = {
+  appName: "Softkave",
+  clientDomain: process.env.CLIENT_DOMAIN || "https://www.softkave.com",
+  defaultEmailSender: "softkave@softkave.com",
+  defaultEmailEncoding: "UTF-8"
+};
 
 module.exports = {
-  appName,
-  clientDomain
+  appInfo
 };

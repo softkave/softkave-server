@@ -1,95 +1,46 @@
 const get = require("lodash/get");
 const Joi = require("joi");
+
 const { RequestError } = require("./error");
+const { joiErrorMessages } = require("./joiErrorMessages");
+const {
+  errorMessages: validationErrorMessages
+} = require("./validationErrorMessages");
 
-module.exports = exports;
+const typePath = "details.0.type";
+const pathPath = "details.0.path";
 
-function defaultErrorMessage() {
-  return "data is invalid";
-}
-
-function requiredErrorMessage() {
-  return "field is required";
-}
-
-function minErrorMessage(error) {
-  const limitPath = "details.0.context.limit";
-  const labelPath = "details.0.context.label";
-  const min = get(error, limitPath);
-  const label = get(error, labelPath);
-
-  if (!min || !label) {
-    return defaultErrorMessage();
-  }
-
-  return `data must be at least ${min} in length`;
-}
-
-function maxErrorMessage(error) {
-  const limitPath = "details.0.context.limit";
-  const labelPath = "details.0.context.label";
-  const max = get(error, limitPath);
-  const label = get(error, labelPath);
-
-  if (!max || !label) {
-    return defaultErrorMessage();
-  }
-
-  return `data must be less than ${max}`;
-}
-
-function uniqueErrorMessage() {
-  return "data is not unique";
-}
-
-function emailErrorMessage() {
-  return "input is not a valid email address";
-}
-
-const errorMessages = {
-  "any.required": requiredErrorMessage,
-  "any.empty": requiredErrorMessage,
-  "any.allowOnly": defaultErrorMessage,
-  "string.base": defaultErrorMessage,
-  "string.min": minErrorMessage,
-  "string.max": maxErrorMessage,
-  "string.regex.base": defaultErrorMessage,
-  "string.email": emailErrorMessage,
-  "string.guid": defaultErrorMessage,
-  "number.base": defaultErrorMessage,
-  "number.min": minErrorMessage,
-  "number.max": maxErrorMessage,
-  "array.base": defaultErrorMessage,
-  "array.unique": uniqueErrorMessage,
-  "array.min": minErrorMessage,
-  "array.max": maxErrorMessage
-};
-
-exports.validate = function validate(data, schema) {
+function validate(data, schema) {
   const { error, value } = Joi.validate(data, schema, {
     abortEarly: false,
     convert: true
   });
 
   if (error) {
-    let errMessages = [];
-    const typePath = "details.0.type";
-    const pathPath = "details.0.path";
+    let errorArray = [];
     const type = get(error, typePath);
     let path = get(error, pathPath);
     path = Array(path).join(".");
-    const func = get(errorMessages, type);
+    const func = get(joiErrorMessages, type);
 
     if (typeof func === "function") {
       const message = func(error);
-      errMessages.push(new RequestError(path, message));
+      errorArray.push(new RequestError(path, message));
     } else {
-      errMessages.push(new RequestError(path, defaultErrorMessage()));
+      errorArray.push(
+        new RequestError(path, validationErrorMessages.dataInvalid)
+      );
     }
 
-    console.log(errMessages);
-    throw errMessages[0];
+    // console.log(validationErrorMessages);
+    // throw validationErrorMessages[0];
+
+    return errorArray;
   }
 
   return value;
+}
+
+module.exports = {
+  validate
 };

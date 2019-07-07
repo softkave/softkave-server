@@ -13,28 +13,20 @@ const blockSchema = {
     type: String,
     index: true
   },
-  description: {
-    type: String
-  },
+  description: String,
   expectedEndAt: Number,
   createdAt: {
     type: Number,
     default: Date.now
   },
-  color: {
-    type: String
-  },
+  color: String,
   updatedAt: Number,
   type: {
     type: String,
     index: true
   },
   parents: {
-    type: [
-      {
-        type: String
-      }
-    ],
+    type: [String],
     index: true
   },
   createdBy: {
@@ -45,12 +37,8 @@ const blockSchema = {
     type: [blockTaskCollaboratorsDataSchema],
     index: true
   },
-  priority: {
-    type: String
-  },
-  isBacklog: {
-    type: Boolean
-  },
+  priority: String,
+  isBacklog: Boolean,
   position: Number,
   positionTimestamp: Number,
   tasks: [String],
@@ -60,13 +48,16 @@ const blockSchema = {
   groupProjectContext: [String]
 };
 
+const modelName = "block";
+const collectionName = "blocks";
+
 class BlockModel extends MongoModel {
   constructor({ connection }) {
     super({
       connection,
-      rawSchema: blockSchema,
-      modelName: "block",
-      collectionName: "blocks"
+      modelName,
+      collectionName,
+      rawSchema: blockSchema
     });
   }
 }

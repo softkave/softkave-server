@@ -1,5 +1,5 @@
-const { RequestError } = require("../../utils/error");
 const { validateUpdateUserData } = require("./validation");
+const { errors: userErrors } = require("../../utils/userErrorMessages");
 
 async function updateUser({ data, userModel, user }) {
   const userData = validateUpdateUserData(data);
@@ -18,7 +18,7 @@ async function updateUser({ data, userModel, user }) {
     .exec();
 
   if (!!!user) {
-    throw new RequestError("error", "user does not exist");
+    throw userErrors.userDoesNotExist;
   }
 }
 

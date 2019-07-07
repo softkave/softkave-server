@@ -1,22 +1,27 @@
 const addBlockToDb = require("./addBlockToDb");
 const { RequestError } = require("../../utils/error");
+const { errors: blockErrors } = require("../../utils/blockErrorMessages");
+const {
+  errorMessages: validationErrorMessages
+} = require("../../utils/validationErrorMessages");
 const canReadBlock = require("./canReadBlock");
 const { validateBlock } = require("./validation");
 const { blockHasParents, getImmediateParentId } = require("./utils");
 const addOrgIdToUser = require("../user/addOrgIdToUser");
+const { blockFieldNames, constants: blockConstants } = require("./constants");
 
 async function addBlock({ blockModel, user, block }) {
   block = validateBlock(block);
 
-  if (block.type === "root") {
-    throw new RequestError("error", "invalid block type");
+  if (block.type === blockConstants.blockTypes.root) {
+    throw blockErrors.invalidBlockType;
   }
 
-  if (block.type === "org") {
+  if (block.type === blockConstants.blockTypes.org) {
     let result = await addBlockToDb({ block, blockModel, user });
 
     // TODO: scrub for orgs that are not added to user and add or clean them
-    // CONT: you can do this when user tries to read them, or add them again
+    // Continuation: you can do this when user tries to read them, or add them again
     await addOrgIdToUser({ user, id: result.customId });
     return {
       block: result
@@ -24,7 +29,10 @@ async function addBlock({ blockModel, user, block }) {
   }
 
   if (!blockHasParents(block)) {
-    throw RequestError("error", "error in data");
+    throw new RequestError(
+      blockFieldNames.parents,
+      validationErrorMessages.dataInvalid
+    );
   }
 
   const rootParentId = block.parents[0];
@@ -40,7 +48,7 @@ async function addBlock({ blockModel, user, block }) {
     [pluralizedType]: block.customId
   };
 
-  if (block.type === "group") {
+  if (block.type === blockConstants.blockTypes.group) {
     update.groupTaskContext = block.customId;
     update.groupProjectContext = block.customId;
   }

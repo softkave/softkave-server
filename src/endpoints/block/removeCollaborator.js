@@ -1,31 +1,30 @@
 const uuid = require("uuid/v4");
-const { RequestError } = require("../../utils/error");
-const canReadBlock = require("./canReadBlock");
+
+const { errors: userErrors } = require("../../utils/userErrorMessages");
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
-const { validateBlockParam } = require("./validation");
-const { validateUUID } = require("../../utils/validation-utils");
+const { validators } = require("../../utils/validation-utils");
+const {
+  constants: notificationConstants
+} = require("../notification/constants");
 
 async function removeCollaborator({
   block,
   collaborator,
   user,
-  blockModel,
   notificationModel,
   userModel
 }) {
-  block = validateBlockParam(block);
-  collaborator = validateUUID(collaborator);
-  let ownerBlock = await blockModel.model.findOne({ customId: block.customId });
-  await canReadBlock({ user, block: ownerBlock });
+  collaborator = validators.validateUUID(collaborator);
+  let ownerBlock = block;
 
-  let c = await userModel.model
+  let fetchedCollaborator = await userModel.model
     .findOne({
       customId: collaborator
     })
     .exec();
 
-  if (!c) {
-    throw new RequestError("error", "collaborator does not exist");
+  if (!fetchedCollaborator) {
+    throw userErrors.collaboratorDoesNotExist;
   }
 
   await deleteOrgIdFromUser({ user, id: block.customId });
@@ -44,19 +43,20 @@ async function removeCollaborator({
       createdAt: Date.now(),
       body: `
         Hi ${
-          c.name
+          fetchedCollaborator.name
         }, we're sorry to inform you that you have been removed from ${
         ownerBlock.name
       }. Goodluck!
       `,
       to: {
-        email: c.email,
-        userId: c.customId
+        email: fetchedCollaborator.email,
+        userId: fetchedCollaborator.customId
       },
-      type: "remove_collaborator"
+      type: notificationConstants.notificationTypes.removeCollaborator
     });
 
     notification.save().catch(error => {
+      // For debugging purposes
       console.error(error);
     });
   }

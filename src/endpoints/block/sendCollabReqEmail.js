@@ -4,9 +4,11 @@ const {
   collaborationRequestText,
   collaborationRequestMailTitle
 } = require("../../html/collaboration-request");
-const { clientDomain } = require("../../res/app");
+const { appInfo } = require("../../res/app");
 
 const ses = new aws.SES();
+const clientSignupRoute = "/signup";
+const clientLoginRoute = "/login";
 
 async function sendCollabReqEmail({
   email,
@@ -15,8 +17,8 @@ async function sendCollabReqEmail({
   message,
   expires
 }) {
-  const signupLink = `${clientDomain}/signup`;
-  const loginLink = `${clientDomain}/login`;
+  const signupLink = `${appInfo.clientDomain}${clientSignupRoute}`;
+  const loginLink = `${appInfo.clientDomain}${clientLoginRoute}`;
   const contentParams = {
     message,
     signupLink,
@@ -34,19 +36,19 @@ async function sendCollabReqEmail({
       Destination: {
         ToAddresses: [email]
       },
-      Source: "softkave@softkave.com",
+      Source: appInfo.defaultEmailSender,
       Message: {
         Subject: {
-          Charset: "UTF-8",
+          Charset: appInfo.defaultEmailEncoding,
           Data: collaborationRequestMailTitle
         },
         Body: {
           Html: {
-            Charset: "UTF-8",
+            Charset: appInfo.defaultEmailEncoding,
             Data: htmlContent
           },
           Text: {
-            Charset: "UTF-8",
+            Charset: appInfo.defaultEmailEncoding,
             Data: textContent
           }
         }

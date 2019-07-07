@@ -1,4 +1,5 @@
 const argon2 = require("argon2");
+
 const newToken = require("./newToken");
 const { addEntryToPasswordDateLog } = require("./utils");
 const { validatePassword } = require("./validation");

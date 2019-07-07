@@ -1,30 +1,33 @@
-const { RequestError } = require("../../utils/error");
-const canReadBlock = require("./canReadBlock");
-const { validateBlockParam } = require("./validation");
-const { validateUUID } = require("../../utils/validation-utils");
+const {
+  errors: notificationErrors
+} = require("../../utils/notificationErrorMessages");
+const { validators } = require("../../utils/validation-utils");
+const {
+  constants: notificationConstants
+} = require("../notification/constants");
 
-async function revokeRequest({
-  block,
-  request,
-  user,
-  blockModel,
-  notificationModel
-}) {
-  block = validateBlockParam(block);
-  request = validateUUID(request);
-  block = await blockModel.model.findOne({ customId: block.customId });
-  await canReadBlock({ block, user });
+async function revokeRequest({ request, block, notificationModel }) {
+  request = validators.validateUUID(request);
 
   let notification = await notificationModel.model
     .findOneAndUpdate(
       {
         customId: request,
-        "statusHistory.status": { $not: { $in: ["accepted", "declined"] } }
+        "from.blockId": block.customId,
+        "statusHistory.status": {
+          $not: {
+            $in: [
+              notificationConstants.collaborationRequestStatusTypes.accepted,
+              notificationConstants.collaborationRequestStatusTypes.declined
+            ]
+          }
+        }
       },
       {
         $push: {
           statusHistory: {
-            status: "revoked",
+            status:
+              notificationConstants.collaborationRequestStatusTypes.revoked,
             date: Date.now()
           }
         }
@@ -37,10 +40,7 @@ async function revokeRequest({
     .exec();
 
   if (!notification) {
-    throw new RequestError(
-      "error",
-      "request does not exist, or request has been accepted or declined"
-    );
+    throw notificationErrors.requestHasBeenSentBefore;
   }
 }
 

@@ -18,7 +18,7 @@ const {
 
 class UserOperations {
   constructor(staticParams) {
-    const insertFuncs = [insertUserCredentials];
+    const middlewares = [insertUserCredentials];
 
     this.userExists = wrapGraphQLOperation(userExists, staticParams);
     this.signup = wrapGraphQLOperation(signup, staticParams);
@@ -27,13 +27,15 @@ class UserOperations {
     this.changePassword = wrapGraphQLOperation(
       changePassword,
       staticParams,
-      insertFuncs
+      middlewares
     );
+
     this.updateUser = wrapGraphQLOperation(
       updateUser,
       staticParams,
-      insertFuncs
+      middlewares
     );
+
     this.changePasswordWithToken = wrapGraphQLOperation(
       changePasswordWithToken,
       staticParams,
@@ -42,22 +44,25 @@ class UserOperations {
     this.updateCollaborationRequest = wrapGraphQLOperation(
       updateCollaborationRequest,
       staticParams,
-      insertFuncs
+      middlewares
     );
+
     this.respondToCollaborationRequest = wrapGraphQLOperation(
       respondToCollaborationRequest,
       staticParams,
-      insertFuncs
+      middlewares
     );
+
     this.getCollaborationRequests = wrapGraphQLOperation(
       getCollaborationRequests,
       staticParams,
-      insertFuncs
+      middlewares
     );
+
     this.getUserData = wrapGraphQLOperation(
       getUserData,
       staticParams,
-      insertFuncs
+      middlewares
     );
   }
 }

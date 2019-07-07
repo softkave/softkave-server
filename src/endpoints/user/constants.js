@@ -1,13 +1,22 @@
-module.exports = exports;
+const constants = {
+  minNameLength: 1,
+  maxNameLength: 300,
+  minPasswordLength: 5,
+  maxPasswordLength: 20
+};
 
-exports.minNameLength = 1;
-exports.maxNameLength = 300;
-exports.minPasswordLength = 5;
-exports.maxPasswordLength = 20;
+const userFieldNames = {
+  customId: "customId",
+  name: "name",
+  email: "email",
+  hash: "hash",
+  createdAt: "createdAt",
+  forgotPasswordHistory: "forgotPasswordHistory",
+  changePasswordHistory: "changePasswordHistory",
+  lastNotificationCheckTime: "lastNotificationCheckTime",
+  rootBlockId: "rootBlockId",
+  orgs: "orgs",
+  color: "color"
+};
 
-exports.collaborationRequestStatusTypes = [
-  "accepted",
-  "declined",
-  "revoked",
-  "pending"
-];
+module.exports = { constants, userFieldNames };
