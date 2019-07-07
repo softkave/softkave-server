@@ -17,9 +17,9 @@ Softkave is currently a task and project management application intended for peo
 
 ### Architecture
 
-Express Server -> GraphQL -> Endpoints ( Business Logic ) -> Mongo DB ( Using Mongoose )
+**Express Server** -> **GraphQL** -> **Endpoints ( Business Logic )** -> **Mongo DB ( Using Mongoose )**
 
 ### Development
 
-- Run npm local-start for local development
+- Run `npm local-start` for local development
 - Run through vscode debugger for debugging, it is pre-configured
