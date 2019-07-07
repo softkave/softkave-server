@@ -82,8 +82,8 @@ const addCollaboratorCollaboratorSchema = Joi.object().keys({
     .email()
     .lowercase(),
   body: Joi.string()
-    .min(notificationConstants.minAddCollaboratorBodyMessageLength)
-    .max(notificationConstants.maxAddCollaboratorBodyMessageLength),
+    .min(notificationConstants.minAddCollaboratorMessageLength)
+    .max(notificationConstants.maxAddCollaboratorMessageLength),
   expiresAt: Joi.number(),
   customId: joiSchemas.uuidSchema
 });

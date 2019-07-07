@@ -88,7 +88,7 @@ async function addCollaborator({
       to: {
         email: request.email.toLowerCase()
       },
-      type: notificationConstants,
+      type: notificationConstants.notificationTypes.collaborationRequest,
       expiresAt: request.expiresAt || null,
       statusHistory: [
         {

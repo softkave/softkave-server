@@ -30,8 +30,8 @@ const constants = {
     pending: collaborationRequestPending,
     revoked: collaborationRequestRevoked
   },
-  minAddCollaboratorBodyMessageLength: 0,
-  maxAddCollaboratorBodyMessageLength: 500
+  minAddCollaboratorMessageLength: 0,
+  maxAddCollaboratorMessageLength: 500
 };
 
 const notificationFromFieldNames = {

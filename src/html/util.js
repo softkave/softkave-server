@@ -1,10 +1,11 @@
-// const { appName } = require("../res/app");
+const { appName } = require("../res/app");
 
 const styles = `
 *{
   margin: 0;
   padding: 0;
 }
+
 .d-table {
   display:table!important;
 }
@@ -86,8 +87,8 @@ function html(content) {
       <body>
           <div class="">
             <!-- <img class="" src="assets/img/test.png" /> -->
-            <h1>Softkave</h1>
-            <div class="clear-side"></div>
+            <!--<h1>Softkave</h1>
+            <div class="clear-side"></div> -->
             <!-- <i
               class="fa fa-facebook-f "
               style="font-size:24px;height:auto;margin:24px;"
