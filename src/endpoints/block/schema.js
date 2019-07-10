@@ -13,6 +13,20 @@ const blockSchema = `
     assignedAt: Float
   }
 
+  type linkedBlocks{
+    blockId: String,
+    reason: String,
+    createdBy: String,
+    createdAt: Float
+  }
+
+  input linkedBlocksInput{
+    blockId String!,
+    reason: String,
+    createdBy: String!,
+    createdAt: Float!
+  }
+
   type Block {
     customId: String
     name: String
@@ -25,6 +39,7 @@ const blockSchema = `
     parents: [String]
     createdBy: String
     taskCollaborators: [BlockTaskCollaboratorData]
+    linkedBlocks: [linkedBlocks]
     priority: String
     isBacklog: Boolean
     position: Float
@@ -61,6 +76,7 @@ const blockSchema = `
     priority: String
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
+    linkedBlocks: [linkedBlocks]
     position: Float
     positionTimestamp: Float
     groups: [String]
@@ -68,7 +84,6 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-
   }
 
   input UpdateBlockInput {

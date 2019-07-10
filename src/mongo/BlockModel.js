@@ -10,14 +10,16 @@ const blockTaskCollaboratorsDataSchema = {
 const linkedBlocks = {
   blockId: String,
   reason: String,
-  createdAt: Date
+  createdBy: String,
+  createdAt: Number
+  
 };
 
 const blockSchema = {
   customId: { type: String, unique: true },
   name: {
     type: String,
-    index: true
+    index: true 
   },
   description: String,
   expectedEndAt: Number,
@@ -43,7 +45,7 @@ const blockSchema = {
     type: [blockTaskCollaboratorsDataSchema],
     index: true
   },
-  linkedTasks:{
+  linkedBlocks:{
     type:[linkedBlocks],
   },
   priority: String,
