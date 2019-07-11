@@ -37,7 +37,7 @@ const blockChildrenSchema = Joi.array()
   .max(blockConstants.maxChildrenCount);
 
 const accessControlSchema = Joi.object().keys({
-  organizationID: uuidSchema,
+  orgId: uuidSchema,
   actionName: Joi.string()
     .uppercase()
     .valid(actionsArray),
@@ -48,7 +48,7 @@ const accessControlSchema = Joi.object().keys({
         .min(blockConstants.minRoleNameLength)
         .max(blockConstants.maxRoleNameLength)
     )
-    // .unique((role1, role2) => role1.)
+    .unique()
     .max(blockConstants.maxRoles)
 });
 
@@ -92,7 +92,12 @@ const blockSchema = Joi.object().keys({
   isBacklog: Joi.boolean(),
   accessControl: Joi.array()
     .items(accessControlSchema)
-    .unique()
+    .unique((item1, item2) => {
+      return (
+        item1.organizationID === item2.organizationID &&
+        item1.actionName !== item2.actionName
+      );
+    })
     .min(blockConstants.minRoles)
     .max(blockConstants.maxRoles)
 });

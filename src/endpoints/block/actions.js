@@ -1,4 +1,32 @@
-const actionsArray = [];
-const actionsMap = {};
+const actionsMap = {
+  // task
+  CREATE_TASK: "CREATE_TASK",
+  READ_TASK: "READ_TASK",
+  UPDATE_TASK: "UPDATE_TASK",
+  DELETE_TASK: "DELETE_TASK",
+  ASSIGN_TASK: "ASSIGN_TASK",
+  TOGGLE_TASK: "TOGGLE_TASK",
+
+  // group
+  CREATE_GROUP: "CREATE_GROUP",
+  READ_GROUP: "READ_GROUP",
+  UPDATE_GROUP: "UPDATE_GROUP",
+  DELETE_GROUP: " DELETE_GROUP",
+
+  // project
+  CREATE_PROJECT: "CREATE_PROJECT",
+  READ_PROJECT: "READ_PROJECT",
+  UPDATE_PROJECT: "UPDATE_PROJECT",
+  DELETE_PROJECT: "DELETE_PROJECT",
+
+  // org
+  // CREATE_ORG: "CREATE_ORG",
+  READ_ORG: "READ_ORG",
+  UPDATE_ORG: "UPDATE_ORG",
+  DELETE_ORG: "DELETE_ORG",
+  ADD_COLLABORATOR: "ADD_COLLABORATOR"
+};
+
+const actionsArray = Object.keys(actionsMap);
 
 module.exports = { actionsArray, actionsMap };

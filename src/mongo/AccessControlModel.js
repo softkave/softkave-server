@@ -1,7 +1,7 @@
 const MongoModel = require("./MongoModel");
 
 const accessControlSchema = {
-  organizationID: { type: String, unique: true },
+  orgId: { type: String, unique: true },
   actionName: { type: String, index: true },
   permittedRoles: { type: [String], index: true }
 };

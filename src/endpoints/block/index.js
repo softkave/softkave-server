@@ -41,6 +41,7 @@ class BlockOperations {
       staticParams,
       defaultMiddlewares
     );
+
     this.updateBlock = wrapGraphQLOperation(
       updateBlock,
       staticParams,
