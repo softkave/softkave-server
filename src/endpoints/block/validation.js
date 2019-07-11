@@ -6,6 +6,7 @@ const { validate } = require("../../utils/joi-utils");
 const {
   constants: notificationConstants
 } = require("../notification/constants");
+const { actionsArray } = require("./actions");
 
 module.exports = exports;
 
@@ -34,6 +35,22 @@ const blockChildrenSchema = Joi.array()
   .items(joiSchemas.uuidSchema)
   .unique()
   .max(blockConstants.maxChildrenCount);
+
+const accessControlSchema = Joi.object().keys({
+  organizationID: uuidSchema,
+  actionName: Joi.string()
+    .uppercase()
+    .valid(actionsArray),
+  permittedRoles: Joi.array()
+    .items(
+      Joi.string()
+        .lowercase()
+        .min(blockConstants.minRoleNameLength)
+        .max(blockConstants.maxRoleNameLength)
+    )
+    // .unique((role1, role2) => role1.)
+    .max(blockConstants.maxRoles)
+});
 
 const blockSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
@@ -72,7 +89,12 @@ const blockSchema = Joi.object().keys({
   projects: blockChildrenSchema,
   groupTaskContext: blockChildrenSchema,
   groupProjectContext: blockChildrenSchema,
-  isBacklog: Joi.boolean()
+  isBacklog: Joi.boolean(),
+  accessControl: Joi.array()
+    .items(accessControlSchema)
+    .unique()
+    .min(blockConstants.minRoles)
+    .max(blockConstants.maxRoles)
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({

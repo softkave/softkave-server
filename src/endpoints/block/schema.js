@@ -13,6 +13,18 @@ const blockSchema = `
     assignedAt: Float
   }
 
+  type AccessControl {
+    organizationID: String
+    actionName: String
+    permittedRoles: [String]
+  }
+
+  input AccessControlInput {
+    organizationID: String!
+    actionName: String!
+    permittedRoles: [String]!
+  }
+
   type Block {
     customId: String
     name: String
@@ -34,6 +46,7 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+    accessControl: AccessControl
   }
 
   type BlockResponse {
@@ -68,7 +81,7 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-
+    accessControl: AccessControlInput!
   }
 
   input UpdateBlockInput {
@@ -87,6 +100,7 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+    accessControl: AccessControlInput!
   }
 
   type CollabRequestFrom {

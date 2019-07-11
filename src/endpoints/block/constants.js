@@ -51,7 +51,11 @@ const constants = {
     [blockTypeProject]: blockTypeProject,
     [blockTypeRoot]: blockTypeRoot,
     [blockTypeTask]: blockTypeTask
-  }
+  },
+  minRoleNameLength: 0,
+  maxRoleNameLength: 50,
+  minRoles: 0,
+  maxRoles: 10
 };
 
 const blockTaskCollaboratorFieldNames = {
