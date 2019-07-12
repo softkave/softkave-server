@@ -35,6 +35,15 @@ const blockChildrenSchema = Joi.array()
   .unique()
   .max(blockConstants.maxChildrenCount);
 
+const linkedBlockSchema = Joi.object().keys({
+  createdAt: Joi.number(),
+  createdBy: joiSchemas.uuidSchema,
+  reason: Joi.string()
+    .min(blockConstants.minLinkedBlockReasonLength)
+    .max(blockConstants.maxLinkedBlockReasonLength),
+  blockId: joiSchemas.uuidSchema
+});
+
 const blockSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
   name: Joi.string()
@@ -72,7 +81,13 @@ const blockSchema = Joi.object().keys({
   projects: blockChildrenSchema,
   groupTaskContext: blockChildrenSchema,
   groupProjectContext: blockChildrenSchema,
-  isBacklog: Joi.boolean()
+  isBacklog: Joi.boolean(),
+  linkedBlock: Joi.optional()
+    .array()
+    .items(linkedBlockSchema)
+    .unique("blockId")
+    .min(blockConstants.minLinkedBlocksCount)
+    .max(blockConstants.maxLinkedBlocksCount)
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({

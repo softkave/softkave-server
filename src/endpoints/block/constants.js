@@ -51,7 +51,11 @@ const constants = {
     [blockTypeProject]: blockTypeProject,
     [blockTypeRoot]: blockTypeRoot,
     [blockTypeTask]: blockTypeTask
-  }
+  },
+  minLinkedBlockReasonLength: 0,
+  maxLinkedBlockReasonLength: 250,
+  minLinkedBlocksCount: 0,
+  maxLinkedBlocksCount: 250
 };
 
 const blockTaskCollaboratorFieldNames = {
