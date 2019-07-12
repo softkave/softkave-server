@@ -1,11 +1,15 @@
+const { getOrgIds } = require("../user/utils");
+
 async function getRoleBlocks({ user, blockModel }) {
-  let blockIdArr = [...user.orgs, user.rootBlockId];
+  const orgIds = getOrgIds(user);
+  const query = {
+    customId: {
+      $in: orgIds
+    }
+  };
+
   let blocks = await blockModel.model
-    .find({
-      customId: {
-        $in: blockIdArr
-      }
-    })
+    .find(query)
     .lean()
     .exec();
 

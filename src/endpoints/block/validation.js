@@ -6,7 +6,7 @@ const { validate } = require("../../utils/joi-utils");
 const {
   constants: notificationConstants
 } = require("../notification/constants");
-const { actionsArray } = require("./actions");
+const { blockActionsArray } = require("./actions");
 
 module.exports = exports;
 
@@ -40,7 +40,7 @@ const accessControlSchema = Joi.object().keys({
   orgId: uuidSchema,
   actionName: Joi.string()
     .uppercase()
-    .valid(actionsArray),
+    .valid(blockActionsArray),
   permittedRoles: Joi.array()
     .items(
       Joi.string()

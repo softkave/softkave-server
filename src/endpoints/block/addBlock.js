@@ -9,9 +9,17 @@ const { validateBlock } = require("./validation");
 const { blockHasParents, getImmediateParentId } = require("./utils");
 const addOrgIdToUser = require("../user/addOrgIdToUser");
 const { blockFieldNames, constants: blockConstants } = require("./constants");
+const accessControlCheck = require("./accessControlCheck");
+const { CRUDActionsMap } = require("./actions");
 
-async function addBlock({ blockModel, user, block }) {
+async function addBlock({ blockModel, user, block, accessControlModel }) {
   block = validateBlock(block);
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    CRUDActionName: CRUDActionsMap.CREATE
+  });
 
   if (block.type === blockConstants.blockTypes.root) {
     throw blockErrors.invalidBlockType;

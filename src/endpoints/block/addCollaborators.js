@@ -8,6 +8,8 @@ const { validateAddCollaboratorCollaborators } = require("./validation");
 const {
   constants: notificationConstants
 } = require("../notification/constants");
+const accessControlCheck = require("./accessControlCheck");
+const { blockActionsMap } = require("./actions");
 
 function isRequestAccepted(request) {
   if (Array.isArray(request.statusHistory)) {
@@ -26,9 +28,16 @@ async function addCollaborator({
   block,
   collaborators,
   user,
-  notificationModel
+  notificationModel,
+  accessControlModel
 }) {
   collaborators = validateAddCollaboratorCollaborators(collaborators);
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    actionName: blockActionsMap.ADD_COLLABORATOR
+  });
 
   const collaboratorsEmailArr = collaborators.map(collaborator => {
     return collaborator.email.toLowerCase();

@@ -1,8 +1,17 @@
 const deleteOrgIdFromUser = require("../user/deleteOrgIdFromUser");
 const { getImmediateParentId } = require("./utils");
 const { constants: blockConstants } = require("./constants");
+const accessControlCheck = require("./accessControlCheck");
+const { CRUDActionsMap } = require("./actions");
 
-async function deleteBlock({ block, blockModel, user }) {
+async function deleteBlock({ block, blockModel, user, accessControlModel }) {
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    CRUDActionName: CRUDActionsMap.DELETE
+  });
+
   await blockModel.model
     .deleteMany({
       $or: [{ customId: block.customId }, { parents: block.customId }]

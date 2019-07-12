@@ -5,8 +5,8 @@ const indexSchema = require("./schema");
 const { utilitySchema } = require("../utils/schema-utils");
 
 class IndexOperations {
-  constructor({ blockModel, userModel, notificationModel }) {
-    this.staticParams = { blockModel, userModel, notificationModel };
+  constructor(params) {
+    this.staticParams = params;
   }
 
   async user() {

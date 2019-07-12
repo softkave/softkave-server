@@ -1,4 +1,3 @@
-const canReadMultipleBlocks = require("./canReadMultipleBlocks");
 const { errors: blockErrors } = require("../../utils/blockErrorMessages");
 const {
   validateBlockParam,
@@ -6,6 +5,8 @@ const {
   validateGroupContexts
 } = require("./validation");
 const { constants: blockConstants } = require("./constants");
+const accessControlCheck = require("./accessControlCheck");
+const { CRUDActionsMap } = require("./actions");
 
 function getIndex(list, id, notFoundError) {
   const idIndex = list.indexOf(id);
@@ -54,7 +55,8 @@ async function transferBlock({
   draggedBlockType,
   groupContext,
   blockModel,
-  user
+  user,
+  accessControlModel
 }) {
   sourceBlock = validateBlockParam(sourceBlock);
   draggedBlock = validateBlockParam(draggedBlock);
@@ -104,19 +106,40 @@ async function transferBlock({
     }
   });
 
+  // add batching of access control checks
   if (!draggedBlock) {
     throw blockErrors.transferDraggedBlockMissing;
+  } else {
+    await accessControlCheck({
+      user,
+      accessControlModel,
+      block: draggedBlock,
+      CRUDActionName: CRUDActionsMap.UPDATE
+    });
   }
 
   if (!sourceBlock) {
     throw blockErrors.transferSourceBlockMissing;
+  } else {
+    await accessControlCheck({
+      user,
+      accessControlModel,
+      block: sourceBlock,
+      CRUDActionName: CRUDActionsMap.UPDATE
+    });
   }
 
   if (sourceBlock.customId !== destinationBlock.customId && !destinationBlock) {
     throw blockErrors.transferDestinationBlockMissing;
+  } else if (destinationBlock) {
+    await accessControlCheck({
+      user,
+      accessControlModel,
+      block: destinationBlock,
+      CRUDActionName: CRUDActionsMap.UPDATE
+    });
   }
 
-  await canReadMultipleBlocks({ blocks, user });
   const pushUpdates = [];
   const pluralizedType = `${draggedBlock.type}s`;
 

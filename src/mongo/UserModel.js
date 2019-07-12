@@ -1,5 +1,12 @@
 const MongoModel = require("./MongoModel");
 
+const roleSchema = {
+  roleName: String,
+  orgId: String,
+  assignedAt: Number,
+  assignedBy: String
+};
+
 const userSchema = {
   customId: { type: String, unique: true },
   name: {
@@ -23,7 +30,8 @@ const userSchema = {
   lastNotificationCheckTime: Number,
   rootBlockId: String,
   orgs: [String],
-  color: String
+  color: String,
+  roles: [roleSchema]
 };
 
 const modelName = "user";

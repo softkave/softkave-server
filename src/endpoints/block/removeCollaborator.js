@@ -6,16 +6,25 @@ const { validators } = require("../../utils/validation-utils");
 const {
   constants: notificationConstants
 } = require("../notification/constants");
+const accessControlCheck = require("./accessControlCheck");
+const { blockActionsMap } = require("./actions");
 
 async function removeCollaborator({
   block,
   collaborator,
   user,
   notificationModel,
+  accessControlModel,
   userModel
 }) {
   collaborator = validators.validateUUID(collaborator);
   let ownerBlock = block;
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    actionName: blockActionsMap.REMOVE_COLLABORATOR
+  });
 
   let fetchedCollaborator = await userModel.model
     .findOne({

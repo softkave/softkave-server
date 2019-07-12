@@ -1,9 +1,24 @@
 const { getParentsLength } = require("./utils");
 const { validateBlockTypes } = require("./validation");
 const { constants: blockConstants } = require("./constants");
+const accessControlCheck = require("./accessControlCheck");
+const { CRUDActionsMap } = require("./actions");
 
-async function getBlockChildren({ block, types, blockModel, isBacklog }) {
+async function getBlockChildren({
+  block,
+  user,
+  accessControlModel,
+  types,
+  blockModel,
+  isBacklog
+}) {
   const parentBlock = block;
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    CRUDActionName: CRUDActionsMap.READ
+  });
 
   if (types) {
     types = validateBlockTypes(types);

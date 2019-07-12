@@ -2,6 +2,7 @@ const { connection } = require("./mongo/defaultConnection");
 const UserModel = require("./mongo/UserModel");
 const BlockModel = require("./mongo/BlockModel");
 const NotificationModel = require("../src/mongo/NotificationModel");
+const AccessControlModel = require("./mongo/AccessControlModel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -15,6 +16,10 @@ const handleErrors = require("./middlewares/handleErrors");
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
+  connection: connection.getConnection()
+});
+
+const accessControlModel = new AccessControlModel({
   connection: connection.getConnection()
 });
 
@@ -65,7 +70,8 @@ app.use(
     rootValue: new IndexOperations({
       blockModel,
       notificationModel,
-      userModel
+      userModel,
+      accessControlModel
     })
   })
 );
