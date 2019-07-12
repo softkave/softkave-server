@@ -81,7 +81,6 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-    accessControl: [AccessControlInput!]!
   }
 
   input UpdateBlockInput {
@@ -100,7 +99,6 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-    accessControl: [AccessControlInput!]!
   }
 
   type CollabRequestFrom {

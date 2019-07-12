@@ -1,4 +1,11 @@
 const userSchema = `
+  type Role {
+    orgId: String
+    assignedBy: String
+    assignedAt: String
+    roleName: String
+  }
+
   type User {
     customId: String
     name: String
@@ -6,6 +13,7 @@ const userSchema = `
     createdAt: Float
     lastNotificationCheckTime: Float
     color: String
+    roles: [Role]
   }
 
   input UserSignupInput {
@@ -13,11 +21,13 @@ const userSchema = `
     email: String!
     password: String!
     color: String!
+    roles: [Role]
   }
 
   input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
+    roles: [Role]
   }
 
   type UserQueryResult {
@@ -35,7 +45,7 @@ const userSchema = `
     userExists: Boolean
   }
 
-  type RCR {
+  type RespondToCollaborationRequestResponse {
     errors: [Error]
     block: Block
   }
@@ -49,7 +59,8 @@ const userSchema = `
     updateUser (data: UserUpdateInput!): ErrorOnlyResponse
     changePasswordWithToken (password: String!) : UserQueryResult
     getCollaborationRequests: GetCollaborationRequestsResponse
-    respondToCollaborationRequest (customId: String!, response: String!): RCR
+    respondToCollaborationRequest (
+      customId: String!, response: String!): RespondToCollaborationRequestResponse
     updateCollaborationRequest (
       customId: String!, 
       data: UpdateCollaborationRequestInput!
