@@ -7,44 +7,7 @@ const {
 const { constants: blockConstants } = require("./constants");
 const accessControlCheck = require("./accessControlCheck");
 const { CRUDActionsMap } = require("./actions");
-
-function getIndex(list, id, notFoundError) {
-  const idIndex = list.indexOf(id);
-
-  if (idIndex === -1) {
-    throw notFoundError;
-  }
-
-  return idIndex;
-}
-
-function move(list, id, dropPosition, notFoundError) {
-  const idIndex = getIndex(list, id, notFoundError);
-  list = [...list];
-  list.splice(idIndex, 1);
-  list.splice(dropPosition, 0, id);
-  return list;
-}
-
-// function update(list, id, updateId) {
-//   const idIndex = getIndex(list, id);
-// list = [...list];
-//   list[idIndex] = updateId;
-//   return list;
-// }
-
-function remove(list, id, notFoundError) {
-  const idIndex = getIndex(list, id, notFoundError);
-  list = [...list];
-  list.splice(idIndex, 1);
-  return list;
-}
-
-function add(list, id, dropPosition) {
-  list = [...list];
-  list.splice(dropPosition, 0, id);
-  return list;
-}
+const { getIndex, move, remove, add } = require("../../utils/utils");
 
 async function transferBlock({
   sourceBlock,

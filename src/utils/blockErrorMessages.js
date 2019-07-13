@@ -12,7 +12,8 @@ const errorMessages = {
   transferDestinationBlockMissing: "Transfer - destination block missing",
   transferDraggedBlockNotFoundInParent:
     "Transfer - transfered block not found in the source block",
-  blockNotFound: "Block not found"
+  blockNotFound: "Block not found",
+  roleDoesNotExist: "Role does not exist"
 };
 
 const errorFields = {
@@ -25,7 +26,8 @@ const errorFields = {
     "system.block.transferDestinationBlockMissing",
   transferDraggedBlockNotFoundInParent:
     "system.block.transferDraggedBlockNotFoundInParent",
-  blockNotFound: "system.block.blockNotFound"
+  blockNotFound: "system.block.blockNotFound",
+  roleDoesNotExist: "system.block.roleDoesNotExist"
 };
 
 const errors = {
@@ -57,6 +59,11 @@ const errors = {
   blockNotFound: new RequestError(
     errorFields.blockNotFound,
     errorMessages.blockNotFound
+  ),
+
+  roleDoesNotExist: new RequestError(
+    errorFields.roleDoesNotExist,
+    errorMessages.roleDoesNotExist
   )
 };
 

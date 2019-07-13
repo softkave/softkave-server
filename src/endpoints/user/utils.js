@@ -16,10 +16,20 @@ function userRoleIsUpgraded(user) {
   }
 }
 
+function findRoleIndex(user, orgId) {
+  Array.isArray(user.roles)
+    ? user.roles.findIndex(role => role.orgId === orgId)
+    : null;
+}
+
 function findRole(user, orgId) {
   Array.isArray(user.roles)
     ? user.roles.find(role => role.orgId === orgId)
     : null;
+}
+
+function areRolesSame(roleA, roleB) {
+  return roleA.roleName === roleB.roleName;
 }
 
 function getOrgIds(user) {
@@ -36,5 +46,7 @@ module.exports = {
   addEntryToPasswordDateLog,
   userRoleIsUpgraded,
   findRole,
-  getOrgIds
+  getOrgIds,
+  findRoleIndex,
+  areRolesSame
 };

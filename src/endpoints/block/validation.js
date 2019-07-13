@@ -36,18 +36,18 @@ const blockChildrenSchema = Joi.array()
   .unique()
   .max(blockConstants.maxChildrenCount);
 
+const roleNameSchema = Joi.string()
+  .lowercase()
+  .min(blockConstants.minRoleNameLength)
+  .max(blockConstants.maxRoleNameLength);
+
 const accessControlSchema = Joi.object().keys({
   orgId: uuidSchema,
   actionName: Joi.string()
     .uppercase()
     .valid(blockActionsArray),
   permittedRoles: Joi.array()
-    .items(
-      Joi.string()
-        .lowercase()
-        .min(blockConstants.minRoleNameLength)
-        .max(blockConstants.maxRoleNameLength)
-    )
+    .items(roleNameSchema)
     .unique()
     .max(blockConstants.maxRoles)
 });
@@ -160,4 +160,8 @@ exports.validateAddCollaboratorCollaborators = function validateAddCollaboratorC
   params
 ) {
   return validate(params, addCollaboratorCollaboratorsSchema);
+};
+
+exports.validateRoleName = function validateRoleName(params) {
+  return validate(params, roleNameSchema);
 };

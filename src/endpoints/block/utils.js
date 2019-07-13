@@ -17,9 +17,14 @@ function getParentsLength(block) {
 }
 
 function getRootParentId(block) {
+  let rootId = null;
+
   if (blockHasParents(block)) {
-    return block.parents[0];
+    rootId = block.parents[0];
   }
+
+  rootId = rootId || block.customId;
+  return rootId;
 }
 
 function isParentInBlock(block, parentId) {
