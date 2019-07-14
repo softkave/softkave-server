@@ -1,5 +1,4 @@
-const MongoModel = require("./MongoModel");
-const roleSchema = require("./schemas/role-schema");
+import { userRoleSchema } from "../user/schema";
 
 const blockTaskCollaboratorsDataSchema = {
   userId: String,
@@ -47,22 +46,8 @@ const blockSchema = {
   projects: [String],
   groupTaskContext: [String],
   groupProjectContext: [String],
-  roles: [roleSchema]
+  roles: [userRoleSchema]
 };
 
-const modelName = "block";
-const collectionName = "blocks";
-
-class BlockModel extends MongoModel {
-  constructor({ connection }) {
-    super({
-      connection,
-      modelName,
-      collectionName,
-      rawSchema: blockSchema
-    });
-  }
-}
-
-module.exports = BlockModel;
-export {};
+export default blockSchema;
+export { blockTaskCollaboratorsDataSchema };

@@ -16,9 +16,5 @@ const serverError = {
   )
 };
 
-module.exports = {
-  serverError,
-  serverErrorFields,
-  serverErrorMessages
-};
-export {};
+export default serverError;
+export { serverErrorFields, serverErrorMessages };

@@ -70,9 +70,5 @@ const blockError = {
   )
 };
 
-module.exports = {
-  blockError,
-  blockErrorFields,
-  blockErrorMessages
-};
-export {};
+export default blockError;
+export { blockErrorFields, blockErrorMessages };

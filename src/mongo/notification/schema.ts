@@ -1,5 +1,3 @@
-const MongoModel = require("./MongoModel");
-
 const notificationFromSchema = {
   userId: String,
   name: String,
@@ -22,7 +20,7 @@ const notificationSentEmailHistorySchema = {
   date: Number
 };
 
-const schema = {
+const notificationSchema = {
   customId: { type: String, unique: true },
   from: {
     type: notificationFromSchema,
@@ -47,19 +45,10 @@ const schema = {
   root: String
 };
 
-const modelName = "notification";
-const collectionName = "notifications";
-
-class NotificationModel extends MongoModel {
-  constructor({ connection }) {
-    super({
-      connection,
-      modelName,
-      collectionName,
-      rawSchema: schema
-    });
-  }
-}
-
-module.exports = NotificationModel;
-export {};
+export default notificationSchema;
+export {
+  notificationFromSchema,
+  notificationToSchema,
+  notificationSentEmailHistorySchema,
+  notificationStatusHistorySchema
+};

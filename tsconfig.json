@@ -6,7 +6,9 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true
   },
   "lib": ["es2015"],
   "exclude": ["node_modules", "dist"]

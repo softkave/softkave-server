@@ -41,11 +41,10 @@ function getErrorMessageWithMax(max, type) {
   }
 }
 
-module.exports = {
-  validationError,
+export default validationError;
+export {
   validationErrorFields,
   validationErrorMessages,
   getErrorMessageWithMin,
   getErrorMessageWithMax
 };
-export {};

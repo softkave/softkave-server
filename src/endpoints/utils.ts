@@ -82,3 +82,4 @@ module.exports = {
   insertUserCredentials,
   insertChangePasswordCredentials
 };
+export {};

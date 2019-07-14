@@ -1,4 +1,13 @@
-const { html } = require("./util");
+import { html } from "./util";
+
+export interface ICollaborationRequestParameters {
+  signupLink: string;
+  loginLink: string;
+  fromUser: string;
+  fromOrg: string;
+  message: string;
+  expiration: string | number;
+}
 
 const collaborationRequestMailTitle = `Collaboration Request Notification`;
 
@@ -9,7 +18,7 @@ function collaborationRequestHTML({
   fromOrg,
   message,
   expiration
-}) {
+}: ICollaborationRequestParameters) {
   const content = `
   <div
     id=""
@@ -42,7 +51,7 @@ function collaborationRequestHTML({
         To respond,<br />
         Login to your account
         <a href="${loginLink}">here</a>
-      
+
         <br />
         OR signup if you don't have one,
         <a href="${signupLink}">here</a
@@ -60,9 +69,8 @@ function collaborationRequestText({
   loginLink,
   fromUser,
   fromOrg,
-  message,
   expiration
-}) {
+}: ICollaborationRequestParameters) {
   return `
     You have a new collaboration request from ${fromUser} of ${fromOrg}.
     To respond, login to your account using this link ( ${loginLink} ) OR
@@ -71,7 +79,7 @@ function collaborationRequestText({
   `;
 }
 
-module.exports = {
+export {
   collaborationRequestHTML,
   collaborationRequestText,
   collaborationRequestMailTitle

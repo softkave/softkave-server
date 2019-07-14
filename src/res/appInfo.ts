@@ -5,7 +5,4 @@ const appInfo = {
   defaultEmailEncoding: "UTF-8"
 };
 
-module.exports = {
-  appInfo
-};
-export {};
+export default appInfo;

@@ -1,21 +1,61 @@
-const addBlock = require("./addBlock");
-const updateBlock = require("./updateBlock");
-const deleteBlock = require("./deleteBlock");
-const getBlockChildren = require("./getBlockChildren");
-const getBlockCollaborators = require("./getBlockCollaborators");
-const addCollaborators = require("./addCollaborators");
-const removeCollaborator = require("./removeCollaborator");
-const getBlockCollabRequests = require("./getBlockCollabRequests");
-const getRoleBlocks = require("./getRoleBlocks");
-const toggleTask = require("./toggleTask");
-const revokeRequest = require("./revokeRequest");
-const createRootBlock = require("./createRootBlock");
-const transferBlock = require("./transferBlock");
-const getBlock = require("./getBlock");
-const blockSchema = require("./schema");
-const { wrapGraphQLOperation, insertUserCredentials } = require("../utils");
+import { IBaseOperationParameters } from "..";
+import { insertUserCredentials, wrapGraphQLOperation } from "../utils";
+import addBlock from "./addBlock";
+import addCollaborators from "./addCollaborators";
+import assignRole from "./assignRole";
+import createRootBlock from "./createRootBlock";
+import deleteBlock from "./deleteBlock";
+import getBlock from "./getBlock";
+import getBlockChildren from "./getBlockChildren";
+import getBlockCollaborators from "./getBlockCollaborators";
+import getBlockCollabRequests from "./getBlockCollabRequests";
+import getRoleBlocks from "./getRoleBlocks";
+import removeCollaborator from "./removeCollaborator";
+import revokeRequest from "./revokeRequest";
+import blockSchema from "./schema";
+import toggleTask from "./toggleTask";
+import transferBlock from "./transferBlock";
+import updateAccessControlData from "./updateAccessControlData";
+import updateBlock from "./updateBlock";
+import updateRoles from "./updateRoles";
 
-async function getRequestBlock(arg) {
+export interface ITaskCollaborator {
+  userId: string;
+  completedAt: number;
+  assignedAt: number;
+  assignedBy: string;
+}
+
+export interface IBlock {
+  customId: string;
+  name: string;
+  description: string;
+  expectedEndAt: number;
+  createdAt: number;
+  color: string;
+  updatedAt: number;
+  type: string;
+  parents: string[];
+  createdBy: string;
+  taskCollaborators: ITaskCollaborator[];
+  priority: string;
+  isBacklog: boolean;
+  position: number;
+  positionTimestamp: number;
+  tasks: string[];
+  groups: string[];
+  projects: string[];
+  groupTaskContext: string[];
+  groupProjectContext: string[];
+  roles: [userRoleSchema];
+}
+
+export interface IBlockOperationParameters extends IBaseOperationParameters {
+  user;
+  block;
+}
+
+async function getRequestBlock(arg: any) {
   const block = await getBlock({
     ...arg,
     isRequired: true,
@@ -98,6 +138,24 @@ class BlockOperations {
 
     this.revokeRequest = wrapGraphQLOperation(
       revokeRequest,
+      staticParams,
+      endpointsWithBlockParamMiddlewares
+    );
+
+    this.updateAccessControlData = wrapGraphQLOperation(
+      updateAccessControlData,
+      staticParams,
+      endpointsWithBlockParamMiddlewares
+    );
+
+    this.assignRole = wrapGraphQLOperation(
+      assignRole,
+      staticParams,
+      endpointsWithBlockParamMiddlewares
+    );
+
+    this.updateRoles = wrapGraphQLOperation(
+      updateRoles,
       staticParams,
       endpointsWithBlockParamMiddlewares
     );

@@ -25,6 +25,13 @@ const blockSchema = `
     permittedRoles: [String]!
   }
 
+  type Role {
+    roleName: String
+    orgId: String
+    assignedAt: Number
+    assignedBy: String
+  }
+
   type Block {
     customId: String
     name: String
@@ -47,6 +54,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     accessControl: [AccessControl]
+    roles: [Role]
   }
 
   type BlockResponse {
@@ -166,25 +174,25 @@ const blockSchema = `
   type BlockQuery {
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
     updateBlock (
-      block: BlockParamInput!, 
+      block: BlockParamInput!,
       data: UpdateBlockInput!
     ) : ErrorOnlyResponse
     deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
     getRoleBlocks: MultipleBlocksOpResponse
     getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (
-      block: BlockParamInput!, 
+      block: BlockParamInput!,
       types: [String!],
       isBacklog: Boolean
     ) : MultipleBlocksOpResponse
     addCollaborators (
-      block: BlockParamInput!, 
+      block: BlockParamInput!,
       collaborators: [AddCollaboratorInput!]!,
       # body: String,
       # expiresAt: Float
     ) : ErrorOnlyResponse
     removeCollaborator (
-      block: BlockParamInput!, 
+      block: BlockParamInput!,
       collaborator: String!
     ) : ErrorOnlyResponse
     getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
@@ -201,8 +209,10 @@ const blockSchema = `
       draggedBlockType: String!,
       groupContext: String
     ): ErrorOnlyResponse
+    updateAccessControlData (accessControlData: [AccessControlInput!]!) : ErrorOnlyResponse
+    updateRoles (roles: [String!]!) : ErrorOnlyResponse
+    assignRole (collaborator: String!, roleName: String!) : ErrorOnlyResponse
   }
 `;
 
-module.exports = blockSchema;
-export {};
+export default blockSchema;

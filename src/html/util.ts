@@ -1,4 +1,4 @@
-const { appName } = require("../res/app");
+import appInfo from "../res/appInfo";
 
 const styles = `
 *{
@@ -52,7 +52,7 @@ body .sk-header-2{
 }
 .clear-side{
  margin-top: 2%;
-} 
+}
 
 img {
   vertical-align: auto;
@@ -67,13 +67,13 @@ img {
 }
 `;
 
-function html(content) {
+function html(content: string) {
   return `
     <!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="utf-8" />
-        <title>${appName}</title>
+        <title>${appInfo.appName}</title>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css"
@@ -116,6 +116,4 @@ function html(content) {
   `;
 }
 
-module.exports = {
-  html
-};
+export { html };

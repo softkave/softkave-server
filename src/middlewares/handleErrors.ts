@@ -1,26 +1,27 @@
-const {
-  credentialsExpiredError,
-  serverError,
-  invalidCredentialsError
-} = require("../utils/error");
+import { Request, Response } from "express";
 
-function handleErrors(err, req, res) {
-  if (err.name === "UnauthorizedError") {
+import jwtConstants from "../utils/jwtConstants";
+import serverError from "../utils/serverError";
+import userError from "../utils/userError";
+
+function handleErrors(err: Error | any, req: Request, res: Response) {
+  if (err.name === jwtConstants.errorTypes.unauthorizedError) {
     res.status(200).send({
-      errors: [invalidCredentialsError]
+      errors: [userError.invalidCredentials]
     });
-  } else if (err.name === "TokenExpiredError") {
+  } else if (err.name === jwtConstants.errorTypes.tokenExpired) {
     res.status(200).send({
-      errors: [credentialsExpiredError]
+      errors: [userError.credentialsExpired]
     });
   } else {
     res.status(500).send({
-      errors: [serverError]
+      errors: [serverError.serverError]
     });
   }
 
+  // for debugging purposes
+  // TODO: Log error in database, not console
   console.error(err);
 }
 
-module.exports = handleErrors;
-export {};
+export default handleErrors;

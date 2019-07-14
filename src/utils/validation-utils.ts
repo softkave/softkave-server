@@ -42,9 +42,4 @@ const validators = {
   validateColor
 };
 
-module.exports = {
-  validators,
-  regEx,
-  joiSchemas
-};
-export {};
+export { validators, regEx, joiSchemas };

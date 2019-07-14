@@ -74,9 +74,5 @@ const userError = {
   )
 };
 
-module.exports = {
-  userError,
-  userErrorFields,
-  userErrorMessages
-};
-export {};
+export default userError;
+export { userErrorFields, userErrorMessages };

@@ -28,9 +28,5 @@ const error = {
   block: block.blockErrors
 };
 
-module.exports = {
-  error,
-  errorFields,
-  errorMessages
-};
-export {};
+export default error;
+export { errorFields, errorMessages };

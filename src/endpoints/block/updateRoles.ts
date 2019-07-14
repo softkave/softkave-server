@@ -1,13 +1,7 @@
-const differenceWith = require("lodash/differenceWith");
-
 const accessControlCheck = require("./access-control-check");
 const { blockActionsMap } = require("./actions");
-const getRole = require("../block/getRole");
-const getUser = require("../user/getUser");
-const { update, indexArray } = require("../../utils/utils");
-const { findRole, findRoleIndex, areRolesSame } = require("../user/utils");
+const { indexArray } = require("../../utils/utils");
 const {
-  blockError,
   blockErrorFields,
   blockErrorMessages
 } = require("../../utils/blockError");
@@ -133,5 +127,4 @@ async function updateRoles({
   }
 }
 
-module.exports = updateRoles;
-export {};
+export default updateRoles;

@@ -11,3 +11,4 @@ const indexSchema = `
 `;
 
 module.exports = indexSchema;
+export {};

@@ -1,8 +1,13 @@
-const { html } = require("./util");
+import { html } from "./util";
+
+export interface IChangePasswordParameters {
+  link: string;
+  expiration: string | number;
+}
 
 const changePasswordMailTitle = `Change Password`;
 
-function changePasswordHTML({ link, expiration }) {
+function changePasswordHTML({ link, expiration }: IChangePasswordParameters) {
   const content = `
   <div
     id=""
@@ -35,7 +40,7 @@ function changePasswordHTML({ link, expiration }) {
         Also, do not share this link with anybody, as they will be able to
         change your password through it
       </p>
-    
+
     </div>
   </div>
   `;
@@ -43,15 +48,11 @@ function changePasswordHTML({ link, expiration }) {
   return html(content);
 }
 
-function changePasswordText({ link, expiration }) {
+function changePasswordText({ link, expiration }: IChangePasswordParameters) {
   return `
     To change your password, visit this link ( ${link} ) in your browser.
     It expires: ${expiration}.
   `;
 }
 
-module.exports = {
-  changePasswordHTML,
-  changePasswordText,
-  changePasswordMailTitle
-};
+export { changePasswordHTML, changePasswordText, changePasswordMailTitle };

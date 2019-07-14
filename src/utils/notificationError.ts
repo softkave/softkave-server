@@ -43,9 +43,5 @@ const notificationError = {
   )
 };
 
-module.exports = {
-  notificationError,
-  notificationErrorFields,
-  notificationErrorMessages
-};
-export {};
+export default notificationError;
+export { notificationErrorFields, notificationErrorMessages };

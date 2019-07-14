@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 const { joiSchemas, regEx } = require("../../utils/validation-utils");
 const { blockConstants } = require("./constants");
@@ -45,12 +45,17 @@ const roleNameArraySchema = Joi.array()
   .max(blockConstants.maxRoles);
 
 const accessControlSchema = Joi.object().keys({
-  orgId: uuidSchema,
+  orgId: joiSchemas.uuidSchema,
   actionName: Joi.string()
     .uppercase()
     .valid(blockActionsArray),
   permittedRoles: roleNameArraySchema
 });
+
+const accessControlArraySchema = Joi.array()
+  .items(accessControlSchema)
+  .unique("actionName")
+  .max(blockActionsArray.length);
 
 const blockSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
@@ -169,4 +174,9 @@ exports.validateRoleName = function validateRoleName(params) {
 exports.validateRoleNameArray = function validateRoleNameArray(params) {
   return validate(params, roleNameArraySchema);
 };
+
+exports.validateAccessControlArray = params => {
+  return validate(params, accessControlArraySchema);
+};
+
 export {};

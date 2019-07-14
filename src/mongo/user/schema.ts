@@ -1,5 +1,9 @@
-const MongoModel = require("./MongoModel");
-const roleSchema = require("./schemas/role-schema");
+const userRoleSchema = {
+  roleName: String,
+  orgId: String,
+  assignedAt: Number,
+  assignedBy: String
+};
 
 const userSchema = {
   customId: { type: String, unique: true },
@@ -25,22 +29,8 @@ const userSchema = {
   rootBlockId: String,
   orgs: [String],
   color: String,
-  roles: [roleSchema]
+  roles: [userRoleSchema]
 };
 
-const modelName = "user";
-const collectionName = "users";
-
-class UserModel extends MongoModel {
-  constructor({ connection }) {
-    super({
-      connection,
-      modelName,
-      collectionName,
-      rawSchema: userSchema
-    });
-  }
-}
-
-module.exports = UserModel;
-export {};
+export default userSchema;
+export { userRoleSchema };

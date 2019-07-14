@@ -1,7 +1,7 @@
-const { validateBlockParam } = require("./validation");
-const { blockErrors } = require("../../utils/blockError");
-const accessControlCheck = require("./access-control-check");
-const { CRUDActionsMap } = require("./actions");
+import { blockErrors } from "../../utils/blockError";
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
+import { validateBlockParam } from "./validation";
 
 async function getBlock({
   block,
@@ -30,5 +30,4 @@ async function getBlock({
   return block;
 }
 
-module.exports = getBlock;
-export {};
+export default getBlock;

@@ -1,16 +1,19 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const Status = {
-  READY: "READY",
-  ERROR: "ERROR",
-  CONNECTING: "CONNECTING"
-};
+export enum ConnectionStatus {
+  READY = "READY",
+  ERROR = "ERROR",
+  CONNECTING = "CONNECTING"
+}
 
 class MongoConnection {
-  constructor(uri, options) {
+  private connection: mongoose.Connection;
+  private status: ConnectionStatus;
+  private statusPromise: Promise<MongoConnection>;
+
+  constructor(uri: string, options: mongoose.ConnectionOptions) {
     this.connection = mongoose.createConnection(uri, options);
-    this.status = Status.CONNECTING;
-    this.error = null;
+    this.status = ConnectionStatus.CONNECTING;
     this.statusPromise = new Promise((resolve, reject) => {
       this.connection.once("open", () => {
         resolve(this);
@@ -23,31 +26,29 @@ class MongoConnection {
 
     this.statusPromise
       .then(() => {
-        this.status = Status.READY;
+        this.status = ConnectionStatus.READY;
       })
       .catch(error => {
-        this.status = Status.ERROR;
-        this.error = error;
+        this.status = ConnectionStatus.ERROR;
         throw error;
       });
   }
 
-  getConnection() {
+  public getConnection() {
     return this.connection;
   }
 
-  getStatus() {
+  public getStatus() {
     return this.status;
   }
 
-  ready() {
-    return this.status === Status.READY;
+  public isReady() {
+    return this.status === ConnectionStatus.READY;
   }
 
-  wait() {
+  public wait() {
     return this.statusPromise;
   }
 }
 
-module.exports = MongoConnection;
-export {};
+export default MongoConnection;

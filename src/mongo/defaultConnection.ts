@@ -1,4 +1,4 @@
-const MongoConnection = require("./MongoConnection");
+import MongoConnection from "./MongoConnection";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const options = {
@@ -7,5 +7,4 @@ const options = {
 
 const connection = new MongoConnection(MONGODB_URI, options);
 
-module.exports = { connection };
-export {};
+export default connection;
