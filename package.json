@@ -2,9 +2,9 @@
   "name": "softkave-server",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "tsc && node dist/app.js",
     "local-start": "nf start",
     "test": "jest"
   },
@@ -34,9 +34,13 @@
     "winston-transport": "4.3.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.6.2",
     "foreman": "^3.0.1",
     "jest": "^24.8.0",
-    "nodemon": "1.18.4"
+    "nodemon": "1.18.4",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   },
   "keywords": []
 }
