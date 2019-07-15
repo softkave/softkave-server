@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
+import userError from "../endpoints/user/userError";
 import jwtConstants from "../utils/jwtConstants";
 import serverError from "../utils/serverError";
-import userError from "../utils/userError";
 
 function handleErrors(err: Error | any, req: Request, res: Response) {
   if (err.name === jwtConstants.errorTypes.unauthorizedError) {

@@ -70,7 +70,7 @@ const notificationFieldNames = {
   root: "root"
 };
 
-module.exports = {
+export {
   notificationConstants,
   notificationFieldNames,
   notificationFromFieldNames,

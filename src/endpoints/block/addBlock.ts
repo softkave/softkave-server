@@ -1,19 +1,32 @@
-const addBlockToDB = require("./addBlockToDB");
-const { RequestError } = require("../../utils/error");
-const { blockErrors } = require("../../utils/blockError");
-const { validationErrorMessages } = require("../../utils/validationError");
-const canReadBlock = require("./canReadBlock");
-const { validateBlock } = require("./validation");
-const {
-  blockHasParents,
-  getImmediateParentID: getImmediateParentId
-} = require("./utils");
-const addOrgIDToUser = require("../user/addOrgIDToUser");
-const { blockFieldNames, blockConstants } = require("./constants");
-const accessControlCheck = require("./access-control-check");
-const { CRUDActionsMap } = require("./actions");
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import RequestError from "../../utils/RequestError";
+import { validationErrorMessages } from "../../utils/validationError";
+import addOrgIDToUser from "../user/addOrgIDToUser";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
+import addBlockToDB from "./addBlockToDB";
+import { IBlockDocument } from "./block";
+import blockError from "./blockError";
+import canReadBlock from "./canReadBlock";
+import { blockConstants, blockFieldNames } from "./constants";
+import { blockHasParents, getImmediateParentID } from "./utils";
+import { validateBlock } from "./validation";
 
-async function addBlock({ blockModel, user, block, accessControlModel }) {
+export interface IAddBlockParameters {
+  blockModel: BlockModel;
+  user: IUserDocument;
+  block: IBlockDocument;
+  accessControlModel: AccessControlModel;
+}
+
+async function addBlock({
+  blockModel,
+  user,
+  block,
+  accessControlModel
+}: IAddBlockParameters) {
   block = validateBlock(block);
   await accessControlCheck({
     user,
@@ -23,15 +36,15 @@ async function addBlock({ blockModel, user, block, accessControlModel }) {
   });
 
   if (block.type === blockConstants.blockTypes.root) {
-    throw blockErrors.invalidBlockType;
+    throw blockError.invalidBlockType;
   }
 
   if (block.type === blockConstants.blockTypes.org) {
-    let result = await addBlockToDB({ block, blockModel, user });
+    const result = await addBlockToDB({ block, blockModel, user });
 
     // TODO: scrub for orgs that are not added to user and add or clean them
     // Continuation: you can do this when user tries to read them, or add them again
-    await addOrgIDToUser({ user, id: result.customId });
+    await addOrgIDToUser({ user, ID: result.customId });
     return {
       block: result
     };
@@ -63,7 +76,7 @@ async function addBlock({ blockModel, user, block, accessControlModel }) {
   }
 
   await blockModel.model
-    .updateOne({ customId: getImmediateParentId(block) }, { $addToSet: update })
+    .updateOne({ customId: getImmediateParentID(block) }, { $addToSet: update })
     .exec();
 
   return {
@@ -71,5 +84,4 @@ async function addBlock({ blockModel, user, block, accessControlModel }) {
   };
 }
 
-module.exports = addBlock;
-export {};
+export default addBlock;

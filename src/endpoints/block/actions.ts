@@ -44,13 +44,7 @@ const CRUDActionsMap = {
   DELETE: "DELETE",
   TRANSFER: "TRANSFER"
 };
+
 const CRUDActionsArray = Object.keys(CRUDActionsMap);
 
-module.exports = {
-  blockActionsArray,
-  blockActionsMap,
-  CRUDActionsArray,
-  CRUDActionsMap
-};
-
-export {};
+export { blockActionsArray, blockActionsMap, CRUDActionsArray, CRUDActionsMap };

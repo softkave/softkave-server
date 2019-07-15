@@ -1,3 +1,5 @@
+import { IBlock } from "./block";
+
 const { RequestError } = require("./error");
 
 const blockErrorMessages = {
@@ -7,6 +9,7 @@ const blockErrorMessages = {
   taskExists: "Task exists",
   rootExists: "Root block exists",
   projectExists: "Project exists",
+  blockExists: "Block exists",
   transferSourceBlockMissing: "Transfer - source block missing",
   transferDraggedBlockMissing: "Transfer - transfered block missing",
   transferDestinationBlockMissing: "Transfer - destination block missing",
@@ -70,5 +73,24 @@ const blockError = {
   )
 };
 
+function getBlockExistsErrorMessage(block: IBlock) {
+  switch (block.type) {
+    case "org":
+      return blockErrorMessages.orgExists;
+
+    case "group":
+      return blockErrorMessages.groupExists;
+
+    case "project":
+      return blockErrorMessages.projectExists;
+
+    case "org":
+      return blockErrorMessages.orgExists;
+
+    default:
+      return blockErrorMessages.blockExists;
+  }
+}
+
 export default blockError;
-export { blockErrorFields, blockErrorMessages };
+export { blockErrorFields, blockErrorMessages, getBlockExistsErrorMessage };

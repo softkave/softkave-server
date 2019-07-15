@@ -1,9 +1,11 @@
-const {
+import Joi from "joi";
+import get from "lodash/get";
+
+import {
   getErrorMessageWithMax,
   getErrorMessageWithMin,
-  errorMessages: validationErrorMessages
-} = require("./validationErrorMessages");
-const { errorMessages: userErrorMessages } = require("./userErrorMessages");
+  validationErrorMessages
+} from "./validationError";
 
 const limitPath = "details.0.context.limit";
 const labelPath = "details.0.context.label";
@@ -16,7 +18,7 @@ function getRequiredErrorMessage() {
   return validationErrorMessages.requiredError;
 }
 
-function getMinErrorMessage(error, type) {
+function getMinErrorMessage(error: Joi.Err, type) {
   const min = get(error, limitPath);
   const label = get(error, labelPath);
 

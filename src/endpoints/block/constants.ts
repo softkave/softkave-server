@@ -87,9 +87,4 @@ const blockFieldNames = {
   groupProjectContext: "groupProjectContext"
 };
 
-module.exports = {
-  blockConstants,
-  blockFieldNames,
-  blockTaskCollaboratorFieldNames
-};
-export {};
+export { blockConstants, blockFieldNames, blockTaskCollaboratorFieldNames };

@@ -1,14 +1,16 @@
-function getImmediateParentID(block) {
+import { IBlock } from "./block";
+
+export function getImmediateParentID(block: IBlock) {
   if (blockHasParents(block)) {
     return block.parents[block.parents.length - 1];
   }
 }
 
-function blockHasParents(block) {
+export function blockHasParents(block: IBlock) {
   return block && Array.isArray(block.parents) && block.parents.length > 0;
 }
 
-function getParentsLength(block) {
+export function getParentsLength(block: IBlock) {
   if (blockHasParents(block)) {
     return block.parents.length;
   }
@@ -16,7 +18,7 @@ function getParentsLength(block) {
   return 0;
 }
 
-function getRootParentID(block) {
+export function getRootParentID(block: IBlock) {
   let rootId = null;
 
   if (blockHasParents(block)) {
@@ -27,19 +29,10 @@ function getRootParentID(block) {
   return rootId;
 }
 
-function isParentInBlock(block, parentId) {
+export function isParentInBlock(block: IBlock, parentId: string) {
   if (blockHasParents(block)) {
     return !!block.parents.find(parent => parent === parentId);
   }
 
   return false;
 }
-
-module.exports = {
-  getImmediateParentID,
-  blockHasParents,
-  getRootParentID,
-  isParentInBlock,
-  getParentsLength
-};
-export {};

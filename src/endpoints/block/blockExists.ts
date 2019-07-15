@@ -1,6 +1,14 @@
-async function blockExists({ block, blockModel }) {
+import BlockModel from "../../mongo/block/BlockModel";
+import { IBlock } from "./block";
+
+export interface IBlockExistsParameters {
+  block: IBlock;
+  blockModel: BlockModel;
+}
+
+async function blockExists({ block, blockModel }: IBlockExistsParameters) {
   const { name, type, customId, parents } = block;
-  let blockExistQuery = {
+  const blockExistQuery: any = {
     name,
     type,
     customId
@@ -10,12 +18,11 @@ async function blockExists({ block, blockModel }) {
     blockExistQuery.parents = parents;
   }
 
-  let blockExists = await blockModel.model
+  const blockExistsResult = await blockModel.model
     .findOne(blockExistQuery, "customId")
     .exec();
 
-  return blockExists;
+  return blockExistsResult;
 }
 
-module.exports = blockExists;
-export {};
+export default blockExists;

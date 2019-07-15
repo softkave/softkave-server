@@ -1,4 +1,6 @@
-function addEntryToPasswordDateLog(arr) {
+import { IUser, IUserRole } from "./user";
+
+function addEntryToPasswordDateLog(arr: number[]) {
   arr.push(Date.now());
 
   if (arr.length > 5) {
@@ -8,46 +10,46 @@ function addEntryToPasswordDateLog(arr) {
   return arr;
 }
 
-function userRoleIsUpgraded(user) {
+function userRoleIsUpgraded(user: IUser) {
   if (Array.isArray(user.roles)) {
     return true;
-  } else {
-    return false;
   }
+
+  return false;
 }
 
-function findRoleIndex(user, orgId) {
-  Array.isArray(user.roles)
-    ? user.roles.findIndex(role => role.orgId === orgId)
+function findRoleIndex(user: IUser, orgID: string) {
+  return Array.isArray(user.roles)
+    ? user.roles.findIndex(role => role.orgId === orgID)
     : null;
 }
 
-function findRole(user, orgId) {
-  Array.isArray(user.roles)
-    ? user.roles.find(role => role.orgId === orgId)
+function findRole(user: IUser, orgID: string) {
+  return Array.isArray(user.roles)
+    ? user.roles.find(role => role.orgId === orgID)
     : null;
 }
 
-function areRolesSame(roleA, roleB) {
+function areRolesTheSame(roleA: IUserRole, roleB: IUserRole) {
   return roleA.roleName === roleB.roleName;
 }
 
-function getOrgIDs(user) {
+function getOrgIDs(user: IUser) {
   if (userRoleIsUpgraded(user)) {
     return [...user.orgs, user.rootBlockId];
-  } else {
-    return user.roles.reduce((accumulator, role) => {
-      accumulator.push(role.orgId);
-    }, []);
   }
+
+  return user.roles.reduce((accumulator, role) => {
+    accumulator.push(role.orgId);
+    return accumulator;
+  }, []);
 }
 
-module.exports = {
+export {
   addEntryToPasswordDateLog,
   userRoleIsUpgraded,
   findRole,
   getOrgIDs,
   findRoleIndex,
-  areRolesSame
+  areRolesTheSame
 };
-export {};

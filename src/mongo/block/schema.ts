@@ -1,10 +1,14 @@
-import { userRoleSchema } from "../user/schema";
-
 const blockTaskCollaboratorsDataSchema = {
   userId: String,
   completedAt: Number,
   assignedAt: Number,
   assignedBy: String
+};
+
+const blockRoleSchema = {
+  roleName: String,
+  createdBy: String,
+  createdAt: String
 };
 
 const blockSchema = {
@@ -46,7 +50,7 @@ const blockSchema = {
   projects: [String],
   groupTaskContext: [String],
   groupProjectContext: [String],
-  roles: [userRoleSchema]
+  roles: [blockRoleSchema]
 };
 
 export default blockSchema;

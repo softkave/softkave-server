@@ -1,6 +1,6 @@
-import { blockErrors } from "../../utils/blockError";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
+import { blockErrors } from "./blockError";
 import { validateBlockParam } from "./validation";
 
 async function getBlock({

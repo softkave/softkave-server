@@ -1,12 +1,10 @@
 import Joi from "joi";
 
-const { joiSchemas, regEx } = require("../../utils/validation-utils");
-const { blockConstants } = require("./constants");
-const { validate } = require("../../utils/joi-utils");
-const { notificationConstants } = require("../notification/constants");
-const { blockActionsArray } = require("./actions");
-
-module.exports = exports;
+import { validate } from "../../utils/joi-utils";
+import { joiSchemas, regEx } from "../../utils/validation-utils";
+import { notificationConstants } from "../notification/constants";
+import { blockActionsArray } from "./actions";
+import { blockConstants } from "./constants";
 
 const blockParamSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema

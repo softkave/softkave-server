@@ -30,6 +30,8 @@ Also, some extensions are required to take advantage of the configurations, they
 
 ### Run Application
 
+Open your command line, navigate to the project's root folder, and
+
 - Run `npm install`
-- Run `npm local-start` for local development
+- Run `npm local-start` for local development OR
 - Run through vscode debugger for debugging, it is pre-configured

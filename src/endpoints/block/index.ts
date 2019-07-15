@@ -1,8 +1,10 @@
 import { IBaseOperationParameters } from "..";
+import { IUser } from "../user/user";
 import { insertUserCredentials, wrapGraphQLOperation } from "../utils";
 import addBlock from "./addBlock";
 import addCollaborators from "./addCollaborators";
 import assignRole from "./assignRole";
+import { IBlock } from "./block";
 import createRootBlock from "./createRootBlock";
 import deleteBlock from "./deleteBlock";
 import getBlock from "./getBlock";
@@ -19,40 +21,9 @@ import updateAccessControlData from "./updateAccessControlData";
 import updateBlock from "./updateBlock";
 import updateRoles from "./updateRoles";
 
-export interface ITaskCollaborator {
-  userId: string;
-  completedAt: number;
-  assignedAt: number;
-  assignedBy: string;
-}
-
-export interface IBlock {
-  customId: string;
-  name: string;
-  description: string;
-  expectedEndAt: number;
-  createdAt: number;
-  color: string;
-  updatedAt: number;
-  type: string;
-  parents: string[];
-  createdBy: string;
-  taskCollaborators: ITaskCollaborator[];
-  priority: string;
-  isBacklog: boolean;
-  position: number;
-  positionTimestamp: number;
-  tasks: string[];
-  groups: string[];
-  projects: string[];
-  groupTaskContext: string[];
-  groupProjectContext: string[];
-  roles: [userRoleSchema];
-}
-
 export interface IBlockOperationParameters extends IBaseOperationParameters {
-  user;
-  block;
+  user: IUser;
+  block: IBlock;
 }
 
 async function getRequestBlock(arg: any) {

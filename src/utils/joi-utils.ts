@@ -1,23 +1,21 @@
-const get = require("lodash/get");
-const Joi = require("joi");
+import Joi from "joi";
+import get from "lodash/get";
 
-const { RequestError } = require("./error");
-const { joiErrorMessages } = require("./joiErrors");
-const {
-  errorMessages: validationErrorMessages
-} = require("./validationErrorMessages");
+import { joiErrorMessages } from "./joiError";
+import RequestError from "./RequestError";
+import { validationErrorMessages } from "./validationError";
 
 const typePath = "details.0.type";
 const pathPath = "details.0.path";
 
-function validate(data, schema) {
+function validate(data: any, schema) {
   const { error, value } = Joi.validate(data, schema, {
     abortEarly: false,
     convert: true
   });
 
   if (error) {
-    let errorArray = [];
+    const errorArray = [];
     const type = get(error, typePath);
     let path = get(error, pathPath);
     path = Array(path).join(".");
@@ -32,16 +30,10 @@ function validate(data, schema) {
       );
     }
 
-    // console.log(validationErrorMessages);
-    // throw validationErrorMessages[0];
-
     return errorArray;
   }
 
   return value;
 }
 
-module.exports = {
-  validate
-};
-export {};
+export { validate };
