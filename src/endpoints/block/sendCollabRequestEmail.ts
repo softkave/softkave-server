@@ -1,14 +1,14 @@
-const aws = require("../../res/aws");
-const {
+import {
   collaborationRequestHTML,
-  collaborationRequestText,
-  collaborationRequestMailTitle
-} = require("../../html/collaboration-request");
-const { appInfo } = require("../../res/app");
+  collaborationRequestMailTitle,
+  collaborationRequestText
+} from "../../html/collaboration-request";
+import { appInfo } from "../../res/app";
+import aws from "../../res/aws";
 
-const ses = new aws.SES();
-const clientSignupRoute = "/signup";
-const clientLoginRoute = "/login";
+import ses =; new aws.SES();
+import clientSignupRoute =; "/signup";
+import clientLoginRoute =; "/login";
 
 async function sendCollabReqEmail({
   email,

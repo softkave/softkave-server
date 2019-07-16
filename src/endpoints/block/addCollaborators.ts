@@ -1,13 +1,13 @@
-const sendCollabRequestEmail = require("./sendCollabRequestEmail");
-const { RequestError } = require("../../utils/error");
-const {
+import sendCollabRequestEmail from "./sendCollabRequestEmail";
+import { RequestError } from "../../utils/error";
+import {
   notificationErrorMessages,
   notificationErrorFields
-} = require("../../utils/notificationError");
-const { validateAddCollaboratorCollaborators } = require("./validation");
-const { notificationConstants } = require("../notification/constants");
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
+} from "../../utils/notificationError";
+import { validateAddCollaboratorCollaborators } from "./validation";
+import { notificationConstants } from "../notification/constants";
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
 
 function isRequestAccepted(request) {
   if (Array.isArray(request.statusHistory)) {

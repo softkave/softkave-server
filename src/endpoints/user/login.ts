@@ -1,10 +1,17 @@
-const argon2 = require("argon2");
+import argon2 from "argon2";
 
-const newToken = require("./newToken");
-const { validatePassword, validateEmail } = require("./validation");
-const { userErrors } = require("../../utils/userError");
+import UserModel from "../../mongo/user/UserModel";
+import newToken from "./newToken";
+import userError from "./userError";
+import { validateEmail, validatePassword } from "./validation";
 
-async function login({ email, password, userModel }) {
+export interface ILoginParameters {
+  email: string;
+  password: string;
+  userModel: UserModel;
+}
+
+async function login({ email, password, userModel }: ILoginParameters) {
   email = validateEmail(email);
   password = validatePassword(password);
 
@@ -16,7 +23,7 @@ async function login({ email, password, userModel }) {
     .exec();
 
   if (!userData || !(await argon2.verify(userData.hash, password))) {
-    throw userErrors.invalidLoginCredentials;
+    throw userError.invalidLoginCredentials;
   }
 
   return {
@@ -25,5 +32,4 @@ async function login({ email, password, userModel }) {
   };
 }
 
-module.exports = login;
-export {};
+export default login;

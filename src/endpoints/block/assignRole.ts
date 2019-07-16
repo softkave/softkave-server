@@ -1,12 +1,12 @@
-const accessControlCheck = require("./accessControlCheck");
-const { blockActionsMap } = require("./actions");
-const getRole = require("../block/getRole");
-const getUser = require("../user/getUser");
-const { update } = require("../../utils/utils");
-const { getRootParentId } = require("./utils");
-const { findRole, findRoleIndex } = require("../user/utils");
-const { blockErrors } = require("../../utils/blockError");
-const { validateRoleName } = require("./validation");
+import accessControlCheck from "./accessControlCheck";
+import { blockActionsMap } from "./actions";
+import getRole from "../block/getRole";
+import getUser from "../user/getUser";
+import { update } from "../../utils/utils";
+import { getRootParentId } from "./utils";
+import { findRole, findRoleIndex } from "../user/utils";
+import { blockErrors } from "../../utils/blockError";
+import { validateRoleName } from "./validation";
 
 async function assignRole({
   block,

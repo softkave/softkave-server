@@ -1,10 +1,12 @@
+import { IUser } from "./user";
+
 const jwt = require("jsonwebtoken");
 
 const { jwtConstants } = require("../../utils/jwt-constants");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-function newToken(user, additionalInfo) {
+function newToken(user: IUser, additionalInfo?: any) {
   return jwt.sign(
     {
       customId: user.customId,
@@ -17,5 +19,4 @@ function newToken(user, additionalInfo) {
   );
 }
 
-module.exports = newToken;
-export {};
+export default newToken;

@@ -3,13 +3,13 @@ import mongoDBConstants from "../../mongo/constants";
 import RequestError from "../../utils/RequestError";
 import { validationErrorMessages } from "../../utils/validationError";
 import { IUserDocument } from "../user/user";
-import { IBlock, IBlockDocument } from "./block";
+import { IBlock } from "./block";
 import { blockErrorFields, getBlockExistsErrorMessage } from "./blockError";
 import blockExists from "./blockExists";
 import { blockFieldNames } from "./constants";
 
 export interface IAddBlockToDBParameters {
-  block: IBlockDocument;
+  block: IBlock;
   blockModel: BlockModel;
   user: IUserDocument;
 }

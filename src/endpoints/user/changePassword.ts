@@ -1,10 +1,16 @@
-const argon2 = require("argon2");
+import argon2 from "argon2";
 
-const newToken = require("./newToken");
-const { addEntryToPasswordDateLog } = require("./utils");
-const { validatePassword } = require("./validation");
+import newToken from "./newToken";
+import { IUserDocument } from "./user";
+import { addEntryToPasswordDateLog } from "./utils";
+import { validatePassword } from "./validation";
 
-async function changePassword({ password, user }) {
+export interface IChangePasswordParameters {
+  password: string;
+  user: IUserDocument;
+}
+
+async function changePassword({ password, user }: IChangePasswordParameters) {
   const passwordValue = validatePassword(password);
   user.hash = await argon2.hash(passwordValue);
   user.changePasswordHistory = addEntryToPasswordDateLog(
@@ -18,5 +24,4 @@ async function changePassword({ password, user }) {
   };
 }
 
-module.exports = changePassword;
-export {};
+export default changePassword;

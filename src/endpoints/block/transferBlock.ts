@@ -1,13 +1,13 @@
-const { blockErrors } = require("../../utils/blockError");
-const {
+import { blockErrors } from "../../utils/blockError";
+import {
   validateBlockParam,
   validateBlockTypes,
   validateGroupContexts
-} = require("./validation");
-const { blockConstants } = require("./constants");
-const accessControlCheck = require("./access-control-check");
-const { CRUDActionsMap } = require("./actions");
-const { getIndex, move, remove, add } = require("../../utils/utils");
+} from "./validation";
+import { blockConstants } from "./constants";
+import accessControlCheck from "./access-control-check";
+import { CRUDActionsMap } from "./actions";
+import { getIndex, move, remove, add } from "../../utils/utils";
 
 async function transferBlock({
   sourceBlock,

@@ -1,7 +1,13 @@
-const { validateEmail } = require("./validation");
+import UserModel from "../../mongo/user/UserModel";
+import { validateEmail } from "./validation";
 
-async function userExists({ email, userModel }) {
-  let value = validateEmail(email);
+export interface IUserExistsParameters {
+  email: string;
+  userModel: UserModel;
+}
+
+async function userExists({ email, userModel }: IUserExistsParameters) {
+  const value = validateEmail(email);
   const user = await userModel.model
     .findOne(
       {
@@ -19,5 +25,4 @@ async function userExists({ email, userModel }) {
   };
 }
 
-module.exports = userExists;
-export {};
+export default userExists;

@@ -1,4 +1,4 @@
-const { getOrgIDs } = require("../user/utils");
+import { getOrgIDs } from "../user/utils";
 
 async function getRoleBlocks({ user, blockModel }) {
   const orgIds = getOrgIDs(user);
@@ -8,7 +8,7 @@ async function getRoleBlocks({ user, blockModel }) {
     }
   };
 
-  let blocks = await blockModel.model
+  const blocks = await blockModel.model
     .find(query)
     .lean()
     .exec();

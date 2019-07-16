@@ -1,26 +1,34 @@
-const { validateUpdateUserData } = require("./validation");
-const { userErrors } = require("../../utils/userError");
+import UserModel from "../../mongo/user/UserModel";
+import { IUserDocument } from "./user";
+import userError from "./userError";
+import { validateUpdateUserData } from "./validation";
 
-async function updateUser({ data, userModel, user }) {
+// TODO: define data's type
+export interface IUpdateUserParameters {
+  data: any;
+  userModel: UserModel;
+  user: IUserDocument;
+}
+
+async function updateUser({ data, userModel, user }: IUpdateUserParameters) {
   const userData = validateUpdateUserData(data);
 
-  let user = userModel.model
+  const updatedUser = userModel.model
     .findOneAndUpdate(
       {
         customId: user.customId
       },
       userData,
       {
-        lean: true,
         fields: "customId"
       }
     )
+    .lean()
     .exec();
 
-  if (!!!user) {
-    throw userErrors.userDoesNotExist;
+  if (!!!updatedUser) {
+    throw userError.userDoesNotExist;
   }
 }
 
-module.exports = updateUser;
-export {};
+export default updateUser;

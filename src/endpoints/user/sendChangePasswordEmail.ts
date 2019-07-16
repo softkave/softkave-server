@@ -1,18 +1,28 @@
-const querystring = require("querystring");
+import querystring from "querystring";
 
-const aws = require("../../res/aws");
-const { appInfo } = require("../../res/app");
-const {
+import {
   changePasswordHTML,
-  changePasswordText,
-  changePasswordMailTitle
-} = require("../../html/change-password");
+  changePasswordMailTitle,
+  changePasswordText
+} from "../../html/changePasswordHTML";
+import appInfo from "../../res/appInfo";
+import aws from "../../res/aws";
 
 const ses = new aws.SES();
 const clientDomain = appInfo.clientDomain;
 const changePasswordRoute = "/change-password";
 
-async function sendChangePasswordEmail({ emailAddress, query, expiration }) {
+export interface ISendChangePasswordEmailParameters {
+  emailAddress: string;
+  query: any;
+  expiration: string | number;
+}
+
+async function sendChangePasswordEmail({
+  emailAddress,
+  query,
+  expiration
+}: ISendChangePasswordEmailParameters) {
   const link = `${clientDomain}${changePasswordRoute}?${querystring.stringify(
     query
   )}`;
@@ -48,5 +58,4 @@ async function sendChangePasswordEmail({ emailAddress, query, expiration }) {
   return result;
 }
 
-module.exports = sendChangePasswordEmail;
-export {};
+export default sendChangePasswordEmail;

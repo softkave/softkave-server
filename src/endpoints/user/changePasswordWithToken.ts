@@ -1,16 +1,23 @@
-const { userErrors } = require("../../utils/userError");
-const changePassword = require("./changePassword");
-const { jwtConstants } = require("../../utils/jwt-constants");
+import jwtConstants from "../../utils/jwtConstants";
+import changePassword, { IChangePasswordParameters } from "./changePassword";
+import userError from "./userError";
 
-async function changePasswordWithToken(arg) {
+// TODO: define tokenData
+export interface IChangePasswordWithTokenParameters
+  extends IChangePasswordParameters {
+  tokenData: any;
+}
+
+async function changePasswordWithToken(
+  arg: IChangePasswordWithTokenParameters
+) {
   const { tokenData } = arg;
 
   if (tokenData && tokenData.domain !== jwtConstants.domains.changePassword) {
-    throw userErrors.invalidCredentials;
+    throw userError.invalidCredentials;
   }
 
   return await changePassword(arg);
 }
 
-module.exports = changePasswordWithToken;
-export {};
+export default changePasswordWithToken;

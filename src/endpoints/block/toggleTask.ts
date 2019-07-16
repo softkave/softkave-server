@@ -1,6 +1,6 @@
-const { blockConstants } = require("./constants");
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
+import { blockConstants } from "./constants";
 
 async function toggleTask({
   block,

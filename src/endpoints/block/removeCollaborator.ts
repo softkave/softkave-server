@@ -1,11 +1,11 @@
-const uuid = require("uuid/v4");
+import uuid from "uuid/v4";
 
-const { errors: userErrors } = require("../../utils/userErrorMessages");
-const deleteOrgIDFromUser = require("../user/deleteOrgIDFromUser");
-const { validators } = require("../../utils/validation-utils");
-const { notificationConstants } = require("../notification/constants");
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
+import { errors: userErrors } from "../../utils/userErrorMessages";
+import { validators } from "../../utils/validation-utils";
+import { notificationConstants } from "../notification/constants";
+import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
 
 async function removeCollaborator({
   block,
@@ -16,7 +16,7 @@ async function removeCollaborator({
   userModel
 }) {
   collaborator = validators.validateUUID(collaborator);
-  let ownerBlock = block;
+  const ownerBlock = block;
   await accessControlCheck({
     user,
     block,
@@ -24,7 +24,7 @@ async function removeCollaborator({
     actionName: blockActionsMap.REMOVE_COLLABORATOR
   });
 
-  let fetchedCollaborator = await userModel.model
+  const fetchedCollaborator = await userModel.model
     .findOne({
       customId: collaborator
     })
@@ -38,7 +38,7 @@ async function removeCollaborator({
   sendNotification();
 
   async function sendNotification() {
-    let notification = new notificationModel.model({
+    const notification = new notificationModel.model({
       customId: uuid(),
       from: {
         userId: user.customId,

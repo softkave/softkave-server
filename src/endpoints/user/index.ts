@@ -1,20 +1,20 @@
-const signup = require("./signup");
-const login = require("./login");
-const changePassword = require("./changePassword");
-const forgotPassword = require("./forgotPassword");
-const userExists = require("./userExists");
-const updateUser = require("./updateUser");
-const getCollaborationRequests = require("./getCollaborationRequests");
-const respondToCollaborationRequest = require("./respondToCollaborationRequest");
-const updateCollaborationRequest = require("./updateCollaborationRequest");
-const changePasswordWithToken = require("./changePasswordWithToken");
-const getUserData = require("./getUserData");
-const userSchema = require("./schema");
-const {
+import signup from "./signup";
+import login from "./login";
+import changePassword from "./changePassword";
+import forgotPassword from "./forgotPassword";
+import userExists from "./userExists";
+import updateUser from "./updateUser";
+import getCollaborationRequests from "./getCollaborationRequests";
+import respondToCollaborationRequest from "./respondToCollaborationRequest";
+import updateCollaborationRequest from "./updateCollaborationRequest";
+import changePasswordWithToken from "./changePasswordWithToken";
+import getUserData from "./getUserData";
+import userSchema from "./schema";
+import {
   wrapGraphQLOperation,
   insertUserCredentials,
   insertChangePasswordCredentials
-} = require("../utils");
+} from "../utils";
 
 class UserOperations {
   constructor(staticParams) {

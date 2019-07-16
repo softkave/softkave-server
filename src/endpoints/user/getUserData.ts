@@ -1,13 +1,17 @@
-const newToken = require("./newToken");
-const { userErrors } = require("../../utils/userError");
+import newToken from "./newToken";
+import { IUserDocument } from "./user";
+import userError from "./userError";
 
-async function getUserData({ user }) {
+export interface IGetUserDataParameters {
+  user: IUserDocument;
+}
+
+async function getUserData({ user }: IGetUserDataParameters) {
   if (!user) {
-    throw userErrors.userDoesNotExist;
+    throw userError.userDoesNotExist;
   }
 
   return { user, token: newToken(user) };
 }
 
-module.exports = getUserData;
-export {};
+export default getUserData;

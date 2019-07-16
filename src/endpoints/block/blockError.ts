@@ -1,6 +1,6 @@
 import { IBlock } from "./block";
 
-const { RequestError } = require("./error");
+import { RequestError } from "./error";
 
 const blockErrorMessages = {
   invalidBlockType: "Invalid block type",

@@ -1,13 +1,10 @@
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
-const { indexArray } = require("../../utils/utils");
-const {
-  blockErrorFields,
-  blockErrorMessages
-} = require("../../utils/blockError");
-const { validateAccessControlArray } = require("./validation");
-const { blockConstants } = require("./constants");
-const { RequestError } = require("../../utils/RequestError");
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
+import { indexArray } from "../../utils/utils";
+import { blockErrorFields, blockErrorMessages } from "../../utils/blockError";
+import { validateAccessControlArray } from "./validation";
+import { blockConstants } from "./constants";
+import { RequestError } from "../../utils/RequestError";
 
 async function updateAccessControlData({
   block,

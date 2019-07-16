@@ -1,7 +1,18 @@
-const { userErrors } = require("../../utils/userError");
-const { validators } = require("../../utils/validation-utils");
+import UserModel from "../../mongo/user/UserModel";
+import { validators } from "../../utils/validation-utils";
+import userError from "./userError";
 
-async function getUser({ collaborator, userModel, required }) {
+export interface IGetUserParameters {
+  collaborator: string;
+  userModel: UserModel;
+  required?: boolean;
+}
+
+async function getUser({
+  collaborator,
+  userModel,
+  required
+}: IGetUserParameters) {
   collaborator = validators.validateUUID(collaborator);
   const query = {
     customId: collaborator
@@ -10,11 +21,10 @@ async function getUser({ collaborator, userModel, required }) {
   const fetchedCollaborator = await userModel.model.findOne(query).exec();
 
   if (!fetchedCollaborator && required) {
-    throw userErrors.collaboratorDoesNotExist;
+    throw userError.collaboratorDoesNotExist;
   }
 
   return fetchedCollaborator;
 }
 
-module.exports = getUser;
-export {};
+export default getUser;

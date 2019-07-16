@@ -1,8 +1,8 @@
-const { getParentsLength } = require("./utils");
-const { validateBlockTypes } = require("./validation");
-const { blockConstants } = require("./constants");
-const accessControlCheck = require("./access-control-check");
-const { CRUDActionsMap } = require("./actions");
+import { getParentsLength } from "./utils";
+import { validateBlockTypes } from "./validation";
+import { blockConstants } from "./constants";
+import accessControlCheck from "./access-control-check";
+import { CRUDActionsMap } from "./actions";
 
 async function getBlockChildren({
   block,

@@ -1,13 +1,19 @@
-const sendChangePasswordEmail = require("./sendChangePasswordEmail");
-const { addEntryToPasswordDateLog } = require("./utils");
-const newToken = require("./newToken");
-const { validateEmail } = require("./validation");
-const { userErrors } = require("../../utils/userError");
-const { jwtConstants } = require("../../utils/jwt-constants");
+import UserModel from "../../mongo/user/UserModel";
+import jwtConstants from "../../utils/jwtConstants";
+import newToken from "./newToken";
+import sendChangePasswordEmail from "./sendChangePasswordEmail";
+import userError from "./userError";
+import { addEntryToPasswordDateLog } from "./utils";
+import { validateEmail } from "./validation";
 
 const linkExpirationDuration = "1 day";
 
-async function forgotPassword({ email, userModel }) {
+export interface IForgotPasswordParameters {
+  email: string;
+  userModel: UserModel;
+}
+
+async function forgotPassword({ email, userModel }: IForgotPasswordParameters) {
   const emailValue = validateEmail(email);
   const user = await userModel.model
     .findOne({
@@ -16,7 +22,7 @@ async function forgotPassword({ email, userModel }) {
     .exec();
 
   if (!user) {
-    throw userErrors.userDoesNotExist;
+    throw userError.userDoesNotExist;
   }
 
   const expirationDuration = linkExpirationDuration;
@@ -38,5 +44,4 @@ async function forgotPassword({ email, userModel }) {
   user.save();
 }
 
-module.exports = forgotPassword;
-export {};
+export default forgotPassword;

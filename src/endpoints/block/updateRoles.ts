@@ -1,14 +1,14 @@
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
-const { indexArray } = require("../../utils/utils");
-const {
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
+import { indexArray } from "../../utils/utils";
+import {
   blockErrorFields,
   blockErrorMessages
-} = require("../../utils/blockError");
-const { validateRoleNameArray } = require("./validation");
-const getBlockRoles = require("./getBlocksAccessControlData");
-const { blockConstants } = require("./constants");
-const { RequestError } = require("../../utils/RequestError");
+} from "../../utils/blockError";
+import { validateRoleNameArray } from "./validation";
+import getBlockRoles from "./getBlocksAccessControlData";
+import { blockConstants } from "./constants";
+import { RequestError } from "../../utils/RequestError";
 
 function indexRoles(roles) {
   return indexArray(roles, {

@@ -1,5 +1,5 @@
-const { getRootParentID } = require("./utils");
-const { blockErrors } = require("../../utils/blockError");
+import { blockErrors } from "../../utils/blockError";
+import { getRootParentID } from "./utils";
 
 async function getRole({ accessControlModel, roleName, block, required }) {
   const query = {

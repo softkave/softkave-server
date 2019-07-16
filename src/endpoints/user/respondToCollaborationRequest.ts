@@ -1,8 +1,19 @@
-const { notificationErrors } = require("../../utils/notificationError");
-const addOrgIdToUser = require("./addOrgIdToUser");
-const { validators } = require("../../utils/validation-utils");
-const { validateCollaborationRequestResponse } = require("./validation");
-const { notificationConstants } = require("../notification/constants");
+import BlockModel from "../../mongo/block/BlockModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import notificationError from "../../utils/notificationError";
+import { validators } from "../../utils/validation-utils";
+import { notificationConstants } from "../notification/constants";
+import addOrgIDToUser from "./addOrgIDToUser";
+import { IUserDocument } from "./user";
+import { validateCollaborationRequestResponse } from "./validation";
+
+export interface IRespondToCollaborationRequestParameters {
+  customId: string;
+  response: string;
+  notificationModel: NotificationModel;
+  user: IUserDocument;
+  blockModel: BlockModel;
+}
 
 async function respondToCollaborationRequest({
   customId,
@@ -10,14 +21,14 @@ async function respondToCollaborationRequest({
   notificationModel,
   user,
   blockModel
-}) {
+}: IRespondToCollaborationRequestParameters) {
   customId = validators.validateUUID(customId);
-  reponse = validateCollaborationRequestResponse(response);
+  response = validateCollaborationRequestResponse(response);
 
-  let request = await notificationModel.model
+  const request = await notificationModel.model
     .findOneAndUpdate(
       {
-        customId: customId,
+        customId,
         "to.email": user.email,
         "statusHistory.status": {
           $not: {
@@ -38,14 +49,14 @@ async function respondToCollaborationRequest({
         }
       },
       {
-        lean: true,
         fields: "customId from"
       }
     )
+    .lean()
     .exec();
 
   if (!!!request) {
-    throw notificationErrors.requestDoesNotExist;
+    throw notificationError.requestDoesNotExist;
   }
 
   if (
@@ -56,10 +67,9 @@ async function respondToCollaborationRequest({
       .lean()
       .exec();
 
-    await addOrgIdToUser({ user, id: block.customId });
+    await addOrgIDToUser({ user, ID: block.customId });
     return { block };
   }
 }
 
-module.exports = respondToCollaborationRequest;
-export {};
+export default respondToCollaborationRequest;

@@ -1,11 +1,21 @@
-const randomColor = require("randomcolor");
-const uuid = require("uuid/v4");
+import randomColor from "randomcolor";
+import uuid from "uuid/v4";
 
-const addBlockTodDB = require("../block/addBlockToDB");
-const { blockConstants } = require("./constants");
+import BlockModel from "../../mongo/block/BlockModel";
+import addBlockTodDB from "../block/addBlockToDB";
+import { IUserDocument } from "../user/user";
+import { blockConstants } from "./constants";
+
+export interface ICreateRootBlockParameters {
+  user: IUserDocument;
+  blockModel: BlockModel;
+}
 
 // TODO: look for users that have no root block and create one for them
-async function createRootBlock({ user, blockModel }) {
+async function createRootBlock({
+  user,
+  blockModel
+}: ICreateRootBlockParameters) {
   let rootBlock = {
     customId: uuid(),
     name: `root_${user.customId}`,
@@ -24,5 +34,4 @@ async function createRootBlock({ user, blockModel }) {
   };
 }
 
-module.exports = createRootBlock;
-export {};
+export default createRootBlock;

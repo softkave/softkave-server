@@ -1,5 +1,5 @@
-const accessControlCheck = require("./accessControlCheck");
-const { CRUDActionsMap } = require("./actions");
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
 
 async function getBlockCollaborators({
   block,
@@ -14,7 +14,7 @@ async function getBlockCollaborators({
     CRUDActionName: CRUDActionsMap.READ
   });
 
-  let collaborators = await userModel.model
+  const collaborators = await userModel.model
     .find(
       {
         orgs: block.customId

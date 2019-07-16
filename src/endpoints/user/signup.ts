@@ -1,18 +1,28 @@
-const argon2 = require("argon2");
-const uuid = require("uuid/v4");
+import argon2 from "argon2";
+import uuid from "uuid/v4";
 
-const newToken = require("./newToken");
-const { validateUserSignupData } = require("./validation");
-const userExists = require("./userExists");
-const { RequestError } = require("../../utils/error");
-const { serverErrors } = require("../../utils/serverError");
-const { userErrorMessages } = require("../../utils/userError");
-const createRootBlock = require("../block/createRootBlock");
-const { userFieldNames } = require("./constants");
-const { mongoDBConstants } = require("../../mongo/constants");
+import BlockModel from "../../mongo/block/BlockModel";
+import mongoDBConstants from "../../mongo/constants";
+import UserModel from "../../mongo/user/UserModel";
+import RequestError from "../../utils/RequestError";
+import serverError from "../../utils/serverError";
+import createRootBlock from "../block/createRootBlock";
+import { userFieldNames } from "./constants";
+import newToken from "./newToken";
+import { IUser } from "./user";
+import { userErrorMessages } from "./userError";
+import userExists from "./userExists";
+import { validateUserSignupData } from "./validation";
 
-async function signup({ user, userModel, blockModel }) {
-  let value = validateUserSignupData(user);
+// TODO: define user's type
+export interface ISignupParameters {
+  user: any;
+  userModel: UserModel;
+  blockModel: BlockModel;
+}
+
+async function signup({ user, userModel, blockModel }: ISignupParameters) {
+  const value = validateUserSignupData(user);
   const userExistsResult = await userExists({ userModel, email: user.email });
 
   if (!!userExistsResult && userExistsResult.userExists) {
@@ -45,9 +55,8 @@ async function signup({ user, userModel, blockModel }) {
 
     // For debugging purposes
     console.error(error);
-    throw serverErrors.serverError;
+    throw serverError.serverError;
   }
 }
 
-module.exports = signup;
-export {};
+export default signup;

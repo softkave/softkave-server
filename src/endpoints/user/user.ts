@@ -1,3 +1,5 @@
+import { Document } from "mongoose";
+
 export interface IUserRole {
   roleName: string;
   orgId: string;

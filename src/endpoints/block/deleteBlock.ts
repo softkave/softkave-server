@@ -1,8 +1,8 @@
-const deleteOrgIDFromUser = require("../user/deleteOrgIDFromUser");
-const { getImmediateParentID } = require("./utils");
-const { blockConstants } = require("./constants");
-const accessControlCheck = require("./access-control-check");
-const { CRUDActionsMap } = require("./actions");
+import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
+import { getImmediateParentID } from "./utils";
+import { blockConstants } from "./constants";
+import accessControlCheck from "./access-control-check";
+import { CRUDActionsMap } from "./actions";
 
 async function deleteBlock({ block, blockModel, user, accessControlModel }) {
   await accessControlCheck({

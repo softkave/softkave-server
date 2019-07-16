@@ -1,4 +1,15 @@
-async function getCollaborationRequests({ user, notificationModel }) {
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import { IUserDocument } from "./user";
+
+export interface IGetCollaborationRequestsParameters {
+  user: IUserDocument;
+  notificationModel: NotificationModel;
+}
+
+async function getCollaborationRequests({
+  user,
+  notificationModel
+}: IGetCollaborationRequestsParameters) {
   const requests = await notificationModel.model
     .find({
       "to.email": user.email
@@ -11,5 +22,4 @@ async function getCollaborationRequests({ user, notificationModel }) {
   };
 }
 
-module.exports = getCollaborationRequests;
-export {};
+export default getCollaborationRequests;

@@ -1,5 +1,5 @@
-const accessControlCheck = require("./accessControlCheck");
-const { CRUDActionsMap } = require("./actions");
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
 
 async function getBlockCollabRequests({
   block,
@@ -14,7 +14,7 @@ async function getBlockCollabRequests({
     CRUDActionName: CRUDActionsMap.READ
   });
 
-  let requests = await notificationModel.model
+  const requests = await notificationModel.model
     .find({
       "from.blockId": block.customId
     })

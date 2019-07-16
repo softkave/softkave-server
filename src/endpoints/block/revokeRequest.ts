@@ -1,8 +1,8 @@
-const { notificationErrors } = require("../../utils/notificationError");
-const { validators } = require("../../utils/validation-utils");
-const { notificationConstants } = require("../notification/constants");
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
+import { notificationErrors } from "../../utils/notificationError";
+import { validators } from "../../utils/validation-utils";
+import { notificationConstants } from "../notification/constants";
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
 
 async function revokeRequest({
   request,
@@ -19,7 +19,7 @@ async function revokeRequest({
     actionName: blockActionsMap.REVOKE_COLLABORATION_REQUEST
   });
 
-  let notification = await notificationModel.model
+  const notification = await notificationModel.model
     .findOneAndUpdate(
       {
         customId: request,

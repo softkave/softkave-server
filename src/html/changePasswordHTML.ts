@@ -1,13 +1,16 @@
 import { html } from "./util";
 
-export interface IChangePasswordParameters {
+export interface IChangePasswordHTMLParameters {
   link: string;
   expiration: string | number;
 }
 
 const changePasswordMailTitle = `Change Password`;
 
-function changePasswordHTML({ link, expiration }: IChangePasswordParameters) {
+function changePasswordHTML({
+  link,
+  expiration
+}: IChangePasswordHTMLParameters) {
   const content = `
   <div
     id=""
@@ -48,7 +51,10 @@ function changePasswordHTML({ link, expiration }: IChangePasswordParameters) {
   return html(content);
 }
 
-function changePasswordText({ link, expiration }: IChangePasswordParameters) {
+function changePasswordText({
+  link,
+  expiration
+}: IChangePasswordHTMLParameters) {
   return `
     To change your password, visit this link ( ${link} ) in your browser.
     It expires: ${expiration}.

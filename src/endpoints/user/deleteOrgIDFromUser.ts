@@ -1,6 +1,17 @@
-async function deleteOrgIdFromUser({ user, id }) {
-  let orgs = [...user.orgs];
-  let orgIdIndex = orgs.findIndex(orgId => id === orgId);
+import { IUserDocument } from "./user";
+
+// TODO: convert all id to ID
+export interface IDeleteOrgIDFromUserParameters {
+  user: IUserDocument;
+  id: string;
+}
+
+async function deleteOrgIdFromUser({
+  user,
+  id
+}: IDeleteOrgIDFromUserParameters) {
+  const orgs = [...user.orgs];
+  const orgIdIndex = orgs.findIndex(orgId => id === orgId);
 
   if (orgIdIndex !== -1) {
     /**
@@ -13,5 +24,4 @@ async function deleteOrgIdFromUser({ user, id }) {
   }
 }
 
-module.exports = deleteOrgIdFromUser;
-export {};
+export default deleteOrgIdFromUser;

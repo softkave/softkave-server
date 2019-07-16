@@ -1,6 +1,6 @@
-const accessControlCheck = require("./access-control-check");
-const { blockActionsMap } = require("./actions");
-const { getRootParentID } = require("./utils");
+import accessControlCheck from "./access-control-check";
+import { blockActionsMap } from "./actions";
+import { getRootParentID } from "./utils";
 
 async function getBlockAccessControlData({ block, user, accessControlModel }) {
   await accessControlCheck({

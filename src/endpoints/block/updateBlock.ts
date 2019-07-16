@@ -1,5 +1,5 @@
-const accessControlCheck = require("./accessControlCheck");
-const { CRUDActionsMap } = require("./actions");
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
 
 async function updateBlock({
   block,

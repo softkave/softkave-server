@@ -1,4 +1,4 @@
-const { RequestError } = require("./error");
+import RequestError from "../../utils/RequestError";
 
 const userErrorMessages = {
   userAccessRevoked: "Your access has been revoked",
