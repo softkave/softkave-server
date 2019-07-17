@@ -1,0 +1,86 @@
+import uuid from "uuid/v4";
+
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import UserModel from "../../mongo/user/UserModel";
+import { validators } from "../../utils/validation-utils";
+import { notificationConstants } from "../notification/constants";
+import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
+import { IUserDocument } from "../user/user";
+import userError from "../user/userError";
+import accessControlCheck from "./accessControlCheck";
+import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+
+export interface IRemoveCollaboratorParameters {
+  block: IBlockDocument;
+  collaborator: string;
+  user: IUserDocument;
+  notificationModel: NotificationModel;
+  accessControlModel: AccessControlModel;
+  userModel: UserModel;
+}
+
+async function removeCollaborator({
+  block,
+  collaborator,
+  user,
+  notificationModel,
+  accessControlModel,
+  userModel
+}: IRemoveCollaboratorParameters) {
+  collaborator = validators.validateUUID(collaborator);
+  const ownerBlock = block;
+  await accessControlCheck({
+    user,
+    block,
+    accessControlModel,
+    actionName: blockActionsMap.REMOVE_COLLABORATOR
+  });
+
+  const fetchedCollaborator = await userModel.model
+    .findOne({
+      customId: collaborator
+    })
+    .exec();
+
+  if (!fetchedCollaborator) {
+    throw userError.collaboratorDoesNotExist;
+  }
+
+  await deleteOrgIDFromUser({ user, id: block.customId });
+  sendNotification();
+
+  async function sendNotification() {
+    const notification = new notificationModel.model({
+      customId: uuid(),
+      from: {
+        userId: user.customId,
+        name: user.name,
+        blockId: ownerBlock.customId,
+        blockName: ownerBlock.name,
+        blockType: ownerBlock.type
+      },
+      createdAt: Date.now(),
+      body: `
+        Hi ${
+          fetchedCollaborator.name
+        }, we're sorry to inform you that you have been removed from ${
+        ownerBlock.name
+      }. Goodluck!
+      `,
+      to: {
+        email: fetchedCollaborator.email,
+        userId: fetchedCollaborator.customId
+      },
+      type: notificationConstants.notificationTypes.removeCollaborator
+    });
+
+    notification.save().catch((error: Error) => {
+      // For debugging purposes
+      console.error(error);
+    });
+  }
+}
+
+export default removeCollaborator;
