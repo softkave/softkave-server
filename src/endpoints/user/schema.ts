@@ -62,12 +62,11 @@ const userSchema = `
     respondToCollaborationRequest (
       customId: String!, response: String!): RespondToCollaborationRequestResponse
     updateCollaborationRequest (
-      customId: String!, 
+      customId: String!,
       data: UpdateCollaborationRequestInput!
     ): ErrorOnlyResponse
     getUserData: UserQueryResult
   }
 `;
 
-module.exports = userSchema;
-export {};
+export default userSchema;

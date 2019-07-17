@@ -1,17 +1,23 @@
-import sendCollabRequestEmail from "./sendCollabRequestEmail";
-import { RequestError } from "../../utils/error";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
 import {
-  notificationErrorMessages,
-  notificationErrorFields
+  notificationErrorFields,
+  notificationErrorMessages
 } from "../../utils/notificationError";
-import { validateAddCollaboratorCollaborators } from "./validation";
+import RequestError from "../../utils/RequestError";
 import { notificationConstants } from "../notification/constants";
-import accessControlCheck from "./access-control-check";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+import sendCollabRequestEmail from "./sendCollabRequestEmail";
+import { validateAddCollaboratorCollaborators } from "./validation";
 
-function isRequestAccepted(request) {
+// TODO:  define all any types
+
+function isRequestAccepted(request: any) {
   if (Array.isArray(request.statusHistory)) {
-    return !!request.statusHistory.find(status => {
+    return !!request.statusHistory.find((status: any) => {
       return (
         status.status ===
         notificationConstants.collaborationRequestStatusTypes.accepted
@@ -22,13 +28,22 @@ function isRequestAccepted(request) {
   return false;
 }
 
+// TODO: define all any types
+export interface IAddCollaboratorParameters {
+  block: IBlockDocument;
+  collaborators: any;
+  user: IUserDocument;
+  notificationModel: NotificationModel;
+  accessControlModel: AccessControlModel;
+}
+
 async function addCollaborator({
   block,
   collaborators,
   user,
   notificationModel,
   accessControlModel
-}) {
+}: IAddCollaboratorParameters) {
   collaborators = validateAddCollaboratorCollaborators(collaborators);
   await accessControlCheck({
     user,
@@ -37,7 +52,7 @@ async function addCollaborator({
     actionName: blockActionsMap.ADD_COLLABORATOR
   });
 
-  const collaboratorsEmailArr = collaborators.map(collaborator => {
+  const collaboratorsEmailArr = collaborators.map((collaborator: any) => {
     return collaborator.email.toLowerCase();
   });
 
@@ -48,13 +63,13 @@ async function addCollaborator({
     "from.blockId": block.customId
   };
 
-  let existingCollaborationRequests = await notificationModel.model
+  const existingCollaborationRequests = await notificationModel.model
     .find(existingCollabReqQuery, "to.email createdAt")
     .lean()
     .exec();
 
   if (existingCollaborationRequests.length > 0) {
-    const errors = existingCollaborationRequests.map(request => {
+    const errors = existingCollaborationRequests.map((request: any) => {
       if (isRequestAccepted(request)) {
         return new RequestError(
           `${notificationErrorFields.sendingRequestToAnExistingCollaborator}.${
@@ -75,8 +90,8 @@ async function addCollaborator({
     throw errors;
   }
 
-  let collaborationRequests = collaborators.map(request => {
-    let notificationBody =
+  const collaborationRequests = collaborators.map((request: any) => {
+    const notificationBody =
       request.body ||
       `
       You have been invited by ${user.name} to collaborate in ${block.name}.
@@ -111,8 +126,8 @@ async function addCollaborator({
   // TODO: maybe deffer sending email till end of day
   sendEmails(collaborationRequests);
 
-  function sendEmails(collaborationRequests) {
-    let emailPromises = collaborationRequests.map(request => {
+  function sendEmails(collaborationRequestsParam: any) {
+    const emailPromises = collaborationRequestsParam.map((request: any) => {
       return sendCollabRequestEmail({
         email: request.to.email,
         userName: user.name,
@@ -123,10 +138,10 @@ async function addCollaborator({
     });
 
     // TODO: Resend collaboration requests that have not been sent or that failed
-    emailPromises.forEach(async (promise, i) => {
+    emailPromises.forEach(async (promise: Promise<any>, index: number) => {
       try {
         await promise;
-        const request = collaborationRequests[i];
+        const request = collaborationRequestsParam[index];
         notificationModel
           .newModel()
           .updateOne(
@@ -149,5 +164,4 @@ async function addCollaborator({
   }
 }
 
-module.exports = addCollaborator;
-export {};
+export default addCollaborator;

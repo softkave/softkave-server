@@ -1,12 +1,26 @@
-import accessControlCheck from "./accessControlCheck";
-import { blockActionsMap } from "./actions";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import UserModel from "../../mongo/user/UserModel";
+import { update } from "../../utils/utils";
 import getRole from "../block/getRole";
 import getUser from "../user/getUser";
-import { update } from "../../utils/utils";
-import { getRootParentId } from "./utils";
+import { IUserDocument } from "../user/user";
 import { findRole, findRoleIndex } from "../user/utils";
-import { blockErrors } from "../../utils/blockError";
+import accessControlCheck from "./accessControlCheck";
+import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+import blockError from "./blockError";
+import { getRootParentID } from "./utils";
 import { validateRoleName } from "./validation";
+
+export interface IAssignRoleParameters {
+  block: IBlockDocument;
+  collaborator: string;
+  user: IUserDocument;
+  roleName: string;
+  accessControlModel: AccessControlModel;
+  userModel: UserModel;
+  assignedBySystem: boolean;
+}
 
 async function assignRole({
   block,
@@ -16,8 +30,8 @@ async function assignRole({
   accessControlModel,
   userModel,
   assignedBySystem
-}) {
-  collaborator = await getUser({
+}: IAssignRoleParameters) {
+  const fetchedCollaborator = await getUser({
     collaborator,
     userModel,
     required: true
@@ -33,18 +47,17 @@ async function assignRole({
   }
 
   validateRoleName(roleName);
-  const orgId = getRootParentId(block);
+  const orgId = getRootParentID(block);
 
-  // check if role exists
+  // to check if role exists
   await getRole({
     block,
     accessControlModel,
     roleName,
-    block,
     required: true
   });
 
-  const currentRole = findRole(collaborator, orgId);
+  const currentRole = findRole(fetchedCollaborator, orgId);
   const newRole = {
     roleName,
     orgId,
@@ -52,17 +65,16 @@ async function assignRole({
     assignedBy: assignedBySystem ? "system" : user.customId
   };
 
-  collaborator.roles = update(
-    collaborator.roles,
+  fetchedCollaborator.roles = update(
+    fetchedCollaborator.roles,
     currentRole,
     newRole,
-    blockErrors.roleDoesNotExist,
+    blockError.roleDoesNotExist,
     findRoleIndex
   );
 
-  collaborator.markModified("roles");
-  await collaborator.save();
+  fetchedCollaborator.markModified("roles");
+  await fetchedCollaborator.save();
 }
 
-module.exports = assignRole;
-export {};
+export default assignRole;

@@ -10,7 +10,7 @@ export interface ITaskCollaborator {
 export interface IBlockRole {
   roleName: string;
   createdBy: string;
-  createdAt: string;
+  createdAt: number;
 }
 
 export interface IBlock {
@@ -34,7 +34,7 @@ export interface IBlock {
   projects: string[];
   groupTaskContext: string[];
   groupProjectContext: string[];
-  roles: IBlockRole;
+  roles: IBlockRole[];
 }
 
 export interface IBlockDocument extends Document, IBlock {}

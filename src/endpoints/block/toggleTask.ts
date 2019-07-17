@@ -1,6 +1,19 @@
-import accessControlCheck from "./access-control-check";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
+
+// TODO: define any types
+export interface IToggleTaskParameters {
+  block: IBlockDocument;
+  data: any;
+  blockModel: BlockModel;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
 
 async function toggleTask({
   block,
@@ -8,7 +21,7 @@ async function toggleTask({
   blockModel,
   user,
   accessControlModel
-}) {
+}: IToggleTaskParameters) {
   await accessControlCheck({
     user,
     block,
@@ -35,5 +48,4 @@ async function toggleTask({
   );
 }
 
-module.exports = toggleTask;
-export {};
+export default toggleTask;

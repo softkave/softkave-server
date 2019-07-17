@@ -1,13 +1,30 @@
-import { blockErrors } from "../../utils/blockError";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import { add, getIndex, move, remove } from "../../utils/utils";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
+import blockError from "./blockError";
+import { blockConstants } from "./constants";
 import {
   validateBlockParam,
   validateBlockTypes,
   validateGroupContexts
 } from "./validation";
-import { blockConstants } from "./constants";
-import accessControlCheck from "./access-control-check";
-import { CRUDActionsMap } from "./actions";
-import { getIndex, move, remove, add } from "../../utils/utils";
+
+// TODO: define any types, and make sure other types are correct
+export interface ITransferBlockParameters {
+  sourceBlock: any;
+  draggedBlock: any;
+  destinationBlock: any;
+  dropPosition: number;
+  blockPosition: number;
+  draggedBlockType: string;
+  groupContext: string;
+  blockModel: BlockModel;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
 
 async function transferBlock({
   sourceBlock,
@@ -20,7 +37,7 @@ async function transferBlock({
   blockModel,
   user,
   accessControlModel
-}) {
+}: ITransferBlockParameters) {
   sourceBlock = validateBlockParam(sourceBlock);
   draggedBlock = validateBlockParam(draggedBlock);
   destinationBlock = validateBlockParam(destinationBlock);
@@ -71,7 +88,7 @@ async function transferBlock({
 
   // add batching of access control checks
   if (!draggedBlock) {
-    throw blockErrors.transferDraggedBlockMissing;
+    throw blockError.transferDraggedBlockMissing;
   } else {
     await accessControlCheck({
       user,
@@ -82,7 +99,7 @@ async function transferBlock({
   }
 
   if (!sourceBlock) {
-    throw blockErrors.transferSourceBlockMissing;
+    throw blockError.transferSourceBlockMissing;
   } else {
     await accessControlCheck({
       user,
@@ -93,7 +110,7 @@ async function transferBlock({
   }
 
   if (sourceBlock.customId !== destinationBlock.customId && !destinationBlock) {
-    throw blockErrors.transferDestinationBlockMissing;
+    throw blockError.transferDestinationBlockMissing;
   } else if (destinationBlock) {
     await accessControlCheck({
       user,
@@ -107,14 +124,14 @@ async function transferBlock({
   const pluralizedType = `${draggedBlock.type}s`;
 
   if (draggedBlock.type === blockConstants.blockTypes.group) {
-    const sourceBlockUpdates = {};
+    const sourceBlockUpdates: any = {};
 
     if (groupContext) {
       sourceBlockUpdates[groupContext] = move(
         sourceBlock[groupContext],
         draggedBlock.customId,
         dropPosition,
-        blockErrors.transferDraggedBlockNotFoundInParent
+        blockError.transferDraggedBlockNotFoundInParent
       );
     } else {
       const groupTaskContext = blockConstants.groupContexts.groupTaskContext;
@@ -125,14 +142,14 @@ async function transferBlock({
         sourceBlock[groupTaskContext],
         draggedBlock.customId,
         dropPosition,
-        blockErrors.transferDraggedBlockNotFoundInParent
+        blockError.transferDraggedBlockNotFoundInParent
       );
 
       sourceBlockUpdates[groupProjectContext] = move(
         sourceBlock[groupProjectContext],
         draggedBlock.customId,
         dropPosition,
-        blockErrors.transferDraggedBlockNotFoundInParent
+        blockError.transferDraggedBlockNotFoundInParent
       );
     }
 
@@ -140,7 +157,7 @@ async function transferBlock({
       sourceBlock[pluralizedType],
       draggedBlock.customId,
       dropPosition,
-      blockErrors.transferDraggedBlockNotFoundInParent
+      blockError.transferDraggedBlockNotFoundInParent
     );
 
     pushUpdates.push({
@@ -150,13 +167,13 @@ async function transferBlock({
       }
     });
   } else if (sourceBlock.customId === destinationBlock.customId) {
-    const sourceBlockUpdates = {};
+    const sourceBlockUpdates: any = {};
 
     sourceBlockUpdates[pluralizedType] = move(
       sourceBlock[pluralizedType],
       draggedBlock.customId,
       dropPosition,
-      blockErrors.transferDraggedBlockNotFoundInParent
+      blockError.transferDraggedBlockNotFoundInParent
     );
 
     pushUpdates.push({
@@ -166,19 +183,19 @@ async function transferBlock({
       }
     });
   } else {
-    const sourceBlockUpdates = {};
-    const draggedBlockUpdates = {};
-    const destinationBlockUpdates = {};
+    const sourceBlockUpdates: any = {};
+    const draggedBlockUpdates: any = {};
+    const destinationBlockUpdates: any = {};
     const sourceParentIndex = getIndex(
       draggedBlock.parents,
       sourceBlock.customId,
-      blockErrors.transferDraggedBlockNotFoundInParent
+      blockError.transferDraggedBlockNotFoundInParent
     );
 
     sourceBlockUpdates[pluralizedType] = remove(
       sourceBlock[pluralizedType],
       draggedBlock.customId,
-      blockErrors.transferDraggedBlockNotFoundInParent
+      blockError.transferDraggedBlockNotFoundInParent
     );
 
     destinationBlockUpdates[pluralizedType] = add(
@@ -215,10 +232,13 @@ async function transferBlock({
           filter: {
             [`parents.${sourceParentIndex + 1}`]: draggedBlock.customId
           },
-          update: draggedBlockUpdates.parents.reduce((update, id, index) => {
-            update[`parents.${index}`] = id;
-            return update;
-          }, {})
+          update: draggedBlockUpdates.parents.reduce(
+            (update: any, id: string, index: number) => {
+              update[`parents.${index}`] = id;
+              return update;
+            },
+            {}
+          )
         }
       }
     );
@@ -229,5 +249,4 @@ async function transferBlock({
   }
 }
 
-module.exports = transferBlock;
-export {};
+export default transferBlock;

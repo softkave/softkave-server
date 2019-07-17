@@ -1,17 +1,27 @@
-import accessControlCheck from "./access-control-check";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import RequestError from "../../utils/RequestError";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { indexArray } from "../../utils/utils";
-import { blockErrorFields, blockErrorMessages } from "../../utils/blockError";
-import { validateAccessControlArray } from "./validation";
+import { IBlockDocument } from "./block";
+import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
-import { RequestError } from "../../utils/RequestError";
+import { validateAccessControlArray } from "./validation";
+
+// TODO: define all any types
+export interface IUpdateAccessControlDataParameters {
+  block: IBlockDocument;
+  user: IUserDocument;
+  accessControlData: any;
+  accessControlModel: AccessControlModel;
+}
 
 async function updateAccessControlData({
   block,
   user,
   accessControlData,
   accessControlModel
-}) {
+}: IUpdateAccessControlDataParameters) {
   if (block.type !== blockConstants.blockTypes.org) {
     throw new RequestError(
       blockErrorFields.invalidOperation,

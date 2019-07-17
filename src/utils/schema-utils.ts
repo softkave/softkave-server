@@ -9,7 +9,4 @@ const utilitySchema = `
   }
 `;
 
-module.exports = {
-  utilitySchema
-};
-export {};
+export { utilitySchema };

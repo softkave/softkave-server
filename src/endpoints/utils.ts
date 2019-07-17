@@ -1,7 +1,8 @@
-const getUserFromReq = require("../utils/getUserFromReq");
+import getUserFromReq from "../utils/getUserFromReq";
 
-function wrapGraphQLOperationForErrors(func) {
-  return async function(...args) {
+// TODO: define all any types
+function wrapGraphQLOperationForErrors(func: any) {
+  return async (...args: any) => {
     try {
       return await func(...args);
     } catch (error) {
@@ -11,7 +12,7 @@ function wrapGraphQLOperationForErrors(func) {
 
       if (Array.isArray(error)) {
         return {
-          errors: extractError(error)
+          errors: error
         };
       } else if (error.name || error.code || error.message) {
         // TODO: remove in favor of detailed logging
@@ -43,13 +44,13 @@ function wrapGraphQLOperationForErrors(func) {
   };
 }
 
-function wrapGraphQLOperation(func, staticParams, inserts = []) {
+function wrapGraphQLOperation(func: any, staticParams: any, inserts: any = []) {
   const wrappedFunc = wrapGraphQLOperationForErrors(func);
-  return async function(params, req) {
+  return async (params: any, req: any) => {
     const initialParams = { ...staticParams, ...params, req };
     let reducedParams = initialParams;
 
-    for (let insertFunc of inserts) {
+    for (const insertFunc of inserts) {
       const result = await insertFunc(reducedParams);
       reducedParams = { ...reducedParams, ...result };
     }
@@ -58,14 +59,14 @@ function wrapGraphQLOperation(func, staticParams, inserts = []) {
   };
 }
 
-async function insertUserCredentials(params) {
+async function insertUserCredentials(params: any) {
   const { req, userModel } = params;
   const tokenData = req.user;
   const user = await getUserFromReq({ req, userModel });
   return { tokenData, user };
 }
 
-async function insertChangePasswordCredentials({ req, userModel }) {
+async function insertChangePasswordCredentials({ req, userModel }: any) {
   const tokenData = req.user;
   const user = await getUserFromReq({
     req,
@@ -76,10 +77,9 @@ async function insertChangePasswordCredentials({ req, userModel }) {
   return { tokenData, user };
 }
 
-module.exports = {
+export {
   wrapGraphQLOperation,
   wrapGraphQLOperationForErrors,
   insertUserCredentials,
   insertChangePasswordCredentials
 };
-export {};

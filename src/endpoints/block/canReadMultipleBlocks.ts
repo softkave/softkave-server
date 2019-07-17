@@ -1,6 +1,16 @@
+import { IUserDocument } from "../user/user";
+import { IBlock } from "./block";
 import canReadBlock from "./canReadBlock";
 
-async function canReadMultipleBlocks({ blocks, user }) {
+export interface ICanReadMultipleBlocksParameters {
+  blocks: IBlock[];
+  user: IUserDocument;
+}
+
+async function canReadMultipleBlocks({
+  blocks,
+  user
+}: ICanReadMultipleBlocksParameters) {
   await Promise.all(
     blocks.map(block => {
       return canReadBlock({ block, user });
@@ -8,5 +18,4 @@ async function canReadMultipleBlocks({ blocks, user }) {
   );
 }
 
-module.exports = canReadMultipleBlocks;
-export {};
+export default canReadMultipleBlocks;

@@ -1,6 +1,5 @@
+import RequestError from "../../utils/RequestError";
 import { IBlock } from "./block";
-
-import { RequestError } from "./error";
 
 const blockErrorMessages = {
   invalidBlockType: "Invalid block type",

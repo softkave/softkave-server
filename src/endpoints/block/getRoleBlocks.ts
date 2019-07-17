@@ -1,6 +1,13 @@
+import BlockModel from "../../mongo/block/BlockModel";
+import { IUserDocument } from "../user/user";
 import { getOrgIDs } from "../user/utils";
 
-async function getRoleBlocks({ user, blockModel }) {
+export interface IGetRoleBlocksParameters {
+  user: IUserDocument;
+  blockModel: BlockModel;
+}
+
+async function getRoleBlocks({ user, blockModel }: IGetRoleBlocksParameters) {
   const orgIds = getOrgIDs(user);
   const query = {
     customId: {
@@ -18,5 +25,4 @@ async function getRoleBlocks({ user, blockModel }) {
   };
 }
 
-module.exports = getRoleBlocks;
-export {};
+export default getRoleBlocks;

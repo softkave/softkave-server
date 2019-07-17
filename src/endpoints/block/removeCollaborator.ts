@@ -1,11 +1,25 @@
 import uuid from "uuid/v4";
 
-import { errors: userErrors } from "../../utils/userErrorMessages";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import UserModel from "../../mongo/user/UserModel";
 import { validators } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
-import accessControlCheck from "./access-control-check";
+import { IUserDocument } from "../user/user";
+import userError from "../user/userError";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+
+export interface IRemoveCollaboratorParameters {
+  block: IBlockDocument;
+  collaborator: string;
+  user: IUserDocument;
+  notificationModel: NotificationModel;
+  accessControlModel: AccessControlModel;
+  userModel: UserModel;
+}
 
 async function removeCollaborator({
   block,
@@ -14,7 +28,7 @@ async function removeCollaborator({
   notificationModel,
   accessControlModel,
   userModel
-}) {
+}: IRemoveCollaboratorParameters) {
   collaborator = validators.validateUUID(collaborator);
   const ownerBlock = block;
   await accessControlCheck({
@@ -31,7 +45,7 @@ async function removeCollaborator({
     .exec();
 
   if (!fetchedCollaborator) {
-    throw userErrors.collaboratorDoesNotExist;
+    throw userError.collaboratorDoesNotExist;
   }
 
   await deleteOrgIDFromUser({ user, id: block.customId });
@@ -62,12 +76,11 @@ async function removeCollaborator({
       type: notificationConstants.notificationTypes.removeCollaborator
     });
 
-    notification.save().catch(error => {
+    notification.save().catch((error: Error) => {
       // For debugging purposes
       console.error(error);
     });
   }
 }
 
-module.exports = removeCollaborator;
-export {};
+export default removeCollaborator;

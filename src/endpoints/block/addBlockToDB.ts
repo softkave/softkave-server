@@ -37,8 +37,9 @@ async function addBlockToDB({
         } as IBlock
       })
     ) {
+      // TODO: replace the generic blockExists with the right type
       throw new RequestError(
-        blockErrorFields,
+        blockErrorFields.blockExists,
         getBlockExistsErrorMessage(block)
       );
     }
@@ -54,7 +55,7 @@ async function addBlockToDB({
       console.log(`Block with same id - ${block.customId}`);
 
       throw new RequestError(
-        blockErrorFields,
+        blockErrorFields.blockExists,
         getBlockExistsErrorMessage(block)
       );
     }

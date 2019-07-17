@@ -1,7 +1,21 @@
-import { blockErrors } from "../../utils/blockError";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "./block";
+import blockError from "./blockError";
 import { getRootParentID } from "./utils";
 
-async function getRole({ accessControlModel, roleName, block, required }) {
+export interface IGetRoleParameters {
+  accessControlModel: AccessControlModel;
+  roleName: string;
+  block: IBlockDocument;
+  required: boolean;
+}
+
+async function getRole({
+  accessControlModel,
+  roleName,
+  block,
+  required
+}: IGetRoleParameters) {
   const query = {
     roleName,
     orgId: getRootParentID(block)
@@ -10,11 +24,10 @@ async function getRole({ accessControlModel, roleName, block, required }) {
   const role = await accessControlModel.model.findOne(query).exec();
 
   if (!role && required) {
-    throw blockErrors.roleDoesNotExist;
+    throw blockError.roleDoesNotExist;
   }
 
   return role;
 }
 
-module.exports = getRole;
-export {};
+export default getRole;

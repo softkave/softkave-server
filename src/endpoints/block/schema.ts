@@ -27,9 +27,8 @@ const blockSchema = `
 
   type Role {
     roleName: String
-    orgId: String
-    assignedAt: Number
-    assignedBy: String
+    createdBy: String
+    createdAt: String
   }
 
   type Block {

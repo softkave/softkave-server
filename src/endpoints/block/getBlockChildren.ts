@@ -1,8 +1,21 @@
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
+import { CRUDActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+import { blockConstants } from "./constants";
 import { getParentsLength } from "./utils";
 import { validateBlockTypes } from "./validation";
-import { blockConstants } from "./constants";
-import accessControlCheck from "./access-control-check";
-import { CRUDActionsMap } from "./actions";
+
+export interface IGetBlockChildrenParameters {
+  block: IBlockDocument;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+  types: string[];
+  blockModel: BlockModel;
+  isBacklog: boolean;
+}
 
 async function getBlockChildren({
   block,
@@ -11,7 +24,7 @@ async function getBlockChildren({
   types,
   blockModel,
   isBacklog
-}) {
+}: IGetBlockChildrenParameters) {
   const parentBlock = block;
   await accessControlCheck({
     user,
@@ -42,5 +55,4 @@ async function getBlockChildren({
   };
 }
 
-module.exports = getBlockChildren;
-export {};
+export default getBlockChildren;

@@ -1,10 +1,26 @@
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
-import { getImmediateParentID } from "./utils";
-import { blockConstants } from "./constants";
-import accessControlCheck from "./access-control-check";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+import { blockConstants } from "./constants";
+import { getImmediateParentID } from "./utils";
 
-async function deleteBlock({ block, blockModel, user, accessControlModel }) {
+export interface IDeleteBlockParameters {
+  block: IBlockDocument;
+  blockModel: BlockModel;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
+
+async function deleteBlock({
+  block,
+  blockModel,
+  user,
+  accessControlModel
+}: IDeleteBlockParameters) {
   await accessControlCheck({
     user,
     block,
@@ -41,5 +57,4 @@ async function deleteBlock({ block, blockModel, user, accessControlModel }) {
   await deleteOrgIDFromUser({ user, id: block.customId });
 }
 
-module.exports = deleteBlock;
-export {};
+export default deleteBlock;

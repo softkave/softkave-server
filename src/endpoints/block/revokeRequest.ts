@@ -1,8 +1,20 @@
-import { notificationErrors } from "../../utils/notificationError";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import notificationError from "../../utils/notificationError";
 import { validators } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
-import accessControlCheck from "./access-control-check";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+
+export interface IRevokeRequestParameters {
+  request: string;
+  block: IBlockDocument;
+  notificationModel: NotificationModel;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
 
 async function revokeRequest({
   request,
@@ -10,7 +22,7 @@ async function revokeRequest({
   notificationModel,
   user,
   accessControlModel
-}) {
+}: IRevokeRequestParameters) {
   request = validators.validateUUID(request);
   await accessControlCheck({
     user,
@@ -22,7 +34,7 @@ async function revokeRequest({
   const notification = await notificationModel.model
     .findOneAndUpdate(
       {
-        customId: request,
+        ["customId"]: request,
         "from.blockId": block.customId,
         "statusHistory.status": {
           $not: {
@@ -50,9 +62,8 @@ async function revokeRequest({
     .exec();
 
   if (!notification) {
-    throw notificationErrors.requestHasBeenSentBefore;
+    throw notificationError.requestHasBeenSentBefore;
   }
 }
 
-module.exports = revokeRequest;
-export {};
+export default revokeRequest;

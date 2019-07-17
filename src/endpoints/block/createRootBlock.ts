@@ -4,6 +4,7 @@ import uuid from "uuid/v4";
 import BlockModel from "../../mongo/block/BlockModel";
 import addBlockTodDB from "../block/addBlockToDB";
 import { IUserDocument } from "../user/user";
+import { IBlock } from "./block";
 import { blockConstants } from "./constants";
 
 export interface ICreateRootBlockParameters {
@@ -25,7 +26,12 @@ async function createRootBlock({
     createdBy: user.customId
   };
 
-  rootBlock = await addBlockTodDB({ user, blockModel, block: rootBlock });
+  // TODO: redefine IBlock to make the non-required fields optional
+  rootBlock = await addBlockTodDB({
+    user,
+    blockModel,
+    block: rootBlock as IBlock
+  });
   user.rootBlockId = rootBlock.customId;
   await user.save();
 

@@ -2,13 +2,21 @@ import {
   collaborationRequestHTML,
   collaborationRequestMailTitle,
   collaborationRequestText
-} from "../../html/collaboration-request";
-import { appInfo } from "../../res/app";
+} from "../../html/collaborationRequestHTML";
+import appInfo from "../../res/appInfo";
 import aws from "../../res/aws";
 
-import ses =; new aws.SES();
-import clientSignupRoute =; "/signup";
-import clientLoginRoute =; "/login";
+const ses = new aws.SES();
+const clientSignupRoute = "/signup";
+const clientLoginRoute = "/login";
+
+export interface ISendCollaborationRequestEmailParameters {
+  email: string;
+  userName: string;
+  blockName: string;
+  message: string;
+  expires: string | number;
+}
 
 async function sendCollabReqEmail({
   email,
@@ -16,7 +24,7 @@ async function sendCollabReqEmail({
   blockName,
   message,
   expires
-}) {
+}: ISendCollaborationRequestEmailParameters) {
   const signupLink = `${appInfo.clientDomain}${clientSignupRoute}`;
   const loginLink = `${appInfo.clientDomain}${clientLoginRoute}`;
   const contentParams = {
@@ -59,5 +67,4 @@ async function sendCollabReqEmail({
   return result;
 }
 
-module.exports = sendCollabReqEmail;
-export {};
+export default sendCollabReqEmail;

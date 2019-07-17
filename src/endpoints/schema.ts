@@ -10,5 +10,4 @@ const indexSchema = `
   }
 `;
 
-module.exports = indexSchema;
-export {};
+export default indexSchema;

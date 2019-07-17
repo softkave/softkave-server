@@ -18,11 +18,12 @@ const badTestData = {
   password: 20
 };
 
-test("expect validate to work", () => {
-  expect(validate(goodTestData, testSchema)).toStrictEqual(goodTestData);
-});
+// test("expect validate to work", () => {
+//   expect(validate(goodTestData, testSchema)).toStrictEqual(goodTestData);
+// });
 
-test("expect validate to fail", () => {
-  expect(() => validate(badTestData, testSchema)).toThrow();
-});
+// test("expect validate to fail", () => {
+//   expect(() => validate(badTestData, testSchema)).toThrow();
+// });
+
 export {};

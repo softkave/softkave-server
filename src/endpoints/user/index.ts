@@ -1,23 +1,36 @@
-import signup from "./signup";
-import login from "./login";
-import changePassword from "./changePassword";
-import forgotPassword from "./forgotPassword";
-import userExists from "./userExists";
-import updateUser from "./updateUser";
-import getCollaborationRequests from "./getCollaborationRequests";
-import respondToCollaborationRequest from "./respondToCollaborationRequest";
-import updateCollaborationRequest from "./updateCollaborationRequest";
-import changePasswordWithToken from "./changePasswordWithToken";
-import getUserData from "./getUserData";
-import userSchema from "./schema";
 import {
-  wrapGraphQLOperation,
+  insertChangePasswordCredentials,
   insertUserCredentials,
-  insertChangePasswordCredentials
+  wrapGraphQLOperation
 } from "../utils";
+import changePassword from "./changePassword";
+import changePasswordWithToken from "./changePasswordWithToken";
+import forgotPassword from "./forgotPassword";
+import getCollaborationRequests from "./getCollaborationRequests";
+import getUserData from "./getUserData";
+import login from "./login";
+import respondToCollaborationRequest from "./respondToCollaborationRequest";
+import userSchema from "./schema";
+import signup from "./signup";
+import updateCollaborationRequest from "./updateCollaborationRequest";
+import updateUser from "./updateUser";
+import userExists from "./userExists";
 
+// TODO: define all any types
 class UserOperations {
-  constructor(staticParams) {
+  public userExists: any;
+  public signup: any;
+  public login: any;
+  public forgotPassword: any;
+  public changePassword: any;
+  public updateUser: any;
+  public changePasswordWithToken: any;
+  public updateCollaborationRequest: any;
+  public respondToCollaborationRequest: any;
+  public getCollaborationRequests: any;
+  public getUserData: any;
+
+  constructor(staticParams: any) {
     const middlewares = [insertUserCredentials];
 
     this.userExists = wrapGraphQLOperation(userExists, staticParams);
@@ -67,8 +80,4 @@ class UserOperations {
   }
 }
 
-module.exports = {
-  UserOperations,
-  userSchema
-};
-export {};
+export { UserOperations, userSchema };

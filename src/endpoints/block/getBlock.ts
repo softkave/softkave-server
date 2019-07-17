@@ -1,7 +1,20 @@
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
-import { blockErrors } from "./blockError";
+import blockError from "./blockError";
 import { validateBlockParam } from "./validation";
+
+// TODO: define all any parameters
+export interface IGetBlockParameters {
+  block: any;
+  blockModel: BlockModel;
+  isRequired?: boolean;
+  checkPermission?: boolean;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
 
 async function getBlock({
   block,
@@ -10,12 +23,12 @@ async function getBlock({
   checkPermission,
   user,
   accessControlModel
-}) {
+}: IGetBlockParameters) {
   block = validateBlockParam(block);
   block = await blockModel.model.findOne({ customId: block.customId }).exec();
 
   if (!block && isRequired) {
-    throw blockErrors.blockNotFound;
+    throw blockError.blockNotFound;
   }
 
   if (checkPermission && user) {

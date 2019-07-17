@@ -8,7 +8,8 @@ import { validationErrorMessages } from "./validationError";
 const typePath = "details.0.type";
 const pathPath = "details.0.path";
 
-function validate(data: any, schema) {
+// TODO: define all any types
+function validate(data: any, schema: any) {
   const { error, value } = Joi.validate(data, schema, {
     abortEarly: false,
     convert: true

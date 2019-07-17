@@ -58,7 +58,7 @@ const accessControlArraySchema = Joi.array()
 const blockSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
   name: Joi.string()
-    .trim(true)
+    .trim()
     .min(blockConstants.minNameLength)
     .max(blockConstants.maxNameLength),
   description: Joi.string()
@@ -71,7 +71,7 @@ const blockSchema = Joi.object().keys({
   expectedEndAt: Joi.number(),
   createdAt: Joi.number(),
   color: Joi.string()
-    .trim(true)
+    .trim()
     .lowercase()
     .regex(regEx.hexColorPattern),
   updatedAt: Joi.number(),
@@ -93,6 +93,8 @@ const blockSchema = Joi.object().keys({
   groupTaskContext: blockChildrenSchema,
   groupProjectContext: blockChildrenSchema,
   isBacklog: Joi.boolean(),
+
+  // TODO: make a check to make sure this is only checked on orgs or roots
   accessControl: Joi.array()
     .items(accessControlSchema)
     .unique((item1, item2) => {
@@ -108,7 +110,7 @@ const blockSchema = Joi.object().keys({
 const addCollaboratorCollaboratorSchema = Joi.object().keys({
   email: Joi.string()
     .required()
-    .trim(true)
+    .trim()
     .email()
     .lowercase(),
   body: Joi.string()
@@ -137,44 +139,51 @@ const groupContextArraySchema = Joi.array()
   .unique()
   .items(groupContextSchema);
 
-exports.validateBlock = function validateBlock(block) {
+// TODO: define types
+function validateBlock(block: any) {
   return validate(block, blockSchema);
-};
+}
 
-exports.validateGroupContexts = function validateGroupContexts(contexts) {
+function validateGroupContexts(contexts: any) {
   return validate(contexts, groupContextArraySchema);
-};
+}
 
-exports.validateTaskCollaborators = function validateTaskCollaborators(
-  collaborators
-) {
+function validateTaskCollaborators(collaborators: any) {
   return validate(collaborators, taskCollaboratorsSchema);
-};
+}
 
-exports.validateBlockParam = function validateBlockParam(param) {
+function validateBlockParam(param: any) {
   return validate(param, blockParamSchema);
-};
+}
 
-exports.validateBlockTypes = function validateBlockType(types) {
+function validateBlockTypes(types: any) {
   return validate(types, blockTypesSchema);
-};
+}
 
-exports.validateAddCollaboratorCollaborators = function validateAddCollaboratorCollaborators(
-  params
-) {
+function validateAddCollaboratorCollaborators(params: any) {
   return validate(params, addCollaboratorCollaboratorsSchema);
-};
+}
 
-exports.validateRoleName = function validateRoleName(params) {
+function validateRoleName(params: any) {
   return validate(params, roleNameSchema);
-};
+}
 
-exports.validateRoleNameArray = function validateRoleNameArray(params) {
+function validateRoleNameArray(params: any) {
   return validate(params, roleNameArraySchema);
-};
+}
 
-exports.validateAccessControlArray = params => {
+function validateAccessControlArray(params: any) {
   return validate(params, accessControlArraySchema);
-};
+}
 
-export {};
+export {
+  validateAccessControlArray,
+  validateAddCollaboratorCollaborators,
+  validateBlock,
+  validateBlockParam,
+  validateBlockTypes,
+  validateGroupContexts,
+  validateRoleName,
+  validateRoleNameArray,
+  validateTaskCollaborators
+};

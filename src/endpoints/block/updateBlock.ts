@@ -1,5 +1,18 @@
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+
+// TODO: define all any types
+export interface IUpdateBlockParameters {
+  block: IBlockDocument;
+  data: any;
+  blockModel: BlockModel;
+  accessControlModel: AccessControlModel;
+  user: IUserDocument;
+}
 
 async function updateBlock({
   block,
@@ -7,7 +20,7 @@ async function updateBlock({
   blockModel,
   accessControlModel,
   user
-}) {
+}: IUpdateBlockParameters) {
   await accessControlCheck({
     user,
     block,
@@ -24,5 +37,4 @@ async function updateBlock({
   );
 }
 
-module.exports = updateBlock;
-export {};
+export default updateBlock;

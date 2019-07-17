@@ -15,8 +15,11 @@ export interface IBaseOperationParameters {
   accessControlModel: AccessControlModel;
 }
 
+// TODO: define all any types
 class IndexOperations {
-  constructor(params) {
+  public staticParams: any;
+
+  constructor(params: any) {
     this.staticParams = params;
   }
 

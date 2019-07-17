@@ -39,8 +39,27 @@ async function getRequestBlock(arg: any) {
   };
 }
 
+// TODO: define all any types
+
 class BlockOperations {
-  constructor(staticParams) {
+  public addBlock: any;
+  public updateBlock: any;
+  public deleteBlock: any;
+  public getBlockChildren: any;
+  public addCollaborators: any;
+  public removeCollaborator: any;
+  public getCollaborators: any;
+  public getCollabRequests: any;
+  public getRoleBlocks: any;
+  public toggleTask: any;
+  public revokeRequest: any;
+  public updateAccessControlData: any;
+  public assignRole: any;
+  public updateRoles: any;
+  public createRootBlock: any;
+  public transferBlock: any;
+
+  constructor(staticParams: any) {
     const defaultMiddlewares = [insertUserCredentials];
     const endpointsWithBlockParamMiddlewares = [
       ...defaultMiddlewares,
@@ -145,8 +164,4 @@ class BlockOperations {
   }
 }
 
-module.exports = {
-  blockSchema,
-  BlockOperations
-};
-export {};
+export { blockSchema, BlockOperations };

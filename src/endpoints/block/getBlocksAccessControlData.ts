@@ -1,8 +1,21 @@
-import accessControlCheck from "./access-control-check";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
 import { getRootParentID } from "./utils";
 
-async function getBlockAccessControlData({ block, user, accessControlModel }) {
+export interface IGetBlockAccessControlDataParameters {
+  block: IBlockDocument;
+  user: IUserDocument;
+  accessControlModel: AccessControlModel;
+}
+
+async function getBlockAccessControlData({
+  block,
+  user,
+  accessControlModel
+}: IGetBlockAccessControlDataParameters) {
   await accessControlCheck({
     user,
     block,
@@ -16,5 +29,4 @@ async function getBlockAccessControlData({ block, user, accessControlModel }) {
   return { roles };
 }
 
-module.exports = getBlockAccessControlData;
-export {};
+export default getBlockAccessControlData;

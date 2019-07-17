@@ -1,31 +1,46 @@
-const notification = require("./notificationErrorMessages");
-const server = require("./serverErrorMessages");
-const user = require("./userErrorMessages");
-const validation = require("./validationErrorMessages");
-const block = require("./blockErrors");
+import blockError, {
+  blockErrorFields,
+  blockErrorMessages
+} from "../endpoints/block/blockError";
+import userError, {
+  userErrorFields,
+  userErrorMessages
+} from "../endpoints/user/userError";
+import notificationError, {
+  notificationErrorFields,
+  notificationErrorMessages
+} from "./notificationError";
+import serverError, {
+  serverErrorFields,
+  serverErrorMessages
+} from "./serverError";
+import validationError, {
+  validationErrorFields,
+  validationErrorMessages
+} from "./validationError";
 
 const errorMessages = {
-  notification: notification.errorMessages,
-  server: server.errorMessages,
-  user: user.errorMessages,
-  validation: validation.errorMessages,
-  block: block.blockErrorMessages
+  notification: notificationErrorMessages,
+  server: serverErrorMessages,
+  user: userErrorMessages,
+  validation: validationErrorMessages,
+  block: blockErrorMessages
 };
 
 const errorFields = {
-  notification: notification.errorFields,
-  server: server.errorFields,
-  user: user.errorFields,
-  validation: validation.errorFields,
-  block: block.blockErrorFields
+  notification: notificationErrorFields,
+  server: serverErrorFields,
+  user: userErrorFields,
+  validation: validationErrorFields,
+  block: blockErrorFields
 };
 
 const error = {
-  notification: notification.errors,
-  server: server.errors,
-  user: user.errors,
-  validation: validation.errors,
-  block: block.blockErrors
+  notification: notificationError,
+  server: serverError,
+  user: userError,
+  validation: validationError,
+  block: blockError
 };
 
 export default error;

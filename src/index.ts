@@ -1,17 +1,17 @@
-const { connection } = require("./mongo/defaultConnection");
-const UserModel = require("./mongo/UserModel");
-const BlockModel = require("./mongo/BlockModel");
-const NotificationModel = require("../src/mongo/NotificationModel");
-const AccessControlModel = require("./mongo/AccessControlModel");
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const graphqlHTTP = require("express-graphql");
-const expressJwt = require("express-jwt");
+import bodyParser from "body-parser";
+import cors from "cors";
+import express from "express";
+import graphqlHTTP from "express-graphql";
+import expressJwt from "express-jwt";
+import connection from "./mongo/defaultConnection";
 
-const { indexSchema, IndexOperations } = require("./endpoints");
-const httpToHttps = require("./middlewares/httpToHttps");
-const handleErrors = require("./middlewares/handleErrors");
+import { IndexOperations, indexSchema } from "./endpoints";
+import handleErrors from "./middlewares/handleErrors";
+import httpToHttps from "./middlewares/httpToHttps";
+import AccessControlModel from "./mongo/access-control/AccessControlModel";
+import BlockModel from "./mongo/block/BlockModel";
+import NotificationModel from "./mongo/notification/NotificationModel";
+import UserModel from "./mongo/user/UserModel";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -29,7 +29,7 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET not present");
 }
 
-let app = express();
+const app = express();
 const port = process.env.PORT || 5000;
 const whiteListedCorsOrigins = [/^https:\/\/www.softkave.com$/];
 let graphiql = false;

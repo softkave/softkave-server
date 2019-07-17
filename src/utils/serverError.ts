@@ -1,4 +1,4 @@
-const { RequestError } = require("./error");
+import RequestError from "./RequestError";
 
 const serverErrorMessages = {
   serverError: "Server error"

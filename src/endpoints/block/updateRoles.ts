@@ -1,26 +1,28 @@
-import accessControlCheck from "./access-control-check";
-import { blockActionsMap } from "./actions";
+import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import RequestError from "../../utils/RequestError";
 import { indexArray } from "../../utils/utils";
-import {
-  blockErrorFields,
-  blockErrorMessages
-} from "../../utils/blockError";
-import { validateRoleNameArray } from "./validation";
-import getBlockRoles from "./getBlocksAccessControlData";
+import { IUserDocument } from "../user/user";
+import accessControlCheck from "./accessControlCheck";
+import { blockActionsMap } from "./actions";
+import { IBlockDocument } from "./block";
+import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
-import { RequestError } from "../../utils/RequestError";
+import getBlockRoles from "./getBlocksAccessControlData";
+import { validateRoleNameArray } from "./validation";
 
-function indexRoles(roles) {
+// TODO: define types
+function indexRoles(roles: any) {
   return indexArray(roles, {
-    indexer: role => role.roleName,
-    reducer: (role, arr, index) => ({ role, index })
+    indexer: (role: any) => role.roleName,
+    reducer: (role: any, arr: any, index: any) => ({ role, index })
   });
 }
 
 function getAccessControlUpdateWithRole(
-  bulkAccessControlUpdates,
-  role,
-  newRole
+  bulkAccessControlUpdates: any,
+  role: any,
+  newRole: any
 ) {
   bulkAccessControlUpdates.push({
     updateMany: {
@@ -34,7 +36,7 @@ function getAccessControlUpdateWithRole(
   });
 }
 
-function getUserUpdateWithRole(bulkUserUpdates, role, newRole) {
+function getUserUpdateWithRole(bulkUserUpdates: any, role: any, newRole: any) {
   bulkUserUpdates.push({
     updateMany: {
       filter: {
@@ -50,13 +52,13 @@ function getUserUpdateWithRole(bulkUserUpdates, role, newRole) {
 }
 
 function getBulkWriteUpdates(
-  existingRoles,
-  indexedRoles,
-  roles,
-  bulkUserUpdates,
-  bulkAccessControlUpdates
+  existingRoles: any,
+  indexedRoles: any,
+  roles: any,
+  bulkUserUpdates: any,
+  bulkAccessControlUpdates: any
 ) {
-  existingRoles.forEach((role, index) => {
+  existingRoles.forEach((role: any, index: any) => {
     if (!indexedRoles[role.roleName]) {
       const newRole =
         index < roles.length ? roles[index] : roles[roles.length - 1];
@@ -67,14 +69,22 @@ function getBulkWriteUpdates(
   });
 }
 
+// TODO: think on using a generic interface that contains all the models, and extending it instead
+export interface IUpdateRolesParameters {
+  block: IBlockDocument;
+  user: IUserDocument;
+  roles: string[];
+  accessControlModel: AccessControlModel;
+  userModel: BlockModel;
+}
+
 async function updateRoles({
   block,
   user,
   roles,
   accessControlModel,
-  // blockModel,
   userModel
-}) {
+}: IUpdateRolesParameters) {
   if (block.type !== blockConstants.blockTypes.org) {
     throw new RequestError(
       blockErrorFields.invalidOperation,
@@ -97,8 +107,10 @@ async function updateRoles({
   });
 
   const indexedRoles = indexRoles(roles);
-  const bulkUserUpdates = [];
-  const bulkAccessControlUpdates = [];
+
+  // TODO: define type
+  const bulkUserUpdates: any[] = [];
+  const bulkAccessControlUpdates: any[] = [];
 
   /**
    * when a user is removed from an org, send a removed error, and show a notification modal,
@@ -118,7 +130,14 @@ async function updateRoles({
     bulkAccessControlUpdates
   );
 
-  block.roles = roles;
+  block.roles = roles.map(role => {
+    return {
+      roleName: role,
+      createdAt: Date.now(),
+      createdBy: user.customId
+    };
+  });
+
   await block.save();
 
   if (bulkUserUpdates.length > 0) {

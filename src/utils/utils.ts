@@ -1,6 +1,7 @@
-const get = require("lodash/get");
+import get from "lodash/get";
 
-function defaultIndexer(data, path) {
+// TODO: define types
+function defaultIndexer(data: any, path: string) {
   if (path) {
     return get(data, path);
   }
@@ -8,11 +9,11 @@ function defaultIndexer(data, path) {
   return JSON.stringify(data);
 }
 
-function defaultReducer(data) {
+function defaultReducer(data: any) {
   return data;
 }
 
-function indexArray(arr = [], { path, indexer, reducer } = {}) {
+function indexArray(arr: any[] = [], { path, indexer, reducer }: any = {}) {
   if (typeof indexer !== "function") {
     if (typeof path !== "string") {
       console.error(
@@ -27,7 +28,7 @@ function indexArray(arr = [], { path, indexer, reducer } = {}) {
 
   reducer = reducer || defaultReducer;
 
-  let result = arr.reduce((accumulator, current, index) => {
+  const result = arr.reduce((accumulator, current, index) => {
     accumulator[indexer(current, path, arr, index)] = reducer(
       current,
       arr,
@@ -40,7 +41,8 @@ function indexArray(arr = [], { path, indexer, reducer } = {}) {
   return result;
 }
 
-function getIndex(list, item, notFoundError) {
+// update all types to see if they are correct
+function getIndex(list: any, item: any, notFoundError?: any) {
   const itemIndex = list.indexOf(item);
 
   if (itemIndex === -1) {
@@ -51,10 +53,10 @@ function getIndex(list, item, notFoundError) {
 }
 
 function move(
-  list,
-  item,
-  dropPosition,
-  notFoundError,
+  list: any[],
+  item: any,
+  dropPosition: any,
+  notFoundError?: any,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
@@ -65,10 +67,10 @@ function move(
 }
 
 function update(
-  list,
-  item,
-  updateItem,
-  notFoundError,
+  list: any[],
+  item: any,
+  updateItem: any,
+  notFoundError?: any,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
@@ -77,24 +79,22 @@ function update(
   return list;
 }
 
-function remove(list, item, notFoundError, getItemIndex = getIndex) {
+function remove(
+  list: any[],
+  item: any,
+  notFoundError?: any,
+  getItemIndex = getIndex
+) {
   const itemIndex = getItemIndex(list, item, notFoundError);
   list = [...list];
   list.splice(itemIndex, 1);
   return list;
 }
 
-function add(list, item, dropPosition) {
+function add(list: any[], item: any, dropPosition: any) {
   list = [...list];
   list.splice(dropPosition, 0, item);
   return list;
 }
 
-module.exports = {
-  indexArray,
-  move,
-  update,
-  remove,
-  add
-};
-export {};
+export { indexArray, move, update, remove, add, getIndex };

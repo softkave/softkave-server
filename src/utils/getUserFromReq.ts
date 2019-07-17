@@ -1,22 +1,32 @@
-const { errors } = require("./userError");
-const { jwtConstants } = require("./jwt-constants");
+import { Request } from "express";
+
+import userError from "../endpoints/user/userError";
+import UserModel from "../mongo/user/UserModel";
+import jwtConstants from "./jwtConstants";
+
+// TODO: define all any types
+export interface IGetUserFromRequestParamters {
+  req: Request & any;
+  userModel: UserModel;
+  domain?: string;
+}
 
 async function getUserFromReq({
   req,
   userModel,
   domain = jwtConstants.domains.login
-}) {
+}: IGetUserFromRequestParamters) {
   if (req.fetchedUser) {
     return req.fetchedUser;
   }
 
   if (!req.user || !req.user.customId || req.user.domain !== domain) {
-    throw errors.invalidCredentials;
+    throw userError.invalidCredentials;
   }
 
   const userTokenData = req.user;
   let user = null;
-  let query = {
+  const query = {
     customId: userTokenData.customId
   };
 
@@ -24,7 +34,7 @@ async function getUserFromReq({
   user = await userModel.model.findOne(query).exec();
 
   if (!user) {
-    throw errors.permissionDenied;
+    throw userError.permissionDenied;
   }
 
   req.user = user;
@@ -32,18 +42,17 @@ async function getUserFromReq({
 
   if (Array.isArray(user.changePasswordHistory)) {
     if (Array.isArray(userTokenData.changePasswordHistory)) {
-      user.changePasswordHistory.forEach((time, i) => {
-        if (time !== userTokenData.changePasswordHistory[i]) {
-          throw errors.loginAgain;
+      user.changePasswordHistory.forEach((time: number, index: number) => {
+        if (time !== userTokenData.changePasswordHistory[index]) {
+          throw userError.loginAgain;
         }
       });
     } else {
-      throw errors.loginAgain;
+      throw userError.loginAgain;
     }
   }
 
   return user;
 }
 
-module.exports = getUserFromReq;
-export {};
+export default getUserFromReq;
