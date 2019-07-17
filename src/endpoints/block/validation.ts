@@ -50,6 +50,8 @@ const accessControlSchema = Joi.object().keys({
   permittedRoles: roleNameArraySchema
 });
 
+// TODO: split individual schema in different files, classifed by closeness of use
+// TODO: merge this schema with the one defined in blockSchema
 const accessControlArraySchema = Joi.array()
   .items(accessControlSchema)
   .unique("actionName")
@@ -96,6 +98,7 @@ const blockSchema = Joi.object().keys({
 
   // TODO: make a check to make sure this is only checked on orgs or roots
   accessControl: Joi.array()
+    .optional()
     .items(accessControlSchema)
     .unique((item1, item2) => {
       return (
@@ -104,7 +107,10 @@ const blockSchema = Joi.object().keys({
       );
     })
     .min(blockConstants.minRoles)
-    .max(blockConstants.maxRoles)
+    .max(blockConstants.maxRoles),
+
+  // TODO: define schema
+  roles: Joi.any().optional()
 });
 
 const addCollaboratorCollaboratorSchema = Joi.object().keys({
