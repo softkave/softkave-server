@@ -52,6 +52,10 @@ const blockConstants = {
     [blockTypeRoot]: blockTypeRoot,
     [blockTypeTask]: blockTypeTask
   },
+  minLinkedBlockReasonLength: 0,
+  maxLinkedBlockReasonLength: 250,
+  minLinkedBlocksCount: 0,
+  maxLinkedBlocksCount: 250,
   minRoleNameLength: 0,
   maxRoleNameLength: 50,
   minRoles: 0,

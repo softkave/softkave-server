@@ -13,6 +13,20 @@ const blockSchema = `
     assignedAt: Float
   }
 
+  type LinkedBlock{
+    blockId: String
+    reason: String
+    createdBy: String
+    createdAt: Float
+  }
+
+  input LinkedBlockInput{
+    blockId String!
+    reason: String
+    createdBy: String!
+    createdAt: Float!
+  }
+
   type AccessControl {
     orgId: String
     actionName: String
@@ -43,6 +57,7 @@ const blockSchema = `
     parents: [String]
     createdBy: String
     taskCollaborators: [BlockTaskCollaboratorData]
+    linkedBlocks: [LinkedBlock]
     priority: String
     isBacklog: Boolean
     position: Float
@@ -81,6 +96,7 @@ const blockSchema = `
     priority: String
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
+    linkedBlocks: [LinkedBlock]
     position: Float
     positionTimestamp: Float
     groups: [String]

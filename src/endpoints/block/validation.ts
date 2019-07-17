@@ -32,6 +32,15 @@ const blockChildrenSchema = Joi.array()
   .unique()
   .max(blockConstants.maxChildrenCount);
 
+const linkedBlockSchema = Joi.object().keys({
+  createdAt: Joi.number(),
+  createdBy: joiSchemas.uuidSchema,
+  reason: Joi.string()
+    .min(blockConstants.minLinkedBlockReasonLength)
+    .max(blockConstants.maxLinkedBlockReasonLength),
+  blockId: joiSchemas.uuidSchema
+});
+
 const roleNameSchema = Joi.string()
   .lowercase()
   .min(blockConstants.minRoleNameLength)
@@ -63,6 +72,7 @@ const blockSchema = Joi.object().keys({
     .trim()
     .min(blockConstants.minNameLength)
     .max(blockConstants.maxNameLength),
+
   description: Joi.string()
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
@@ -70,23 +80,27 @@ const blockSchema = Joi.object().keys({
       is: "task",
       then: Joi.required()
     }),
+
   expectedEndAt: Joi.number(),
   createdAt: Joi.number(),
   color: Joi.string()
     .trim()
     .lowercase()
     .regex(regEx.hexColorPattern),
+
   updatedAt: Joi.number(),
   type: blockTypeSchema,
   parents: Joi.array()
     .items(joiSchemas.uuidSchema)
     .unique()
     .max(blockConstants.maxParentsLength),
+
   createdBy: joiSchemas.uuidSchema,
   taskCollaborators: taskCollaboratorsSchema,
   priority: Joi.string()
     .lowercase()
     .valid(blockConstants.priorityValuesArray),
+
   position: Joi.number().min(0),
   positionTimestamp: Joi.number().min(0),
   tasks: blockChildrenSchema,
@@ -95,6 +109,12 @@ const blockSchema = Joi.object().keys({
   groupTaskContext: blockChildrenSchema,
   groupProjectContext: blockChildrenSchema,
   isBacklog: Joi.boolean(),
+  linkedBlock: Joi.array()
+    .optional()
+    .items(linkedBlockSchema)
+    .unique("blockId")
+    .min(blockConstants.minLinkedBlocksCount)
+    .max(blockConstants.maxLinkedBlocksCount),
 
   // TODO: make a check to make sure this is only checked on orgs or roots
   accessControl: Joi.array()
