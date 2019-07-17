@@ -1,4 +1,4 @@
-import getUserFromReq from "../utils/getUserFromReq";
+import getUserFromRequest from "../utils/getUserFromRequest";
 
 // TODO: define all any types
 function wrapGraphQLOperationForErrors(func: any) {
@@ -62,13 +62,13 @@ function wrapGraphQLOperation(func: any, staticParams: any, inserts: any = []) {
 async function insertUserCredentials(params: any) {
   const { req, userModel } = params;
   const tokenData = req.user;
-  const user = await getUserFromReq({ req, userModel });
+  const user = await getUserFromRequest({ req, userModel });
   return { tokenData, user };
 }
 
 async function insertChangePasswordCredentials({ req, userModel }: any) {
   const tokenData = req.user;
-  const user = await getUserFromReq({
+  const user = await getUserFromRequest({
     req,
     userModel,
     domain: "change-password"

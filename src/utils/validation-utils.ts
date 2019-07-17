@@ -3,7 +3,7 @@ import isHexColor from "validator/lib/isHexColor";
 import trim from "validator/lib/trim";
 
 import { validate } from "./joi-utils";
-import RequestError from "./RequestError";
+import OperationError from "./OperationError";
 import { validationErrorMessages } from "./validationError";
 
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
@@ -38,7 +38,7 @@ function validateColor(
   color = trim(color);
 
   if (!isHexColor(color)) {
-    throw new RequestError(field, message);
+    throw new OperationError(field, message);
   }
 }
 

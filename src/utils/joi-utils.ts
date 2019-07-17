@@ -2,7 +2,7 @@ import Joi from "joi";
 import get from "lodash/get";
 
 import { joiErrorMessages } from "./joiError";
-import RequestError from "./RequestError";
+import OperationError from "./OperationError";
 import { validationErrorMessages } from "./validationError";
 
 const typePath = "details.0.type";
@@ -24,10 +24,10 @@ function validate(data: any, schema: any) {
 
     if (typeof func === "function") {
       const message = func(error);
-      errorArray.push(new RequestError(path, message));
+      errorArray.push(new OperationError(path, message, path));
     } else {
       errorArray.push(
-        new RequestError(path, validationErrorMessages.dataInvalid)
+        new OperationError(path, validationErrorMessages.dataInvalid, path)
       );
     }
 

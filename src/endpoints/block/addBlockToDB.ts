@@ -1,6 +1,6 @@
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { validationErrorMessages } from "../../utils/validationError";
 import { IUserDocument } from "../user/user";
 import { IBlock } from "./block";
@@ -21,7 +21,7 @@ async function addBlockToDB({
 }: IAddBlockToDBParameters) {
   try {
     if (!block.customId) {
-      throw new RequestError(
+      throw new OperationError(
         blockFieldNames.customId,
         validationErrorMessages.dataInvalid
       );
@@ -38,7 +38,7 @@ async function addBlockToDB({
       })
     ) {
       // TODO: replace the generic blockExists with the right type
-      throw new RequestError(
+      throw new OperationError(
         blockErrorFields.blockExists,
         getBlockExistsErrorMessage(block)
       );
@@ -54,7 +54,7 @@ async function addBlockToDB({
     if (error.code === mongoDBConstants.indexNotUniqueErrorCode) {
       console.log(`Block with same id - ${block.customId}`);
 
-      throw new RequestError(
+      throw new OperationError(
         blockErrorFields.blockExists,
         getBlockExistsErrorMessage(block)
       );

@@ -4,7 +4,7 @@ import uuid from "uuid/v4";
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import UserModel from "../../mongo/user/UserModel";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import serverError from "../../utils/serverError";
 import createRootBlock from "../block/createRootBlock";
 import { userFieldNames } from "./constants";
@@ -26,7 +26,7 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
   const userExistsResult = await userExists({ userModel, email: user.email });
 
   if (!!userExistsResult && userExistsResult.userExists) {
-    throw new RequestError(
+    throw new OperationError(
       userFieldNames.email,
       userErrorMessages.emailAddressNotAvailable
     );
@@ -47,7 +47,7 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
   } catch (error) {
     // Adding a user fails with code 11000 if unique fields in this case email exists
     if (error.code === mongoDBConstants.indexNotUniqueErrorCode) {
-      throw new RequestError(
+      throw new OperationError(
         userFieldNames.email,
         userErrorMessages.emailAddressNotAvailable
       );

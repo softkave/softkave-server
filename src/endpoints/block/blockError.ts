@@ -1,4 +1,4 @@
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { IBlock } from "./block";
 
 const blockErrorMessages = {
@@ -36,37 +36,37 @@ const blockErrorFields = {
 };
 
 const blockError = {
-  invalidBlockType: new RequestError(
+  invalidBlockType: new OperationError(
     blockErrorFields.invalidBlockType,
     blockErrorMessages.invalidBlockType
   ),
 
-  transferDraggedBlockMissing: new RequestError(
+  transferDraggedBlockMissing: new OperationError(
     blockErrorFields.transferDraggedBlockMissing,
     blockErrorMessages.transferDraggedBlockMissing
   ),
 
-  transferSourceBlockMissing: new RequestError(
+  transferSourceBlockMissing: new OperationError(
     blockErrorFields.transferSourceBlockMissing,
     blockErrorMessages.transferSourceBlockMissing
   ),
 
-  transferDestinationBlockMissing: new RequestError(
+  transferDestinationBlockMissing: new OperationError(
     blockErrorFields.transferDestinationBlockMissing,
     blockErrorMessages.transferDestinationBlockMissing
   ),
 
-  transferDraggedBlockNotFoundInParent: new RequestError(
+  transferDraggedBlockNotFoundInParent: new OperationError(
     blockErrorFields.transferDraggedBlockNotFoundInParent,
     blockErrorMessages.transferDraggedBlockNotFoundInParent
   ),
 
-  blockNotFound: new RequestError(
+  blockNotFound: new OperationError(
     blockErrorFields.blockNotFound,
     blockErrorMessages.blockNotFound
   ),
 
-  roleDoesNotExist: new RequestError(
+  roleDoesNotExist: new OperationError(
     blockErrorFields.roleDoesNotExist,
     blockErrorMessages.roleDoesNotExist
   )

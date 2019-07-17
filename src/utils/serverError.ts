@@ -1,4 +1,4 @@
-import RequestError from "./RequestError";
+import OperationError from "./OperationError";
 
 const serverErrorMessages = {
   serverError: "Server error"
@@ -10,7 +10,7 @@ const serverErrorFields = {
 };
 
 const serverError = {
-  serverError: new RequestError(
+  serverError: new OperationError(
     serverErrorFields.serverError,
     serverErrorMessages.serverError
   )

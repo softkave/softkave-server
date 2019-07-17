@@ -1,5 +1,5 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
@@ -23,7 +23,7 @@ async function updateAccessControlData({
   accessControlModel
 }: IUpdateAccessControlDataParameters) {
   if (block.type !== blockConstants.blockTypes.org) {
-    throw new RequestError(
+    throw new OperationError(
       blockErrorFields.invalidOperation,
       blockErrorMessages.accessControlOnTypeOtherThanOrg
     );

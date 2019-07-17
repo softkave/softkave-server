@@ -4,7 +4,7 @@ import {
   notificationErrorFields,
   notificationErrorMessages
 } from "../../utils/notificationError";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { notificationConstants } from "../notification/constants";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -71,14 +71,14 @@ async function addCollaborator({
   if (existingCollaborationRequests.length > 0) {
     const errors = existingCollaborationRequests.map((request: any) => {
       if (isRequestAccepted(request)) {
-        return new RequestError(
+        return new OperationError(
           `${notificationErrorFields.sendingRequestToAnExistingCollaborator}.${
             request.to.email
           }`,
           notificationErrorMessages.sendingRequestToAnExistingCollaborator
         );
       } else {
-        return new RequestError(
+        return new OperationError(
           `${notificationErrorFields.requestHasBeenSentBefore}.${
             request.to.email
           }`,

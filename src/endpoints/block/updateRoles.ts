@@ -1,6 +1,6 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { indexArray } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -86,7 +86,7 @@ async function updateRoles({
   userModel
 }: IUpdateRolesParameters) {
   if (block.type !== blockConstants.blockTypes.org) {
-    throw new RequestError(
+    throw new OperationError(
       blockErrorFields.invalidOperation,
       blockErrorMessages.accessControlOnTypeOtherThanOrg
     );

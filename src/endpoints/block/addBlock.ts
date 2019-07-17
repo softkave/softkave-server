@@ -1,6 +1,6 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 import { validationErrorMessages } from "../../utils/validationError";
 import addOrgIDToUser from "../user/addOrgIDToUser";
 import { IUserDocument } from "../user/user";
@@ -51,7 +51,7 @@ async function addBlock({
   }
 
   if (!blockHasParents(block)) {
-    throw new RequestError(
+    throw new OperationError(
       blockFieldNames.parents,
       validationErrorMessages.dataInvalid
     );

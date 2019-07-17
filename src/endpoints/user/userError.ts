@@ -1,4 +1,4 @@
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 
 const userErrorMessages = {
   userAccessRevoked: "Your access has been revoked",
@@ -28,47 +28,47 @@ const userErrorFields = {
 };
 
 const userError = {
-  userAccessRevoked: new RequestError(
+  userAccessRevoked: new OperationError(
     userErrorFields.userAccessRevoked,
     userErrorMessages.userAccessRevoked
   ),
 
-  credentialsExpired: new RequestError(
+  credentialsExpired: new OperationError(
     userErrorFields.credentialsExpired,
     userErrorMessages.credentialsExpired
   ),
 
-  loginAgain: new RequestError(
+  loginAgain: new OperationError(
     userErrorFields.loginAgain,
     userErrorMessages.loginAgain
   ),
 
-  permissionDenied: new RequestError(
+  permissionDenied: new OperationError(
     userErrorFields.permissionDenied,
     userErrorMessages.permissionDenied
   ),
 
-  invalidCredentials: new RequestError(
+  invalidCredentials: new OperationError(
     userErrorFields.invalidCredentials,
     userErrorMessages.invalidCredentials
   ),
 
-  userDoesNotExist: new RequestError(
+  userDoesNotExist: new OperationError(
     userErrorFields.userDoesNotExist,
     userErrorMessages.userDoesNotExist
   ),
 
-  invalidLoginCredentials: new RequestError(
+  invalidLoginCredentials: new OperationError(
     userErrorFields.invalidLoginCredentials,
     userErrorMessages.invalidLoginCredentials
   ),
 
-  emailAddressNotAvailable: new RequestError(
+  emailAddressNotAvailable: new OperationError(
     userErrorFields.emailAddressNotAvailable,
     userErrorMessages.emailAddressNotAvailable
   ),
 
-  collaboratorDoesNotExist: new RequestError(
+  collaboratorDoesNotExist: new OperationError(
     userErrorFields.collaboratorDoesNotExist,
     userErrorMessages.collaboratorDoesNotExist
   )
