@@ -1,5 +1,7 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
@@ -15,6 +17,10 @@ export interface IToggleTaskParameters {
   accessControlModel: AccessControlModel;
 }
 
+const toggleTaskJoiSchema = Joi.object().keys({
+  data: Joi.boolean()
+});
+
 async function toggleTask({
   block,
   data,
@@ -22,6 +28,9 @@ async function toggleTask({
   user,
   accessControlModel
 }: IToggleTaskParameters) {
+  const result = validate({ data }, toggleTaskJoiSchema);
+  data = result.data;
+
   await accessControlCheck({
     user,
     block,

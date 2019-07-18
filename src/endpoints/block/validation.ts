@@ -6,33 +6,33 @@ import { notificationConstants } from "../notification/constants";
 import { blockActionsArray } from "./actions";
 import { blockConstants } from "./constants";
 
-const blockParamSchema = Joi.object().keys({
+export const blockParamSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema
 });
 
-const taskCollaboratorSchema = Joi.object().keys({
+export const taskCollaboratorSchema = Joi.object().keys({
   userId: joiSchemas.uuidSchema,
   completedAt: Joi.number(),
   assignedBy: joiSchemas.uuidSchema,
   assignedAt: Joi.number()
 });
 
-const taskCollaboratorsSchema = Joi.array()
+export const taskCollaboratorsSchema = Joi.array()
   .min(blockConstants.minTaskCollaboratorsLength)
   .max(blockConstants.maxTaskCollaboratorsLength)
   .unique("email")
   .items(taskCollaboratorSchema);
 
-const blockTypeSchema = Joi.string()
+export const blockTypeSchema = Joi.string()
   .lowercase()
   .valid(blockConstants.blockTypesArray);
 
-const blockChildrenSchema = Joi.array()
+export const blockChildrenSchema = Joi.array()
   .items(joiSchemas.uuidSchema)
   .unique()
   .max(blockConstants.maxChildrenCount);
 
-const linkedBlockSchema = Joi.object().keys({
+export const linkedBlockSchema = Joi.object().keys({
   createdAt: Joi.number(),
   createdBy: joiSchemas.uuidSchema,
   reason: Joi.string()
@@ -41,17 +41,17 @@ const linkedBlockSchema = Joi.object().keys({
   blockId: joiSchemas.uuidSchema
 });
 
-const roleNameSchema = Joi.string()
+export const roleNameSchema = Joi.string()
   .lowercase()
   .min(blockConstants.minRoleNameLength)
   .max(blockConstants.maxRoleNameLength);
 
-const roleNameArraySchema = Joi.array()
+export const roleNameArraySchema = Joi.array()
   .items(roleNameSchema)
   .unique()
   .max(blockConstants.maxRoles);
 
-const accessControlSchema = Joi.object().keys({
+export const accessControlSchema = Joi.object().keys({
   orgId: joiSchemas.uuidSchema,
   actionName: Joi.string()
     .uppercase()
@@ -61,12 +61,12 @@ const accessControlSchema = Joi.object().keys({
 
 // TODO: split individual schema in different files, classifed by closeness of use
 // TODO: merge this schema with the one defined in blockSchema
-const accessControlArraySchema = Joi.array()
+export const accessControlArraySchema = Joi.array()
   .items(accessControlSchema)
   .unique("actionName")
   .max(blockActionsArray.length);
 
-const blockSchema = Joi.object().keys({
+export const blockJoiSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
   name: Joi.string()
     .trim()
@@ -133,7 +133,7 @@ const blockSchema = Joi.object().keys({
   roles: Joi.any().optional()
 });
 
-const addCollaboratorCollaboratorSchema = Joi.object().keys({
+export const addCollaboratorCollaboratorSchema = Joi.object().keys({
   email: Joi.string()
     .required()
     .trim()
@@ -146,28 +146,28 @@ const addCollaboratorCollaboratorSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema
 });
 
-const addCollaboratorCollaboratorsSchema = Joi.array()
+export const addCollaboratorCollaboratorsSchema = Joi.array()
   .items(addCollaboratorCollaboratorSchema)
   .min(blockConstants.minAddCollaboratorValuesLength)
   .max(blockConstants.maxAddCollaboratorValuesLength);
 
-const blockTypesSchema = Joi.array()
+export const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)
   .unique()
   .items(blockTypeSchema);
 
-const groupContextSchema = Joi.string()
+export const groupContextSchema = Joi.string()
   .lowercase()
   .valid(blockConstants.groupContextsArray);
 
-const groupContextArraySchema = Joi.array()
+export const groupContextArraySchema = Joi.array()
   .max(blockConstants.groupContextsArray.length)
   .unique()
   .items(groupContextSchema);
 
 // TODO: define types
 function validateBlock(block: any) {
-  return validate(block, blockSchema);
+  return validate(block, blockJoiSchema);
 }
 
 function validateGroupContexts(contexts: any) {

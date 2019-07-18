@@ -1,4 +1,6 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { validate } from "../../utils/joi-utils";
 import OperationError from "../../utils/OperationError";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -6,7 +8,10 @@ import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
-import { validateAccessControlArray } from "./validation";
+import {
+  accessControlArraySchema,
+  validateAccessControlArray
+} from "./validation";
 
 // TODO: define all any types
 export interface IUpdateAccessControlDataParameters {
@@ -16,12 +21,22 @@ export interface IUpdateAccessControlDataParameters {
   accessControlModel: AccessControlModel;
 }
 
+const updateAccessControlDataJoiSchema = Joi.object().keys({
+  accessControlData: accessControlArraySchema
+});
+
 async function updateAccessControlData({
   block,
   user,
   accessControlData,
   accessControlModel
 }: IUpdateAccessControlDataParameters) {
+  const result = validate(
+    { accessControlData },
+    updateAccessControlDataJoiSchema
+  );
+  accessControlData = result.accessControlData;
+
   if (block.type !== blockConstants.blockTypes.org) {
     throw new OperationError(
       blockErrorFields.invalidOperation,
@@ -30,7 +45,7 @@ async function updateAccessControlData({
   }
 
   // TODO: validate if the permitted roles exist in the block
-  validateAccessControlArray(accessControlData);
+  // validateAccessControlArray(accessControlData);
   await accessControlCheck({
     user,
     block,

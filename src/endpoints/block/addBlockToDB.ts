@@ -1,7 +1,10 @@
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import OperationError from "../../utils/OperationError";
-import { validationErrorMessages } from "../../utils/validationError";
+import {
+  validationErrorFields,
+  validationErrorMessages
+} from "../../utils/validationError";
 import { IUserDocument } from "../user/user";
 import { IBlock } from "./block";
 import { blockErrorFields, getBlockExistsErrorMessage } from "./blockError";
@@ -22,8 +25,9 @@ async function addBlockToDB({
   try {
     if (!block.customId) {
       throw new OperationError(
-        blockFieldNames.customId,
-        validationErrorMessages.dataInvalid
+        validationErrorFields.dataInvalid,
+        validationErrorMessages.dataInvalid,
+        blockFieldNames.customId
       );
     }
 

@@ -1,5 +1,7 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import OperationError from "../../utils/OperationError";
 import { indexArray } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
@@ -9,7 +11,7 @@ import { IBlockDocument } from "./block";
 import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
 import getBlockRoles from "./getBlocksAccessControlData";
-import { validateRoleNameArray } from "./validation";
+import { roleNameArraySchema, validateRoleNameArray } from "./validation";
 
 // TODO: define types
 function indexRoles(roles: any) {
@@ -78,6 +80,10 @@ export interface IUpdateRolesParameters {
   userModel: BlockModel;
 }
 
+const updateRolesJoiSchema = Joi.object().keys({
+  roles: roleNameArraySchema
+});
+
 async function updateRoles({
   block,
   user,
@@ -85,6 +91,9 @@ async function updateRoles({
   accessControlModel,
   userModel
 }: IUpdateRolesParameters) {
+  const result = validate({ roles }, updateRolesJoiSchema);
+  roles = result.roles;
+
   if (block.type !== blockConstants.blockTypes.org) {
     throw new OperationError(
       blockErrorFields.invalidOperation,
@@ -92,7 +101,6 @@ async function updateRoles({
     );
   }
 
-  validateRoleNameArray(roles);
   await accessControlCheck({
     user,
     block,

@@ -6,10 +6,18 @@ class OperationError extends Error {
 
   constructor(message: string, type: string, field?: string, action?: string) {
     super(message);
+    // errorField
     this.field = field;
     this.name = "OperationError";
+
+    // errorType
     this.type = type;
+
+    // clientAction
     this.action = action;
+
+    // errorMessage
+    // value
   }
 }
 

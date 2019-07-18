@@ -1,13 +1,21 @@
+import Joi from "joi";
+
 import UserModel from "../../mongo/user/UserModel";
-import { validateEmail } from "./validation";
+import { validate } from "../../utils/joi-utils";
+import { emailSchema, validateEmail } from "./validation";
 
 export interface IUserExistsParameters {
   email: string;
   userModel: UserModel;
 }
 
+const userExistsJoiSchema = Joi.object().keys({
+  email: emailSchema
+});
+
 async function userExists({ email, userModel }: IUserExistsParameters) {
-  const value = validateEmail(email);
+  const result = validate({ email }, userExistsJoiSchema);
+  const value = result.email;
   const user = await userModel.model
     .findOne(
       {

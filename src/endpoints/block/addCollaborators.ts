@@ -1,5 +1,7 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
+import { validate } from "../../utils/joi-utils";
 import {
   notificationErrorFields,
   notificationErrorMessages
@@ -11,7 +13,11 @@ import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import sendCollabRequestEmail from "./sendCollabRequestEmail";
-import { validateAddCollaboratorCollaborators } from "./validation";
+import {
+  addCollaboratorCollaboratorsSchema,
+  blockParamSchema,
+  validateAddCollaboratorCollaborators
+} from "./validation";
 
 // TODO:  define all any types
 
@@ -27,6 +33,10 @@ function isRequestAccepted(request: any) {
 
   return false;
 }
+
+const addCollaboratorJoiSchema = Joi.object().keys({
+  collaborators: addCollaboratorCollaboratorsSchema
+});
 
 // TODO: define all any types
 export interface IAddCollaboratorParameters {
@@ -44,7 +54,9 @@ async function addCollaborator({
   notificationModel,
   accessControlModel
 }: IAddCollaboratorParameters) {
-  collaborators = validateAddCollaboratorCollaborators(collaborators);
+  const result = validate({ collaborators }, addCollaboratorJoiSchema);
+  collaborators = result.collaborators;
+
   await accessControlCheck({
     user,
     block,
@@ -71,18 +83,17 @@ async function addCollaborator({
   if (existingCollaborationRequests.length > 0) {
     const errors = existingCollaborationRequests.map((request: any) => {
       if (isRequestAccepted(request)) {
+        // TODO: think on how the field should be determined, should it be namespaced to variables or justfields
         return new OperationError(
-          `${notificationErrorFields.sendingRequestToAnExistingCollaborator}.${
-            request.to.email
-          }`,
-          notificationErrorMessages.sendingRequestToAnExistingCollaborator
+          notificationErrorFields.sendingRequestToAnExistingCollaborator,
+          notificationErrorMessages.sendingRequestToAnExistingCollaborator,
+          ""
         );
       } else {
         return new OperationError(
-          `${notificationErrorFields.requestHasBeenSentBefore}.${
-            request.to.email
-          }`,
-          notificationErrorMessages.requestHasBeenSentBefore
+          notificationErrorFields.requestHasBeenSentBefore,
+          notificationErrorMessages.requestHasBeenSentBefore,
+          ""
         );
       }
     });

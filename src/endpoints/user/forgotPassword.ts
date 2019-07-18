@@ -1,10 +1,12 @@
+import Joi from "joi";
 import UserModel from "../../mongo/user/UserModel";
+import { validate } from "../../utils/joi-utils";
 import jwtConstants from "../../utils/jwtConstants";
 import newToken from "./newToken";
 import sendChangePasswordEmail from "./sendChangePasswordEmail";
 import userError from "./userError";
 import { addEntryToPasswordDateLog } from "./utils";
-import { validateEmail } from "./validation";
+import { emailSchema, validateEmail } from "./validation";
 
 const linkExpirationDuration = "1 day";
 
@@ -13,8 +15,13 @@ export interface IForgotPasswordParameters {
   userModel: UserModel;
 }
 
+const forgotPasswordJoiSchema = Joi.object().keys({
+  email: emailSchema
+});
+
 async function forgotPassword({ email, userModel }: IForgotPasswordParameters) {
-  const emailValue = validateEmail(email);
+  const result = validate({ email }, forgotPasswordJoiSchema);
+  const emailValue = result.email;
   const user = await userModel.model
     .findOne({
       email: emailValue

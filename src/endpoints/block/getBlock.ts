@@ -1,10 +1,12 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
 import blockError from "./blockError";
-import { validateBlockParam } from "./validation";
+import { blockParamSchema, validateBlockParam } from "./validation";
 
 // TODO: define all any parameters
 export interface IGetBlockParameters {
@@ -16,6 +18,9 @@ export interface IGetBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
+const getBlockJoiSchema = Joi.object().keys({});
+
+// TODO: separate internal only params out and refactor it into a wrapper function for internal use
 async function getBlock({
   block,
   blockModel,
@@ -24,7 +29,8 @@ async function getBlock({
   user,
   accessControlModel
 }: IGetBlockParameters) {
-  block = validateBlockParam(block);
+  // const result = validate({  }, getBlockJoiSchema);
+
   block = await blockModel.model.findOne({ customId: block.customId }).exec();
 
   if (!block && isRequired) {

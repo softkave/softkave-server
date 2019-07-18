@@ -1,7 +1,10 @@
+import Joi from "joi";
+
 import UserModel from "../../mongo/user/UserModel";
+import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "./user";
 import userError from "./userError";
-import { validateUpdateUserData } from "./validation";
+import { updateUserSchema, validateUpdateUserData } from "./validation";
 
 // TODO: define data's type
 export interface IUpdateUserParameters {
@@ -10,8 +13,13 @@ export interface IUpdateUserParameters {
   user: IUserDocument;
 }
 
+const updateUserJoiSchema = Joi.object().keys({
+  data: updateUserSchema
+});
+
 async function updateUser({ data, userModel, user }: IUpdateUserParameters) {
-  const userData = validateUpdateUserData(data);
+  const result = validate({ data }, updateUserJoiSchema);
+  const userData = result.data;
 
   const updatedUser = userModel.model
     .findOneAndUpdate(

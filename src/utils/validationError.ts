@@ -5,7 +5,13 @@ const validationErrorMessages = {
   invalidColor: "Color data is invalid"
 };
 
-const validationErrorFields = {};
+// TODO: think on "sys.validation.di" maybe use abbreviations on error codes, like
+// TODO: "02344" or something for the error fields
+// TODO: convert the name from fields to type
+const validationErrorFields = {
+  dataInvalid: "system.validation.dataInvalid",
+  invalidColor: "system.validation.invalidColor"
+};
 
 const validationError = {};
 

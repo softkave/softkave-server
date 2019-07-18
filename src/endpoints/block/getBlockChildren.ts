@@ -1,21 +1,32 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { getParentsLength } from "./utils";
-import { validateBlockTypes } from "./validation";
+import {
+  blockParamSchema,
+  blockTypesSchema,
+  validateBlockTypes
+} from "./validation";
 
 export interface IGetBlockChildrenParameters {
   block: IBlockDocument;
   user: IUserDocument;
   accessControlModel: AccessControlModel;
-  types: string[];
+  types?: string[];
   blockModel: BlockModel;
   isBacklog: boolean;
 }
+
+const getBlockChildrenJoiSchema = Joi.object().keys({
+  types: blockTypesSchema,
+  isBacklog: Joi.boolean().optional()
+});
 
 async function getBlockChildren({
   block,
@@ -25,6 +36,11 @@ async function getBlockChildren({
   blockModel,
   isBacklog
 }: IGetBlockChildrenParameters) {
+  const result = validate({ types, isBacklog }, getBlockChildrenJoiSchema);
+
+  types = result.types;
+  isBacklog = result.isBacklog;
+
   const parentBlock = block;
   await accessControlCheck({
     user,
@@ -34,7 +50,7 @@ async function getBlockChildren({
   });
 
   if (types) {
-    types = validateBlockTypes(types);
+    // types = validateBlockTypes(types);
   } else {
     types = blockConstants.blockTypesArray;
   }

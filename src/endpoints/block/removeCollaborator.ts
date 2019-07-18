@@ -1,9 +1,11 @@
+import Joi from "joi";
 import uuid from "uuid/v4";
 
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
-import { validators } from "../../utils/validation-utils";
+import { validate } from "../../utils/joi-utils";
+import { joiSchemas, validators } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
 import { IUserDocument } from "../user/user";
@@ -21,6 +23,10 @@ export interface IRemoveCollaboratorParameters {
   userModel: UserModel;
 }
 
+const removeCollaboratorJoiSchema = Joi.object().keys({
+  collaborator: joiSchemas.uuidSchema
+});
+
 async function removeCollaborator({
   block,
   collaborator,
@@ -29,7 +35,9 @@ async function removeCollaborator({
   accessControlModel,
   userModel
 }: IRemoveCollaboratorParameters) {
-  collaborator = validators.validateUUID(collaborator);
+  const result = validate({ collaborator }, removeCollaboratorJoiSchema);
+  collaborator = result.collaborator;
+
   const ownerBlock = block;
   await accessControlCheck({
     user,

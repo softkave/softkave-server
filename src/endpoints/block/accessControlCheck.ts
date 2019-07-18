@@ -7,6 +7,8 @@ import { IBlock, IBlockDocument } from "./block";
 import canReadBlock from "./canReadBlock";
 import { getRootParentID } from "./utils";
 
+// TODO: extends endpoint parameters from operation parameters which
+// will all be optional, but the required fields will be made required in the endpoint
 export interface IAccessControlCheckUsingRoleParameters {
   CRUDActionName?: string;
   actionName?: string;

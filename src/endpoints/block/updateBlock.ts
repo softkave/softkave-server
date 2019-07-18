@@ -1,9 +1,12 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
+import { blockJoiSchema } from "./validation";
 
 // TODO: define all any types
 export interface IUpdateBlockParameters {
@@ -14,6 +17,10 @@ export interface IUpdateBlockParameters {
   user: IUserDocument;
 }
 
+const updateBlockJoiSchema = Joi.object().keys({
+  data: blockJoiSchema
+});
+
 async function updateBlock({
   block,
   data,
@@ -21,6 +28,8 @@ async function updateBlock({
   accessControlModel,
   user
 }: IUpdateBlockParameters) {
+  const result = validate({ data }, updateBlockJoiSchema);
+  data = result.data;
   await accessControlCheck({
     user,
     block,

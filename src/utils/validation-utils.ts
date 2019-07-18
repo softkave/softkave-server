@@ -4,7 +4,10 @@ import trim from "validator/lib/trim";
 
 import { validate } from "./joi-utils";
 import OperationError from "./OperationError";
-import { validationErrorMessages } from "./validationError";
+import {
+  validationErrorFields,
+  validationErrorMessages
+} from "./validationError";
 
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
 const passwordPattern = /[A-Za-z0-9!()?_`~#$^&*+=]/;
@@ -38,7 +41,11 @@ function validateColor(
   color = trim(color);
 
   if (!isHexColor(color)) {
-    throw new OperationError(field, message);
+    throw new OperationError(
+      validationErrorFields.invalidColor,
+      message,
+      field
+    );
   }
 }
 
