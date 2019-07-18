@@ -67,8 +67,8 @@ async function addBlock({
   if (!blockHasParents(validatedBlock)) {
     throw new OperationError(
       validationErrorFields.dataInvalid,
-      validationErrorMessages.dataInvalid,
-      blockFieldNames.parents
+      validationErrorMessages.dataInvalid
+      // blockFieldNames.parents
     );
   }
 

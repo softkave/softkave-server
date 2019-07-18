@@ -26,8 +26,8 @@ async function addBlockToDB({
     if (!block.customId) {
       throw new OperationError(
         validationErrorFields.dataInvalid,
-        validationErrorMessages.dataInvalid,
-        blockFieldNames.customId
+        validationErrorMessages.dataInvalid
+        // blockFieldNames.customId
       );
     }
 

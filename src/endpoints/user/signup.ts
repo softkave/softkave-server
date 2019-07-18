@@ -36,7 +36,7 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
     throw new OperationError(
       userErrorFields.emailAddressNotAvailable,
       userErrorMessages.emailAddressNotAvailable,
-      userFieldNames.email
+      `user.${userFieldNames.email}`
     );
   }
 
@@ -58,7 +58,7 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
       throw new OperationError(
         userErrorFields.emailAddressNotAvailable,
         userErrorMessages.emailAddressNotAvailable,
-        userFieldNames.email
+        `user.${userFieldNames.email}`
       );
     }
 

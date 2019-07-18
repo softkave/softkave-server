@@ -33,6 +33,7 @@ function validateUUID(uuid: string) {
   return value;
 }
 
+// TODO: fields most likely will be incorrect and will break error flow
 function validateColor(
   field: string,
   color: string,

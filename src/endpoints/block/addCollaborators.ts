@@ -7,6 +7,7 @@ import {
   notificationErrorMessages
 } from "../../utils/notificationError";
 import OperationError from "../../utils/OperationError";
+import { indexArray } from "../../utils/utils";
 import { notificationConstants } from "../notification/constants";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -81,19 +82,28 @@ async function addCollaborator({
     .exec();
 
   if (existingCollaborationRequests.length > 0) {
+    const idc = indexArray(collaborators, {
+      path: "email",
+      reducer: (data: any, arr: any, index: number) => ({
+        data,
+        index
+      })
+    });
+
     const errors = existingCollaborationRequests.map((request: any) => {
+      const idcItem = idc[request.to.email];
       if (isRequestAccepted(request)) {
         // TODO: think on how the field should be determined, should it be namespaced to variables or justfields
         return new OperationError(
           notificationErrorFields.sendingRequestToAnExistingCollaborator,
           notificationErrorMessages.sendingRequestToAnExistingCollaborator,
-          ""
+          `collaborators.${idcItem.index}.email`
         );
       } else {
         return new OperationError(
           notificationErrorFields.requestHasBeenSentBefore,
           notificationErrorMessages.requestHasBeenSentBefore,
-          ""
+          `collaborators.${idcItem.index}.email`
         );
       }
     });
