@@ -1,1 +1,0 @@
-{"version":3,"file":"appInfo.js","sourceRoot":"","sources":["../../src/res/appInfo.ts"],"names":[],"mappings":";;AAAA,MAAM,OAAO,GAAG;IACd,OAAO,EAAE,UAAU;IACnB,YAAY,EAAE,OAAO,CAAC,GAAG,CAAC,aAAa,IAAI,0BAA0B;IACrE,kBAAkB,EAAE,uBAAuB;IAC3C,oBAAoB,EAAE,OAAO;CAC9B,CAAC;AAEF,kBAAe,OAAO,CAAC"}
