@@ -3,7 +3,7 @@
 # dependencies
 /node_modules
 
-# generated dist
+# TS generated dist
 /dist
 
 # testing
