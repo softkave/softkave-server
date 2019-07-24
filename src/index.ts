@@ -79,6 +79,7 @@ app.use(
 app.use(handleErrors);
 
 connection.wait().then(async () => {
+  // TODO: move index creation to DB pipeline
   await userModel.model.init();
   await blockModel.model.init();
   await notificationModel.model.init();

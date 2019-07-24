@@ -1,5 +1,5 @@
 const userSchema = `
-  type Role {
+  type UserRole {
     orgId: String
     assignedBy: String
     assignedAt: String
@@ -13,7 +13,7 @@ const userSchema = `
     createdAt: Float
     lastNotificationCheckTime: Float
     color: String
-    roles: [Role]
+    roles: [UserRole]
   }
 
   input UserSignupInput {
@@ -21,13 +21,13 @@ const userSchema = `
     email: String!
     password: String!
     color: String!
-    roles: [Role]
+    roles: [UserRole]
   }
 
   input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
-    roles: [Role]
+    roles: [UserRole]
   }
 
   type UserQueryResult {

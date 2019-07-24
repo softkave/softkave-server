@@ -21,7 +21,7 @@ const blockSchema = `
   }
 
   input LinkedBlockInput{
-    blockId String!
+    blockId: String!
     reason: String
     createdBy: String!
     createdAt: Float!
@@ -39,7 +39,7 @@ const blockSchema = `
     permittedRoles: [String]!
   }
 
-  type Role {
+  type BlockRole {
     roleName: String
     createdBy: String
     createdAt: String
@@ -68,7 +68,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     accessControl: [AccessControl]
-    roles: [Role]
+    roles: [BlockRole]
   }
 
   type BlockResponse {
@@ -224,9 +224,12 @@ const blockSchema = `
       draggedBlockType: String!,
       groupContext: String
     ): ErrorOnlyResponse
-    updateAccessControlData (accessControlData: [AccessControlInput!]!) : ErrorOnlyResponse
-    updateRoles (roles: [String!]!) : ErrorOnlyResponse
-    assignRole (collaborator: String!, roleName: String!) : ErrorOnlyResponse
+    updateAccessControlData (
+      block: BlockParamInput!, accessControlData: [AccessControlInput!]!) : ErrorOnlyResponse
+    updateRoles (
+      block: BlockParamInput!, roles: [String!]!) : ErrorOnlyResponse
+    assignRole (
+      block: BlockParamInput!, collaborator: String!, roleName: String!) : ErrorOnlyResponse
   }
 `;
 

@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "nodemon",
       "runtimeExecutable": "nodemon",
-      "program": "${workspaceFolder}/src/index.js",
+      "program": "${workspaceFolder}/dist/index.js",
       "envFile": "${workspaceFolder}/.env",
       "restart": true,
       "console": "integratedTerminal",
