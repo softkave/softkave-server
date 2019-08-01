@@ -5,12 +5,7 @@ import UserModel from "../../mongo/user/UserModel";
 import { validate } from "../../utils/joi-utils";
 import newToken from "./newToken";
 import userError from "./userError";
-import {
-  emailSchema,
-  passwordSchema,
-  validateEmail,
-  validatePassword
-} from "./validation";
+import { emailSchema, passwordSchema } from "./validation";
 
 export interface ILoginParameters {
   email: string;

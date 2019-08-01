@@ -45,6 +45,12 @@ const blockSchema = `
     createdAt: String
   }
 
+  input BlockRoleInput {
+    roleName: String
+    createdBy: String
+    createdAt: String
+  }
+
   type Block {
     customId: String
     name: String

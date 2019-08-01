@@ -1,5 +1,13 @@
+// TODO: Look at this types and ensure they are correct
 const userSchema = `
   type UserRole {
+    orgId: String
+    assignedBy: String
+    assignedAt: String
+    roleName: String
+  }
+
+  input UserRoleInput {
     orgId: String
     assignedBy: String
     assignedAt: String
@@ -21,13 +29,13 @@ const userSchema = `
     email: String!
     password: String!
     color: String!
-    roles: [UserRole]
+    roles: [UserRoleInput]
   }
 
   input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
-    roles: [UserRole]
+    roles: [UserRoleInput]
   }
 
   type UserQueryResult {
