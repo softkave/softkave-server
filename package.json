@@ -4,8 +4,7 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "ts-node --inspect=5858 src/index.ts",
-    "dev:start": "nf start",
+    "start": "tsc src/index.ts",
     "dev": "nodemon src/index.ts",
     "dev:debug": "nodemon -r dotenv/config --inspect src/index.ts",
     "test": "jest"
