@@ -1,17 +1,24 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
+import { validate } from "../../utils/joi-utils";
 import {
   notificationErrorFields,
   notificationErrorMessages
 } from "../../utils/notificationError";
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
+import { indexArray } from "../../utils/utils";
 import { notificationConstants } from "../notification/constants";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import sendCollabRequestEmail from "./sendCollabRequestEmail";
-import { validateAddCollaboratorCollaborators } from "./validation";
+import {
+  addCollaboratorCollaboratorsSchema,
+  blockParamSchema,
+  validateAddCollaboratorCollaborators
+} from "./validation";
 
 // TODO:  define all any types
 
@@ -27,6 +34,10 @@ function isRequestAccepted(request: any) {
 
   return false;
 }
+
+const addCollaboratorJoiSchema = Joi.object().keys({
+  collaborators: addCollaboratorCollaboratorsSchema
+});
 
 // TODO: define all any types
 export interface IAddCollaboratorParameters {
@@ -44,7 +55,9 @@ async function addCollaborator({
   notificationModel,
   accessControlModel
 }: IAddCollaboratorParameters) {
-  collaborators = validateAddCollaboratorCollaborators(collaborators);
+  const result = validate({ collaborators }, addCollaboratorJoiSchema);
+  collaborators = result.collaborators;
+
   await accessControlCheck({
     user,
     block,
@@ -69,20 +82,28 @@ async function addCollaborator({
     .exec();
 
   if (existingCollaborationRequests.length > 0) {
+    const idc = indexArray(collaborators, {
+      path: "email",
+      reducer: (data: any, arr: any, index: number) => ({
+        data,
+        index
+      })
+    });
+
     const errors = existingCollaborationRequests.map((request: any) => {
+      const idcItem = idc[request.to.email];
       if (isRequestAccepted(request)) {
-        return new RequestError(
-          `${notificationErrorFields.sendingRequestToAnExistingCollaborator}.${
-            request.to.email
-          }`,
-          notificationErrorMessages.sendingRequestToAnExistingCollaborator
+        // TODO: think on how the field should be determined, should it be namespaced to variables or justfields
+        return new OperationError(
+          notificationErrorFields.sendingRequestToAnExistingCollaborator,
+          notificationErrorMessages.sendingRequestToAnExistingCollaborator,
+          `collaborators.${idcItem.index}.email`
         );
       } else {
-        return new RequestError(
-          `${notificationErrorFields.requestHasBeenSentBefore}.${
-            request.to.email
-          }`,
-          notificationErrorMessages.requestHasBeenSentBefore
+        return new OperationError(
+          notificationErrorFields.requestHasBeenSentBefore,
+          notificationErrorMessages.requestHasBeenSentBefore,
+          `collaborators.${idcItem.index}.email`
         );
       }
     });

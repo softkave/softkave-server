@@ -22,8 +22,8 @@ import updateBlock from "./updateBlock";
 import updateRoles from "./updateRoles";
 
 export interface IBlockOperationParameters extends IBaseOperationParameters {
-  user: IUser;
-  block: IBlock;
+  user?: IUser;
+  block?: IBlock;
 }
 
 async function getRequestBlock(arg: any) {

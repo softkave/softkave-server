@@ -1,5 +1,7 @@
+import Joi from "joi";
 import UserModel from "../../mongo/user/UserModel";
-import { validators } from "../../utils/validation-utils";
+import { validate } from "../../utils/joi-utils";
+import { joiSchemas, validators } from "../../utils/validation-utils";
 import userError from "./userError";
 
 export interface IGetUserParameters {
@@ -8,12 +10,17 @@ export interface IGetUserParameters {
   required?: boolean;
 }
 
+const getUserJoiSchema = Joi.object().keys({
+  collaborator: joiSchemas.uuidSchema
+});
+
 async function getUser({
   collaborator,
   userModel,
   required
 }: IGetUserParameters) {
-  collaborator = validators.validateUUID(collaborator);
+  const result = validate({ collaborator }, getUserJoiSchema);
+  collaborator = result.collaborator;
   const query = {
     customId: collaborator
   };

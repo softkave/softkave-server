@@ -1,7 +1,12 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import RequestError from "../../utils/RequestError";
-import { validationErrorMessages } from "../../utils/validationError";
+import { validate } from "../../utils/joi-utils";
+import OperationError from "../../utils/OperationError";
+import {
+  validationErrorFields,
+  validationErrorMessages
+} from "../../utils/validationError";
 import addOrgIDToUser from "../user/addOrgIDToUser";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -12,7 +17,11 @@ import blockError from "./blockError";
 import canReadBlock from "./canReadBlock";
 import { blockConstants, blockFieldNames } from "./constants";
 import { blockHasParents, getImmediateParentID } from "./utils";
-import { validateBlock } from "./validation";
+import { blockJoiSchema, validateBlock } from "./validation";
+
+const addBlockJoiSchema = Joi.object().keys({
+  block: blockJoiSchema
+});
 
 export interface IAddBlockParameters {
   blockModel: BlockModel;
@@ -27,20 +36,25 @@ async function addBlock({
   block,
   accessControlModel
 }: IAddBlockParameters) {
-  block = validateBlock(block);
+  // block = validateBlock(block);
+  let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
   await accessControlCheck({
     user,
-    block,
+    block: validatedBlock,
     accessControlModel,
     CRUDActionName: CRUDActionsMap.CREATE
   });
 
-  if (block.type === blockConstants.blockTypes.root) {
+  if (validatedBlock.type === blockConstants.blockTypes.root) {
     throw blockError.invalidBlockType;
   }
 
-  if (block.type === blockConstants.blockTypes.org) {
-    const result = await addBlockToDB({ block, blockModel, user });
+  if (validatedBlock.type === blockConstants.blockTypes.org) {
+    const result = await addBlockToDB({
+      block: validatedBlock,
+      blockModel,
+      user
+    });
 
     // TODO: scrub for orgs that are not added to user and add or clean them
     // Continuation: you can do this when user tries to read them, or add them again
@@ -50,37 +64,45 @@ async function addBlock({
     };
   }
 
-  if (!blockHasParents(block)) {
-    throw new RequestError(
-      blockFieldNames.parents,
+  if (!blockHasParents(validatedBlock)) {
+    throw new OperationError(
+      validationErrorFields.dataInvalid,
       validationErrorMessages.dataInvalid
+      // blockFieldNames.parents
     );
   }
 
-  const rootParentId = block.parents[0];
+  const rootParentId = validatedBlock.parents[0];
   const rootParent = await blockModel.model
     .findOne({ customId: rootParentId })
     .lean()
     .exec();
 
   await canReadBlock({ user, block: rootParent });
-  block = await addBlockToDB({ block, blockModel, user });
-  const pluralizedType = `${block.type}s`;
+  validatedBlock = await addBlockToDB({
+    block: validatedBlock,
+    blockModel,
+    user
+  });
+  const pluralizedType = `${validatedBlock.type}s`;
   const update = {
-    [pluralizedType]: block.customId
+    [pluralizedType]: validatedBlock.customId
   };
 
-  if (block.type === blockConstants.blockTypes.group) {
-    update.groupTaskContext = block.customId;
-    update.groupProjectContext = block.customId;
+  if (validatedBlock.type === blockConstants.blockTypes.group) {
+    update.groupTaskContext = validatedBlock.customId;
+    update.groupProjectContext = validatedBlock.customId;
   }
 
   await blockModel.model
-    .updateOne({ customId: getImmediateParentID(block) }, { $addToSet: update })
+    .updateOne(
+      { customId: getImmediateParentID(validatedBlock) },
+      { $addToSet: update }
+    )
     .exec();
 
   return {
-    block
+    block: validatedBlock
   };
 }
 

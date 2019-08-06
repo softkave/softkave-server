@@ -58,7 +58,7 @@ const blockConstants = {
   maxLinkedBlocksCount: 250,
   minRoleNameLength: 0,
   maxRoleNameLength: 50,
-  minRoles: 0,
+  minRoles: 1,
   maxRoles: 10
 };
 

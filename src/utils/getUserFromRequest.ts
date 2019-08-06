@@ -5,13 +5,14 @@ import UserModel from "../mongo/user/UserModel";
 import jwtConstants from "./jwtConstants";
 
 // TODO: define all any types
+// TODO: define all possible actions in one file
 export interface IGetUserFromRequestParamters {
   req: Request & any;
   userModel: UserModel;
   domain?: string;
 }
 
-async function getUserFromReq({
+async function getUserFromRequest({
   req,
   userModel,
   domain = jwtConstants.domains.login
@@ -55,4 +56,4 @@ async function getUserFromReq({
   return user;
 }
 
-export default getUserFromReq;
+export default getUserFromRequest;

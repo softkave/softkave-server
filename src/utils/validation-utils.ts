@@ -3,8 +3,11 @@ import isHexColor from "validator/lib/isHexColor";
 import trim from "validator/lib/trim";
 
 import { validate } from "./joi-utils";
-import RequestError from "./RequestError";
-import { validationErrorMessages } from "./validationError";
+import OperationError from "./OperationError";
+import {
+  validationErrorFields,
+  validationErrorMessages
+} from "./validationError";
 
 // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
 const passwordPattern = /[A-Za-z0-9!()?_`~#$^&*+=]/;
@@ -30,6 +33,7 @@ function validateUUID(uuid: string) {
   return value;
 }
 
+// TODO: fields most likely will be incorrect and will break error flow
 function validateColor(
   field: string,
   color: string,
@@ -38,7 +42,11 @@ function validateColor(
   color = trim(color);
 
   if (!isHexColor(color)) {
-    throw new RequestError(field, message);
+    throw new OperationError(
+      validationErrorFields.invalidColor,
+      message,
+      field
+    );
   }
 }
 

@@ -5,26 +5,26 @@ import { validate } from "../../utils/joi-utils";
 import { regEx } from "../../utils/validation-utils";
 import { userConstants } from "./constants";
 
-const emailSchema = Joi.string()
+export const emailSchema = Joi.string()
   .required()
   .trim()
   .lowercase()
   .email();
 
-const passwordSchema = Joi.string()
+export const passwordSchema = Joi.string()
   .required()
   .trim()
   .min(userConstants.minPasswordLength)
   .max(userConstants.maxPasswordLength)
   .regex(regEx.passwordPattern);
 
-const nameSchema = Joi.string()
+export const nameSchema = Joi.string()
   .required()
   .trim()
   .min(userConstants.minNameLength)
   .max(userConstants.maxNameLength);
 
-const userSignupSchema = Joi.object().keys({
+export const userSignupSchema = Joi.object().keys({
   name: nameSchema,
   password: passwordSchema,
   email: emailSchema,
@@ -34,17 +34,17 @@ const userSignupSchema = Joi.object().keys({
     .regex(regEx.hexColorPattern)
 });
 
-const updateUserSchema = Joi.object().keys({
+export const updateUserSchema = Joi.object().keys({
   name: nameSchema,
   lastNotificationCheckTime: Joi.number().required()
 });
 
-const collaborationRequestResponseSchema = Joi.string()
+export const collaborationRequestResponseSchema = Joi.string()
   .trim()
   .lowercase()
   .valid(["accepted", "declined"]);
 
-const collaborationRequestSchema = Joi.object().keys({
+export const collaborationRequestSchema = Joi.object().keys({
   readAt: Joi.number()
 });
 

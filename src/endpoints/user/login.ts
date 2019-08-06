@@ -1,9 +1,11 @@
 import argon2 from "argon2";
+import Joi from "joi";
 
 import UserModel from "../../mongo/user/UserModel";
+import { validate } from "../../utils/joi-utils";
 import newToken from "./newToken";
 import userError from "./userError";
-import { validateEmail, validatePassword } from "./validation";
+import { emailSchema, passwordSchema } from "./validation";
 
 export interface ILoginParameters {
   email: string;
@@ -11,9 +13,15 @@ export interface ILoginParameters {
   userModel: UserModel;
 }
 
+const loginJoiSchema = Joi.object().keys({
+  email: emailSchema,
+  password: passwordSchema
+});
+
 async function login({ email, password, userModel }: ILoginParameters) {
-  email = validateEmail(email);
-  password = validatePassword(password);
+  const result = validate({ email, password }, loginJoiSchema);
+  email = result.email;
+  password = result.password;
 
   const userData = await userModel.model
     .findOne({

@@ -8,6 +8,8 @@ export interface IChangePasswordWithTokenParameters
   tokenData: any;
 }
 
+// TODO: write joi validation
+
 async function changePasswordWithToken(
   arg: IChangePasswordWithTokenParameters
 ) {

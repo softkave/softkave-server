@@ -1,7 +1,9 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
+import { validate } from "../../utils/joi-utils";
 import notificationError from "../../utils/notificationError";
-import { validators } from "../../utils/validation-utils";
+import { joiSchemas, validators } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -16,6 +18,10 @@ export interface IRevokeRequestParameters {
   accessControlModel: AccessControlModel;
 }
 
+const revokeRequestJoiSchema = Joi.object().keys({
+  request: joiSchemas.uuidSchema
+});
+
 async function revokeRequest({
   request,
   block,
@@ -23,7 +29,9 @@ async function revokeRequest({
   user,
   accessControlModel
 }: IRevokeRequestParameters) {
-  request = validators.validateUUID(request);
+  const result = validate({ request }, revokeRequestJoiSchema);
+  request = result.request;
+
   await accessControlCheck({
     user,
     block,

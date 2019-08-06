@@ -1,18 +1,20 @@
 import argon2 from "argon2";
+import Joi from "joi";
 import uuid from "uuid/v4";
 
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import UserModel from "../../mongo/user/UserModel";
-import RequestError from "../../utils/RequestError";
+import { validate } from "../../utils/joi-utils";
+import OperationError from "../../utils/OperationError";
 import serverError from "../../utils/serverError";
 import createRootBlock from "../block/createRootBlock";
 import { userFieldNames } from "./constants";
 import newToken from "./newToken";
 import { IUser } from "./user";
-import { userErrorMessages } from "./userError";
+import { userErrorFields, userErrorMessages } from "./userError";
 import userExists from "./userExists";
-import { validateUserSignupData } from "./validation";
+import { userSignupSchema, validateUserSignupData } from "./validation";
 
 // TODO: define user's type
 export interface ISignupParameters {
@@ -21,14 +23,20 @@ export interface ISignupParameters {
   blockModel: BlockModel;
 }
 
+const signupJoiSchema = Joi.object().keys({
+  user: userSignupSchema
+});
+
 async function signup({ user, userModel, blockModel }: ISignupParameters) {
-  const value = validateUserSignupData(user);
+  const result = validate({ user }, signupJoiSchema);
+  const value = result.user;
   const userExistsResult = await userExists({ userModel, email: user.email });
 
   if (!!userExistsResult && userExistsResult.userExists) {
-    throw new RequestError(
-      userFieldNames.email,
-      userErrorMessages.emailAddressNotAvailable
+    throw new OperationError(
+      userErrorFields.emailAddressNotAvailable,
+      userErrorMessages.emailAddressNotAvailable,
+      `user.${userFieldNames.email}`
     );
   }
 
@@ -47,9 +55,10 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
   } catch (error) {
     // Adding a user fails with code 11000 if unique fields in this case email exists
     if (error.code === mongoDBConstants.indexNotUniqueErrorCode) {
-      throw new RequestError(
-        userFieldNames.email,
-        userErrorMessages.emailAddressNotAvailable
+      throw new OperationError(
+        userErrorFields.emailAddressNotAvailable,
+        userErrorMessages.emailAddressNotAvailable,
+        `user.${userFieldNames.email}`
       );
     }
 

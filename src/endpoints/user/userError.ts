@@ -1,4 +1,4 @@
-import RequestError from "../../utils/RequestError";
+import OperationError from "../../utils/OperationError";
 
 const userErrorMessages = {
   userAccessRevoked: "Your access has been revoked",
@@ -27,48 +27,64 @@ const userErrorFields = {
   collaboratorDoesNotExist: "system.user.collaboratorDoesNotExist"
 };
 
+const actions = {
+  logout: "logout"
+};
+
 const userError = {
-  userAccessRevoked: new RequestError(
+  userAccessRevoked: new OperationError(
     userErrorFields.userAccessRevoked,
-    userErrorMessages.userAccessRevoked
+    userErrorMessages.userAccessRevoked,
+    null,
+    actions.logout
   ),
 
-  credentialsExpired: new RequestError(
+  credentialsExpired: new OperationError(
     userErrorFields.credentialsExpired,
-    userErrorMessages.credentialsExpired
+    userErrorMessages.credentialsExpired,
+    null,
+    actions.logout
   ),
 
-  loginAgain: new RequestError(
+  loginAgain: new OperationError(
     userErrorFields.loginAgain,
-    userErrorMessages.loginAgain
+    userErrorMessages.loginAgain,
+    null,
+    actions.logout
   ),
 
-  permissionDenied: new RequestError(
+  permissionDenied: new OperationError(
     userErrorFields.permissionDenied,
     userErrorMessages.permissionDenied
   ),
 
-  invalidCredentials: new RequestError(
+  invalidCredentials: new OperationError(
     userErrorFields.invalidCredentials,
-    userErrorMessages.invalidCredentials
+    userErrorMessages.invalidCredentials,
+    null,
+    actions.logout
   ),
 
-  userDoesNotExist: new RequestError(
+  userDoesNotExist: new OperationError(
     userErrorFields.userDoesNotExist,
-    userErrorMessages.userDoesNotExist
+    userErrorMessages.userDoesNotExist,
+    null,
+    actions.logout
   ),
 
-  invalidLoginCredentials: new RequestError(
+  invalidLoginCredentials: new OperationError(
     userErrorFields.invalidLoginCredentials,
-    userErrorMessages.invalidLoginCredentials
+    userErrorMessages.invalidLoginCredentials,
+    null,
+    actions.logout
   ),
 
-  emailAddressNotAvailable: new RequestError(
+  emailAddressNotAvailable: new OperationError(
     userErrorFields.emailAddressNotAvailable,
     userErrorMessages.emailAddressNotAvailable
   ),
 
-  collaboratorDoesNotExist: new RequestError(
+  collaboratorDoesNotExist: new OperationError(
     userErrorFields.collaboratorDoesNotExist,
     userErrorMessages.collaboratorDoesNotExist
   )

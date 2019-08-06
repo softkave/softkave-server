@@ -8,6 +8,7 @@
 8. figure out where block.owner should be added
 9. write scripts to clean permissions to blocks that have been deleted
 10. change password mutation should ask for current password
+11. Remove nf or find a way to use it
 
 - set up prettier or airbnb style guide
 - use rbac for roles (role to user, role to permission | action, role to block, etc)

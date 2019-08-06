@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
-    "local-start": "nf start",
+    "start": "tsc src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "dev:debug": "nodemon -r dotenv/config --inspect src/index.ts",
     "test": "jest"
   },
   "engines": {
@@ -50,8 +51,9 @@
     "@types/validator": "^10.11.1",
     "foreman": "^3.0.1",
     "jest": "^24.8.0",
-    "nodemon": "1.18.4",
+    "nodemon": "^1.18.4",
     "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },

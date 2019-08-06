@@ -1,5 +1,7 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
+import { validate } from "../../utils/joi-utils";
 import { add, getIndex, move, remove } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -7,6 +9,9 @@ import { CRUDActionsMap } from "./actions";
 import blockError from "./blockError";
 import { blockConstants } from "./constants";
 import {
+  blockParamSchema,
+  blockTypeSchema,
+  groupContextSchema,
   validateBlockParam,
   validateBlockTypes,
   validateGroupContexts
@@ -26,6 +31,16 @@ export interface ITransferBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
+const transferBlockJoiSchema = Joi.object().keys({
+  sourceBlock: blockParamSchema,
+  draggedBlock: blockParamSchema,
+  destinationBlock: blockParamSchema,
+  dropPosition: Joi.number(),
+  blockPosition: Joi.number(),
+  draggedBlockType: blockTypeSchema,
+  groupContext: groupContextSchema
+});
+
 async function transferBlock({
   sourceBlock,
   draggedBlock,
@@ -38,14 +53,26 @@ async function transferBlock({
   user,
   accessControlModel
 }: ITransferBlockParameters) {
-  sourceBlock = validateBlockParam(sourceBlock);
-  draggedBlock = validateBlockParam(draggedBlock);
-  destinationBlock = validateBlockParam(destinationBlock);
-  draggedBlockType = validateBlockTypes([draggedBlockType])[0];
+  const result = validate(
+    {
+      sourceBlock,
+      draggedBlock,
+      destinationBlock,
+      dropPosition,
+      blockPosition,
+      draggedBlockType,
+      groupContext
+    },
+    transferBlockJoiSchema
+  );
 
-  if (groupContext) {
-    groupContext = validateGroupContexts([groupContext])[0];
-  }
+  sourceBlock = result.sourceBlock;
+  draggedBlock = result.draggedBlock;
+  destinationBlock = result.destinationBlock;
+  draggedBlockType = result.draggedBlockType;
+  dropPosition = result.dropPosition;
+  blockPosition = result.blockPosition;
+  groupContext = result.groupContext;
 
   const blockChildIndex = `${draggedBlockType}s.${blockPosition}`;
   const sourceBlockQuery = {

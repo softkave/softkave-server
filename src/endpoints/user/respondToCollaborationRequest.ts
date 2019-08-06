@@ -1,11 +1,16 @@
+import Joi from "joi";
 import BlockModel from "../../mongo/block/BlockModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
+import { validate } from "../../utils/joi-utils";
 import notificationError from "../../utils/notificationError";
-import { validators } from "../../utils/validation-utils";
+import { joiSchemas, validators } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import addOrgIDToUser from "./addOrgIDToUser";
 import { IUserDocument } from "./user";
-import { validateCollaborationRequestResponse } from "./validation";
+import {
+  collaborationRequestResponseSchema,
+  validateCollaborationRequestResponse
+} from "./validation";
 
 export interface IRespondToCollaborationRequestParameters {
   customId: string;
@@ -15,6 +20,11 @@ export interface IRespondToCollaborationRequestParameters {
   blockModel: BlockModel;
 }
 
+const respondToCollaborationRequestJoiSchema = Joi.object().keys({
+  customId: joiSchemas.uuidSchema,
+  response: collaborationRequestResponseSchema
+});
+
 async function respondToCollaborationRequest({
   customId,
   response,
@@ -22,8 +32,13 @@ async function respondToCollaborationRequest({
   user,
   blockModel
 }: IRespondToCollaborationRequestParameters) {
-  customId = validators.validateUUID(customId);
-  response = validateCollaborationRequestResponse(response);
+  const result = validate(
+    { customId, response },
+    respondToCollaborationRequestJoiSchema
+  );
+
+  customId = result.customId;
+  response = result.response;
 
   const request = await notificationModel.model
     .findOneAndUpdate(

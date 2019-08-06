@@ -1,8 +1,7 @@
+import jwtConstants from "../../utils/jwtConstants";
 import { IUser } from "./user";
 
 const jwt = require("jsonwebtoken");
-
-const { jwtConstants } = require("../../utils/jwt-constants");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

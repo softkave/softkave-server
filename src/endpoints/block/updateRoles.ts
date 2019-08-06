@@ -1,6 +1,8 @@
+import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import RequestError from "../../utils/RequestError";
+import { validate } from "../../utils/joi-utils";
+import OperationError from "../../utils/OperationError";
 import { indexArray } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -9,7 +11,7 @@ import { IBlockDocument } from "./block";
 import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
 import getBlockRoles from "./getBlocksAccessControlData";
-import { validateRoleNameArray } from "./validation";
+import { roleNameArraySchema, validateRoleNameArray } from "./validation";
 
 // TODO: define types
 function indexRoles(roles: any) {
@@ -78,6 +80,10 @@ export interface IUpdateRolesParameters {
   userModel: BlockModel;
 }
 
+const updateRolesJoiSchema = Joi.object().keys({
+  roles: roleNameArraySchema
+});
+
 async function updateRoles({
   block,
   user,
@@ -85,14 +91,16 @@ async function updateRoles({
   accessControlModel,
   userModel
 }: IUpdateRolesParameters) {
+  const result = validate({ roles }, updateRolesJoiSchema);
+  roles = result.roles;
+
   if (block.type !== blockConstants.blockTypes.org) {
-    throw new RequestError(
+    throw new OperationError(
       blockErrorFields.invalidOperation,
       blockErrorMessages.accessControlOnTypeOtherThanOrg
     );
   }
 
-  validateRoleNameArray(roles);
   await accessControlCheck({
     user,
     block,
@@ -113,6 +121,7 @@ async function updateRoles({
   const bulkAccessControlUpdates: any[] = [];
 
   /**
+   * TODO:
    * when a user is removed from an org, send a removed error, and show a notification modal,
    * prompt the user to respond, then remove or delete org from UI
    *

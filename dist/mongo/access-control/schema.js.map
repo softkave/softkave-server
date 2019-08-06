@@ -1,1 +1,0 @@
-{"version":3,"file":"schema.js","sourceRoot":"","sources":["../../../src/mongo/access-control/schema.ts"],"names":[],"mappings":";;AAAA,MAAM,mBAAmB,GAAG;IAC1B,KAAK,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,MAAM,EAAE,IAAI,EAAE;IACrC,UAAU,EAAE,EAAE,IAAI,EAAE,MAAM,EAAE,KAAK,EAAE,IAAI,EAAE;IACzC,cAAc,EAAE,EAAE,IAAI,EAAE,CAAC,MAAM,CAAC,EAAE,KAAK,EAAE,IAAI,EAAE;CAChD,CAAC;AAEF,kBAAe,mBAAmB,CAAC"}

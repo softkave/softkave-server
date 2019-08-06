@@ -1,8 +1,14 @@
+import Joi from "joi";
+
 import NotificationModel from "../../mongo/notification/NotificationModel";
+import { validate } from "../../utils/joi-utils";
 import notificationError from "../../utils/notificationError";
-import { validators } from "../../utils/validation-utils";
+import { joiSchemas, validators } from "../../utils/validation-utils";
 import { IUserDocument } from "./user";
-import { validateCollaborationRequest } from "./validation";
+import {
+  collaborationRequestSchema,
+  validateCollaborationRequest
+} from "./validation";
 
 // TODO: define data's type
 export interface IUpdateCollaborationRequestParameters {
@@ -12,14 +18,23 @@ export interface IUpdateCollaborationRequestParameters {
   notificationModel: NotificationModel;
 }
 
+const updateCollaborationRequestJoiSchema = Joi.object().keys({
+  customId: joiSchemas.uuidSchema,
+  data: collaborationRequestSchema
+});
+
 async function updateCollaborationRequest({
   customId,
   data,
   user,
   notificationModel
 }: IUpdateCollaborationRequestParameters) {
-  customId = validators.validateUUID(customId);
-  data = validateCollaborationRequest(data);
+  const result = validate(
+    { customId, data },
+    updateCollaborationRequestJoiSchema
+  );
+  customId = result.customId;
+  data = result.data;
   const notification = await notificationModel.model
     .findOneAndUpdate(
       {

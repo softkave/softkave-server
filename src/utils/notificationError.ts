@@ -1,4 +1,4 @@
-const { RequestError } = require("./error");
+import OperationError from "./OperationError";
 
 const notificationErrorMessages = {
   requestDoesNotExist: "Request does not exist",
@@ -22,22 +22,22 @@ const notificationErrorFields = {
 };
 
 const notificationError = {
-  requestDoesNotExist: new RequestError(
+  requestDoesNotExist: new OperationError(
     notificationErrorFields.requestDoesNotExist,
     notificationErrorMessages.requestDoesNotExist
   ),
 
-  sendRequestEmailError: new RequestError(
+  sendRequestEmailError: new OperationError(
     notificationErrorFields.sendRequestEmailError,
     notificationErrorMessages.sendRequestEmailError
   ),
 
-  requestHasBeenSentBefore: new RequestError(
+  requestHasBeenSentBefore: new OperationError(
     notificationErrorFields.requestHasBeenSentBefore,
     notificationErrorMessages.requestHasBeenSentBefore
   ),
 
-  cannotRevokeRequest: new RequestError(
+  cannotRevokeRequest: new OperationError(
     notificationErrorFields.cannotRevokeRequest,
     notificationErrorMessages.cannotRevokeRequest
   )
