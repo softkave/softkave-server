@@ -121,6 +121,7 @@ async function updateRoles({
   const bulkAccessControlUpdates: any[] = [];
 
   /**
+   * TODO:
    * when a user is removed from an org, send a removed error, and show a notification modal,
    * prompt the user to respond, then remove or delete org from UI
    *

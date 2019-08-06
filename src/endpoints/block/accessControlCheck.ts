@@ -1,11 +1,19 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import { IUser, IUserDocument } from "../user/user";
 import userError from "../user/userError";
-import { findRole, userRoleIsUpgraded } from "../user/utils";
+import { findRole } from "../user/utils";
 import { blockActionsMap } from "./actions";
 import { IBlock, IBlockDocument } from "./block";
 import canReadBlock from "./canReadBlock";
 import { getRootParentID } from "./utils";
+
+function getAccessControlStrategy(block: IBlock) {
+  if (block.roles && Array.isArray(block.roles) && block.roles.length > 0) {
+    return "roles";
+  } else {
+    return "legacy";
+  }
+}
 
 // TODO: extends endpoint parameters from operation parameters which
 // will all be optional, but the required fields will be made required in the endpoint
@@ -70,7 +78,9 @@ export type IAccessControlCheckParameters = IAccessControlCheckUsingOrgsParamete
   IAccessControlCheckUsingRoleParameters;
 
 async function accessControlCheck(params: IAccessControlCheckParameters) {
-  if (userRoleIsUpgraded(params.user)) {
+  const accessControlStrategy = getAccessControlStrategy(params.block);
+
+  if (accessControlStrategy === "roles") {
     return accessControlCheckUsingRole(params);
   } else {
     return accessControlCheckUsingOrgs(params);

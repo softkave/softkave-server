@@ -49,6 +49,7 @@ export const roleNameSchema = Joi.string()
 export const roleNameArraySchema = Joi.array()
   .items(roleNameSchema)
   .unique()
+  .min(blockConstants.minRoles)
   .max(blockConstants.maxRoles);
 
 export const accessControlSchema = Joi.object().keys({
