@@ -102,7 +102,7 @@ const blockSchema = `
     priority: String
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    linkedBlocks: [LinkedBlock]
+    linkedBlocks: [LinkedBlockInput]
     position: Float
     positionTimestamp: Float
     groups: [String]
@@ -128,6 +128,7 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+    linkedBlocks: [LinkedBlockInput]
   }
 
   type CollabRequestFrom {

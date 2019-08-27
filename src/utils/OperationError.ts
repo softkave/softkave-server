@@ -4,7 +4,7 @@ class OperationError extends Error {
   public type: string;
   public action: string;
 
-  constructor(message: string, type: string, field?: string, action?: string) {
+  constructor(type: string, message: string, field?: string, action?: string) {
     super(message);
     // errorField
     this.field = field;

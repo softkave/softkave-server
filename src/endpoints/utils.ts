@@ -23,6 +23,7 @@ function wrapGraphQLOperationForErrors(func: any) {
         return {
           errors: [
             {
+              ...error,
               field: error.field || "error",
               message: error.message || "server error"
             }

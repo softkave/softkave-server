@@ -18,7 +18,7 @@ const validationError = {};
 function getErrorMessageWithMin(min: number, type: string) {
   switch (type) {
     case "number":
-      return `Input must be at less than ${min}`;
+      return `Input must be less than ${min}`;
 
     case "string":
       return `Input must be at least ${min} characters`;
@@ -34,16 +34,16 @@ function getErrorMessageWithMin(min: number, type: string) {
 function getErrorMessageWithMax(max: number, type: string) {
   switch (type) {
     case "number":
-      return `Input must be at greater than ${max}`;
+      return `Input must be greater than ${max}`;
 
     case "string":
-      return `Input must is more than ${max} characters`;
+      return `Input must be more than ${max} characters`;
 
     case "array":
-      return `Input must more than ${max} items`;
+      return `Input must be more than ${max} items`;
 
     default:
-      return `Input must be less than ${max}`;
+      return `Input must be more than ${max}`;
   }
 }
 

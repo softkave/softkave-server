@@ -5,7 +5,6 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "tsc src/index.ts",
-    "dev": "nodemon src/index.ts",
     "dev:debug": "nodemon -r dotenv/config --inspect src/index.ts",
     "test": "jest"
   },
