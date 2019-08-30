@@ -38,16 +38,19 @@ async function addBlock({
 }: IAddBlockParameters) {
   // block = validateBlock(block);
   let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
-  await accessControlCheck({
-    user,
-    block: validatedBlock,
-    accessControlModel,
-    CRUDActionName: CRUDActionsMap.CREATE
-  });
 
   if (validatedBlock.type === blockConstants.blockTypes.root) {
     throw blockError.invalidBlockType;
   }
+
+  // if (validatedBlock.type !== blockConstants.blockTypes.org) {
+  //   await accessControlCheck({
+  //     user,
+  //     block: validatedBlock,
+  //     accessControlModel,
+  //     CRUDActionName: CRUDActionsMap.CREATE
+  //   });
+  // }
 
   if (validatedBlock.type === blockConstants.blockTypes.org) {
     const result = await addBlockToDB({

@@ -20,12 +20,15 @@ async function blockExists({ block, blockModel }: IBlockExistsParameters) {
   const { name, type, customId, parents } = block;
   const blockExistQuery: any = {
     name,
-    type,
-    customId
+    type
   };
 
   if (parents) {
     blockExistQuery.parents = parents;
+  }
+
+  if (customId) {
+    blockExistQuery.customId = customId;
   }
 
   const blockExistsResult = await blockModel.model

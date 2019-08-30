@@ -22,6 +22,7 @@ const userSchema = `
     lastNotificationCheckTime: Float
     color: String
     roles: [UserRole]
+    orgs: [String]
   }
 
   input UserSignupInput {
