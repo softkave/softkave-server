@@ -12,9 +12,11 @@ export const blockParamSchema = Joi.object().keys({
 
 export const taskCollaboratorSchema = Joi.object().keys({
   userId: joiSchemas.uuidSchema,
-  completedAt: Joi.number(),
   assignedBy: joiSchemas.uuidSchema,
-  assignedAt: Joi.number()
+  assignedAt: Joi.number(),
+
+  // Allow null because sometimes, the value from the API or in DB is null, and it leads to a false validation error
+  completedAt: Joi.number().allow(null)
 });
 
 export const taskCollaboratorsSchema = Joi.array()

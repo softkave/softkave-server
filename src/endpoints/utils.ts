@@ -1,4 +1,5 @@
 import getUserFromRequest from "../utils/getUserFromRequest";
+import OperationError from "../utils/OperationError";
 
 // TODO: define all any types
 function wrapGraphQLOperationForErrors(func: any) {
@@ -7,12 +8,21 @@ function wrapGraphQLOperationForErrors(func: any) {
       return await func(...args);
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
-        console.error(error);
+        console.log(error);
       }
 
       if (Array.isArray(error)) {
         return {
-          errors: error
+          /**
+           * Remove error stack and other thrown error bits,
+           * to prevent the graphql runtime from handling the error for us
+           */
+          errors: error.map((e: OperationError) => ({
+            field: e.field,
+            message: e.message,
+            type: e.type,
+            action: e.action
+          }))
         };
       } else if (error.name || error.code || error.message) {
         // TODO: remove in favor of detailed logging

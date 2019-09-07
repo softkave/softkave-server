@@ -19,28 +19,29 @@ function validate(data: any, schema: any) {
   });
 
   if (error) {
+    console.log({ error });
     const errorArray = [];
     const type = get(error, typePath);
     let path = get(error, pathPath);
-    path = Array(path).join(".");
+    path = path.join(".");
     const func = get(joiErrorMessages, type);
 
     if (typeof func === "function") {
       const message = func(error);
       errorArray.push(
-        new OperationError(message, validationErrorFields.dataInvalid, path)
+        new OperationError(validationErrorFields.dataInvalid, message, path)
       );
     } else {
       errorArray.push(
         new OperationError(
-          validationErrorMessages.dataInvalid,
           validationErrorFields.dataInvalid,
+          validationErrorMessages.dataInvalid,
           path
         )
       );
     }
 
-    return errorArray;
+    throw errorArray;
   }
 
   return value;

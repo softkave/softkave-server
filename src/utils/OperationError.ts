@@ -6,7 +6,7 @@ class OperationError extends Error {
 
   constructor(type: string, message: string, field?: string, action?: string) {
     super(message);
-    // errorField
+    // errorDataPath
     this.field = field;
     this.name = "OperationError";
 

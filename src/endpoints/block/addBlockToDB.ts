@@ -31,21 +31,23 @@ async function addBlockToDB({
       );
     }
 
-    if (
-      await blockExists({
-        blockModel,
-        block: {
-          name: block.name,
-          type: block.type,
-          parents: block.parents
-        } as IBlock
-      })
-    ) {
-      // TODO: replace the generic blockExists with the right type
-      throw new OperationError(
-        blockErrorFields.blockExists,
-        getBlockExistsErrorMessage(block)
-      );
+    if (block.type !== "task") {
+      if (
+        await blockExists({
+          blockModel,
+          block: {
+            name: block.name,
+            type: block.type,
+            parents: block.parents
+          } as IBlock
+        })
+      ) {
+        // TODO: replace the generic blockExists with the right type
+        throw new OperationError(
+          blockErrorFields.blockExists,
+          getBlockExistsErrorMessage(block)
+        );
+      }
     }
 
     block.createdBy = user.customId;
