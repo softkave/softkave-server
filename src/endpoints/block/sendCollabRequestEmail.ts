@@ -25,6 +25,7 @@ async function sendCollabReqEmail({
   message,
   expires
 }: ISendCollaborationRequestEmailParameters) {
+  return;
   const signupLink = `${appInfo.clientDomain}${clientSignupRoute}`;
   const loginLink = `${appInfo.clientDomain}${clientLoginRoute}`;
   const contentParams = {

@@ -1,3 +1,6 @@
+import moment from "moment";
+
+import appInfo from "../res/appInfo";
 import { html } from "./util";
 
 export interface ICollaborationRequestParameters {
@@ -44,10 +47,16 @@ function collaborationRequestHTML({
         .<br />
       </p>
       <p>
-      ${message ? message : ""}<br />
+      ${message ? `Message - ${message}` : ""}<br />
       </p>
       <p style="margin-bottom: 0;">
-        ${expiration ? `This request expires: ${expiration}.` : ""}<br />
+        ${
+          expiration
+            ? `This request expires: ${moment(expiration).format(
+                appInfo.defaultDateFormat
+              )}.`
+            : ""
+        }<br />
         To respond,<br />
         Login to your account
         <a href="${loginLink}">here</a>
@@ -75,7 +84,11 @@ function collaborationRequestText({
     You have a new collaboration request from ${fromUser} of ${fromOrg}.
     To respond, login to your account using this link ( ${loginLink} ) OR
     signup using this link ( ${signupLink} ) if you don't have one.
-    It expires: ${expiration}.
+    ${
+      expiration
+        ? `It expires: ${moment(expiration).format(appInfo.defaultDateFormat)}.`
+        : ""
+    }
   `;
 }
 

@@ -1,3 +1,6 @@
+import moment from "moment";
+
+import appInfo from "../res/appInfo";
 import { html } from "./util";
 
 export interface IChangePasswordHTMLParameters {
@@ -37,7 +40,13 @@ function changePasswordHTML({
         - and visit in your browser.
       </p>
       <p>
-        This link expires after ${expiration}.<br />
+        ${
+          expiration
+            ? `This link expires after ${moment(expiration).format(
+                appInfo.defaultDateFormat
+              )}.<br />`
+            : ""
+        }
         If you did not request a change of password, please ignore this
         mail.<br />
         Also, do not share this link with anybody, as they will be able to
@@ -57,7 +66,11 @@ function changePasswordText({
 }: IChangePasswordHTMLParameters) {
   return `
     To change your password, visit this link ( ${link} ) in your browser.
-    It expires: ${expiration}.
+    ${
+      expiration
+        ? `It expires: ${moment(expiration).format(appInfo.defaultDateFormat)}.`
+        : ""
+    }
   `;
 }
 

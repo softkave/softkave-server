@@ -6,7 +6,7 @@ const notificationErrorMessages = {
   requestHasBeenSentBefore:
     "Request has been sent before to this email address",
   sendingRequestToAnExistingCollaborator:
-    "User with this email address is already a part of this organization",
+    "A user with this email address is already a part of this organization",
   cannotRevokeRequest:
     "Request does not exist, or has been accepted or declined"
 };

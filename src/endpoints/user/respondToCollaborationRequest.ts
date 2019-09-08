@@ -12,6 +12,8 @@ import {
   validateCollaborationRequestResponse
 } from "./validation";
 
+// TODO: Test not allowing action on an expired collaboration request
+
 export interface IRespondToCollaborationRequestParameters {
   customId: string;
   response: string;
