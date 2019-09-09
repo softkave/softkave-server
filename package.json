@@ -2,9 +2,11 @@
   "name": "softkave-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
   "scripts": {
-    "start": "tsc src/index.ts",
+    "start": "npm run build && npm run start-dist-server",
+    "build": "npm run build-ts",
+    "build-ts": "tsc",
+    "start-dist-server": "node dist/index.js",
     "dev:debug": "nodemon -r dotenv/config --inspect src/index.ts",
     "test": "jest"
   },
