@@ -31,7 +31,7 @@ if (!JWT_SECRET) {
 
 const app = express();
 const port = process.env.PORT || 5000;
-const whiteListedCorsOrigins = [/^https:\/\/www.softkave.com$/];
+const whiteListedCorsOrigins = [/softkave.com\//];
 let graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
