@@ -1,4 +1,5 @@
 import Joi from "joi";
+
 import UserModel from "../../mongo/user/UserModel";
 import { validate } from "../../utils/joi-utils";
 import jwtConstants from "../../utils/jwtConstants";
@@ -9,6 +10,7 @@ import { addEntryToPasswordDateLog } from "./utils";
 import { emailSchema, validateEmail } from "./validation";
 
 const linkExpirationDuration = "1 day";
+const linkExpirationDurationMs = 24 * 60 * 60 * 1000;
 
 export interface IForgotPasswordParameters {
   email: string;
@@ -33,6 +35,7 @@ async function forgotPassword({ email, userModel }: IForgotPasswordParameters) {
   }
 
   const expirationDuration = linkExpirationDuration;
+
   const token = newToken(user, {
     domain: jwtConstants.domains.changePassword,
     expiresIn: expirationDuration
@@ -41,7 +44,7 @@ async function forgotPassword({ email, userModel }: IForgotPasswordParameters) {
   await sendChangePasswordEmail({
     emailAddress: user.email,
     query: { t: token },
-    expiration: expirationDuration
+    expiration: linkExpirationDurationMs
   });
 
   user.forgotPasswordHistory = addEntryToPasswordDateLog(

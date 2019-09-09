@@ -18,7 +18,7 @@ const changePasswordJoiSchema = Joi.object().keys({
 
 async function changePassword({ password, user }: IChangePasswordParameters) {
   const result = validate({ password }, changePasswordJoiSchema);
-  const passwordValue = result.passwordValue;
+  const passwordValue = result.password;
   user.hash = await argon2.hash(passwordValue);
   user.changePasswordHistory = addEntryToPasswordDateLog(
     user.changePasswordHistory
