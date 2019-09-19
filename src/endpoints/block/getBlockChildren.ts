@@ -1,4 +1,5 @@
 import Joi from "joi";
+
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
@@ -8,11 +9,7 @@ import { CRUDActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { getParentsLength } from "./utils";
-import {
-  blockParamSchema,
-  blockTypesSchema,
-  validateBlockTypes
-} from "./validation";
+import { blockTypesSchema, validateBlockTypes } from "./validation";
 
 export interface IGetBlockChildrenParameters {
   block: IBlockDocument;
