@@ -104,8 +104,6 @@ export const blockJoiSchema = Joi.object().keys({
     .lowercase()
     .valid(blockConstants.priorityValuesArray),
 
-  position: Joi.number().min(0),
-  positionTimestamp: Joi.number().min(0),
   tasks: blockChildrenSchema,
   groups: blockChildrenSchema,
   projects: blockChildrenSchema,

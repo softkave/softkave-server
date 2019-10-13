@@ -27,8 +27,6 @@ export interface IBlock {
   taskCollaborators: ITaskCollaborator[];
   priority: string;
   isBacklog: boolean;
-  position: number;
-  positionTimestamp: number;
   tasks: string[];
   groups: string[];
   projects: string[];

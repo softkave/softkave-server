@@ -66,8 +66,6 @@ const blockSchema = `
     linkedBlocks: [LinkedBlock]
     priority: String
     isBacklog: Boolean
-    position: Float
-    positionTimestamp: Float
     groups: [String]
     projects: [String]
     tasks: [String]
@@ -103,8 +101,6 @@ const blockSchema = `
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     linkedBlocks: [LinkedBlockInput]
-    position: Float
-    positionTimestamp: Float
     groups: [String]
     projects: [String]
     tasks: [String]
@@ -120,8 +116,6 @@ const blockSchema = `
     priority: String
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    position: Float
-    positionTimestamp: Float
     parents: [String!]
     groups: [String]
     projects: [String]

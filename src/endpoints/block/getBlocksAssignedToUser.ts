@@ -12,7 +12,7 @@ async function getBlocksAssignedToUser({
   blockModel
 }: IGetBlocksAssignedToUserParameters) {
   const blocks = await blockModel.model.find({
-    "taskCollaborators.userId": user.customId,
+    ["taskCollaborators.userId"]: user.customId,
     type: blockConstants.blockTypes.task
   });
 
