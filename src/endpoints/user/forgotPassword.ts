@@ -7,10 +7,10 @@ import newToken from "./newToken";
 import sendChangePasswordEmail from "./sendChangePasswordEmail";
 import userError from "./userError";
 import { addEntryToPasswordDateLog } from "./utils";
-import { emailSchema, validateEmail } from "./validation";
+import { emailSchema } from "./validation";
 
-const linkExpirationDuration = "1 day";
-const linkExpirationDurationMs = 24 * 60 * 60 * 1000;
+const linkExpirationDuration = "2d";
+const linkExpirationDurationMs = Date.now() + 2 * 24 * 60 * 60 * 1000;
 
 export interface IForgotPasswordParameters {
   email: string;
