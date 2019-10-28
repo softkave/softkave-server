@@ -1,10 +1,10 @@
+import { Moment } from "moment";
 import querystring from "querystring";
-
 import {
-  changePasswordHTML,
-  changePasswordMailTitle,
-  changePasswordText
-} from "../../html/changePasswordHTML";
+  forgotPasswordEmailHTML,
+  forgotPasswordEmailText,
+  forgotPasswordEmailTitle
+} from "../../html/forgotPassword";
 import appInfo from "../../res/appInfo";
 import aws from "../../res/aws";
 
@@ -15,7 +15,7 @@ const changePasswordRoute = "/change-password";
 export interface ISendChangePasswordEmailParameters {
   emailAddress: string;
   query: any;
-  expiration: string | number;
+  expiration: Moment;
 }
 
 async function sendChangePasswordEmail({
@@ -27,8 +27,8 @@ async function sendChangePasswordEmail({
     query
   )}`;
 
-  const htmlContent = changePasswordHTML({ link, expiration });
-  const textContent = changePasswordText({ link, expiration });
+  const htmlContent = forgotPasswordEmailHTML({ link, expiration });
+  const textContent = forgotPasswordEmailText({ link, expiration });
 
   const result = await ses
     .sendEmail({
@@ -39,7 +39,7 @@ async function sendChangePasswordEmail({
       Message: {
         Subject: {
           Charset: appInfo.defaultEmailEncoding,
-          Data: changePasswordMailTitle
+          Data: forgotPasswordEmailTitle
         },
         Body: {
           Html: {

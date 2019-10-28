@@ -1,7 +1,9 @@
 import Joi from "joi";
+import moment from "moment";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
+import appInfo from "../../res/appInfo";
 import { validate } from "../../utils/joi-utils";
 import {
   notificationErrorFields,
@@ -185,10 +187,15 @@ async function addCollaborator({
     const emailPromises = collaborationRequestsParam.map((request: any) => {
       return sendCollabRequestEmail({
         email: request.to.email,
-        userName: user.name,
-        blockName: block.name,
+        senderName: user.name,
+        senderOrg: block.name,
         message: request.body,
-        expires: request.expiresAt
+        expiration: moment(request.expiresAt),
+        loginLink: `${appInfo.clientDomain}/login`,
+
+        // TODO: Unfinished
+        recipientIsUser: false,
+        signupLink: `${appInfo.clientDomain}/signup`
       });
     });
 
