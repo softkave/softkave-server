@@ -1,5 +1,6 @@
 import { Moment } from "moment";
 import {
+  getEndGreeting,
   getFooterHTML,
   getHeaderHTML,
   getHeaderText,
@@ -19,19 +20,13 @@ export interface ICollaborationRequestEmailProps {
 }
 
 function getExpiration(props: ICollaborationRequestEmailProps) {
-  return `
-  ${
+  return `${
     props.expiration
-      ? `
-      This request is set to expires
-      ${props.expiration.fromNow()}, on
-      ${props.expiration.format("MM/DD/YYYY hh:mmA")}.
-    `
-      : `
-      This request has no expiration date.
-    `
-  }
-  `;
+      ? `This request is set to expire ${props.expiration.fromNow()}, on ${props.expiration.format(
+          "MM/DD/YYYY hh:mmA"
+        )}.`
+      : `This request has no expiration date.`
+  }`;
 }
 
 export function collaborationRequestEmailHTML(
@@ -82,13 +77,14 @@ export function collaborationRequestEmailHTML(
               <a href="${props.signupLink}">Signup here</a>
             `
           }
-          , open the app menu, goto Notifications and you'll find the request there.<br />
+          <br />
+          then, open the app menu, goto Notifications and you'll find the request there.<br />
           ${
             props.recipientIsUser ? `Login` : `Signup`
           } > Open app menu > Notifications
         </p>
         <p>
-          Thanks, have a nice day.
+          ${getEndGreeting()}
         </p>
       </div>
     </div>
@@ -102,40 +98,30 @@ export function collaborationRequestEmailHTML(
 export function collaborationRequestEmailText(
   props: ICollaborationRequestEmailProps
 ) {
-  return `
-  ${getHeaderText(collaborationRequestEmailTitle)}
-  \n\n
-  You have a new collaboration request from ${props.senderName} of ${
-    props.senderOrg
-  }.
-  ${
-    props.message
-      ? `
-      \n\n
-      Message :-\n
-      ${props.message}
-    `
-      : ""
+  function getMessage() {
+    return props.message ? `Message :-\n${props.message}` : "";
   }
-  \n\n
-  Expiration :-\n
-  ${getExpiration(props)}
-  \n\n
-  To respond to this request,\n
-  ${
-    props.recipientIsUser
-      ? `
-      Login to your account using :-\n
-      ${props.loginLink}
-    `
-      : `
-      Create an account using :-\n
-      ${props.signupLink}
-    `
+
+  function getLink() {
+    return props.recipientIsUser
+      ? `Login to your account using :-\n${props.loginLink}`
+      : `Create an account using :-\n${props.signupLink}`;
   }
-  , open the app menu, goto Notifications and you'll find the request there.
-  ${props.recipientIsUser ? `Login` : `Signup`} > Open app menu > Notifications
-  \n\n
-  Thanks, have a nice day.
-  `;
+
+  const message = getMessage();
+
+  const textBlocks = [
+    `${getHeaderText(collaborationRequestEmailTitle)}`,
+    `\n\nYou have a new collaboration request from ${props.senderName} of ${props.senderOrg}`,
+    `${message.length > 0 ? `\n\n${message}` : ""}`,
+    `\n\nExpiration :-\n${getExpiration(props)}`,
+    `\n\nTo respond to this request,\n${getLink()}`,
+    `\n\nthen, open the app menu, goto Notifications and you'll find the request there.`,
+    `\n${
+      props.recipientIsUser ? `Login` : `Signup`
+    } > Open app menu > Notifications`,
+    `\n\n${getEndGreeting()}`
+  ];
+
+  return textBlocks.join("");
 }

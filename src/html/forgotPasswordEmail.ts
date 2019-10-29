@@ -1,5 +1,6 @@
 import { Moment } from "moment";
 import {
+  getEndGreeting,
   getFooterHTML,
   getHeaderHTML,
   getHeaderText,
@@ -54,7 +55,7 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
           Also, do not share this link with anybody, as they will be able to
           change your password through it.
           <br /><br />
-          Thanks, have a nice day.
+          ${getEndGreeting()}
         </p>
       </div>
     </div>
@@ -66,22 +67,18 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
 }
 
 export function forgotPasswordEmailText(props: IForgotPasswordEmailProps) {
-  return `
-  ${getHeaderText(forgotPasswordEmailTitle)}
-  \n\n
-  To change your password, copy the following link, and visit in your browser :-\n
-  ${props.link}
-  \n\n
-    This link expires :-\n
-    - Immediately after you change your password OR\n
-    - In ${props.expiration.fromNow(true)}, on ${props.expiration.format(
-    "MM/DD/YYYY hh:mmA"
-  )}
-  \n\n
-  If you did not request a change of password, please ignore this mail.
-  Also, do not share this link with anybody, as they will be able to
-  change your password through it.
-  \n\n
-  Thanks, have a nice day.
-  `;
+  const textBlocks = [
+    `${getHeaderText(forgotPasswordEmailTitle)}`,
+    `\n\nTo change your password, copy the following link, and visit in your browser :-\n${props.link}`,
+    `\n\nThis link expires :-\n`,
+    `- Immediately after you change your password OR\n`,
+    `- In ${props.expiration.fromNow(true)}, on ${props.expiration.format(
+      "MM/DD/YYYY hh:mmA"
+    )}`,
+    `\n\nIf you did not request a change of password, please ignore this mail.`,
+    `\nAlso, do not share this link with anybody, as they will be able to`,
+    `\n\n${getEndGreeting()}`
+  ];
+
+  return textBlocks.join("");
 }

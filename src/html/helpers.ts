@@ -11,21 +11,21 @@ export function getFooterHTML() {
 export function getHeaderHTML(title) {
   return `
   <header class="email-header">
-    <h1>${appInfo.appName} - ${title}</h1>
+    <h1 class="email-content-center">${appInfo.appName} - ${title}</h1>
   </header>
   `;
 }
 
 export function getHeaderText(title) {
-  return `
-  ${appInfo.appName} - ${title}
-  `;
+  const textBlocks = [`${appInfo.appName} - ${title}`];
+
+  return textBlocks.join("");
 }
 
 export function getTemplateStylesHTML() {
   return `
   .email-header {
-    text-align: center;
+    text-align: left;
   }
 
   .email-body {
@@ -44,4 +44,8 @@ export function getTemplateStylesHTML() {
     text-align: center;
   }
   `;
+}
+
+export function getEndGreeting() {
+  return "Thank you, and have a nice day.";
 }
