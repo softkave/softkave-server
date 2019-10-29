@@ -147,6 +147,7 @@ export const addCollaboratorCollaboratorSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema
 });
 
+// TODO: Implement test for unique items
 export const addCollaboratorCollaboratorsSchema = Joi.array()
   .items(addCollaboratorCollaboratorSchema)
   .min(blockConstants.minAddCollaboratorValuesLength)

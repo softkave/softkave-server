@@ -1,7 +1,9 @@
 import Joi from "joi";
+import moment from "moment";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
+import appInfo from "../../res/appInfo";
 import { validate } from "../../utils/joi-utils";
 import {
   notificationErrorFields,
@@ -15,11 +17,7 @@ import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import sendCollabRequestEmail from "./sendCollabRequestEmail";
-import {
-  addCollaboratorCollaboratorsSchema,
-  blockParamSchema,
-  validateAddCollaboratorCollaborators
-} from "./validation";
+import { addCollaboratorCollaboratorsSchema } from "./validation";
 
 // TODO:  define all any types
 
@@ -40,10 +38,16 @@ const addCollaboratorJoiSchema = Joi.object().keys({
   collaborators: addCollaboratorCollaboratorsSchema
 });
 
-// TODO: define all any types
-export interface IAddCollaboratorParameters {
+interface INewCollaborator {
+  email: string;
+  body: string;
+  expiresAt: number;
+  customId: string;
+}
+
+export interface IAddCollaboratorsProps {
   block: IBlockDocument;
-  collaborators: any;
+  collaborators: INewCollaborator[];
   user: IUserDocument;
   notificationModel: NotificationModel;
   accessControlModel: AccessControlModel;
@@ -57,7 +61,7 @@ async function addCollaborator({
   notificationModel,
   accessControlModel,
   userModel
-}: IAddCollaboratorParameters) {
+}: IAddCollaboratorsProps) {
   const result = validate({ collaborators }, addCollaboratorJoiSchema);
   collaborators = result.collaborators;
 
@@ -72,7 +76,7 @@ async function addCollaborator({
     return collaborator.email.toLowerCase();
   });
 
-  const idc = indexArray(collaborators, {
+  const indexedNewCollaborators = indexArray(collaborators, {
     path: "email",
     reducer: (data: any, arr: any, index: number) => ({
       data,
@@ -80,31 +84,41 @@ async function addCollaborator({
     })
   });
 
-  const existingCollaboratorsQuery = {
+  const existingUsersQuery = {
     email: {
       $in: collaboratorsEmailArr
-    },
-    orgs: block.customId
-    // $or: collaboratorsEmailArr.map((email: string) => {
-    //   return {
-    //     email,
-    //     orgs: block.customId
-    //   };
-    // })
+    }
   };
 
-  const existingCollaborators = await userModel.model
-    .find(existingCollaboratorsQuery, "email")
+  const existingUsers = await userModel.model
+    .find(existingUsersQuery, "email orgs")
     .lean()
     .exec();
 
-  if (existingCollaborators.length > 0) {
-    const errors = existingCollaborators.map((collaborator: IUser) => {
-      const idcItem = idc[collaborator.email];
+  // const indexedExistingUsers = indexArray(existingUsers, {
+  //   path: "email"
+  // });
+
+  const indexedExistingUsers = {};
+  const existingUsersInOrg = [];
+
+  existingUsers.forEach((existingUser: Partial<IUser>) => {
+    indexedExistingUsers[existingUser.email] = existingUser;
+
+    if (existingUser.orgs!.indexOf(block.customId)) {
+      existingUsersInOrg.push(existingUser);
+    }
+  });
+
+  if (existingUsersInOrg.length > 0) {
+    const errors = existingUsersInOrg.map((existingUser: Partial<IUser>) => {
+      const indexedNewCollaborator =
+        indexedNewCollaborators[existingUser.email];
+
       return new OperationError(
         notificationErrorFields.sendingRequestToAnExistingCollaborator,
         notificationErrorMessages.sendingRequestToAnExistingCollaborator,
-        `collaborators.${idcItem.index}.email`
+        `collaborators.${indexedNewCollaborator.index}.email`
       );
     });
 
@@ -125,19 +139,18 @@ async function addCollaborator({
 
   if (existingCollaborationRequests.length > 0) {
     const errors = existingCollaborationRequests.map((request: any) => {
-      const idcItem = idc[request.to.email];
+      const indexedNewCollaborator = indexedNewCollaborators[request.to.email];
       if (isRequestAccepted(request)) {
-        // TODO: think on how the field should be determined, should it be namespaced to variables or justfields
         return new OperationError(
           notificationErrorFields.sendingRequestToAnExistingCollaborator,
           notificationErrorMessages.sendingRequestToAnExistingCollaborator,
-          `collaborators.${idcItem.index}.email`
+          `collaborators.${indexedNewCollaborator.index}.email`
         );
       } else {
         return new OperationError(
           notificationErrorFields.requestHasBeenSentBefore,
           notificationErrorMessages.requestHasBeenSentBefore,
-          `collaborators.${idcItem.index}.email`
+          `collaborators.${indexedNewCollaborator.index}.email`
         );
       }
     });
@@ -145,7 +158,7 @@ async function addCollaborator({
     throw errors;
   }
 
-  const collaborationRequests = collaborators.map((request: any) => {
+  const collaborationRequests = collaborators.map(request => {
     const notificationBody =
       request.body ||
       `
@@ -185,10 +198,13 @@ async function addCollaborator({
     const emailPromises = collaborationRequestsParam.map((request: any) => {
       return sendCollabRequestEmail({
         email: request.to.email,
-        userName: user.name,
-        blockName: block.name,
+        senderName: user.name,
+        senderOrg: block.name,
         message: request.body,
-        expires: request.expiresAt
+        expiration: moment(request.expiresAt),
+        loginLink: `${appInfo.clientDomain}/login`,
+        recipientIsUser: !!indexedExistingUsers[request.to.email],
+        signupLink: `${appInfo.clientDomain}/signup`
       });
     });
 

@@ -6,6 +6,7 @@ import {
 import changePassword from "./changePassword";
 import changePasswordWithToken from "./changePasswordWithToken";
 import forgotPassword from "./forgotPassword";
+import getChangePasswordTokenData from "./getChangePasswordTokenData";
 import getCollaborationRequests from "./getCollaborationRequests";
 import getUserData from "./getUserData";
 import login from "./login";
@@ -29,6 +30,7 @@ class UserOperations {
   public respondToCollaborationRequest: any;
   public getCollaborationRequests: any;
   public getUserData: any;
+  public getChangePasswordTokenData: any;
 
   constructor(staticParams: any) {
     const middlewares = [insertUserCredentials];
@@ -76,6 +78,11 @@ class UserOperations {
       getUserData,
       staticParams,
       middlewares
+    );
+
+    this.getChangePasswordTokenData = wrapGraphQLOperation(
+      getChangePasswordTokenData,
+      staticParams
     );
   }
 }

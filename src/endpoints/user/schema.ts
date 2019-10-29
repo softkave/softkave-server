@@ -59,6 +59,13 @@ const userSchema = `
     block: Block
   }
 
+  type GetChangePasswordTokenDataResult {
+    errors: [Error]
+    email: String;
+    issuedAt: Number;
+    expires: Number;
+  }
+
   type UserQuery {
     userExists (email: String!) : UserExistsResult
     signup (user: UserSignupInput!) : UserQueryResult
@@ -75,6 +82,7 @@ const userSchema = `
       data: UpdateCollaborationRequestInput!
     ): ErrorOnlyResponse
     getUserData: UserQueryResult
+    getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult
   }
 `;
 

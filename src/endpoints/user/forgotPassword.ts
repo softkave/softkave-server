@@ -1,16 +1,17 @@
 import Joi from "joi";
-
+import moment from "moment";
 import UserModel from "../../mongo/user/UserModel";
 import { validate } from "../../utils/joi-utils";
 import jwtConstants from "../../utils/jwtConstants";
-import newToken from "./newToken";
+import newToken, { IBaseTokenData } from "./newToken";
 import sendChangePasswordEmail from "./sendChangePasswordEmail";
 import userError from "./userError";
 import { addEntryToPasswordDateLog } from "./utils";
 import { emailSchema } from "./validation";
 
-const linkExpirationDuration = "2d";
-const linkExpirationDurationMs = Date.now() + 2 * 24 * 60 * 60 * 1000;
+export interface IChangePasswordTokenData extends IBaseTokenData {
+  exp: number;
+}
 
 export interface IForgotPasswordParameters {
   email: string;
@@ -34,17 +35,28 @@ async function forgotPassword({ email, userModel }: IForgotPasswordParameters) {
     throw userError.userDoesNotExist;
   }
 
-  const expirationDuration = linkExpirationDuration;
+  // TODO: Validate if user has reached threshold for changing password daily
+  // TODO: Generate a change password token ID history
+  // TODO: Or alternatively, instead of sending links to user emails, send a uuid code
+  // corresponding to stored credentials in db
+
+  const defaultExpirationDurationInDays = 2;
+  const days = "days";
+  const initTime = moment();
+  const expiration = moment(initTime).add(
+    defaultExpirationDurationInDays,
+    days
+  );
 
   const token = newToken(user, {
     domain: jwtConstants.domains.changePassword,
-    expiresIn: expirationDuration
+    expiresIn: `${defaultExpirationDurationInDays} ${days}`
   });
 
   await sendChangePasswordEmail({
+    expiration,
     emailAddress: user.email,
-    query: { t: token },
-    expiration: linkExpirationDurationMs
+    query: { t: token }
   });
 
   user.forgotPasswordHistory = addEntryToPasswordDateLog(

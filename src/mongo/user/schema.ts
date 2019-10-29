@@ -29,7 +29,8 @@ const userSchema = {
   rootBlockId: String,
   orgs: [String],
   color: String,
-  roles: [userRoleSchema]
+  roles: [userRoleSchema],
+  changePasswordTokenIDs: [String]
 };
 
 export default userSchema;

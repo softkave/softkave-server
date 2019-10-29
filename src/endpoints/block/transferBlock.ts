@@ -11,10 +11,7 @@ import { blockConstants } from "./constants";
 import {
   blockParamSchema,
   blockTypeSchema,
-  groupContextSchema,
-  validateBlockParam,
-  validateBlockTypes,
-  validateGroupContexts
+  groupContextSchema
 } from "./validation";
 
 // TODO: define any types, and make sure other types are correct

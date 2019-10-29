@@ -1,5 +1,4 @@
 import { Request } from "express";
-
 import userError from "../endpoints/user/userError";
 import UserModel from "../mongo/user/UserModel";
 import jwtConstants from "./jwtConstants";

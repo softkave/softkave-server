@@ -11,8 +11,8 @@ import getBlock from "./getBlock";
 import getBlockChildren from "./getBlockChildren";
 import getBlockCollaborators from "./getBlockCollaborators";
 import getBlockCollabRequests from "./getBlockCollabRequests";
-import getBlocksAssignedToUser from "./getBlocksAssignedToUser";
 import getRoleBlocks from "./getRoleBlocks";
+import getTasksAssignedToUser from "./getTasksAssignedToUser";
 import removeCollaborator from "./removeCollaborator";
 import revokeRequest from "./revokeRequest";
 import blockSchema from "./schema";
@@ -59,7 +59,7 @@ class BlockOperations {
   public updateRoles: any;
   public createRootBlock: any;
   public transferBlock: any;
-  public getBlocksAssignedToUser: any;
+  public getTasksAssignedToUser: any;
 
   constructor(staticParams: any) {
     const defaultMiddlewares = [insertUserCredentials];
@@ -164,8 +164,8 @@ class BlockOperations {
       defaultMiddlewares
     );
 
-    this.getBlocksAssignedToUser = wrapGraphQLOperation(
-      getBlocksAssignedToUser,
+    this.getTasksAssignedToUser = wrapGraphQLOperation(
+      getTasksAssignedToUser,
       staticParams,
       defaultMiddlewares
     );
