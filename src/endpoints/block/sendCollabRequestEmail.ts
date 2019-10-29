@@ -3,7 +3,7 @@ import {
   collaborationRequestEmailText,
   collaborationRequestEmailTitle,
   ICollaborationRequestEmailProps
-} from "../../html/collaborationRequest";
+} from "../../html/collaborationRequestEmail";
 import appInfo from "../../res/appInfo";
 import aws from "../../res/aws";
 

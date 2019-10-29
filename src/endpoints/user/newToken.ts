@@ -5,6 +5,14 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+export interface IBaseTokenData {
+  customId: string;
+  email: string;
+  changePasswordHistory: number[];
+  domain: string;
+  iat: number;
+}
+
 function newToken(user: IUser, additionalInfo?: any) {
   return jwt.sign(
     {

@@ -7,7 +7,7 @@ export interface IGetBlocksAssignedToUserParameters {
   blockModel: BlockModel;
 }
 
-async function getBlocksAssignedToUser({
+async function getTasksAssignedToUser({
   user,
   blockModel
 }: IGetBlocksAssignedToUserParameters) {
@@ -21,4 +21,4 @@ async function getBlocksAssignedToUser({
   };
 }
 
-export default getBlocksAssignedToUser;
+export default getTasksAssignedToUser;

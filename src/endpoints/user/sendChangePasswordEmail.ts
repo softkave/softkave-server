@@ -4,7 +4,7 @@ import {
   forgotPasswordEmailHTML,
   forgotPasswordEmailText,
   forgotPasswordEmailTitle
-} from "../../html/forgotPassword";
+} from "../../html/forgotPasswordEmail";
 import appInfo from "../../res/appInfo";
 import aws from "../../res/aws";
 

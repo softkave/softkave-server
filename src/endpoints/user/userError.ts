@@ -10,7 +10,8 @@ const userErrorMessages = {
   loginAgain: "Please, login again",
   userDoesNotExist: "User does not exist",
   collaboratorDoesNotExist: "Collaborator does not exist",
-  invalidLoginCredentials: "Invalid email or password"
+  invalidLoginCredentials: "Invalid email or password",
+  invalidToken: "Invalid token"
 };
 
 const userErrorFields = {
@@ -24,7 +25,8 @@ const userErrorFields = {
   userDoesNotExist: "system.user.userDoesNotExist",
   emailAddressNotAvailable: "system.user.emailAddressNotAvailable",
   invalidEmail: "system.user.invalidEmail",
-  collaboratorDoesNotExist: "system.user.collaboratorDoesNotExist"
+  collaboratorDoesNotExist: "system.user.collaboratorDoesNotExist",
+  invalidToken: "system.user.invalidToken"
 };
 
 const actions = {

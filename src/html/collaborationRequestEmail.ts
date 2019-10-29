@@ -13,9 +13,9 @@ export interface ICollaborationRequestEmailProps {
   loginLink: string;
   senderName: string;
   senderOrg: string;
-  message: string;
-  expiration: Moment;
   recipientIsUser: boolean;
+  message?: string;
+  expiration?: Moment;
 }
 
 function getExpiration(props: ICollaborationRequestEmailProps) {

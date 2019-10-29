@@ -231,7 +231,7 @@ const blockSchema = `
       block: BlockParamInput!, roles: [String!]!) : ErrorOnlyResponse
     assignRole (
       block: BlockParamInput!, collaborator: String!, roleName: String!) : ErrorOnlyResponse
-    getBlocksAssignedToUser: MultipleBlocksOpResponse
+    getTasksAssignedToUser: MultipleBlocksOpResponse
   }
 `;
 
