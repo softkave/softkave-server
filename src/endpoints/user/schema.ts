@@ -61,9 +61,9 @@ const userSchema = `
 
   type GetChangePasswordTokenDataResult {
     errors: [Error]
-    email: String;
-    issuedAt: Number;
-    expires: Number;
+    email: String
+    issuedAt: Float
+    expires: Float
   }
 
   type UserQuery {

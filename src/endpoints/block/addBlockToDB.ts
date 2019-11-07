@@ -45,7 +45,8 @@ async function addBlockToDB({
         // TODO: replace the generic blockExists with the right type
         throw new OperationError(
           blockErrorFields.blockExists,
-          getBlockExistsErrorMessage(block)
+          getBlockExistsErrorMessage(block),
+          `block.${blockFieldNames.name}`
         );
       }
     }

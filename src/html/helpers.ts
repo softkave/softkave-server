@@ -26,11 +26,12 @@ export function getTemplateStylesHTML() {
   return `
   .email-header {
     text-align: left;
+    font-size: 22px;
   }
 
   .email-body {
-    margin-top: 48px;
-    margin-bottom: 48px;
+    margin-top: 32px;
+    margin-bottom: 32px;
   }
 
   .email-content-center {

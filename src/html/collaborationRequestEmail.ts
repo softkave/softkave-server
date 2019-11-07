@@ -19,12 +19,24 @@ export interface ICollaborationRequestEmailProps {
   expiration?: Moment;
 }
 
-function getExpiration(props: ICollaborationRequestEmailProps) {
+function getExpiration(
+  props: ICollaborationRequestEmailProps,
+  isHTML?: boolean
+) {
+  const expirationRelativeStr = props.expiration && props.expiration.fromNow();
+  const expirationDateStr =
+    props.expiration && props.expiration.format("MM/DD/YYYY hh:mmA");
+
+  const renderedExpRelStr = isHTML
+    ? `<b>${expirationRelativeStr}</b>`
+    : expirationRelativeStr;
+  const renderedExpDateStr = isHTML
+    ? `<b>${expirationDateStr}</b>`
+    : expirationDateStr;
+
   return `${
     props.expiration
-      ? `This request is set to expire ${props.expiration.fromNow()}, on ${props.expiration.format(
-          "MM/DD/YYYY hh:mmA"
-        )}.`
+      ? `This request is set to expire ${renderedExpRelStr}, on ${renderedExpDateStr}.`
       : `This request has no expiration date.`
   }`;
 }
@@ -50,7 +62,7 @@ export function collaborationRequestEmailHTML(
       <div class="email-content-center">
         <p>
           You have a new collaboration request from
-          ${props.senderName} of ${props.senderOrg}.
+          <b>${props.senderName}</b> of <b>${props.senderOrg}</b>.
         </p>
         ${
           props.message
@@ -78,7 +90,7 @@ export function collaborationRequestEmailHTML(
             `
           }
           <br />
-          then, open the app menu, goto Notifications and you'll find the request there.<br />
+          Then, open the app menu, goto Notifications and you'll find the request there.<br />
           ${
             props.recipientIsUser ? `Login` : `Signup`
           } > Open app menu > Notifications
