@@ -26,19 +26,11 @@ function getExpiration(
   const expirationRelativeStr = props.expiration && props.expiration.fromNow();
   const expirationDateStr =
     props.expiration && props.expiration.format("MM/DD/YYYY hh:mmA");
+  const expirationStr = props.expiration
+    ? `This request is set to expire ${expirationRelativeStr}, on ${expirationDateStr}.`
+    : `This request has no expiration date.`;
 
-  const renderedExpRelStr = isHTML
-    ? `<b>${expirationRelativeStr}</b>`
-    : expirationRelativeStr;
-  const renderedExpDateStr = isHTML
-    ? `<b>${expirationDateStr}</b>`
-    : expirationDateStr;
-
-  return `${
-    props.expiration
-      ? `This request is set to expire ${renderedExpRelStr}, on ${renderedExpDateStr}.`
-      : `This request has no expiration date.`
-  }`;
+  return isHTML ? `<b>${expirationStr}</b>` : expirationStr;
 }
 
 export function collaborationRequestEmailHTML(
@@ -76,7 +68,7 @@ export function collaborationRequestEmailHTML(
         }
         <p>
           <b>Expiration :-</b><br />
-          ${getExpiration(props)}
+          ${getExpiration(props, true)}
         </p>
         <p>
           To respond to this request,
@@ -128,7 +120,7 @@ export function collaborationRequestEmailText(
     `${message.length > 0 ? `\n\n${message}` : ""}`,
     `\n\nExpiration :-\n${getExpiration(props)}`,
     `\n\nTo respond to this request,\n${getLink()}`,
-    `\n\nthen, open the app menu, goto Notifications and you'll find the request there.`,
+    `\n\nThen, open the app menu, goto Notifications and you'll find the request there.`,
     `\n${
       props.recipientIsUser ? `Login` : `Signup`
     } > Open app menu > Notifications`,

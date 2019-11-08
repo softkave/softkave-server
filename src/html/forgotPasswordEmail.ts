@@ -43,10 +43,14 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
         <div>
           <strong>This link expires :-</strong>
           <ul>
-            <li>Immediately after you change your password OR</li>
-            <li>In ${props.expiration.fromNow(
+            ${
+              /*
+              TODO: Waiting to implement revoking used forgot password tokens
+              <li><strong>Immediately after you change your password</strong> OR</li> */ ""
+            }
+            <li><strong>In ${props.expiration.fromNow(
               true
-            )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}</li>
+            )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}</strong></li>
           </ul>
         </div>
         <p>

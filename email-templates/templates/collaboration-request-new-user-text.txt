@@ -6,13 +6,13 @@ Message :-
 How are you Isaac, we had a talk yesterday, this is our official offer.
 
 Expiration :-
-This request is set to expire in a month, on 11/29/2019 05:56PM.
+This request has no expiration date.
 
 To respond to this request,
 Create an account using :-
 https://www.softkave.com/signup
 
-then, open the app menu, goto Notifications and you'll find the request there.
+Then, open the app menu, goto Notifications and you'll find the request there.
 Signup > Open app menu > Notifications
 
 Thank you, and have a nice day.

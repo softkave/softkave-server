@@ -29,7 +29,7 @@ export default function renderCollaborationRequestEmailToFile() {
   };
 
   const newUserProps: ICollaborationRequestEmailProps = {
-    expiration: moment().add(1, "month"),
+    // expiration: moment().add(1, "month"),
     loginLink: `${appInfo.clientDomain}/login`,
     message:
       "How are you Isaac, we had a talk yesterday, this is our official offer.",

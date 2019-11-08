@@ -201,7 +201,7 @@ async function addCollaborator({
         senderName: user.name,
         senderOrg: block.name,
         message: request.body,
-        expiration: moment(request.expiresAt),
+        expiration: request.expiresAt ? moment(request.expiresAt) : null,
         loginLink: `${appInfo.clientDomain}/login`,
         recipientIsUser: !!indexedExistingUsers[request.to.email],
         signupLink: `${appInfo.clientDomain}/signup`

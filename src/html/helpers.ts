@@ -26,6 +26,9 @@ export function getTemplateStylesHTML() {
   return `
   .email-header {
     text-align: left;
+  }
+
+  .email-header h1 {
     font-size: 22px;
   }
 
