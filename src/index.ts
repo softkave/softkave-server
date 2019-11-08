@@ -3,13 +3,12 @@ import cors from "cors";
 import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
-import connection from "./mongo/defaultConnection";
-
 import { IndexOperations, indexSchema } from "./endpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import AccessControlModel from "./mongo/access-control/AccessControlModel";
 import BlockModel from "./mongo/block/BlockModel";
+import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 
@@ -32,7 +31,7 @@ if (!JWT_SECRET) {
 const app = express();
 const port = process.env.PORT || 5000;
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
-const whiteListedCorsOrigins = [/softkave.com/];
+const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
 // const whiteListedCorsOrigins = [];
 let graphiql = false;
 
