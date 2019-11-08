@@ -8,9 +8,6 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "serve-distribution": "node dist/index.js",
-    "debug": "npm run build && npm run watch-debug",
-    "serve-debug": "nodemon -r dotenv/config --inspect dist/server.js",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
     "test": "jest",
     "render-email-templates": "tsc --project email-templates/tsconfig.json && node email-templates/code/email-templates/index.js"
   },
