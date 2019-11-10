@@ -7,15 +7,15 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "forceConsistentCasingInFileNames": true,
+    // "rootDir": "src",
+    // "forceConsistentCasingInFileNames": true,
     // "noImplicitAny": true,
     "experimentalDecorators": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "src/types/*"]
-    }
+    // "baseUrl": ".",
+    // "paths": {
+    //   "*": ["node_modules/*", "src/types/*"],
+    // }
   },
   "lib": ["es2015"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "email-templates", "features", "iterations"]
 }

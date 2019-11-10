@@ -226,12 +226,20 @@ const blockSchema = `
       groupContext: String
     ): ErrorOnlyResponse
     updateAccessControlData (
-      block: BlockParamInput!, accessControlData: [AccessControlInput!]!) : ErrorOnlyResponse
+      block: BlockParamInput!,
+      accessControlData: [AccessControlInput!]!
+    ) : ErrorOnlyResponse
     updateRoles (
-      block: BlockParamInput!, roles: [String!]!) : ErrorOnlyResponse
+      block: BlockParamInput!,
+      roles: [String!]!
+    ) : ErrorOnlyResponse
     assignRole (
-      block: BlockParamInput!, collaborator: String!, roleName: String!) : ErrorOnlyResponse
-    getTasksAssignedToUser: MultipleBlocksOpResponse
+      block: BlockParamInput!,
+      collaborator: String!,
+      roleName: String!
+    ) : ErrorOnlyResponse
+    getAssignedTasks: MultipleBlocksOpResponse
+    getBlocksWithCustomIDs (customIDs: [String!]!): MultipleBlocksOpResponse
   }
 `;
 

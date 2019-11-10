@@ -1,11 +1,13 @@
-import MongoModel, { IBaseMongoModelParameters } from "../MongoModel";
-import blockSchema from "./schema";
+import MongoModel, {
+  IDerivedMongoModelInitializationProps
+} from "../MongoModel";
+import blockSchema, { IBlockDocument } from "./definitions";
 
 const modelName = "block";
 const collectionName = "blocks";
 
-class BlockModel extends MongoModel {
-  constructor({ connection }: IBaseMongoModelParameters) {
+class BlockModel extends MongoModel<IBlockDocument> {
+  constructor({ connection }: IDerivedMongoModelInitializationProps) {
     super({
       connection,
       modelName,

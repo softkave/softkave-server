@@ -1,11 +1,13 @@
-import MongoModel, { IBaseMongoModelParameters } from "../MongoModel";
-import notificationSchema from "./schema";
+import MongoModel, {
+  IDerivedMongoModelInitializationProps
+} from "../MongoModel";
+import notificationSchema, { INotificationDocument } from "./definitions";
 
 const modelName = "notification";
 const collectionName = "notifications";
 
-class NotificationModel extends MongoModel {
-  constructor({ connection }: IBaseMongoModelParameters) {
+class NotificationModel extends MongoModel<INotificationDocument> {
+  constructor({ connection }: IDerivedMongoModelInitializationProps) {
     super({
       connection,
       modelName,

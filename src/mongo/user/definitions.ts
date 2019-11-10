@@ -1,9 +1,35 @@
+import { Document } from "mongoose";
+
+export interface IUserRole {
+  roleName: string;
+  orgId: string;
+  assignedAt: number;
+  assignedBy: string;
+}
+
 const userRoleSchema = {
   roleName: String,
   orgId: String,
   assignedAt: Number,
   assignedBy: String
 };
+
+export interface IUser {
+  customId: string;
+  name: string;
+  email: string;
+  hash: string;
+  createdAt: number;
+  forgotPasswordHistory: number[];
+  changePasswordHistory: number[];
+  lastNotificationCheckTime: number;
+  rootBlockId: string;
+  orgs: string[];
+  color: string;
+  roles: IUserRole[];
+}
+
+export interface IUserDocument extends Document, IUser {}
 
 const userSchema = {
   customId: { type: String, unique: true },
@@ -34,4 +60,3 @@ const userSchema = {
 };
 
 export default userSchema;
-export { userRoleSchema };
