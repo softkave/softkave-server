@@ -4,13 +4,14 @@ import connection from "../mongo/defaultConnection";
 
 export default async function lowerCaseBlockNames() {
   // Lowercases block names to lowerCasedName
-  console.log(`Script - ${__filename} - started`);
+  console.log(`script - ${__filename} - started`);
 
   const blockModel = new BlockModel({ connection: connection.getConnection() });
 
   await blockModel.model.init();
 
   const cursor = blockModel.model.find({}, "name lowerCasedName").cursor();
+  let docsCount = 0;
 
   try {
     for (
@@ -23,11 +24,13 @@ export default async function lowerCaseBlockNames() {
       }
 
       await doc.save();
+      docsCount++;
     }
 
-    console.log(`Script - ${__filename} - completed`);
+    console.log(`updated ${docsCount} docs`);
+    console.log(`script - ${__filename} - completed`);
   } catch (error) {
-    console.log(`Script - ${__filename} - error`);
+    console.log(`script - ${__filename} - error`);
     console.log("- - - - -");
     console.error(error);
     console.log("- - - - -");

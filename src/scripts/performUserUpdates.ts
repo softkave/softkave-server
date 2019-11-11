@@ -6,13 +6,14 @@ import UserModel from "../mongo/user/UserModel";
 export default async function performUserUpdates() {
   // Lowercases user emails
   // Adds color avatar to users that have none
-  console.log(`Script - ${__filename} - started`);
+  console.log(`script - ${__filename} - started`);
 
   const userModel = new UserModel({ connection: connection.getConnection() });
 
   await userModel.model.init();
 
   const cursor = userModel.model.find({}, "email color").cursor();
+  let docsCount = 0;
 
   try {
     for (
@@ -27,11 +28,13 @@ export default async function performUserUpdates() {
       }
 
       await doc.save();
+      docsCount++;
     }
 
-    console.log(`Script - ${__filename} - completed`);
+    console.log(`updated ${docsCount} docs`);
+    console.log(`script - ${__filename} - completed`);
   } catch (error) {
-    console.log(`Script - ${__filename} - error`);
+    console.log(`script - ${__filename} - error`);
     console.log("- - - - -");
     console.error(error);
     console.log("- - - - -");
