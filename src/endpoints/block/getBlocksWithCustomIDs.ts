@@ -25,16 +25,21 @@ export interface IGetBlocksWithCustomIDsParameters {
 async function getBlocksWithCustomIDs(
   props: IGetBlocksWithCustomIDsParameters
 ) {
-  const result = validate(props, getBlocksWithCustomIDsJoiSchema);
+  const result = validate(
+    { customIDs: props.customIDs },
+    getBlocksWithCustomIDsJoiSchema
+  );
   const blockCustomIDs = uniq(result.customIDs);
   const query = {
-    customId: { $in: blockCustomIDs },
-    parents: { $in: result.user.orgs }
+    customId: { $in: blockCustomIDs }
+    // TODO: Look into fetching blocks for assigned tasks parents using the orgs and limiting the depth
+    // or limiting the scope ( block type )
+    // parents: { $in: props.user.orgs }
   };
 
   const blocks = await props.blockModel.model.find(query).exec();
 
-  return blocks;
+  return { blocks };
 }
 
 export default getBlocksWithCustomIDs;

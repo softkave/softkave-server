@@ -15,7 +15,7 @@ const userExistsJoiSchema = Joi.object().keys({
 
 async function userExists({ email, userModel }: IUserExistsParameters) {
   const result = validate({ email }, userExistsJoiSchema);
-  const value = result.email;
+  const value = result.email.toLowerCase();
   const user = await userModel.model
     .findOne(
       {

@@ -12,6 +12,8 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
+import lowerCaseBlockNames from "./scripts/lowerCaseBlockNames";
+import performUserUpdates from "./scripts/performUserUpdates";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -81,6 +83,9 @@ app.use(
 app.use(handleErrors);
 
 connection.wait().then(async () => {
+  await performUserUpdates();
+  await lowerCaseBlockNames();
+
   // TODO: move index creation to DB pipeline
   await userModel.model.init();
   await blockModel.model.init();

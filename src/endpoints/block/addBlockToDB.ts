@@ -53,6 +53,10 @@ async function addBlockToDB({
 
     block.createdBy = user.customId;
     block.createdAt = Date.now();
+
+    // TODO: Think on, where is the right place to lowercase names?
+    // Joi, logic or Mongo schema?
+    block.lowerCasedName = block.name ? block.name.toLowerCase() : undefined;
     let newBlock = new blockModel.model(block);
     newBlock = await newBlock.save();
 

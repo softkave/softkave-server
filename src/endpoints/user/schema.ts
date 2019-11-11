@@ -21,7 +21,7 @@ const userSchema = `
     createdAt: Float
     lastNotificationCheckTime: Float
     color: String
-    roles: [UserRole]
+    # roles: [UserRole]
     orgs: [String]
   }
 
@@ -30,13 +30,13 @@ const userSchema = `
     email: String!
     password: String!
     color: String!
-    roles: [UserRoleInput]
+    # roles: [UserRoleInput]
   }
 
   input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
-    roles: [UserRoleInput]
+    # roles: [UserRoleInput]
   }
 
   type UserQueryResult {

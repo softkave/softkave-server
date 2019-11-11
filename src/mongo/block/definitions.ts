@@ -1,4 +1,9 @@
-import { Document } from "mongoose";
+import {
+  Document,
+  SchemaDefinition,
+  SchemaOptions,
+  SchemaTypeOpts
+} from "mongoose";
 
 export interface ITaskCollaborator {
   userId: string;
@@ -36,6 +41,7 @@ export const linkedBlocks = {
 export interface IBlock {
   customId: string;
   name: string;
+  lowerCasedName: string;
   description: string;
   expectedEndAt: number;
   createdAt: number;
@@ -61,6 +67,14 @@ const blockSchema = {
     type: String,
     index: true
   },
+
+  // TODO: Think on, should we retain lowercased names so that we can retain the
+  // user formatting of the block name?
+  lowerCasedName: {
+    type: String,
+    index: true,
+    lowercase: true
+  } as SchemaTypeOpts<StringConstructor>,
   description: String,
   expectedEndAt: Number,
   createdAt: {
@@ -71,7 +85,8 @@ const blockSchema = {
   updatedAt: Number,
   type: {
     type: String,
-    index: true
+    index: true,
+    lowercase: true
   },
   parents: {
     type: [String],

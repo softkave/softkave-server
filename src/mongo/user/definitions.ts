@@ -39,7 +39,8 @@ const userSchema = {
   email: {
     type: String,
     unique: true,
-    index: true
+    index: true,
+    lowercase: true
   },
   hash: {
     type: String,
