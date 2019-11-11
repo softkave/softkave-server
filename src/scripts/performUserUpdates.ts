@@ -31,7 +31,7 @@ export default async function performUserUpdates() {
       docsCount++;
     }
 
-    console.log(`updated ${docsCount} docs`);
+    console.log(`updated ${docsCount} doc(s)`);
     console.log(`script - ${__filename} - completed`);
   } catch (error) {
     console.log(`script - ${__filename} - error`);
