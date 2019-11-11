@@ -22,7 +22,7 @@ const blockConstants = {
   maxTaskCollaboratorsLength: 10,
   minAddCollaboratorValuesLength: 0,
   maxAddCollaboratorValuesLength: 10,
-  maxChildrenCount: 100,
+  maxChildrenCount: 500,
   blockTypesArray: [
     blockTypeGroup,
     blockTypeOrg,
@@ -57,7 +57,7 @@ const blockConstants = {
   minLinkedBlocksCount: 0,
   maxLinkedBlocksCount: 250,
   minRoleNameLength: 0,
-  maxRoleNameLength: 50,
+  maxRoleNameLength: 100,
   minRoles: 1,
   maxRoles: 10
 };

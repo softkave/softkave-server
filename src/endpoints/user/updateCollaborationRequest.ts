@@ -1,14 +1,10 @@
 import Joi from "joi";
-
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import { validate } from "../../utils/joi-utils";
 import notificationError from "../../utils/notificationError";
-import { joiSchemas, validators } from "../../utils/validation-utils";
+import { joiSchemas } from "../../utils/validation-utils";
 import { IUserDocument } from "./user";
-import {
-  collaborationRequestSchema,
-  validateCollaborationRequest
-} from "./validation";
+import { collaborationRequestSchema } from "./validation";
 
 // TODO: define data's type
 export interface IUpdateCollaborationRequestParameters {

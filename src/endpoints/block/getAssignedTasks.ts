@@ -2,15 +2,15 @@ import BlockModel from "../../mongo/block/BlockModel";
 import { IUserDocument } from "../user/user";
 import { blockConstants } from "./constants";
 
-export interface IGetBlocksAssignedToUserParameters {
+export interface IGetAssignedTasksParameters {
   user: IUserDocument;
   blockModel: BlockModel;
 }
 
-async function getTasksAssignedToUser({
+async function getAssignedTasks({
   user,
   blockModel
-}: IGetBlocksAssignedToUserParameters) {
+}: IGetAssignedTasksParameters) {
   const blocks = await blockModel.model.find({
     ["taskCollaborators.userId"]: user.customId,
     type: blockConstants.blockTypes.task
@@ -21,4 +21,4 @@ async function getTasksAssignedToUser({
   };
 }
 
-export default getTasksAssignedToUser;
+export default getAssignedTasks;

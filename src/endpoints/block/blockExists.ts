@@ -19,8 +19,8 @@ async function blockExists({ block, blockModel }: IBlockExistsParameters) {
 
   const { name, type, customId, parents } = block;
   const blockExistQuery: any = {
-    name,
-    type
+    type: type.toLowerCase(),
+    lowerCasedName: name.toLowerCase()
   };
 
   if (parents) {

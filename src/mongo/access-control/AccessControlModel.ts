@@ -1,11 +1,13 @@
-import MongoModel, { IBaseMongoModelParameters } from "../MongoModel";
-import accessControlSchema from "./schema";
+import MongoModel, {
+  IDerivedMongoModelInitializationProps
+} from "../MongoModel";
+import accessControlSchema, { IAccessControlDocument } from "./definitions";
 
 const modelName = "access-control";
 const collectionName = "access-control";
 
-class AccessControlModel extends MongoModel {
-  constructor({ connection }: IBaseMongoModelParameters) {
+class AccessControlModel extends MongoModel<IAccessControlDocument> {
+  constructor({ connection }: IDerivedMongoModelInitializationProps) {
     super({
       connection,
       modelName,

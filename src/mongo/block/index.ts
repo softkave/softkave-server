@@ -1,2 +1,2 @@
 export * from "./BlockModel";
-export * from "./schema";
+export * from "./definitions";

@@ -1,22 +1,23 @@
 import mongoose from "mongoose";
 
-export interface IBaseMongoModelParameters {
+export interface IDerivedMongoModelInitializationProps {
   connection: mongoose.Connection;
 }
 
-export interface IMongoModelParameters extends IBaseMongoModelParameters {
+export interface IMongoModelParameters {
   rawSchema: mongoose.SchemaDefinition;
   modelName: string;
   collectionName: string;
+  connection: mongoose.Connection;
 }
 
-class MongoModel {
+class MongoModel<DocumentType extends mongoose.Document = any> {
   public connection: mongoose.Connection;
   public rawSchema: mongoose.SchemaDefinition;
   public modelName: string;
   public collectionName: string;
   public schema: mongoose.Schema;
-  public model: mongoose.Model<any>;
+  public model: mongoose.Model<DocumentType>;
 
   constructor({
     connection,
@@ -33,7 +34,7 @@ class MongoModel {
   }
 
   public newModel() {
-    return this.connection.model(
+    return this.connection.model<DocumentType>(
       this.modelName,
       this.schema,
       this.collectionName

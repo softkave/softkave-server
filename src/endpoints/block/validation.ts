@@ -79,6 +79,7 @@ export const blockJoiSchema = Joi.object().keys({
   description: Joi.string()
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
+    .trim()
     .when("type", {
       is: "task",
       then: Joi.required()

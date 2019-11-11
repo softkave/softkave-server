@@ -71,8 +71,8 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-    accessControl: [AccessControl]
-    roles: [BlockRole]
+    # accessControl: [AccessControl]
+    # roles: [BlockRole]
   }
 
   type BlockResponse {
@@ -204,8 +204,6 @@ const blockSchema = `
     addCollaborators (
       block: BlockParamInput!,
       collaborators: [AddCollaboratorInput!]!,
-      # body: String,
-      # expiresAt: Float
     ) : ErrorOnlyResponse
     removeCollaborator (
       block: BlockParamInput!,
@@ -226,12 +224,20 @@ const blockSchema = `
       groupContext: String
     ): ErrorOnlyResponse
     updateAccessControlData (
-      block: BlockParamInput!, accessControlData: [AccessControlInput!]!) : ErrorOnlyResponse
-    updateRoles (
-      block: BlockParamInput!, roles: [String!]!) : ErrorOnlyResponse
+      block: BlockParamInput!,
+      accessControlData: [AccessControlInput!]!
+    ) : ErrorOnlyResponse
+    # updateRoles (
+    #  block: BlockParamInput!,
+    #  roles: [String!]!
+    # ) : ErrorOnlyResponse
     assignRole (
-      block: BlockParamInput!, collaborator: String!, roleName: String!) : ErrorOnlyResponse
-    getTasksAssignedToUser: MultipleBlocksOpResponse
+      block: BlockParamInput!,
+      collaborator: String!,
+      roleName: String!
+    ) : ErrorOnlyResponse
+    getAssignedTasks: MultipleBlocksOpResponse
+    getBlocksWithCustomIDs (customIDs: [String!]!): MultipleBlocksOpResponse
   }
 `;
 

@@ -16,6 +16,7 @@ export interface IBlockRole {
 export interface IBlock {
   customId: string;
   name: string;
+  lowerCasedName: string;
   description: string;
   expectedEndAt: number;
   createdAt: number;

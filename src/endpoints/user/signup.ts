@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import Joi from "joi";
 import uuid from "uuid/v4";
-
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import UserModel from "../../mongo/user/UserModel";
@@ -11,16 +10,27 @@ import serverError from "../../utils/serverError";
 import createRootBlock from "../block/createRootBlock";
 import { userFieldNames } from "./constants";
 import newToken from "./newToken";
-import { IUser } from "./user";
 import { userErrorFields, userErrorMessages } from "./userError";
 import userExists from "./userExists";
-import { userSignupSchema, validateUserSignupData } from "./validation";
+import { userSignupSchema } from "./validation";
+
+interface INewUserInput {
+  name: string;
+  email: string;
+  password: string;
+  color: string;
+}
 
 // TODO: define user's type
 export interface ISignupParameters {
-  user: any;
+  user: INewUserInput;
   userModel: UserModel;
   blockModel: BlockModel;
+}
+
+interface INewUser extends INewUserInput {
+  customId: string;
+  hash: string;
 }
 
 const signupJoiSchema = Joi.object().keys({
@@ -29,7 +39,6 @@ const signupJoiSchema = Joi.object().keys({
 
 async function signup({ user, userModel, blockModel }: ISignupParameters) {
   const result = validate({ user }, signupJoiSchema);
-  const value = result.user;
   const userExistsResult = await userExists({ userModel, email: user.email });
 
   if (!!userExistsResult && userExistsResult.userExists) {
@@ -41,8 +50,14 @@ async function signup({ user, userModel, blockModel }: ISignupParameters) {
   }
 
   try {
-    value.hash = await argon2.hash(value.password);
-    value.customId = uuid();
+    const hash = await argon2.hash(result.user.password);
+    const value: INewUser = {
+      ...result.user,
+      hash,
+      customId: uuid(),
+      email: result.user.email.toLowerCase()
+    };
+
     delete value.password;
     let newUser = new userModel.model(value);
     newUser = await newUser.save();

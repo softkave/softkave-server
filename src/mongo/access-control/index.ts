@@ -1,2 +1,2 @@
 export * from "./AccessControlModel";
-export * from "./schema";
+export * from "./definitions";
