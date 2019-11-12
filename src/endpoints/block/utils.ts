@@ -36,3 +36,11 @@ export function isParentInBlock(block: IBlock, parentId: string) {
 
   return false;
 }
+
+export function hasBlockParentsChanged(block: IBlock, update: Partial<IBlock>) {
+  if (update.parents) {
+    return !!block.parents.find((id, index) => id !== update.parents[index]);
+  }
+
+  return false;
+}

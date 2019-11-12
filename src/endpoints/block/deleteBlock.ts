@@ -1,7 +1,5 @@
-import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import { validate } from "../../utils/joi-utils";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
@@ -9,7 +7,6 @@ import { CRUDActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { getImmediateParentID } from "./utils";
-import { blockParamSchema } from "./validation";
 
 export interface IDeleteBlockParameters {
   block: IBlockDocument;
@@ -18,17 +15,12 @@ export interface IDeleteBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
-// const deleteBlockJoiSchema = Joi.object().keys({
-// });
-
 async function deleteBlock({
   block,
   blockModel,
   user,
   accessControlModel
 }: IDeleteBlockParameters) {
-  // const result = validate({  }, deleteBlockJoiSchema);
-
   await accessControlCheck({
     user,
     block,

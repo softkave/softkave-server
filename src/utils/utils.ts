@@ -41,8 +41,7 @@ function indexArray(arr: any[] = [], { path, indexer, reducer }: any = {}) {
   return result;
 }
 
-// update all types to see if they are correct
-function getIndex(list: any, item: any, notFoundError?: any) {
+function getIndex(list: any[], item: any, notFoundError?: string | Error) {
   const itemIndex = list.indexOf(item);
 
   if (itemIndex === -1) {
@@ -55,8 +54,8 @@ function getIndex(list: any, item: any, notFoundError?: any) {
 function move(
   list: any[],
   item: any,
-  dropPosition: any,
-  notFoundError?: any,
+  dropPosition: number,
+  notFoundError?: string | Error,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
@@ -70,7 +69,7 @@ function update(
   list: any[],
   item: any,
   updateItem: any,
-  notFoundError?: any,
+  notFoundError?: string | Error,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
@@ -82,7 +81,7 @@ function update(
 function remove(
   list: any[],
   item: any,
-  notFoundError?: any,
+  notFoundError?: string | Error,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
@@ -91,9 +90,15 @@ function remove(
   return list;
 }
 
-function add(list: any[], item: any, dropPosition: any) {
-  list = [...list];
-  list.splice(dropPosition, 0, item);
+function add(list: any[], item: any, dropPosition?: number) {
+  list = Array.isArray(list) ? [...list] : [];
+
+  if (dropPosition) {
+    list.splice(dropPosition, 0, item);
+  } else {
+    list.push(item);
+  }
+
   return list;
 }
 

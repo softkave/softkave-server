@@ -1,11 +1,13 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlock, IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { add, getIndex, move, remove } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
+import { IBlockParam } from "./block";
 import blockError from "./blockError";
 import { blockConstants } from "./constants";
 import {
@@ -16,16 +18,15 @@ import {
 
 // TODO: define any types, and make sure other types are correct
 export interface ITransferBlockParameters {
-  sourceBlock: any;
-  draggedBlock: any;
-  destinationBlock: any;
-  dropPosition: number;
-  blockPosition: number;
+  sourceBlock: IBlockParam;
+  draggedBlock: IBlockParam;
   draggedBlockType: string;
-  groupContext: string;
   blockModel: BlockModel;
   user: IUserDocument;
   accessControlModel: AccessControlModel;
+  destinationBlock: IBlockParam;
+  dropPosition?: number;
+  groupContext?: string;
 }
 
 const transferBlockJoiSchema = Joi.object().keys({
@@ -33,54 +34,53 @@ const transferBlockJoiSchema = Joi.object().keys({
   draggedBlock: blockParamSchema,
   destinationBlock: blockParamSchema,
   dropPosition: Joi.number(),
-  blockPosition: Joi.number(),
   draggedBlockType: blockTypeSchema,
   groupContext: groupContextSchema
 });
 
-async function transferBlock({
-  sourceBlock,
-  draggedBlock,
-  destinationBlock,
-  dropPosition,
-  blockPosition,
-  draggedBlockType,
-  groupContext,
-  blockModel,
-  user,
-  accessControlModel
-}: ITransferBlockParameters) {
+function validateParameters(props: ITransferBlockParameters) {
   const result = validate(
     {
-      sourceBlock,
-      draggedBlock,
-      destinationBlock,
-      dropPosition,
-      blockPosition,
-      draggedBlockType,
-      groupContext
+      sourceBlock: props.sourceBlock,
+      draggedBlock: props.draggedBlock,
+      destinationBlock: props.destinationBlock,
+      dropPosition: props.dropPosition,
+      draggedBlockType: props.draggedBlockType,
+      groupContext: props.groupContext
     },
     transferBlockJoiSchema
   );
 
-  sourceBlock = result.sourceBlock;
-  draggedBlock = result.draggedBlock;
-  destinationBlock = result.destinationBlock;
-  draggedBlockType = result.draggedBlockType;
-  dropPosition = result.dropPosition;
-  blockPosition = result.blockPosition;
-  groupContext = result.groupContext;
+  return result;
+}
 
-  const blockChildIndex = `${draggedBlockType}s.${blockPosition}`;
+interface IFetchBlocksResult {
+  sourceBlock?: IBlockDocument;
+  draggedBlock?: IBlockDocument;
+  destinationBlock?: IBlockDocument;
+}
+
+async function fetchBlocks(
+  props: ITransferBlockParameters
+): Promise<IFetchBlocksResult> {
+  const {
+    sourceBlock,
+    draggedBlock,
+    draggedBlockType,
+    destinationBlock,
+    blockModel
+  } = props;
+
   const sourceBlockQuery = {
     customId: sourceBlock.customId,
-    [blockChildIndex]: draggedBlock.customId
+    [`${draggedBlockType}s`]: draggedBlock.customId
   };
 
   const draggedBlockQuery = {
     customId: draggedBlock.customId,
     type: draggedBlockType
   };
+
   const destinationBlockQuery = { customId: destinationBlock.customId };
   const queries = [sourceBlockQuery, draggedBlockQuery];
 
@@ -94,22 +94,33 @@ async function transferBlock({
     })
     .exec();
 
+  const result: IFetchBlocksResult = {};
+
   blocks.forEach(block => {
     switch (block.customId) {
       case sourceBlock.customId:
-        sourceBlock = block;
+        result.sourceBlock = block;
         break;
 
       case draggedBlock.customId:
-        draggedBlock = block;
+        result.draggedBlock = block;
         break;
 
       case destinationBlock.customId:
-        destinationBlock = block;
+        result.destinationBlock = block;
         break;
     }
   });
 
+  return result;
+}
+
+async function checkBlocks(
+  blocks: IFetchBlocksResult,
+  props: ITransferBlockParameters
+) {
+  const { sourceBlock, draggedBlock, destinationBlock } = blocks;
+  const { user, accessControlModel } = props;
   // add batching of access control checks
   if (!draggedBlock) {
     throw blockError.transferDraggedBlockMissing;
@@ -143,13 +154,15 @@ async function transferBlock({
       CRUDActionName: CRUDActionsMap.UPDATE
     });
   }
+}
 
-  const pushUpdates = [];
-  const pluralizedType = `${draggedBlock.type}s`;
+function updateDraggedBlockPositionInSource(
+  props: IFetchBlocksResult & { dropPosition: number; groupContext?: string }
+) {
+  const { groupContext, sourceBlock, draggedBlock, dropPosition } = props;
+  const sourceBlockUpdates: Partial<IBlock> = {};
 
   if (draggedBlock.type === blockConstants.blockTypes.group) {
-    const sourceBlockUpdates: any = {};
-
     if (groupContext) {
       sourceBlockUpdates[groupContext] = move(
         sourceBlock[groupContext],
@@ -176,29 +189,98 @@ async function transferBlock({
         blockError.transferDraggedBlockNotFoundInParent
       );
     }
+  }
 
-    sourceBlockUpdates[pluralizedType] = move(
-      sourceBlock[pluralizedType],
+  const pluralizedType = `${draggedBlock.type}s`;
+  sourceBlockUpdates[pluralizedType] = move(
+    sourceBlock[pluralizedType],
+    draggedBlock.customId,
+    dropPosition,
+    blockError.transferDraggedBlockNotFoundInParent
+  );
+
+  return sourceBlockUpdates;
+}
+
+function updateDraggedBlockInSourceAndDestination(props: IFetchBlocksResult) {
+  const { draggedBlock, sourceBlock, destinationBlock } = props;
+  const sourceBlockUpdates: Partial<IBlock> = {};
+  const draggedBlockUpdates: Partial<IBlock> = {};
+  const destinationBlockUpdates: Partial<IBlock> = {};
+  const pluralizedType = `${draggedBlock.type}s`;
+
+  if (draggedBlock.type === blockConstants.blockTypes.group) {
+    const groupTaskContext = blockConstants.groupContexts.groupTaskContext;
+    const groupProjectContext =
+      blockConstants.groupContexts.groupProjectContext;
+
+    sourceBlockUpdates[groupTaskContext] = remove(
+      sourceBlock[groupTaskContext],
       draggedBlock.customId,
-      dropPosition,
       blockError.transferDraggedBlockNotFoundInParent
     );
 
-    pushUpdates.push({
-      updateOne: {
-        filter: { customId: sourceBlock.customId },
-        update: sourceBlockUpdates
-      }
+    sourceBlockUpdates[groupProjectContext] = remove(
+      sourceBlock[groupProjectContext],
+      draggedBlock.customId,
+      blockError.transferDraggedBlockNotFoundInParent
+    );
+
+    destinationBlockUpdates[groupTaskContext] = add(
+      destinationBlock[pluralizedType],
+      draggedBlock.customId
+    );
+
+    destinationBlockUpdates[groupProjectContext] = add(
+      destinationBlock[pluralizedType],
+      draggedBlock.customId
+    );
+  }
+
+  sourceBlockUpdates[pluralizedType] = remove(
+    sourceBlock[pluralizedType],
+    draggedBlock.customId,
+    blockError.transferDraggedBlockNotFoundInParent
+  );
+
+  destinationBlockUpdates[pluralizedType] = add(
+    destinationBlock[pluralizedType],
+    draggedBlock.customId
+  );
+
+  const draggedBlockParentUpdate = [...(destinationBlock.parents || [])];
+  draggedBlockParentUpdate.push(destinationBlock.customId);
+  draggedBlockUpdates.parents = draggedBlockParentUpdate;
+
+  return {
+    sourceBlockUpdates,
+    destinationBlockUpdates,
+    draggedBlockUpdates
+  };
+}
+
+async function transferBlock(props: ITransferBlockParameters) {
+  const result = validateParameters(props);
+
+  const dropPosition = result.dropPosition;
+  const groupContext = result.groupContext;
+  const blockModel = props.blockModel;
+
+  const fetchBlocksResult = await fetchBlocks(props);
+  const sourceBlock = fetchBlocksResult.sourceBlock;
+  const draggedBlock = fetchBlocksResult.draggedBlock;
+  const destinationBlock = fetchBlocksResult.destinationBlock;
+
+  await checkBlocks(fetchBlocksResult, props);
+
+  const pushUpdates = [];
+
+  if (sourceBlock.customId === destinationBlock.customId) {
+    const sourceBlockUpdates = updateDraggedBlockPositionInSource({
+      ...fetchBlocksResult,
+      dropPosition,
+      groupContext
     });
-  } else if (sourceBlock.customId === destinationBlock.customId) {
-    const sourceBlockUpdates: any = {};
-
-    sourceBlockUpdates[pluralizedType] = move(
-      sourceBlock[pluralizedType],
-      draggedBlock.customId,
-      dropPosition,
-      blockError.transferDraggedBlockNotFoundInParent
-    );
 
     pushUpdates.push({
       updateOne: {
@@ -207,30 +289,18 @@ async function transferBlock({
       }
     });
   } else {
-    const sourceBlockUpdates: any = {};
-    const draggedBlockUpdates: any = {};
-    const destinationBlockUpdates: any = {};
+    // Ignores paremeters' groupContext and dropPosition
     const sourceParentIndex = getIndex(
       draggedBlock.parents,
       sourceBlock.customId,
       blockError.transferDraggedBlockNotFoundInParent
     );
 
-    sourceBlockUpdates[pluralizedType] = remove(
-      sourceBlock[pluralizedType],
-      draggedBlock.customId,
-      blockError.transferDraggedBlockNotFoundInParent
-    );
-
-    destinationBlockUpdates[pluralizedType] = add(
-      destinationBlock[pluralizedType],
-      draggedBlock.customId,
-      dropPosition
-    );
-
-    const draggedBlockParentUpdate = [...(destinationBlock.parents || [])];
-    draggedBlockParentUpdate.push(destinationBlock.customId);
-    draggedBlockUpdates.parents = draggedBlockParentUpdate;
+    const {
+      sourceBlockUpdates,
+      destinationBlockUpdates,
+      draggedBlockUpdates
+    } = updateDraggedBlockInSourceAndDestination(fetchBlocksResult);
 
     pushUpdates.push(
       {
@@ -250,8 +320,11 @@ async function transferBlock({
           filter: { customId: draggedBlock.customId },
           update: draggedBlockUpdates
         }
-      },
-      {
+      }
+    );
+
+    if (draggedBlock.type !== blockConstants.blockTypes.task) {
+      pushUpdates.push({
         updateMany: {
           filter: {
             [`parents.${sourceParentIndex + 1}`]: draggedBlock.customId
@@ -264,8 +337,8 @@ async function transferBlock({
             {}
           )
         }
-      }
-    );
+      });
+    }
   }
 
   if (pushUpdates.length > 0) {

@@ -1,17 +1,47 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlock } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
+import transferBlock from "./transferBlock";
+import { getImmediateParentID, hasBlockParentsChanged } from "./utils";
 import { blockJoiSchema } from "./validation";
 
 // TODO: define all any types
+interface IUpdateBlockInput {
+  name: string;
+  description: string;
+  expectedEndAt: number;
+  color: string;
+  priority: string;
+  isBacklog: boolean;
+  taskCollaborators: Array<{
+    userId: string;
+    completedAt: number;
+    assignedBy: string;
+    assignedAt: number;
+  }>;
+  parents: string[];
+  groups: string[];
+  projects: string[];
+  tasks: string[];
+  groupTaskContext: string[];
+  groupProjectContext: string[];
+  linkedBlocks: Array<{
+    blockId: string;
+    reason: string;
+    createdBy: string;
+    createdAt: number;
+  }>;
+}
+
 export interface IUpdateBlockParameters {
   block: IBlockDocument;
-  data: any;
+  data: IUpdateBlockInput;
   blockModel: BlockModel;
   accessControlModel: AccessControlModel;
   user: IUserDocument;
@@ -29,7 +59,6 @@ async function updateBlock({
   user
 }: IUpdateBlockParameters) {
   const result = validate({ data }, updateBlockJoiSchema);
-  data = result.data;
   await accessControlCheck({
     user,
     block,
@@ -37,13 +66,29 @@ async function updateBlock({
     CRUDActionName: CRUDActionsMap.UPDATE
   });
 
-  data.updatedAt = Date.now();
+  const update: Partial<IBlock> = {
+    ...result.data,
+    updatedAt: Date.now()
+  };
+
   await blockModel.model.updateOne(
     {
       customId: block.customId
     },
-    data
+    update
   );
+
+  if (hasBlockParentsChanged(block, update)) {
+    await transferBlock({
+      accessControlModel,
+      user,
+      blockModel,
+      draggedBlock: block,
+      sourceBlock: { customId: getImmediateParentID(block) },
+      destinationBlock: { customId: getImmediateParentID(update as IBlock) },
+      draggedBlockType: block.type
+    });
+  }
 }
 
 export default updateBlock;

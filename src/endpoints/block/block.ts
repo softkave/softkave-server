@@ -36,4 +36,8 @@ export interface IBlock {
   roles: IBlockRole[];
 }
 
+export interface IBlockParam {
+  customId: string;
+}
+
 export interface IBlockDocument extends Document, IBlock {}

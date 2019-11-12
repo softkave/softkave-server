@@ -219,7 +219,6 @@ const blockSchema = `
       draggedBlock: BlockParamInput!,
       destinationBlock: BlockParamInput,
       dropPosition: Float!,
-      blockPosition: Float!,
       draggedBlockType: String!,
       groupContext: String
     ): ErrorOnlyResponse
