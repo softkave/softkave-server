@@ -43,54 +43,46 @@ async function assignRole({
   userModel,
   assignedBySystem
 }: IAssignRoleParameters) {
-  const result = validate({ collaborator, roleName }, assignRoleJoiSchema);
-
-  collaborator = result.collaborator;
-  roleName = result.roleName;
-
-  const fetchedCollaborator = await getUser({
-    collaborator,
-    userModel,
-    required: true
-  });
-
-  if (!assignedBySystem) {
-    await accessControlCheck({
-      user,
-      block,
-      accessControlModel,
-      actionName: blockActionsMap.ASSIGN_ROLE
-    });
-  }
-
-  const orgId = getRootParentID(block);
-
-  // to check if role exists
-  await getRole({
-    block,
-    accessControlModel,
-    roleName,
-    required: true
-  });
-
-  const currentRole = findRole(fetchedCollaborator, orgId);
-  const newRole = {
-    roleName,
-    orgId,
-    assignedAt: Date.now(),
-    assignedBy: assignedBySystem ? "system" : user.customId
-  };
-
-  fetchedCollaborator.roles = update(
-    fetchedCollaborator.roles,
-    currentRole,
-    newRole,
-    blockError.roleDoesNotExist,
-    findRoleIndex
-  );
-
-  fetchedCollaborator.markModified("roles");
-  await fetchedCollaborator.save();
+  // const result = validate({ collaborator, roleName }, assignRoleJoiSchema);
+  // collaborator = result.collaborator;
+  // roleName = result.roleName;
+  // const fetchedCollaborator = await getUser({
+  //   collaborator,
+  //   userModel,
+  //   required: true
+  // });
+  // if (!assignedBySystem) {
+  //   await accessControlCheck({
+  //     user,
+  //     block,
+  //     accessControlModel,
+  //     actionName: blockActionsMap.ASSIGN_ROLE
+  //   });
+  // }
+  // const orgId = getRootParentID(block);
+  // // to check if role exists
+  // await getRole({
+  //   block,
+  //   accessControlModel,
+  //   roleName,
+  //   required: true
+  // });
+  // const currentRole = findRole(fetchedCollaborator, orgId);
+  // const newRole = {
+  //   roleName,
+  //   orgId,
+  //   assignedAt: Date.now(),
+  //   assignedBy: assignedBySystem ? "system" : user.customId
+  // };
+  // fetchedCollaborator.roles = update(
+  //   fetchedCollaborator.roles,
+  //   currentRole,
+  //   newRole,
+  //   blockError.roleDoesNotExist,
+  //   findRoleIndex
+  // );
+  // fetchedCollaborator.markModified("roles");
+  // await fetchedCollaborator.save();
 }
 
 export default assignRole;

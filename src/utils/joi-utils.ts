@@ -1,4 +1,4 @@
-import Joi, { JoiObject, Schema as JoiSchema } from "joi";
+import Joi, { Schema as JoiSchema, ValidationOptions } from "joi";
 import get from "lodash/get";
 
 import { joiErrorMessages } from "./joiError";
@@ -12,10 +12,15 @@ const typePath = "details.0.type";
 const pathPath = "details.0.path";
 
 // TODO: define all any types
-function validate<DataType>(data: DataType, schema: JoiSchema): DataType {
+function validate<DataType>(
+  data: DataType,
+  schema: JoiSchema,
+  options?: ValidationOptions
+): DataType {
   const { error, value } = Joi.validate(data, schema, {
     abortEarly: false,
-    convert: true
+    convert: true,
+    ...options
   });
 
   if (error) {

@@ -48,7 +48,8 @@ function validateParameters(props: ITransferBlockParameters) {
       draggedBlockType: props.draggedBlockType,
       groupContext: props.groupContext
     },
-    transferBlockJoiSchema
+    transferBlockJoiSchema,
+    { allowUnknown: true }
   );
 
   return result;
