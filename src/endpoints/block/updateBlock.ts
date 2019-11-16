@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { pick } from "lodash";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import { IBlock } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
@@ -39,6 +40,22 @@ interface IUpdateBlockInput {
   }>;
 }
 
+const permittedUpdatesInUpdateBlock = [
+  "name",
+  "description",
+  "expectedEndAt",
+  "color",
+  "priority",
+  "isBacklog",
+  "taskCollaborators",
+  "groups",
+  "projects",
+  "tasks",
+  "groupTaskContext",
+  "groupProjectContext",
+  "linkedBlocks"
+];
+
 export interface IUpdateBlockParameters {
   block: IBlockDocument;
   data: IUpdateBlockInput;
@@ -75,7 +92,7 @@ async function updateBlock({
     {
       customId: block.customId
     },
-    update
+    pick(update, permittedUpdatesInUpdateBlock)
   );
 
   if (hasBlockParentsChanged(block, update)) {
