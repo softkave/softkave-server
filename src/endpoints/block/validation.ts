@@ -117,6 +117,9 @@ export const blockJoiSchema = Joi.object().keys({
     .unique("blockId")
     .min(blockConstants.minLinkedBlocksCount)
     .max(blockConstants.maxLinkedBlocksCount),
+  subTasks: Joi.array()
+    .min()
+    .max(),
 
   // TODO: make a check to make sure this is only checked on orgs or roots
   accessControl: Joi.array()

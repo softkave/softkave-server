@@ -38,6 +38,11 @@ export const linkedBlocks = {
   createdAt: Number
 };
 
+export const subTasks = {
+  customId: String,
+  description: String 
+}
+
 export interface IBlock {
   customId: string;
   name: string;
@@ -102,6 +107,9 @@ const blockSchema = {
   },
   linkedBlocks: {
     type: [linkedBlocks]
+  },
+  subTasks:{
+    type: [subTasks]
   },
   priority: String,
   isBacklog: Boolean,
