@@ -88,6 +88,7 @@ async function addCollaborator({
     email: {
       $in: collaboratorsEmailArr
     }
+    // orgs: block.customId
   };
 
   const existingUsers = await userModel.model
@@ -105,7 +106,7 @@ async function addCollaborator({
   existingUsers.forEach((existingUser: Partial<IUser>) => {
     indexedExistingUsers[existingUser.email] = existingUser;
 
-    if (existingUser.orgs!.indexOf(block.customId)) {
+    if (existingUser.orgs!.indexOf(block.customId) !== -1) {
       existingUsersInOrg.push(existingUser);
     }
   });

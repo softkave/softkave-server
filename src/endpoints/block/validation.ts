@@ -22,7 +22,7 @@ export const taskCollaboratorSchema = Joi.object().keys({
 export const taskCollaboratorsSchema = Joi.array()
   .min(blockConstants.minTaskCollaboratorsLength)
   .max(blockConstants.maxTaskCollaboratorsLength)
-  .unique("email")
+  .unique("userId")
   .items(taskCollaboratorSchema);
 
 export const blockTypeSchema = Joi.string()
