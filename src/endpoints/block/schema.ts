@@ -83,6 +83,7 @@ const blockSchema = `
     groupProjectContext: [String]
     # accessControl: [AccessControl]
     # roles: [BlockRole]
+    subTasks: [SubTask]
   }
 
   type BlockResponse {
