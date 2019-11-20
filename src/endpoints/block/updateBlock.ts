@@ -38,10 +38,10 @@ interface IUpdateBlockInput {
     createdBy: string;
     createdAt: number;
   }>;
-  // subTasks: Array<{
-  //   customId: String;
-  //   description: String
-  // }>
+  subTasks: Array<{
+    customId: string;
+    description: string;
+  }>;
 }
 
 const permittedUpdatesInUpdateBlock = [

@@ -1,9 +1,4 @@
-import {
-  Document,
-  SchemaDefinition,
-  SchemaOptions,
-  SchemaTypeOpts
-} from "mongoose";
+import { Document, SchemaTypeOpts } from "mongoose";
 
 export interface ITaskCollaborator {
   userId: string;
@@ -40,8 +35,8 @@ export const linkedBlocks = {
 
 export const subTasks = {
   customId: String,
-  description: String 
-}
+  description: String
+};
 
 export interface IBlock {
   customId: string;
@@ -75,6 +70,7 @@ const blockSchema = {
 
   // TODO: Think on, should we retain lowercased names so that we can retain the
   // user formatting of the block name?
+  // TODO: Define type for blockSchema and other mongo schemas
   lowerCasedName: {
     type: String,
     index: true,
@@ -108,7 +104,7 @@ const blockSchema = {
   linkedBlocks: {
     type: [linkedBlocks]
   },
-  subTasks:{
+  subTasks: {
     type: [subTasks]
   },
   priority: String,

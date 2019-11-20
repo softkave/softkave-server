@@ -69,6 +69,17 @@ export const accessControlArraySchema = Joi.array()
   .unique("actionName")
   .max(blockActionsArray.length);
 
+export const subTasksSchema = Joi.object().keys({
+  customId: Joi.string()
+    .uuid()
+    .required(),
+  description: Joi.string()
+    .min(blockConstants.minDescriptionLength)
+    .max(blockConstants.maxDescriptionLength)
+    .trim()
+    .required()
+});
+
 export const blockJoiSchema = Joi.object().keys({
   customId: joiSchemas.uuidSchema,
   name: Joi.string()
@@ -118,8 +129,9 @@ export const blockJoiSchema = Joi.object().keys({
     .min(blockConstants.minLinkedBlocksCount)
     .max(blockConstants.maxLinkedBlocksCount),
   subTasks: Joi.array()
-    .min()
-    .max(),
+    .items(subTasksSchema)
+    .min(blockConstants.minSubTasksLength)
+    .max(blockConstants.maxSubTasksLength),
 
   // TODO: make a check to make sure this is only checked on orgs or roots
   accessControl: Joi.array()

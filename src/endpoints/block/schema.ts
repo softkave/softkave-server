@@ -27,14 +27,14 @@ const blockSchema = `
     createdAt: Float!
   }
 
-  type subTasks{
-    customId: String! 
-    description: String 
+  type SubTask{
+    customId: String
+    description: String
   }
 
-  input subTasksInput{
-    customId: String! 
-    description: String 
+  input SubTaskInput{
+    customId: String!
+    description: String!
   }
 
   type AccessControl {
@@ -111,7 +111,7 @@ const blockSchema = `
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     linkedBlocks: [LinkedBlockInput]
-    subTasks: [subTasksInput]
+    subTasks: [SubTaskInput]
     groups: [String]
     projects: [String]
     tasks: [String]
@@ -134,7 +134,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     linkedBlocks: [LinkedBlockInput]
-    subTasks: [subTasksInput]
+    subTasks: [SubTaskInput]
   }
 
   type CollabRequestFrom {
