@@ -57,7 +57,8 @@ const permittedUpdatesInUpdateBlock = [
   "tasks",
   "groupTaskContext",
   "groupProjectContext",
-  "linkedBlocks"
+  "linkedBlocks",
+  "subTasks"
 ];
 
 export interface IUpdateBlockParameters {
