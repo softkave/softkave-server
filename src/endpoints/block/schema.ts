@@ -27,6 +27,16 @@ const blockSchema = `
     createdAt: Float!
   }
 
+  type SubTask{
+    customId: String
+    description: String
+  }
+
+  input SubTaskInput{
+    customId: String!
+    description: String!
+  }
+
   type AccessControl {
     orgId: String
     actionName: String
@@ -73,6 +83,7 @@ const blockSchema = `
     groupProjectContext: [String]
     # accessControl: [AccessControl]
     # roles: [BlockRole]
+    subTasks: [SubTask]
   }
 
   type BlockResponse {
@@ -101,6 +112,7 @@ const blockSchema = `
     isBacklog: Boolean
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     linkedBlocks: [LinkedBlockInput]
+    subTasks: [SubTaskInput]
     groups: [String]
     projects: [String]
     tasks: [String]
@@ -123,6 +135,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     linkedBlocks: [LinkedBlockInput]
+    subTasks: [SubTaskInput]
   }
 
   type CollabRequestFrom {

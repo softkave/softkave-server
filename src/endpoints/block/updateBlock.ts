@@ -38,6 +38,10 @@ interface IUpdateBlockInput {
     createdBy: string;
     createdAt: number;
   }>;
+  subTasks: Array<{
+    customId: string;
+    description: string;
+  }>;
 }
 
 const permittedUpdatesInUpdateBlock = [
@@ -53,7 +57,8 @@ const permittedUpdatesInUpdateBlock = [
   "tasks",
   "groupTaskContext",
   "groupProjectContext",
-  "linkedBlocks"
+  "linkedBlocks",
+  "subTasks"
 ];
 
 export interface IUpdateBlockParameters {
@@ -84,7 +89,7 @@ async function updateBlock({
   });
 
   const update: Partial<IBlock> = {
-    ...result.data,
+    ...pick(result.data, permittedUpdatesInUpdateBlock),
     updatedAt: Date.now()
   };
 
@@ -92,7 +97,7 @@ async function updateBlock({
     {
       customId: block.customId
     },
-    pick(update, permittedUpdatesInUpdateBlock)
+    update
   );
 
   if (hasBlockParentsChanged(block, update)) {
