@@ -33,6 +33,11 @@ export const linkedBlocks = {
   createdAt: Number
 };
 
+export interface ISubTask {
+  customId: string;
+  description: string;
+}
+
 export const subTasks = {
   customId: String,
   description: String
@@ -59,6 +64,7 @@ export interface IBlock {
   groupTaskContext: string[];
   groupProjectContext: string[];
   roles: IBlockRole[];
+  subTasks: ISubTask[];
 }
 
 const blockSchema = {
