@@ -166,13 +166,15 @@ async function addCollaborator({
       You have been invited by ${user.name} to collaborate in ${block.name}.
     `;
 
+    // TODO: Define type
     return {
       customId: request.customId,
       from: {
         userId: user.customId,
         name: user.name,
         blockId: block.customId,
-        blockName: block.name
+        blockName: block.name,
+        blockType: block.type
       },
       createdAt: Date.now(),
       body: notificationBody,
