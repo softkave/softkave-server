@@ -1,4 +1,4 @@
-import { IBlock } from "./block";
+import { IBlock } from "../../mongo/block";
 
 export function getImmediateParentID(block: IBlock) {
   if (blockHasParents(block)) {

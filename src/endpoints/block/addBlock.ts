@@ -9,15 +9,13 @@ import {
 } from "../../utils/validationError";
 import addOrgIDToUser from "../user/addOrgIDToUser";
 import { IUserDocument } from "../user/user";
-import accessControlCheck from "./accessControlCheck";
-import { CRUDActionsMap } from "./actions";
 import addBlockToDB from "./addBlockToDB";
 import { IBlockDocument } from "./block";
 import blockError from "./blockError";
 import canReadBlock from "./canReadBlock";
-import { blockConstants, blockFieldNames } from "./constants";
+import { blockConstants } from "./constants";
 import { blockHasParents, getImmediateParentID } from "./utils";
-import { blockJoiSchema, validateBlock } from "./validation";
+import { blockJoiSchema } from "./validation";
 
 const addBlockJoiSchema = Joi.object().keys({
   block: blockJoiSchema
@@ -36,21 +34,11 @@ async function addBlock({
   block,
   accessControlModel
 }: IAddBlockParameters) {
-  // block = validateBlock(block);
   let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
 
   if (validatedBlock.type === blockConstants.blockTypes.root) {
     throw blockError.invalidBlockType;
   }
-
-  // if (validatedBlock.type !== blockConstants.blockTypes.org) {
-  //   await accessControlCheck({
-  //     user,
-  //     block: validatedBlock,
-  //     accessControlModel,
-  //     CRUDActionName: CRUDActionsMap.CREATE
-  //   });
-  // }
 
   if (validatedBlock.type === blockConstants.blockTypes.org) {
     const result = await addBlockToDB({
@@ -71,7 +59,6 @@ async function addBlock({
     throw new OperationError(
       validationErrorFields.dataInvalid,
       validationErrorMessages.dataInvalid
-      // blockFieldNames.parents
     );
   }
 

@@ -1,5 +1,5 @@
+import { IBlock } from "../../mongo/block";
 import OperationError from "../../utils/OperationError";
-import { IBlock } from "./block";
 
 const blockErrorMessages = {
   invalidBlockType: "Invalid block type",

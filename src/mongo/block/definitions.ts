@@ -26,7 +26,7 @@ export const blockRoleSchema = {
   createdAt: String
 };
 
-export const linkedBlocks = {
+export const linkedBlocksSchema = {
   blockId: String,
   reason: String,
   createdBy: String,
@@ -43,6 +43,18 @@ export const subTasks = {
   description: String
 };
 
+const taskCollaborationTypeSchema = {
+  collaborationType: String,
+  completedAt: Number,
+  completedBy: String
+};
+
+export interface ITaskCollaborationType {
+  collaborationType: "individual" | "collective";
+  completedAt?: number;
+  completedBy?: string;
+}
+
 export interface IBlock {
   customId: string;
   name: string;
@@ -55,6 +67,7 @@ export interface IBlock {
   type: string;
   parents: string[];
   createdBy: string;
+  taskCollaborationType: ITaskCollaborationType;
   taskCollaborators: ITaskCollaborator[];
   priority: string;
   isBacklog: boolean;
@@ -103,12 +116,13 @@ const blockSchema = {
     type: String,
     index: true
   },
+  taskCollaborationType: taskCollaborationTypeSchema,
   taskCollaborators: {
     type: [blockTaskCollaboratorsDataSchema],
     index: true
   },
   linkedBlocks: {
-    type: [linkedBlocks]
+    type: [linkedBlocksSchema]
   },
   subTasks: {
     type: [subTasks]

@@ -61,6 +61,18 @@ const blockSchema = `
     createdAt: String
   }
 
+  type TaskCollaborationType {
+    collaborationType: String
+    completedAt: Number
+    completedBy: String
+  }
+
+  input TaskCollaborationTypeInput {
+    collaborationType: String
+    completedAt: Number
+    completedBy: String
+  }
+
   type Block {
     customId: String
     name: String
@@ -72,6 +84,7 @@ const blockSchema = `
     type: String
     parents: [String]
     createdBy: String
+    taskCollaborationType: TaskCollaborationType
     taskCollaborators: [BlockTaskCollaboratorData]
     linkedBlocks: [LinkedBlock]
     priority: String
@@ -110,6 +123,7 @@ const blockSchema = `
     parents: [String!]
     priority: String
     isBacklog: Boolean
+    taskCollaborationType: TaskCollaborationTypeInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     linkedBlocks: [LinkedBlockInput]
     subTasks: [SubTaskInput]

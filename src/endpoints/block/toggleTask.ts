@@ -8,7 +8,7 @@ import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 
-// TODO: define any types
+// TODO: define the any types
 export interface IToggleTaskParameters {
   block: IBlockDocument;
   data: any;
@@ -29,7 +29,6 @@ async function toggleTask({
   accessControlModel
 }: IToggleTaskParameters) {
   const result = validate({ data }, toggleTaskJoiSchema);
-  data = result.data;
 
   await accessControlCheck({
     user,
@@ -38,23 +37,36 @@ async function toggleTask({
     actionName: blockActionsMap.TOGGLE_TASK
   });
 
-  await blockModel.model.updateOne(
-    {
-      customId: block.customId,
-      type: blockConstants.blockTypes.task,
+  let blockQuery: any = {
+    customId: block.customId,
+    type: blockConstants.blockTypes.task
+  };
+  let updateQuery = null;
+  const isCompleted = Boolean(result.data);
+  const now = Date.now();
+
+  if (block.taskCollaborationType.collaborationType === "collective") {
+    updateQuery = {
+      taskCollaborationType: {
+        completedAt: isCompleted ? now : null,
+        completedBy: isCompleted ? user.customId : null
+      }
+    };
+  } else {
+    blockQuery = {
+      ...blockQuery,
       taskCollaborators: {
         $elemMatch: {
           userId: user.customId
         }
       }
-    },
-    {
-      "taskCollaborators.$.completedAt": data ? Date.now() : null
-    },
-    {
-      fields: "customId"
-    }
-  );
+    };
+    updateQuery = {
+      "taskCollaborators.$.completedAt": isCompleted ? now : null
+    };
+  }
+
+  await blockModel.model.updateOne(blockQuery, updateQuery);
 }
 
 export default toggleTask;
