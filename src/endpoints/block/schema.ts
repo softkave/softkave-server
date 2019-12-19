@@ -63,13 +63,13 @@ const blockSchema = `
 
   type TaskCollaborationType {
     collaborationType: String
-    completedAt: Number
+    completedAt: Float
     completedBy: String
   }
 
   input TaskCollaborationTypeInput {
     collaborationType: String
-    completedAt: Number
+    completedAt: Float
     completedBy: String
   }
 
@@ -141,6 +141,7 @@ const blockSchema = `
     color: String
     priority: String
     isBacklog: Boolean
+    taskCollaborationType: TaskCollaborationTypeInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     parents: [String!]
     groups: [String]

@@ -44,7 +44,7 @@ export const subTasks = {
 };
 
 const taskCollaborationTypeSchema = {
-  collaborationType: String,
+  collaborationType: { type: String, default: "collective" },
   completedAt: Number,
   completedBy: String
 };
