@@ -1,5 +1,6 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { ITaskCollaborator } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
@@ -7,6 +8,7 @@ import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
 import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
+import { isUserAssignedToTask } from "./utils";
 
 // TODO: define the any types
 export interface IToggleTaskParameters {
@@ -53,17 +55,31 @@ async function toggleTask({
       }
     };
   } else {
-    blockQuery = {
-      ...blockQuery,
-      taskCollaborators: {
-        $elemMatch: {
-          userId: user.customId
+    if (isUserAssignedToTask(block, user)) {
+      const newTaskCollaborator: ITaskCollaborator = {
+        userId: user.customId,
+        completedAt: isCompleted ? now : null,
+        assignedBy: user.customId,
+        assignedAt: now
+      };
+      updateQuery = {
+        $push: {
+          taskCollaborators: newTaskCollaborator
         }
-      }
-    };
-    updateQuery = {
-      "taskCollaborators.$.completedAt": isCompleted ? now : null
-    };
+      };
+    } else {
+      blockQuery = {
+        ...blockQuery,
+        taskCollaborators: {
+          $elemMatch: {
+            userId: user.customId
+          }
+        }
+      };
+      updateQuery = {
+        "taskCollaborators.$.completedAt": isCompleted ? now : null
+      };
+    }
   }
 
   await blockModel.model.updateOne(blockQuery, updateQuery);
