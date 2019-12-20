@@ -21,7 +21,6 @@
     "@types/express-graphql": "^0.8.0",
     "@types/express-jwt": "0.0.42",
     "@types/graphql": "^14.2.2",
-    "@types/jest": "^24.0.15",
     "@types/joi": "^14.3.3",
     "@types/lodash": "^4.14.136",
     "@types/mongoose": "^5.5.8",
@@ -53,6 +52,7 @@
     "winston-transport": "4.3.0"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.23",
     "foreman": "^3.0.1",
     "jest": "^24.9.0",
     "nodemon": "^1.18.4",

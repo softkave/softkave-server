@@ -1,3 +1,4 @@
+import { IBlock } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import OperationError from "../../utils/OperationError";
@@ -6,7 +7,6 @@ import {
   validationErrorMessages
 } from "../../utils/validationError";
 import { IUserDocument } from "../user/user";
-import { IBlock } from "./block";
 import { blockErrorFields, getBlockExistsErrorMessage } from "./blockError";
 import blockExists from "./blockExists";
 import { blockFieldNames } from "./constants";
@@ -27,7 +27,6 @@ async function addBlockToDB({
       throw new OperationError(
         validationErrorFields.dataInvalid,
         validationErrorMessages.dataInvalid
-        // blockFieldNames.customId
       );
     }
 

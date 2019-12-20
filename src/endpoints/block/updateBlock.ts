@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { pick } from "lodash";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
-import { IBlock } from "../../mongo/block";
+import { IBlock, ITaskCollaborationType } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
@@ -20,6 +20,7 @@ interface IUpdateBlockInput {
   color: string;
   priority: string;
   isBacklog: boolean;
+  taskCollaborationType: ITaskCollaborationType;
   taskCollaborators: Array<{
     userId: string;
     completedAt: number;
@@ -51,6 +52,7 @@ const permittedUpdatesInUpdateBlock = [
   "color",
   "priority",
   "isBacklog",
+  "taskCollaborationType",
   "taskCollaborators",
   "groups",
   "projects",

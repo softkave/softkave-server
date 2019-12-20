@@ -2,7 +2,8 @@ import MongoConnection from "./MongoConnection";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const options = {
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 };
 
 const connection = new MongoConnection(MONGODB_URI, options);
