@@ -58,7 +58,7 @@ async function toggleTask({
     if (isUserAssignedToTask(block, user)) {
       const newTaskCollaborator: ITaskCollaborator = {
         userId: user.customId,
-        completedAt: isCompleted ? now : null,
+        completedAt: now,
         assignedBy: user.customId,
         assignedAt: now
       };
