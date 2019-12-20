@@ -28,12 +28,7 @@ export interface IAddBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
-async function addBlock({
-  blockModel,
-  user,
-  block,
-  accessControlModel
-}: IAddBlockParameters) {
+async function addBlock({ blockModel, user, block }: IAddBlockParameters) {
   let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
 
   if (validatedBlock.type === blockConstants.blockTypes.root) {

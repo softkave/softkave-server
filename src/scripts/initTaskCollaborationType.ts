@@ -17,6 +17,7 @@ export default async function initTaskCollaborationType() {
       ]
     };
     const docsCount = await blockModel.model.countDocuments(query).exec();
+
     await blockModel.model
       .updateMany(query, {
         taskCollaborationType: { collaborationType: "collective" }
