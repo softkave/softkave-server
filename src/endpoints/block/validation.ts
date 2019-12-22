@@ -77,7 +77,9 @@ export const subTasksSchema = Joi.object().keys({
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
     .trim()
-    .required()
+    .required(),
+  completedBy: Joi.string().uuid(),
+  completedAt: Joi.number()
 });
 
 export const taskCollaborationTypeSchema = Joi.object().keys({

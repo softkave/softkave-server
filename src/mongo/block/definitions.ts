@@ -36,11 +36,15 @@ export const linkedBlocksSchema = {
 export interface ISubTask {
   customId: string;
   description: string;
+  completedBy: string;
+  completedAt: number;
 }
 
 export const subTasks = {
   customId: String,
-  description: String
+  description: String,
+  completedBy: String,
+  completedAt: Number
 };
 
 const taskCollaborationTypeSchema = {

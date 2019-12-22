@@ -42,6 +42,8 @@ interface IUpdateBlockInput {
   subTasks: Array<{
     customId: string;
     description: string;
+    completedBy: string;
+    completedAt: number;
   }>;
 }
 

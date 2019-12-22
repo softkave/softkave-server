@@ -30,11 +30,15 @@ const blockSchema = `
   type SubTask{
     customId: String
     description: String
+    completedBy: String!
+    completedAt: Float!
   }
 
   input SubTaskInput{
     customId: String!
     description: String!
+    completedBy: String!
+    completedAt: Float!
   }
 
   type AccessControl {
