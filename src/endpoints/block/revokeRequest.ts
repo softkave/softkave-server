@@ -1,14 +1,14 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import { validate } from "../../utils/joi-utils";
 import notificationError from "../../utils/notificationError";
-import { joiSchemas, validators } from "../../utils/validation-utils";
+import { joiSchemas } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 
 export interface IRevokeRequestParameters {
   request: string;

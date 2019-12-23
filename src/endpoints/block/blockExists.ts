@@ -1,7 +1,7 @@
 import Joi from "joi";
+import { IBlock } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
-import { IBlock } from "../../mongo/block";
 import { blockJoiSchema } from "./validation";
 
 export interface IBlockExistsParameters {

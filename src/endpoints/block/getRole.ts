@@ -1,10 +1,10 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import { validate } from "../../utils/joi-utils";
-import { IBlockDocument } from "./block";
 import blockError from "./blockError";
 import { getRootParentID } from "./utils";
-import { blockParamSchema, roleNameSchema } from "./validation";
+import { roleNameSchema } from "./validation";
 
 export interface IGetRoleParameters {
   accessControlModel: AccessControlModel;

@@ -1,19 +1,17 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
-import { ITaskCollaborator } from "../../mongo/block";
+import { IBlockDocument, ITaskCollaborator } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { isUserAssignedToTask } from "./utils";
 
-// TODO: define the any types
 export interface IToggleTaskParameters {
   block: IBlockDocument;
-  data: any;
+  data: boolean;
   blockModel: BlockModel;
   user: IUserDocument;
   accessControlModel: AccessControlModel;
@@ -39,48 +37,49 @@ async function toggleTask({
     actionName: blockActionsMap.TOGGLE_TASK
   });
 
-  let blockQuery: any = {
+  const blockQuery: any = {
     customId: block.customId,
     type: blockConstants.blockTypes.task
   };
-  let updateQuery = null;
+
   const isCompleted = Boolean(result.data);
   const now = Date.now();
+  let updateQuery: any = {
+    taskCollaborationData: {
+      ...block.taskCollaborationData,
+      completedAt: isCompleted ? now : null,
+      completedBy: isCompleted ? user.customId : null
+    }
+  };
 
-  if (block.taskCollaborationType.collaborationType === "collective") {
+  if (!isUserAssignedToTask(block, user)) {
+    const newTaskCollaborator: ITaskCollaborator = {
+      userId: user.customId,
+      assignedBy: user.customId,
+      assignedAt: now
+    };
+
     updateQuery = {
-      taskCollaborationType: {
-        ...block.taskCollaborationType,
-        completedAt: isCompleted ? now : null,
-        completedBy: isCompleted ? user.customId : null
+      ...updateQuery,
+      $push: {
+        taskCollaborators: newTaskCollaborator
       }
     };
-  } else {
-    if (isUserAssignedToTask(block, user)) {
-      blockQuery = {
-        ...blockQuery,
-        taskCollaborators: {
-          $elemMatch: {
-            userId: user.customId
-          }
-        }
-      };
-      updateQuery = {
-        "taskCollaborators.$.completedAt": isCompleted ? now : null
-      };
-    } else {
-      const newTaskCollaborator: ITaskCollaborator = {
-        userId: user.customId,
-        completedAt: now,
-        assignedBy: user.customId,
-        assignedAt: now
-      };
-      updateQuery = {
-        $push: {
-          taskCollaborators: newTaskCollaborator
-        }
-      };
-    }
+  }
+
+  const subTasks = block.subTasks;
+
+  if (Array.isArray(subTasks) && subTasks.length > 0) {
+    const newSubTasks = subTasks.map(subTask => ({
+      ...subTask,
+      completedAt: isCompleted ? null : now,
+      completedBy: isCompleted ? null : user.customId
+    }));
+
+    updateQuery = {
+      ...updateQuery,
+      subTasks: newSubTasks
+    };
   }
 
   await blockModel.model.updateOne(blockQuery, updateQuery);

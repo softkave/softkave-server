@@ -82,10 +82,10 @@ export const subTasksSchema = Joi.object().keys({
   completedAt: Joi.number()
 });
 
-export const taskCollaborationTypeSchema = Joi.object().keys({
+export const taskCollaborationDataSchema = Joi.object().keys({
   collaborationType: Joi.string()
     .lowercase()
-    .valid(blockConstants.taskCollaborationType),
+    .valid(blockConstants.taskCollaborationData),
   completedAt: Joi.number().allow(null),
   completedBy: Joi.string()
     .uuid()
@@ -123,7 +123,7 @@ export const blockJoiSchema = Joi.object().keys({
     .max(blockConstants.maxParentsLength),
 
   createdBy: joiSchemas.uuidSchema,
-  taskCollaborationType: taskCollaborationTypeSchema,
+  taskCollaborationData: taskCollaborationDataSchema,
   taskCollaborators: taskCollaboratorsSchema,
   priority: Joi.string()
     .lowercase()

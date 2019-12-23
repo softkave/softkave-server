@@ -1,10 +1,9 @@
 import randomColor from "randomcolor";
 import uuid from "uuid/v4";
-
+import { IBlock } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import addBlockTodDB from "../block/addBlockToDB";
 import { IUserDocument } from "../user/user";
-import { IBlock } from "../../mongo/block";
 import { blockConstants } from "./constants";
 
 export interface ICreateRootBlockParameters {
