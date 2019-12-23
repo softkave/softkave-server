@@ -61,7 +61,8 @@ const blockConstants = {
   minRoles: 1,
   maxRoles: 10,
   minSubTasksLength: 0,
-  maxSubTasksLength: 20
+  maxSubTasksLength: 20,
+  taskCollaborationType: ["individual", "collective"]
 };
 
 const blockTaskCollaboratorFieldNames = {
