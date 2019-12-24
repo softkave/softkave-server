@@ -1,10 +1,10 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { getImmediateParentID } from "./utils";
 

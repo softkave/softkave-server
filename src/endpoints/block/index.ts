@@ -1,10 +1,10 @@
 import { IBaseOperationParameters } from "..";
+import { IBlock } from "../../mongo/block";
 import { IUser } from "../user/user";
 import { insertUserCredentials, wrapGraphQLOperation } from "../utils";
 import addBlock from "./addBlock";
 import addCollaborators from "./addCollaborators";
 import assignRole from "./assignRole";
-import { IBlock } from "../../mongo/block";
 import createRootBlock from "./createRootBlock";
 import deleteBlock from "./deleteBlock";
 import getAssignedTasks from "./getAssignedTasks";

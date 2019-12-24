@@ -1,18 +1,23 @@
 import Joi from "joi";
 import { pick } from "lodash";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
-import { IBlock, ITaskCollaborationType } from "../../mongo/block";
+import {
+  IBlock,
+  IBlockDocument,
+  ISubTask,
+  ITaskCollaborationData,
+  ITaskCollaborator
+} from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import transferBlock from "./transferBlock";
 import { getImmediateParentID, hasBlockParentsChanged } from "./utils";
 import { blockJoiSchema } from "./validation";
 
-// TODO: define all any types
+// TODO: move type to a type file
 interface IUpdateBlockInput {
   name: string;
   description: string;
@@ -20,13 +25,8 @@ interface IUpdateBlockInput {
   color: string;
   priority: string;
   isBacklog: boolean;
-  taskCollaborationType: ITaskCollaborationType;
-  taskCollaborators: Array<{
-    userId: string;
-    completedAt: number;
-    assignedBy: string;
-    assignedAt: number;
-  }>;
+  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborators: ITaskCollaborator[];
   parents: string[];
   groups: string[];
   projects: string[];
@@ -39,10 +39,7 @@ interface IUpdateBlockInput {
     createdBy: string;
     createdAt: number;
   }>;
-  subTasks: Array<{
-    customId: string;
-    description: string;
-  }>;
+  subTasks: ISubTask[];
 }
 
 const permittedUpdatesInUpdateBlock = [
@@ -52,7 +49,7 @@ const permittedUpdatesInUpdateBlock = [
   "color",
   "priority",
   "isBacklog",
-  "taskCollaborationType",
+  "taskCollaborationData",
   "taskCollaborators",
   "groups",
   "projects",
@@ -94,6 +91,23 @@ async function updateBlock({
     ...pick(result.data, permittedUpdatesInUpdateBlock),
     updatedAt: Date.now()
   };
+
+  const subTasks = block.subTasks;
+  const now = Date.now();
+
+  if (Array.isArray(subTasks) && subTasks.length > 0) {
+    const areSubTasksCompleted = !!!subTasks.find(
+      subTask => !!!subTask.completedAt
+    );
+
+    if (areSubTasksCompleted !== !!update.taskCollaborationData.completedAt) {
+      update.taskCollaborationData = {
+        ...update.taskCollaborationData,
+        completedAt: areSubTasksCompleted ? now : null,
+        completedBy: areSubTasksCompleted ? user.customId : null
+      };
+    }
+  }
 
   await blockModel.model.updateOne(
     {
