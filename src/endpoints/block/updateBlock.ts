@@ -17,7 +17,7 @@ import transferBlock from "./transferBlock";
 import { getImmediateParentID, hasBlockParentsChanged } from "./utils";
 import { blockJoiSchema } from "./validation";
 
-// TODO: define all any types
+// TODO: move type to a type file
 interface IUpdateBlockInput {
   name: string;
   description: string;

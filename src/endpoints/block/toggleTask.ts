@@ -1,6 +1,12 @@
 import Joi from "joi";
+import pick from "lodash/pick";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
-import { IBlockDocument, ITaskCollaborator } from "../../mongo/block";
+import {
+  IBlockDocument,
+  ITaskCollaborator,
+  mongoSubTaskSchema,
+  mongoTaskCollaborationDataSchema
+} from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
@@ -8,6 +14,11 @@ import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
 import { blockConstants } from "./constants";
 import { isUserAssignedToTask } from "./utils";
+
+const taskCollaborationDataFields = Object.keys(
+  mongoTaskCollaborationDataSchema
+);
+const subTaskFields = Object.keys(mongoSubTaskSchema);
 
 export interface IToggleTaskParameters {
   block: IBlockDocument;
@@ -46,32 +57,33 @@ async function toggleTask({
   const now = Date.now();
   let updateQuery: any = {
     taskCollaborationData: {
-      ...block.taskCollaborationData,
+      ...pick(block.taskCollaborationData, taskCollaborationDataFields),
       completedAt: isCompleted ? now : null,
       completedBy: isCompleted ? user.customId : null
     }
   };
 
-  if (!isUserAssignedToTask(block, user)) {
-    const newTaskCollaborator: ITaskCollaborator = {
-      userId: user.customId,
-      assignedBy: user.customId,
-      assignedAt: now
-    };
+  // TODO: THINK ON: should we auto-assign a task to the user if he/she toggles it?
+  // if (!isUserAssignedToTask(block, user)) {
+  //   const newTaskCollaborator: ITaskCollaborator = {
+  //     userId: user.customId,
+  //     assignedBy: user.customId,
+  //     assignedAt: now
+  //   };
 
-    updateQuery = {
-      ...updateQuery,
-      $push: {
-        taskCollaborators: newTaskCollaborator
-      }
-    };
-  }
+  //   updateQuery = {
+  //     ...updateQuery,
+  //     $push: {
+  //       taskCollaborators: newTaskCollaborator
+  //     }
+  //   };
+  // }
 
   const subTasks = block.subTasks;
 
   if (Array.isArray(subTasks) && subTasks.length > 0) {
     const newSubTasks = subTasks.map(subTask => ({
-      ...subTask,
+      ...pick(subTask, subTaskFields),
       completedAt: isCompleted ? null : now,
       completedBy: isCompleted ? null : user.customId
     }));

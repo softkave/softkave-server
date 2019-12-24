@@ -12,6 +12,7 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
+import taskCollaborationDataScript from "./scripts/taskCollaborationData";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -89,6 +90,7 @@ connection.wait().then(async () => {
   await notificationModel.model.ensureIndexes();
 
   // Scripts
+  taskCollaborationDataScript();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

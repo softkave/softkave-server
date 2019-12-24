@@ -40,14 +40,14 @@ export interface ISubTask {
   completedAt: number;
 }
 
-export const subTasks = {
+export const mongoSubTaskSchema = {
   customId: String,
   description: String,
   completedBy: String,
   completedAt: Number
 };
 
-const taskCollaborationDataSchema = {
+export const mongoTaskCollaborationDataSchema = {
   collaborationType: { type: String, default: "collective" }, // "individual" OR "collective"
   completedAt: Number,
   completedBy: String
@@ -71,6 +71,9 @@ export interface IBlock {
   type: string;
   parents: string[];
   createdBy: string;
+
+  taskCollaborationType: ITaskCollaborationData; // deprecate
+
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
   priority: string;
@@ -120,7 +123,11 @@ const blockSchema = {
     type: String,
     index: true
   },
-  taskCollaborationData: taskCollaborationDataSchema,
+
+  // deprecate
+  taskCollaborationType: mongoTaskCollaborationDataSchema,
+
+  taskCollaborationData: mongoTaskCollaborationDataSchema,
   taskCollaborators: {
     type: [blockTaskCollaboratorDataSchema],
     index: true
@@ -129,7 +136,7 @@ const blockSchema = {
     type: [linkedBlocksSchema]
   },
   subTasks: {
-    type: [subTasks]
+    type: [mongoSubTaskSchema]
   },
   priority: String,
   isBacklog: Boolean,

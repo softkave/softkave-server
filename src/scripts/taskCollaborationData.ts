@@ -1,8 +1,14 @@
-import { IBlockDocument } from "../mongo/block";
+import pick from "lodash/pick";
+import {
+  blockTaskCollaboratorDataSchema,
+  IBlockDocument
+} from "../mongo/block";
 import BlockModel from "../mongo/block/BlockModel";
 import connection from "../mongo/defaultConnection";
 
-export default async function taskCollaborationData() {
+const taskCollaboratorFields = Object.keys(blockTaskCollaboratorDataSchema);
+
+export default async function taskCollaborationDataScript() {
   // convert taskCollaborationType to taskCollaborationData
   // move completedAt from taskCollaborators to taskCollaborationData
   // clear taskCollaborationType
@@ -21,37 +27,41 @@ export default async function taskCollaborationData() {
       doc !== null;
       doc = await cursor.next()
     ) {
-      // @ts-ignore
-      doc.taskCollaborationData = doc.taskCollaborationType;
+      const update: any = {};
+      update.taskCollaborationData = {
+        ...doc.taskCollaborationType,
+        collaborationType: "collective"
+      };
 
-      // @ts-ignore
-      doc.taskCollaborationType = null;
       const hasCollaborators =
         Array.isArray(doc.taskCollaborators) &&
         doc.taskCollaborators.length > 0;
 
       if (hasCollaborators) {
-        const collaborators = doc.taskCollaborators || [];
+        const collaborators = doc.taskCollaborators;
         collaborators.sort(
           (collaborator1, collaborator2) =>
             Number(collaborator1.completedAt || 0) -
             Number(collaborator2.completedAt || 0)
         );
 
-        doc.taskCollaborators = collaborators.map(collaborator => ({
-          ...collaborator,
-          completedAt: null
+        update.taskCollaborationData.completedAt = collaborators[0].completedAt;
+        update.taskCollaborationData.completedBy = collaborators[0].userId;
+        update.taskCollaborators = collaborators.map(collaborator => ({
+          ...pick(collaborator, taskCollaboratorFields)
+          // completedAt: null
         }));
-
-        doc.taskCollaborationData.completedAt = collaborators[0].completedAt;
-        doc.taskCollaborationData.completedBy = collaborators[0].userId;
-      } else {
-        doc.taskCollaborators = [];
       }
 
-      await doc.save();
+      await blockModel.model
+        .updateOne({ customId: doc.customId }, update)
+        .exec();
       docsCount++;
     }
+
+    await blockModel.model
+      .updateMany({ type: "task" }, { $unset: { taskCollaborationType: "" } })
+      .exec();
 
     console.log(`updated ${docsCount} doc(s)`);
     console.log(`script - ${__filename} - completed`);
