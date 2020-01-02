@@ -1,5 +1,6 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import OperationError from "../../utils/OperationError";
@@ -10,7 +11,6 @@ import {
 import addOrgIDToUser from "../user/addOrgIDToUser";
 import { IUserDocument } from "../user/user";
 import addBlockToDB from "./addBlockToDB";
-import { IBlockDocument } from "./block";
 import blockError from "./blockError";
 import canReadBlock from "./canReadBlock";
 import { blockConstants } from "./constants";
@@ -28,12 +28,7 @@ export interface IAddBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
-async function addBlock({
-  blockModel,
-  user,
-  block,
-  accessControlModel
-}: IAddBlockParameters) {
+async function addBlock({ blockModel, user, block }: IAddBlockParameters) {
   let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
 
   if (validatedBlock.type === blockConstants.blockTypes.root) {

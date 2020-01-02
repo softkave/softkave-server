@@ -1,5 +1,6 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import OperationError from "../../utils/OperationError";
@@ -7,11 +8,10 @@ import { indexArray } from "../../utils/utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import { blockErrorFields, blockErrorMessages } from "./blockError";
 import { blockConstants } from "./constants";
 import getBlockRoles from "./getBlocksAccessControlData";
-import { roleNameArraySchema, validateRoleNameArray } from "./validation";
+import { roleNameArraySchema } from "./validation";
 
 // TODO: define types
 function indexRoles(roles: any) {

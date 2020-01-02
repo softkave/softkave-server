@@ -50,8 +50,25 @@ async function addBlockToDB({
       }
     }
 
+    const subTasks = block.subTasks;
+    const now = Date.now();
+
+    if (Array.isArray(subTasks) && subTasks.length > 0) {
+      const areSubTasksCompleted = !!!subTasks.find(
+        subTask => !!!subTask.completedAt
+      );
+
+      if (areSubTasksCompleted !== !!block.taskCollaborationData.completedAt) {
+        block.taskCollaborationData = {
+          ...block.taskCollaborationData,
+          completedAt: areSubTasksCompleted ? now : null,
+          completedBy: areSubTasksCompleted ? user.customId : null
+        };
+      }
+    }
+
     block.createdBy = user.customId;
-    block.createdAt = Date.now();
+    block.createdAt = now;
 
     // TODO: Think on, where is the right place to lowercase names?
     // Joi, logic or Mongo schema?

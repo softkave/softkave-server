@@ -1,6 +1,7 @@
 import Joi from "joi";
 import moment from "moment";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
 import appInfo from "../../res/appInfo";
@@ -15,7 +16,6 @@ import { notificationConstants } from "../notification/constants";
 import { IUser, IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import sendCollabRequestEmail from "./sendCollabRequestEmail";
 import { addCollaboratorCollaboratorsSchema } from "./validation";
 

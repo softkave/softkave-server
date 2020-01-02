@@ -1,12 +1,9 @@
-import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import NotificationModel from "../../mongo/notification/NotificationModel";
-import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
-import { blockParamSchema } from "./validation";
 
 export interface IGetBlockCollaborationRequestsParameters {
   block: IBlockDocument;
@@ -15,16 +12,12 @@ export interface IGetBlockCollaborationRequestsParameters {
   accessControlModel: AccessControlModel;
 }
 
-const getBlockCollabRequestsJoiSchema = Joi.object().keys({});
-
 async function getBlockCollabRequests({
   block,
   notificationModel,
   user,
   accessControlModel
 }: IGetBlockCollaborationRequestsParameters) {
-  // const result = validate({  }, getBlockCollabRequestsJoiSchema);
-
   await accessControlCheck({
     user,
     block,

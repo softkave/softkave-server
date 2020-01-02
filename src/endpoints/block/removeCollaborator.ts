@@ -1,18 +1,17 @@
 import Joi from "joi";
 import uuid from "uuid/v4";
-
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
 import { validate } from "../../utils/joi-utils";
-import { joiSchemas, validators } from "../../utils/validation-utils";
+import { joiSchemas } from "../../utils/validation-utils";
 import { notificationConstants } from "../notification/constants";
 import deleteOrgIDFromUser from "../user/deleteOrgIDFromUser";
 import { IUserDocument } from "../user/user";
 import userError from "../user/userError";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 
 export interface IRemoveCollaboratorParameters {
   block: IBlockDocument;
@@ -71,11 +70,7 @@ async function removeCollaborator({
       },
       createdAt: Date.now(),
       body: `
-        Hi ${
-          fetchedCollaborator.name
-        }, we're sorry to inform you that you have been removed from ${
-        ownerBlock.name
-      }. Goodluck!
+        Hi ${fetchedCollaborator.name}, we're sorry to inform you that you have been removed from ${ownerBlock.name}. Goodluck!
       `,
       to: {
         email: fetchedCollaborator.email,
