@@ -8,6 +8,7 @@ import changePasswordWithToken from "./changePasswordWithToken";
 import forgotPassword from "./forgotPassword";
 import getChangePasswordTokenData from "./getChangePasswordTokenData";
 import getCollaborationRequests from "./getCollaborationRequests";
+import getSessionDetails from "./getSessionDetails";
 import getUserData from "./getUserData";
 import login from "./login";
 import respondToCollaborationRequest from "./respondToCollaborationRequest";
@@ -16,7 +17,6 @@ import signup from "./signup";
 import updateCollaborationRequest from "./updateCollaborationRequest";
 import updateUser from "./updateUser";
 import userExists from "./userExists";
-import getSessionDetails from "./getSessionDetails";
 
 // TODO: define all any types
 class UserOperations {

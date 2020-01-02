@@ -67,9 +67,10 @@ const userSchema = `
   }
 
   type SessionDetails {
-    organizationsCount: float
-    notificationsCount: float
-    assignedTasksCount: float
+    errors: [Error]
+    organizationsCount: Float
+    notificationsCount: Float
+    assignedTasksCount: Float
   }
 
   type UserQuery {

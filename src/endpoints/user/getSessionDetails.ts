@@ -4,13 +4,13 @@ import { IUserDocument } from "./user";
 
 export interface IGetSessionDetailsProps {
   user: IUserDocument;
-  notifications: NotificationModel;
+  notificationModel: NotificationModel;
   blockModel: BlockModel;
 }
 
 async function getSessionDetails({
   user,
-  notifications,
+  notificationModel,
   blockModel
 }: IGetSessionDetailsProps) {
   // TODO: add unseen assigned tasks count
@@ -18,15 +18,15 @@ async function getSessionDetails({
   // TODO: don't wait for one request to complete before we start another one
   // We'll implement these ones later
 
-  const notificationsCount = await notifications.model
-    .count({
+  const notificationsCount = await notificationModel.model
+    .estimatedDocumentCount({
       "to.email": user.email
     })
     .lean()
     .exec();
 
   const assignedTaskCount = await blockModel.model
-    .count({
+    .estimatedDocumentCount({
       ["taskCollaborators.userId"]: user.customId,
       type: "task"
     })
