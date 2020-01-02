@@ -16,6 +16,7 @@ import signup from "./signup";
 import updateCollaborationRequest from "./updateCollaborationRequest";
 import updateUser from "./updateUser";
 import userExists from "./userExists";
+import getSessionDetails from "./getSessionDetails";
 
 // TODO: define all any types
 class UserOperations {
@@ -31,6 +32,7 @@ class UserOperations {
   public getCollaborationRequests: any;
   public getUserData: any;
   public getChangePasswordTokenData: any;
+  public getSessionDetails: any;
 
   constructor(staticParams: any) {
     const middlewares = [insertUserCredentials];
@@ -83,6 +85,12 @@ class UserOperations {
     this.getChangePasswordTokenData = wrapGraphQLOperation(
       getChangePasswordTokenData,
       staticParams
+    );
+
+    this.getSessionDetails = wrapGraphQLOperation(
+      getSessionDetails,
+      staticParams,
+      middlewares
     );
   }
 }

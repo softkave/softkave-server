@@ -1,43 +1,40 @@
-import NotificationModel from "../../mongo/notification/NotificationModel";
 import BlockModel from "../../mongo/block/BlockModel";
-import UserModel from "../../mongo/user/UserModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
 import { IUserDocument } from "./user";
-import { blockConstants } from "./constants";
 
-
-export interface IGetSessionDetails{
+export interface IGetSessionDetailsProps {
   user: IUserDocument;
   notifications: NotificationModel;
-  organizations: UserModel;
-  assignedTasks: BlockModel;
+  blockModel: BlockModel;
 }
-
 
 async function getSessionDetails({
   user,
   notifications,
-  organizations,
-  assignedTasks
-}:IGetSessionDetails) {
-  const notificationsCount = await notifications.model.count({
+  blockModel
+}: IGetSessionDetailsProps) {
+  // TODO: add unseen assigned tasks count
+  // TODO: add unseen notifications count
+  // TODO: don't wait for one request to complete before we start another one
+  // We'll implement these ones later
+
+  const notificationsCount = await notifications.model
+    .count({
       "to.email": user.email
     })
     .lean()
     .exec();
 
-  const assignedTaskCount = await assignedTasks.model.count({
-    ["taskCollaborators.userId"]: user.customId,
-    type: blockConstants.blockTypes.task
-  });
+  const assignedTaskCount = await blockModel.model
+    .count({
+      ["taskCollaborators.userId"]: user.customId,
+      type: "task"
+    })
+    .exec();
 
-  const organizationsCount = await organizations.model
-  .count({
-    orgs:user.orgs
-  })
-  .lean()
-  .exec();
+  const organizationsCount = user.orgs.length;
 
-  return{
+  return {
     notificationsCount,
     assignedTaskCount,
     organizationsCount
