@@ -51,6 +51,10 @@
 - Pagination
 - Limiting sent data, for example, assigned tasks
 - Search
+- Error definitions
+- User validation
+- Subscriptions, web sockets, and push notifications
+- A client SDK
 
 ## Thoughts
 
