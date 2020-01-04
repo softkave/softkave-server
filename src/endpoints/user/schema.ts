@@ -66,6 +66,13 @@ const userSchema = `
     expires: Float
   }
 
+  type SessionDetails {
+    errors: [Error]
+    organizationsCount: Float
+    notificationsCount: Float
+    assignedTasksCount: Float
+  }
+
   type UserQuery {
     userExists (email: String!) : UserExistsResult
     signup (user: UserSignupInput!) : UserQueryResult
@@ -83,6 +90,7 @@ const userSchema = `
     ): ErrorOnlyResponse
     getUserData: UserQueryResult
     getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult
+    getSessionDetails: SessionDetails
   }
 `;
 
