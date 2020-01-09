@@ -44,14 +44,11 @@
 
 ### Questions
 
-{- How do we capture unseen data, like:
-
-- unseen/new assigned tasks
-- unseen notifications
-- unseen organizations, etc.
-  // well, i don't still understand what you mean by unseen data. I saw something online that we have implemented already but i guess it's not a bad idea to check https://hashnode.com/post/how-to-implement-instant-notification-system-using-express-mongo-rest-api-ciibz8fg8019zj3xtzkwfx3hw
-} --
-
+- How do we capture unseen data, like:
+  - unseen/new assigned tasks
+  - unseen notifications
+  - unseen organizations, etc.
+    // well, i don't still understand what you mean by unseen data. I saw something online that we have implemented already but i guess it's not a bad idea to check https://hashnode.com/post/how-to-implement-instant-notification-system-using-express-mongo-rest-api-ciibz8fg8019zj3xtzkwfx3hw
 - Pagination
 - Limiting sent data, for example, assigned tasks
 - Search
