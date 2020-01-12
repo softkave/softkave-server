@@ -30,11 +30,15 @@ const blockSchema = `
   type SubTask{
     customId: String
     description: String
+    completedBy: String
+    completedAt: Float
   }
 
   input SubTaskInput{
     customId: String!
     description: String!
+    completedBy: String
+    completedAt: Float
   }
 
   type AccessControl {
@@ -61,6 +65,18 @@ const blockSchema = `
     createdAt: String
   }
 
+  type TaskCollaborationData {
+    collaborationType: String
+    completedAt: Float
+    completedBy: String
+  }
+
+  input TaskCollaborationDataInput {
+    collaborationType: String
+    completedAt: Float
+    completedBy: String
+  }
+
   type Block {
     customId: String
     name: String
@@ -72,6 +88,7 @@ const blockSchema = `
     type: String
     parents: [String]
     createdBy: String
+    taskCollaborationData: TaskCollaborationData
     taskCollaborators: [BlockTaskCollaboratorData]
     linkedBlocks: [LinkedBlock]
     priority: String
@@ -110,6 +127,7 @@ const blockSchema = `
     parents: [String!]
     priority: String
     isBacklog: Boolean
+    taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     linkedBlocks: [LinkedBlockInput]
     subTasks: [SubTaskInput]
@@ -127,6 +145,7 @@ const blockSchema = `
     color: String
     priority: String
     isBacklog: Boolean
+    taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
     parents: [String!]
     groups: [String]

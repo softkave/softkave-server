@@ -12,6 +12,7 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
+// import taskCollaborationDataScript from "./scripts/taskCollaborationData";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -82,9 +83,14 @@ app.use(handleErrors);
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
-  await userModel.model.init();
-  await blockModel.model.init();
-  await notificationModel.model.init();
+  // TODO: should we move to createIndex?
+  // although createIndex most likely creates the indexes all over again, find out more, to be sure.
+  await userModel.model.ensureIndexes();
+  await blockModel.model.ensureIndexes();
+  await notificationModel.model.ensureIndexes();
+
+  // Scripts
+  // taskCollaborationDataScript();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

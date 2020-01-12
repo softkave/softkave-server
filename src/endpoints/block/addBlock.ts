@@ -1,5 +1,6 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import OperationError from "../../utils/OperationError";
@@ -9,15 +10,12 @@ import {
 } from "../../utils/validationError";
 import addOrgIDToUser from "../user/addOrgIDToUser";
 import { IUserDocument } from "../user/user";
-import accessControlCheck from "./accessControlCheck";
-import { CRUDActionsMap } from "./actions";
 import addBlockToDB from "./addBlockToDB";
-import { IBlockDocument } from "./block";
 import blockError from "./blockError";
 import canReadBlock from "./canReadBlock";
-import { blockConstants, blockFieldNames } from "./constants";
+import { blockConstants } from "./constants";
 import { blockHasParents, getImmediateParentID } from "./utils";
-import { blockJoiSchema, validateBlock } from "./validation";
+import { blockJoiSchema } from "./validation";
 
 const addBlockJoiSchema = Joi.object().keys({
   block: blockJoiSchema
@@ -30,27 +28,12 @@ export interface IAddBlockParameters {
   accessControlModel: AccessControlModel;
 }
 
-async function addBlock({
-  blockModel,
-  user,
-  block,
-  accessControlModel
-}: IAddBlockParameters) {
-  // block = validateBlock(block);
+async function addBlock({ blockModel, user, block }: IAddBlockParameters) {
   let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
 
   if (validatedBlock.type === blockConstants.blockTypes.root) {
     throw blockError.invalidBlockType;
   }
-
-  // if (validatedBlock.type !== blockConstants.blockTypes.org) {
-  //   await accessControlCheck({
-  //     user,
-  //     block: validatedBlock,
-  //     accessControlModel,
-  //     CRUDActionName: CRUDActionsMap.CREATE
-  //   });
-  // }
 
   if (validatedBlock.type === blockConstants.blockTypes.org) {
     const result = await addBlockToDB({
@@ -71,7 +54,6 @@ async function addBlock({
     throw new OperationError(
       validationErrorFields.dataInvalid,
       validationErrorMessages.dataInvalid
-      // blockFieldNames.parents
     );
   }
 

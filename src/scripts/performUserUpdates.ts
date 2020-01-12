@@ -10,7 +10,7 @@ export default async function performUserUpdates() {
 
   const userModel = new UserModel({ connection: connection.getConnection() });
 
-  await userModel.model.init();
+  await userModel.model.ensureIndexes();
 
   const cursor = userModel.model.find({}, "email color").cursor();
   let docsCount = 0;

@@ -1,15 +1,14 @@
 import Joi from "joi";
-
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlockDocument } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
 import { validate } from "../../utils/joi-utils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { CRUDActionsMap } from "./actions";
-import { IBlockDocument } from "./block";
 import { blockConstants } from "./constants";
 import { getParentsLength } from "./utils";
-import { blockTypesSchema, validateBlockTypes } from "./validation";
+import { blockTypesSchema } from "./validation";
 
 export interface IGetBlockChildrenParameters {
   block: IBlockDocument;
@@ -46,9 +45,7 @@ async function getBlockChildren({
     CRUDActionName: CRUDActionsMap.READ
   });
 
-  if (types) {
-    // types = validateBlockTypes(types);
-  } else {
+  if (!types) {
     types = blockConstants.blockTypesArray;
   }
 

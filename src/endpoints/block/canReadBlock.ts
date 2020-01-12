@@ -1,6 +1,6 @@
+import { IBlock } from "../../mongo/block";
 import { IUser } from "../user/user";
 import userError from "../user/userError";
-import { IBlock } from "./block";
 import { blockConstants } from "./constants";
 
 export interface ICanReadBlockParameters {

@@ -1,5 +1,5 @@
+import { IBlock } from "../../mongo/block";
 import { IUserDocument } from "../user/user";
-import { IBlock } from "./block";
 import canReadBlock from "./canReadBlock";
 
 export interface ICanReadMultipleBlocksParameters {

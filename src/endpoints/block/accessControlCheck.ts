@@ -1,9 +1,9 @@
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
+import { IBlock, IBlockDocument } from "../../mongo/block";
 import { IUser, IUserDocument } from "../user/user";
 import userError from "../user/userError";
 import { findRole } from "../user/utils";
 import { blockActionsMap } from "./actions";
-import { IBlock, IBlockDocument } from "./block";
 import canReadBlock from "./canReadBlock";
 import { getRootParentID } from "./utils";
 

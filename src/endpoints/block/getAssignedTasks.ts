@@ -11,10 +11,12 @@ async function getAssignedTasks({
   user,
   blockModel
 }: IGetAssignedTasksParameters) {
-  const blocks = await blockModel.model.find({
-    ["taskCollaborators.userId"]: user.customId,
-    type: blockConstants.blockTypes.task
-  });
+  const blocks = await blockModel.model
+    .find({
+      ["taskCollaborators.userId"]: user.customId,
+      type: blockConstants.blockTypes.task
+    })
+    .exec();
 
   return {
     blocks

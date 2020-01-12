@@ -330,13 +330,6 @@ async function transferBlock(props: ITransferBlockParameters) {
           filter: {
             [`parents.${sourceParentIndex + 1}`]: draggedBlock.customId
           },
-          // update: draggedBlockUpdates.parents.reduce(
-          //   (update: any, id: string, index: number) => {
-          //     update[`parents.${index}`] = id;
-          //     return update;
-          //   },
-          //   {}
-          // )
           update: {
             $pull: {
               parents: sourceBlock.parents.concat(sourceBlock.customId)

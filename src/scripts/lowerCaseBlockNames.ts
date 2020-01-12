@@ -8,7 +8,7 @@ export default async function lowerCaseBlockNames() {
 
   const blockModel = new BlockModel({ connection: connection.getConnection() });
 
-  await blockModel.model.init();
+  await blockModel.model.ensureIndexes();
 
   const cursor = blockModel.model.find({}, "name lowerCasedName").cursor();
   let docsCount = 0;
