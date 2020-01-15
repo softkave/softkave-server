@@ -1,27 +1,28 @@
 import { Request, Response } from "express";
-
-import userError from "../endpoints/user/userError";
-import jwtConstants from "../utils/jwtConstants";
-import serverError from "../utils/serverError";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import {
+  CredentialsExpiredError,
+  InvalidCredentialsError
+} from "../endpoints/user/errors";
+import { ServerError } from "../utils/errors";
+import logger from "../utils/logger";
 
 function handleErrors(err: Error | any, req: Request, res: Response) {
-  if (err.name === jwtConstants.errorTypes.unauthorizedError) {
+  if (err.name === JsonWebTokenError.name) {
     res.status(200).send({
-      errors: [userError.invalidCredentials]
+      errors: [new InvalidCredentialsError()]
     });
-  } else if (err.name === jwtConstants.errorTypes.tokenExpired) {
+  } else if (err.name === TokenExpiredError.name) {
     res.status(200).send({
-      errors: [userError.credentialsExpired]
+      errors: [new CredentialsExpiredError()]
     });
   } else {
     res.status(500).send({
-      errors: [serverError.serverError]
+      errors: [new ServerError()]
     });
   }
 
-  // for debugging purposes
-  // TODO: Log error in database, not console
-  console.error(err);
+  logger.error(err);
 }
 
 export default handleErrors;

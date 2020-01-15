@@ -1,7 +1,7 @@
 import Joi from "joi";
 import moment from "moment";
 import UserModel from "../../mongo/user/UserModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import jwtConstants from "../../utils/jwtConstants";
 import newToken, { IBaseTokenData } from "./newToken";
 import sendChangePasswordEmail from "./sendChangePasswordEmail";

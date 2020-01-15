@@ -1,23 +1,23 @@
+export interface IOperationErrorParameters {
+  message?: string;
+  field?: string;
+  action?: string;
+}
+
 class OperationError extends Error {
   public field: string;
   public message: string;
-  public type: string;
   public action: string;
+  public name = "OperationError";
 
-  constructor(type: string, message: string, field?: string, action?: string) {
-    super(message);
-    // errorDataPath
-    this.field = field;
-    this.name = "OperationError";
+  constructor(p: IOperationErrorParameters = {}) {
+    super(p.message);
 
-    // errorType
-    this.type = type;
+    // error data path
+    this.field = p.field;
 
-    // clientAction
-    this.action = action;
-
-    // errorMessage
-    // value
+    // recommended action for the client
+    this.action = p.action;
   }
 }
 

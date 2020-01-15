@@ -5,13 +5,13 @@ import { IBlockDocument } from "../../mongo/block";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
 import appInfo from "../../res/appInfo";
-import { validate } from "../../utils/joi-utils";
+import { indexArray } from "../../utils/functionUtils";
+import { validate } from "../../utils/joiUtils";
 import {
   notificationErrorFields,
   notificationErrorMessages
 } from "../../utils/notificationError";
 import OperationError from "../../utils/OperationError";
-import { indexArray } from "../../utils/utils";
 import { notificationConstants } from "../notification/constants";
 import { IUser, IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";

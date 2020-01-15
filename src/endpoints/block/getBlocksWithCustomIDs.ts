@@ -1,7 +1,7 @@
 import Joi from "joi";
 import uniq from "lodash/uniq";
 import BlockModel from "../../mongo/block/BlockModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import { IUserDocument } from "../user/user";
 
 const getBlocksWithCustomIDsValidationConstants = {

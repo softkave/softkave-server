@@ -20,7 +20,7 @@ export interface ISettledPromise {
   reason?: any;
 }
 
-const allSettled = (
+const waitOnPromises = (
   promises: IAllSettledPromiseArgument[]
 ): Promise<ISettledPromise[]> => {
   return Promise.all(
@@ -38,4 +38,4 @@ const allSettled = (
   );
 };
 
-export default allSettled;
+export default waitOnPromises;

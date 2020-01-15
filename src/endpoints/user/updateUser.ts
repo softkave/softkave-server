@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 import UserModel from "../../mongo/user/UserModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import { IUserDocument } from "./user";
 import userError from "./userError";
 import { updateUserSchema, validateUpdateUserData } from "./validation";

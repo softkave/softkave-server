@@ -1,7 +1,7 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import { IBlockDocument } from "../../mongo/block";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import blockError from "./blockError";
 import { getRootParentID } from "./utils";
 import { roleNameSchema } from "./validation";

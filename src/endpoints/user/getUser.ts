@@ -1,7 +1,7 @@
 import Joi from "joi";
 import UserModel from "../../mongo/user/UserModel";
-import { validate } from "../../utils/joi-utils";
-import { joiSchemas, validators } from "../../utils/validation-utils";
+import { validate } from "../../utils/joiUtils";
+import { joiSchemas, validators } from "../../utils/validationUtils";
 import userError from "./userError";
 
 export interface IGetUserParameters {

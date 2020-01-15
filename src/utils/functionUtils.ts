@@ -1,7 +1,7 @@
 import get from "lodash/get";
+import logger from "./logger";
 
-// TODO: define types
-function defaultIndexer(data: any, path: string) {
+function defaultIndexer(data: object | any[], path: string) {
   if (path) {
     return get(data, path);
   }
@@ -13,10 +13,13 @@ function defaultReducer(data: any) {
   return data;
 }
 
-function indexArray(arr: any[] = [], { path, indexer, reducer }: any = {}) {
+export function indexArray(
+  arr: any[] = [],
+  { path, indexer, reducer }: any = {}
+) {
   if (typeof indexer !== "function") {
     if (typeof path !== "string") {
-      console.error(
+      logger.info(
         new Error("Path must be provided if an indexer is not provided")
       );
 
@@ -41,7 +44,11 @@ function indexArray(arr: any[] = [], { path, indexer, reducer }: any = {}) {
   return result;
 }
 
-function getIndex(list: any[], item: any, notFoundError?: string | Error) {
+export function getIndex(
+  list: any[],
+  item: any,
+  notFoundError?: string | Error
+) {
   const itemIndex = list.indexOf(item);
 
   if (itemIndex === -1) {
@@ -51,7 +58,7 @@ function getIndex(list: any[], item: any, notFoundError?: string | Error) {
   return itemIndex;
 }
 
-function move(
+export function immutableMove(
   list: any[],
   item: any,
   dropPosition: number,
@@ -65,20 +72,20 @@ function move(
   return list;
 }
 
-function update(
+export function immutableUpdate(
   list: any[],
   item: any,
-  updateItem: any,
+  data: any,
   notFoundError?: string | Error,
   getItemIndex = getIndex
 ) {
   const itemIndex = getItemIndex(list, item, notFoundError);
   list = [...list];
-  list[itemIndex] = updateItem;
+  list[itemIndex] = data;
   return list;
 }
 
-function remove(
+export function immutableRemove(
   list: any[],
   item: any,
   notFoundError?: string | Error,
@@ -90,7 +97,7 @@ function remove(
   return list;
 }
 
-function add(list: any[], item: any, dropPosition?: number) {
+export function immutableAdd(list: any[], item: any, dropPosition?: number) {
   list = Array.isArray(list) ? [...list] : [];
 
   if (dropPosition) {
@@ -101,5 +108,3 @@ function add(list: any[], item: any, dropPosition?: number) {
 
   return list;
 }
-
-export { indexArray, move, update, remove, add, getIndex };

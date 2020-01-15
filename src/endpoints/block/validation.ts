@@ -1,7 +1,7 @@
 import Joi from "joi";
 
-import { validate } from "../../utils/joi-utils";
-import { joiSchemas, regEx } from "../../utils/validation-utils";
+import { validate } from "../../utils/joiUtils";
+import { joiSchemas, regEx } from "../../utils/validationUtils";
 import { notificationConstants } from "../notification/constants";
 import { blockActionsArray } from "./actions";
 import { blockConstants } from "./constants";

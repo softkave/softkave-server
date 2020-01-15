@@ -1,11 +1,22 @@
-const userConstants = {
+export const userConstants = {
   minNameLength: 1,
   maxNameLength: 300,
   minPasswordLength: 5,
-  maxPasswordLength: 20
+  maxPasswordLength: 20,
+
+  currentTokenVersion: 2
 };
 
-const userFieldNames = {
+export const userEndpoints = {
+  changePassword: "change-password",
+  login: "login"
+};
+
+export const userErrorActions = {
+  loginAgain: "login-again"
+};
+
+export const userFieldNames = {
   customId: "customId",
   name: "name",
   email: "email",
@@ -18,5 +29,3 @@ const userFieldNames = {
   orgs: "orgs",
   color: "color"
 };
-
-export { userConstants, userFieldNames };

@@ -1,38 +1,36 @@
 import Joi from "joi";
 import trim from "validator/lib/trim";
-
-import { validate } from "../../utils/joi-utils";
-import { regEx } from "../../utils/validation-utils";
+import { validate } from "../../utils/joiUtils";
+import { regEx, validationSchemas } from "../../utils/validationUtils";
 import { userConstants } from "./constants";
 
-export const emailSchema = Joi.string()
+const email = Joi.string()
   .required()
   .trim()
   .lowercase()
   .email();
 
-export const passwordSchema = Joi.string()
+const password = Joi.string()
   .required()
   .trim()
   .min(userConstants.minPasswordLength)
   .max(userConstants.maxPasswordLength)
   .regex(regEx.passwordPattern);
 
-export const nameSchema = Joi.string()
+const name = Joi.string()
   .required()
   .trim()
   .min(userConstants.minNameLength)
   .max(userConstants.maxNameLength);
 
-export const userSignupSchema = Joi.object().keys({
-  name: nameSchema,
-  password: passwordSchema,
-  email: emailSchema,
-  color: Joi.string()
-    .trim()
-    .lowercase()
-    .regex(regEx.hexColorPattern)
-});
+const userValidationSchema = {
+  name,
+  email,
+  password,
+  color: validationSchemas.color
+};
+
+export default userValidationSchema;
 
 export const updateUserSchema = Joi.object().keys({
   name: nameSchema,

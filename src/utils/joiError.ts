@@ -1,56 +1,49 @@
 import Joi from "joi";
 import get from "lodash/get";
-
-import { userErrorMessages } from "../endpoints/user/userError";
+import { InvalidEmailAddressError } from "../endpoints/user/errors";
 import {
-  getErrorMessageWithMax,
-  getErrorMessageWithMin,
-  validationErrorMessages
-} from "./validationError";
+  InputNotUniqueError,
+  InvalidValueError,
+  RequiredInputError,
+  ValueTooBigError,
+  ValueTooSmallError
+} from "./errors";
+import { DataType } from "./types";
 
 const limitPath = "details.0.context.limit";
 const labelPath = "details.0.context.label";
 
-// define all any
 function getDataInvalidErrorMessage() {
-  return validationErrorMessages.dataInvalid;
+  return new InvalidValueError();
 }
 
 function getRequiredErrorMessage() {
-  return validationErrorMessages.requiredError;
+  return new RequiredInputError();
 }
 
-function getMinErrorMessage(error: Joi.Err, type: any) {
+function getMinErrorMessage(error: Joi.Err, type: DataType) {
   const min = get(error, limitPath);
-  const label = get(error, labelPath);
+  const message = get(error, labelPath);
 
-  if (!min || !label) {
-    return getDataInvalidErrorMessage();
-  }
-
-  return getErrorMessageWithMin(min, type);
+  return new ValueTooSmallError({ message, min, type });
 }
 
-function getMaxErrorMessage(error: any, type: any) {
+function getMaxErrorMessage(error: Joi.Err, type: DataType) {
   const max = get(error, limitPath);
-  const label = get(error, labelPath);
+  const message = get(error, labelPath);
 
-  if (!max || !label) {
-    return getDataInvalidErrorMessage();
-  }
-
-  return getErrorMessageWithMax(max, type);
+  return new ValueTooBigError({ message, max, type });
 }
 
 function getUniqueErrorMessage() {
-  return validationErrorMessages.notUniqueError;
+  return new InputNotUniqueError();
 }
 
 function getEmailErrorMessage() {
-  return userErrorMessages.invalidEmail;
+  return new InvalidEmailAddressError();
 }
 
-const joiErrorMessages = {
+export const joiErrorMessages = {
   "any.required": getRequiredErrorMessage,
   "any.empty": getRequiredErrorMessage,
   "any.allowOnly": getDataInvalidErrorMessage,
@@ -68,5 +61,3 @@ const joiErrorMessages = {
   "array.min": (error: any) => getMinErrorMessage(error, "array"),
   "array.max": (error: any) => getMaxErrorMessage(error, "array")
 };
-
-export { joiErrorMessages };

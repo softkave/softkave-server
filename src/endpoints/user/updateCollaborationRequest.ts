@@ -1,8 +1,8 @@
 import Joi from "joi";
 import NotificationModel from "../../mongo/notification/NotificationModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import notificationError from "../../utils/notificationError";
-import { joiSchemas } from "../../utils/validation-utils";
+import { joiSchemas } from "../../utils/validationUtils";
 import { IUserDocument } from "./user";
 import { collaborationRequestSchema } from "./validation";
 

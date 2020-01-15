@@ -2,7 +2,7 @@ import Joi from "joi";
 import uniq from "lodash/uniq";
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { validate } from "../../../utils/joi-utils";
+import { validate } from "../../../utils/joiUtils";
 
 // import BlockModel from "src/mongo/block/BlockModel";
 

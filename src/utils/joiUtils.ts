@@ -1,18 +1,13 @@
 import Joi, { Schema as JoiSchema, ValidationOptions } from "joi";
 import get from "lodash/get";
-
+import { InvalidInputError } from "./errors";
 import { joiErrorMessages } from "./joiError";
-import OperationError from "./OperationError";
-import {
-  validationErrorFields,
-  validationErrorMessages
-} from "./validationError";
+import logger from "./logger";
 
 const typePath = "details.0.type";
 const pathPath = "details.0.path";
 
-// TODO: define all any types
-function validate<DataType>(
+export function validate<DataType>(
   data: DataType,
   schema: JoiSchema,
   options?: ValidationOptions
@@ -24,7 +19,8 @@ function validate<DataType>(
   });
 
   if (error) {
-    console.log({ error });
+    logger.info(error);
+
     const errorArray = [];
     const type = get(error, typePath);
     let path = get(error, pathPath);
@@ -33,17 +29,9 @@ function validate<DataType>(
 
     if (typeof func === "function") {
       const message = func(error);
-      errorArray.push(
-        new OperationError(validationErrorFields.dataInvalid, message, path)
-      );
+      errorArray.push(new InvalidInputError({ message, field: path }));
     } else {
-      errorArray.push(
-        new OperationError(
-          validationErrorFields.dataInvalid,
-          validationErrorMessages.dataInvalid,
-          path
-        )
-      );
+      errorArray.push(new InvalidInputError({ field: path }));
     }
 
     throw errorArray;
@@ -51,5 +39,3 @@ function validate<DataType>(
 
   return value;
 }
-
-export { validate };

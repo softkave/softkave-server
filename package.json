@@ -22,6 +22,7 @@
     "@types/express-jwt": "0.0.42",
     "@types/graphql": "^14.2.2",
     "@types/joi": "^14.3.3",
+    "@types/jsonwebtoken": "^8.3.6",
     "@types/lodash": "^4.14.136",
     "@types/mongoose": "^5.5.8",
     "@types/node": "^12.6.2",

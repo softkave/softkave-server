@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import Joi from "joi";
 
 import UserModel from "../../mongo/user/UserModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import newToken from "./newToken";
 import userError from "./userError";
 import { emailSchema, passwordSchema } from "./validation";

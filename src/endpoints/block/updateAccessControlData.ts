@@ -1,7 +1,7 @@
 import Joi from "joi";
 import AccessControlModel from "../../mongo/access-control/AccessControlModel";
 import { IBlockDocument } from "../../mongo/block";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import OperationError from "../../utils/OperationError";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";

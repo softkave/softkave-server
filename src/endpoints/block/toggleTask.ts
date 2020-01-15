@@ -8,7 +8,7 @@ import {
   mongoTaskCollaborationDataSchema
 } from "../../mongo/block";
 import BlockModel from "../../mongo/block/BlockModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import { IUserDocument } from "../user/user";
 import accessControlCheck from "./accessControlCheck";
 import { blockActionsMap } from "./actions";

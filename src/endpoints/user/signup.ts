@@ -4,7 +4,7 @@ import uuid from "uuid/v4";
 import BlockModel from "../../mongo/block/BlockModel";
 import mongoDBConstants from "../../mongo/constants";
 import UserModel from "../../mongo/user/UserModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import OperationError from "../../utils/OperationError";
 import serverError from "../../utils/serverError";
 import createRootBlock from "../block/createRootBlock";

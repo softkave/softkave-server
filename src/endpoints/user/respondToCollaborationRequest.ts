@@ -1,9 +1,9 @@
 import Joi from "joi";
 import BlockModel from "../../mongo/block/BlockModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
-import { validate } from "../../utils/joi-utils";
+import { validate } from "../../utils/joiUtils";
 import notificationError from "../../utils/notificationError";
-import { joiSchemas, validators } from "../../utils/validation-utils";
+import { joiSchemas, validators } from "../../utils/validationUtils";
 import { notificationConstants } from "../notification/constants";
 import addOrgIDToUser from "./addOrgIDToUser";
 import { IUserDocument } from "./user";
