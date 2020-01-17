@@ -7,13 +7,18 @@ export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
 }
 
+export interface IBaseEndpointContextParameters {
+  req: IServerRequest;
+  userModel: UserModel;
+}
+
 export default class BaseEndpointContext implements IBaseEndpointContext {
   protected req: IServerRequest;
   protected userModel: UserModel;
 
-  constructor(req: IServerRequest, userModel: UserModel) {
-    this.req = req;
-    this.userModel = userModel;
+  constructor(p: IBaseEndpointContextParameters) {
+    this.req = p.req;
+    this.userModel = p.userModel;
   }
 
   public async getUser() {

@@ -1,15 +1,35 @@
-import { Request } from "express";
-import BaseEndpointContext from "endpoints/BaseEndpointContext";
-import { ILoginContext } from "./types";
-import UserModel from "mongo/user/UserModel";
+import BaseEndpointContext, {
+  IBaseEndpointContextParameters
+} from "endpoints/BaseEndpointContext";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import { ILoginContext, ILoginParameters } from "./types";
+
+export interface ILoginContextParameters
+  extends IBaseEndpointContextParameters {
+  data: ILoginParameters;
+}
 
 export default class LoginContext extends BaseEndpointContext
   implements ILoginContext {
-  constructor(req: Request, userModel: UserModel) {
-    super(req, userModel);
-    //i'm not sure of the things required in the class, so i'm going to
-    //push fro your assistance on this
+  public data: ILoginParameters;
+
+  constructor(p: ILoginContextParameters) {
+    super(p);
+    this.data = p.data;
   }
 
-  public async userExists(email: string) {}
+  public async getUserByEmail(email: string) {
+    try {
+      return await this.userModel.model
+        .findOne({
+          email
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
 }

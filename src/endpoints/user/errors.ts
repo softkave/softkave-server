@@ -30,3 +30,9 @@ export class LoginAgainError extends OperationError {
   public message = "Please login again";
   public action = userErrorActions.loginAgain;
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class UserDoesNotExistError extends OperationError {
+  public name = "UserDoesNotExistError";
+  public message = "User does not exist";
+}

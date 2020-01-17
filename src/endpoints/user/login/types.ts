@@ -1,5 +1,5 @@
-import UserModel from "mongo/user/UserModel";
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
+import UserModel from "mongo/user/UserModel";
 import { IUser } from "../../../mongo/user";
 
 export interface ILoginParameters {
@@ -10,7 +10,7 @@ export interface ILoginParameters {
 
 export interface ILoginContext extends IBaseEndpointContext {
   data: ILoginParameters;
-  userExists: (email: string) => Promise<boolean>;
+  getUserByEmail: (email: string) => Promise<IUser>;
 }
 
 export interface ILoginResult {
