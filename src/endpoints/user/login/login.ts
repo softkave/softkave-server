@@ -7,9 +7,7 @@ import { ILoginContext, ILoginResult } from "./types";
 import { loginJoiSchema } from "./validation";
 
 async function login(context: ILoginContext): Promise<ILoginResult> {
-  validate(context.data, loginJoiSchema);
-
-  const loginDetails = context.data;
+  const loginDetails = validate(context.data, loginJoiSchema);
   const userData = await context.getUserByEmail(loginDetails.email);
 
   if (userData) {
