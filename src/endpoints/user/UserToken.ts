@@ -15,12 +15,14 @@ export interface IBaseUserTokenData {
   sub: IUserTokenSubject;
   iat: number;
   aud: string[];
+  exp?: number;
 }
 
 export interface INewUserTokenParameters {
   user: IUser;
   audience: string[];
   additionalData?: any;
+  expires?: number;
 }
 
 export default class UserToken {
@@ -36,7 +38,8 @@ export default class UserToken {
       {
         sub: subject,
         aud: p.audience || [],
-        version: userConstants.currentTokenVersion
+        version: userConstants.currentTokenVersion,
+        exp: p.expires ? p.expires / 1000 : undefined
       },
       JWT_SECRET
     );

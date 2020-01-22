@@ -4,10 +4,13 @@ import getUserFromRequest from "../middlewares/getUserFromRequest";
 import { IUser } from "../mongo/user";
 import UserModel from "../mongo/user/UserModel";
 import { IServerRequest } from "../utils/types";
+import { InvalidCredentialsError } from "./user/errors";
+import { IBaseUserTokenData } from "./user/UserToken";
 
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
+  getRequestToken: () => IBaseUserTokenData;
 }
 
 export interface IBaseEndpointContextParameters {
@@ -30,6 +33,14 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
       userModel: this.userModel,
       required: true
     });
+  }
+
+  public async getRequestToken() {
+    if (this.req.user) {
+      return this.req.user;
+    } else {
+      throw new InvalidCredentialsError();
+    }
   }
 
   public async getUserByEmail(email: string) {

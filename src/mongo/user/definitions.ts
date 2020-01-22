@@ -26,7 +26,7 @@ export interface IUser {
   rootBlockId: string;
   orgs: string[];
   color: string;
-  roles: IUserRole[];
+  // roles: IUserRole[];
 }
 
 export interface IUserDocument extends Document, IUser {}

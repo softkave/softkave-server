@@ -6,7 +6,6 @@ import {
 import changePassword from "./changePassword";
 import changePasswordWithToken from "./changePasswordWithToken";
 import forgotPassword from "./forgotPassword";
-import getChangePasswordTokenData from "./getChangePasswordTokenData";
 import getCollaborationRequests from "./getCollaborationRequests";
 import getSessionDetails from "./getSessionDetails";
 import getUserData from "./getUserData";
@@ -80,11 +79,6 @@ class UserOperations {
       getUserData,
       staticParams,
       middlewares
-    );
-
-    this.getChangePasswordTokenData = wrapGraphQLOperation(
-      getChangePasswordTokenData,
-      staticParams
     );
 
     this.getSessionDetails = wrapGraphQLOperation(
