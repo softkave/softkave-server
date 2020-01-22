@@ -35,7 +35,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     });
   }
 
-  public async getRequestToken() {
+  public getRequestToken() {
     if (this.req.user) {
       return this.req.user;
     } else {

@@ -26,6 +26,13 @@ export const blockRoleSchema = {
   createdAt: String
 };
 
+export interface ILinkedBlock {
+  blockId: string;
+  reason: string;
+  createdBy: string;
+  createdAt: number;
+}
+
 export const linkedBlocksSchema = {
   blockId: String,
   reason: String,
@@ -59,6 +66,8 @@ export interface ITaskCollaborationData {
   completedBy?: string;
 }
 
+export type BlockType = "root" | "org" | "project" | "group" | "task";
+
 export interface IBlock {
   customId: string;
   name: string;
@@ -68,7 +77,7 @@ export interface IBlock {
   createdAt: number;
   color: string;
   updatedAt: number;
-  type: string;
+  type: BlockType;
   parents: string[];
   createdBy: string;
 

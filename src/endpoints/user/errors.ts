@@ -2,7 +2,7 @@ import OperationError from "../../utils/OperationError";
 import { userErrorActions } from "./constants";
 
 export class EmailAddressNotAvailableError extends OperationError {
-  public name = "EmailAddressNotAvailable";
+  public name = "EmailAddressNotAvailableError";
   public message = "This email address is not available";
 }
 
