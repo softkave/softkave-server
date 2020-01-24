@@ -1,18 +1,18 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { IAddBlockParameters, ICreateRootBlockContext } from "./types";
 
-export interface IAddBlockContextParameters
+export interface ICreateRootBlockContextParameters
   extends IBaseEndpointContextParameters {
   data: IAddBlockParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
+export default class CreateRootBlockContext extends BaseEndpointContext
+  implements ICreateRootBlockContext {
   public data: IAddBlockParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: ICreateRootBlockContextParameters) {
     super(p);
     this.data = p.data;
   }
