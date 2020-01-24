@@ -1,19 +1,32 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import {
+  IDirectUpdateBlockInput,
+  IUpdateBlockContext,
+  IUpdateBlockParameters
+} from "./types";
 
-export interface IAddBlockContextParameters
+export interface IUpdateBlockContextParameters
   extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
+  data: IUpdateBlockParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
+export default class UpdateBlockContext extends BaseEndpointContext
+  implements IUpdateBlockContext {
+  public data: IUpdateBlockParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: IUpdateBlockContextParameters) {
     super(p);
     this.data = p.data;
+  }
+
+  public async updateBlock(blockID: string, data: IDirectUpdateBlockInput) {
+    await blockModel.model.updateOne(
+      {
+        customId: block.customId
+      },
+      update
+    );
   }
 }

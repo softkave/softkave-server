@@ -1,75 +1,33 @@
 import Joi from "joi";
-
-import { validate } from "../../utils/joiUtils";
-import { joiSchemas, regEx } from "../../utils/validationUtils";
-import { notificationConstants } from "../notification/constants";
-import { blockActionsArray } from "./actions";
+import { regEx, validationSchemas } from "../../utils/validationUtils";
 import { blockConstants } from "./constants";
 
-export const blockParamSchema = Joi.object().keys({
-  customId: joiSchemas.uuidSchema
-});
-
-export const taskCollaboratorSchema = Joi.object().keys({
-  userId: joiSchemas.uuidSchema,
-  assignedBy: joiSchemas.uuidSchema,
+const taskCollaboratorSchema = Joi.object().keys({
+  userId: validationSchemas.uuid,
+  assignedBy: validationSchemas.uuid,
   assignedAt: Joi.number(),
 
-  // Allow null because sometimes, the value from the API or in DB is null, and it leads to a false validation error
+  // Allow null because sometimes, the value from the API or in DB is null,
+  // and it leads to a false validation error
   completedAt: Joi.number().allow(null)
 });
 
-export const taskCollaboratorsSchema = Joi.array()
+const taskCollaboratorsListSchema = Joi.array()
   .min(blockConstants.minTaskCollaboratorsLength)
   .max(blockConstants.maxTaskCollaboratorsLength)
   .unique("userId")
   .items(taskCollaboratorSchema);
 
-export const blockTypeSchema = Joi.string()
+const blockType = Joi.string()
   .lowercase()
   .valid(blockConstants.blockTypesArray);
 
-export const blockChildrenSchema = Joi.array()
-  .items(joiSchemas.uuidSchema)
+const blockChildrenIDList = Joi.array()
+  .items(validationSchemas.uuid)
   .unique()
   .max(blockConstants.maxChildrenCount);
 
-export const linkedBlockSchema = Joi.object().keys({
-  createdAt: Joi.number(),
-  createdBy: joiSchemas.uuidSchema,
-  reason: Joi.string()
-    .min(blockConstants.minLinkedBlockReasonLength)
-    .max(blockConstants.maxLinkedBlockReasonLength),
-  blockId: joiSchemas.uuidSchema
-});
-
-export const roleNameSchema = Joi.string()
-  .lowercase()
-  .min(blockConstants.minRoleNameLength)
-  .max(blockConstants.maxRoleNameLength);
-
-export const roleNameArraySchema = Joi.array()
-  .items(roleNameSchema)
-  .unique()
-  .min(blockConstants.minRoles)
-  .max(blockConstants.maxRoles);
-
-export const accessControlSchema = Joi.object().keys({
-  orgId: joiSchemas.uuidSchema,
-  actionName: Joi.string()
-    .uppercase()
-    .valid(blockActionsArray),
-  permittedRoles: roleNameArraySchema
-});
-
-// TODO: split individual schema in different files, classifed by closeness of use
-// TODO: merge this schema with the one defined in blockSchema
-export const accessControlArraySchema = Joi.array()
-  .items(accessControlSchema)
-  .unique("actionName")
-  .max(blockActionsArray.length);
-
-export const subTasksSchema = Joi.object().keys({
+const subTasksSchema = Joi.object().keys({
   customId: Joi.string()
     .uuid()
     .required(),
@@ -82,7 +40,7 @@ export const subTasksSchema = Joi.object().keys({
   completedAt: Joi.number()
 });
 
-export const taskCollaborationDataSchema = Joi.object().keys({
+const taskCollaborationDataSchema = Joi.object().keys({
   collaborationType: Joi.string()
     .lowercase()
     .valid(blockConstants.taskCollaborationData),
@@ -92,155 +50,94 @@ export const taskCollaborationDataSchema = Joi.object().keys({
     .allow(null)
 });
 
-export const blockJoiSchema = Joi.object().keys({
-  customId: joiSchemas.uuidSchema,
-  name: Joi.string()
-    .trim()
-    .min(blockConstants.minNameLength)
-    .max(blockConstants.maxNameLength),
-
-  description: Joi.string()
-    .min(blockConstants.minDescriptionLength)
-    .max(blockConstants.maxDescriptionLength)
-    .trim()
-    .when("type", {
-      is: "task",
-      then: Joi.required()
-    }),
-
-  expectedEndAt: Joi.number(),
-  createdAt: Joi.number(),
-  color: Joi.string()
-    .trim()
-    .lowercase()
-    .regex(regEx.hexColorPattern),
-
-  updatedAt: Joi.number(),
-  type: blockTypeSchema,
-  parents: Joi.array()
-    .items(joiSchemas.uuidSchema)
-    .unique()
-    .max(blockConstants.maxParentsLength),
-
-  createdBy: joiSchemas.uuidSchema,
-  taskCollaborationData: taskCollaborationDataSchema,
-  taskCollaborators: taskCollaboratorsSchema,
-  priority: Joi.string()
-    .lowercase()
-    .valid(blockConstants.priorityValuesArray),
-
-  tasks: blockChildrenSchema,
-  groups: blockChildrenSchema,
-  projects: blockChildrenSchema,
-  groupTaskContext: blockChildrenSchema,
-  groupProjectContext: blockChildrenSchema,
-  isBacklog: Joi.boolean(),
-  linkedBlock: Joi.array()
-    .optional()
-    .items(linkedBlockSchema)
-    .unique("blockId")
-    .min(blockConstants.minLinkedBlocksCount)
-    .max(blockConstants.maxLinkedBlocksCount),
-  subTasks: Joi.array()
-    .items(subTasksSchema)
-    .min(blockConstants.minSubTasksLength)
-    .max(blockConstants.maxSubTasksLength),
-
-  // TODO: make a check to make sure this is only checked on orgs or roots
-  accessControl: Joi.array()
-    .optional()
-    .items(accessControlSchema)
-    .unique((item1, item2) => {
-      return (
-        item1.organizationID === item2.organizationID &&
-        item1.actionName !== item2.actionName
-      );
-    })
-    .min(blockConstants.minRoles)
-    .max(blockConstants.maxRoles),
-
-  // TODO: define schema
-  roles: Joi.any().optional()
-});
-
-export const addCollaboratorCollaboratorSchema = Joi.object().keys({
-  email: Joi.string()
-    .required()
-    .trim()
-    .email()
-    .lowercase(),
-  body: Joi.string()
-    .min(notificationConstants.minAddCollaboratorMessageLength)
-    .max(notificationConstants.maxAddCollaboratorMessageLength),
-  expiresAt: Joi.number(),
-  customId: joiSchemas.uuidSchema
-});
-
-// TODO: Implement test for unique items
-export const addCollaboratorCollaboratorsSchema = Joi.array()
-  .items(addCollaboratorCollaboratorSchema)
-  .min(blockConstants.minAddCollaboratorValuesLength)
-  .max(blockConstants.maxAddCollaboratorValuesLength);
-
-export const blockTypesSchema = Joi.array()
+const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)
   .unique()
-  .items(blockTypeSchema);
+  .items(blockType);
 
-export const groupContextSchema = Joi.string()
+const blockID = validationSchemas.uuid;
+const name = Joi.string()
+  .trim()
+  .min(blockConstants.minNameLength)
+  .max(blockConstants.maxNameLength);
+
+const description = Joi.string()
+  .min(blockConstants.minDescriptionLength)
+  .max(blockConstants.maxDescriptionLength)
+  .trim()
+  .when("type", {
+    is: "task",
+    then: Joi.required()
+  });
+const expectedEndAt = Joi.number();
+const createdAt = Joi.number();
+const color = Joi.string()
+  .trim()
   .lowercase()
-  .valid(blockConstants.groupContextsArray);
-
-export const groupContextArraySchema = Joi.array()
-  .max(blockConstants.groupContextsArray.length)
+  .regex(regEx.hexColorPattern);
+const updatedAt = Joi.number();
+const type = blockType;
+const parents = Joi.array()
+  .items(validationSchemas.uuid)
   .unique()
-  .items(groupContextSchema);
+  .max(blockConstants.maxParentsLength);
 
-// TODO: define types
-function validateBlock(block: any) {
-  return validate(block, blockJoiSchema);
-}
+const createdBy = validationSchemas.uuid;
+const taskCollaborationData = taskCollaborationDataSchema;
+const taskCollaborators = taskCollaboratorsListSchema;
+const priority = Joi.string()
+  .lowercase()
+  .valid(blockConstants.priorityValuesArray);
 
-function validateGroupContexts(contexts: any) {
-  return validate(contexts, groupContextArraySchema);
-}
+const tasks = blockChildrenIDList;
+const groups = blockChildrenIDList;
+const projects = blockChildrenIDList;
+const subTasks = Joi.array()
+  .items(subTasksSchema)
+  .min(blockConstants.minSubTasksLength)
+  .max(blockConstants.maxSubTasksLength);
 
-function validateTaskCollaborators(collaborators: any) {
-  return validate(collaborators, taskCollaboratorsSchema);
-}
+const block = Joi.object().keys({
+  // TODO: blockID or just id
+  blockID,
+  name,
+  description,
+  expectedEndAt,
+  createdAt,
+  color,
+  updatedAt,
+  parents,
+  createdBy,
+  subTasks,
+  priority,
+  taskCollaborationData: taskCollaborationDataSchema,
+  taskCollaborators: taskCollaboratorsListSchema,
+  tasks: blockChildrenIDList,
+  groups: blockChildrenIDList,
+  projects: blockChildrenIDList,
+  type: blockType
+});
 
-function validateBlockParam(param: any) {
-  return validate(param, blockParamSchema);
-}
-
-function validateBlockTypes(types: any) {
-  return validate(types, blockTypesSchema);
-}
-
-function validateAddCollaboratorCollaborators(params: any) {
-  return validate(params, addCollaboratorCollaboratorsSchema);
-}
-
-function validateRoleName(params: any) {
-  return validate(params, roleNameSchema);
-}
-
-function validateRoleNameArray(params: any) {
-  return validate(params, roleNameArraySchema);
-}
-
-function validateAccessControlArray(params: any) {
-  return validate(params, accessControlArraySchema);
-}
-
-export {
-  validateAccessControlArray,
-  validateAddCollaboratorCollaborators,
-  validateBlock,
-  validateBlockParam,
-  validateBlockTypes,
-  validateGroupContexts,
-  validateRoleName,
-  validateRoleNameArray,
-  validateTaskCollaborators
+const blockValidationSchemas = {
+  name,
+  blockID,
+  expectedEndAt,
+  description,
+  createdAt,
+  color,
+  createdBy,
+  taskCollaborationData,
+  taskCollaborators,
+  priority,
+  tasks,
+  groups,
+  projects,
+  subTasks,
+  parents,
+  updatedAt,
+  type,
+  block,
+  blockTypesList: blockTypesSchema
 };
+
+export default blockValidationSchemas;

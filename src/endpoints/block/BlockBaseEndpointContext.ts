@@ -1,4 +1,3 @@
-import { IBlock } from "mongo/block";
 import { ServerError } from "utils/errors";
 import logger from "utils/logger";
 import getUserFromRequest from "../middlewares/getUserFromRequest";
@@ -12,7 +11,6 @@ export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
-  getBlockByID: (blockID: string) => Promise<IBlock>;
 }
 
 export interface IBaseEndpointContextParameters {

@@ -52,3 +52,6 @@ export const isUserAssignedToTask = (task: IBlock, user: IUser) => {
     taskCollaborator => taskCollaborator.userId === user.customId
   );
 };
+
+// TODO: should we put all the utilities in **Utils class or leave as function exports?
+class BlockUtils {}

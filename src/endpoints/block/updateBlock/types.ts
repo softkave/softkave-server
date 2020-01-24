@@ -1,15 +1,52 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
+import {
+  IBlock,
+  ISubTask,
+  ITaskCollaborationData,
+  ITaskCollaborator
+} from "mongo/block";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface IUpdateBlockInput {
+  name: string;
+  description: string;
+  expectedEndAt: number;
+  color: string;
+  priority: string;
+  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborators: ITaskCollaborator[];
+  parents: string[];
+  groups: string[];
+  projects: string[];
+  tasks: string[];
+  groupTaskContext: string[];
+  groupProjectContext: string[];
+  subTasks: ISubTask[];
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
+export interface IDirectUpdateBlockInput {
+  name: string;
+  description: string;
+  expectedEndAt: number;
+  color: string;
+  priority: string;
+  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborators: ITaskCollaborator[];
+  groups: string[];
+  projects: string[];
+  tasks: string[];
+  subTasks: ISubTask[];
 }
 
-export interface IAddBlockResult {
-  block: IBlock;
+export interface IUpdateBlockParameters {
+  blockID: string;
+  data: IUpdateBlockInput;
+}
+
+export interface IUpdateBlockContext extends IBaseEndpointContext {
+  data: IUpdateBlockParameters;
+  updateBlock: (
+    blockID: string,
+    data: IDirectUpdateBlockInput
+  ) => Promise<void>;
+  transferBlock: (block: IBlock, destinationBlockID: string) => Promise<void>;
 }
