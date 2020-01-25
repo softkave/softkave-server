@@ -63,5 +63,17 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     }
   }
 
-  public async getBlockByID(blockID: string) {}
+  public async getBlockByID(blockID: string) {
+    try {
+      return await this.blockModel.model
+        .findOne({
+          blockID
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
 }

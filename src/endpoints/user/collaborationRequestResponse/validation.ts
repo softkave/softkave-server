@@ -1,7 +1,8 @@
-import Joi from "joi"
+import Joi from "joi";
 import userValidationSchema from "../validation";
+import { validationSchemas } from "utils/validationUtils";
 
-const respondToCollaborationRequestJoiSchema = Joi.object().keys({
-  // customId: userValidationSchema,
+export const respondToCollaborationRequestJoiSchema = Joi.object().keys({
+  customId: validationSchemas.uuid,
   response: userValidationSchema.collaborationRequestResponse
 });
