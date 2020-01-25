@@ -1,3 +1,5 @@
+import { BlockType } from "mongo/block";
+
 const priorityNotImportant = "not important";
 const priorityImportant = "important";
 const priorityVeryImportant = "very important";
@@ -29,7 +31,7 @@ const blockConstants = {
     blockTypeProject,
     blockTypeTask,
     blockTypeRoot
-  ],
+  ] as BlockType[],
   priorityValuesArray: [
     priorityNotImportant,
     priorityImportant,

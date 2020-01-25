@@ -1,19 +1,42 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { BlockType } from "mongo/block";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import { IGetBlockChildrenContext, IGetBlockChildrenParameters } from "./types";
 
-export interface IAddBlockContextParameters
+export interface IGetBlockChildrenContextParameters
   extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
+  data: IGetBlockChildrenParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
+export default class GetBlockChildrenContext extends BaseEndpointContext
+  implements IGetBlockChildrenContext {
+  public data: IGetBlockChildrenParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: IGetBlockChildrenContextParameters) {
     super(p);
     this.data = p.data;
+  }
+
+  public async getBlockChildrenFromDatabase(
+    blockID: string,
+    typeList: BlockType[]
+  ) {
+    try {
+      const blocks = await this.blockModel.model.find({
+        parents: {
+          $size: getParentsLength(parentBlock) + 1,
+          $eq: parentBlock.customId
+        },
+        type: {
+          $in: types
+        }
+      });
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
   }
 }

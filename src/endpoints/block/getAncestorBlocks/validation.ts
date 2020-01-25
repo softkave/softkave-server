@@ -1,3 +1,3 @@
 import Joi from "joi";
 
-export const getUserDataJoiSchema = Joi.object().keys({});
+export const getAncestorBlocksJoiSchema = Joi.object().keys({});

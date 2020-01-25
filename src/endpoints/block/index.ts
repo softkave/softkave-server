@@ -8,7 +8,7 @@ import assignRole from "./assignRole";
 import createRootBlock from "./createRootBlock";
 import deleteBlock from "./deleteBlock";
 import getAssignedTasks from "./getAssignedTasks";
-import getBlock from "./getBlock";
+import getBlock from "./getBlockByID";
 import getBlockChildren from "./getBlockChildren";
 import getBlockCollaborators from "./getBlockCollaborators";
 import getBlockCollabRequests from "./getBlockCollabRequests";

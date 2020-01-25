@@ -1,19 +1,34 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import { blockConstants } from "../constants";
+import { IGetAssignedTasksContext } from "./types";
 
-export interface IAddBlockContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
-}
+// tslint:disable-next-line: no-empty-interface
+export interface IGetAssignedTasksContextParameters
+  extends IBaseEndpointContextParameters {}
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
-
-  constructor(p: IAddBlockContextParameters) {
+export default class GetAssignedTasksContext extends BaseEndpointContext
+  implements IGetAssignedTasksContext {
+  constructor(p: IGetAssignedTasksContextParameters) {
     super(p);
-    this.data = p.data;
+  }
+
+  public async getAssignedTasksFromDatabase() {
+    try {
+      const user = await this.getUser();
+
+      return await this.blockModel.model
+        .find({
+          ["taskCollaborators.userId"]: user.customId,
+          type: blockConstants.blockTypes.task
+        })
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
   }
 }

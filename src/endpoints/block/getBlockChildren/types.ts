@@ -1,15 +1,19 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
+import { BlockType, IBlock } from "mongo/block";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface IGetBlockChildrenParameters {
+  blockID: string;
+  typeList?: BlockType[];
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
+export interface IGetBlockChildrenContext extends IBaseEndpointContext {
+  data: IGetBlockChildrenParameters;
+  getBlockChildrenFromDatabase: (
+    blockID: string,
+    typeList: BlockType[]
+  ) => Promise<IBlock[]>;
 }
 
-export interface IAddBlockResult {
-  block: IBlock;
+export interface IGetBlockChildrenResult {
+  blocks: IBlock[];
 }
