@@ -1,5 +1,6 @@
 import { IBlock } from "mongo/block";
 import BlockModel from "mongo/block/BlockModel";
+import NotificationModel from "mongo/notification/NotificationModel";
 import { ServerError } from "utils/errors";
 import logger from "utils/logger";
 import getUserFromRequest from "../middlewares/getUserFromRequest";
@@ -20,17 +21,20 @@ export interface IBaseEndpointContextParameters {
   req: IServerRequest;
   userModel: UserModel;
   blockModel: BlockModel;
+  notificationModel: NotificationModel;
 }
 
 export default class BaseEndpointContext implements IBaseEndpointContext {
   protected req: IServerRequest;
   protected userModel: UserModel;
   protected blockModel: BlockModel;
+  protected notificationModel: NotificationModel;
 
   constructor(p: IBaseEndpointContextParameters) {
     this.req = p.req;
     this.userModel = p.userModel;
     this.blockModel = p.blockModel;
+    this.notificationModel = p.notificationModel;
   }
 
   public async getUser() {
