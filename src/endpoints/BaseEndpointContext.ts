@@ -9,12 +9,19 @@ import UserModel from "../mongo/user/UserModel";
 import { IServerRequest } from "../utils/types";
 import { InvalidCredentialsError } from "./user/errors";
 import { IBaseUserTokenData } from "./user/UserToken";
+import { notificationConstants } from "./notification/constants";
+import { INotification } from "mongo/notification";
 
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (blockID: string) => Promise<IBlock>;
+  addResponseToCollaborationRequestInDatabase: (
+    customId: string,
+    email: string,
+    response: string
+  ) => Promise<INotification>;
 }
 
 export interface IBaseEndpointContextParameters {
@@ -73,6 +80,49 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
         .findOne({
           blockID
         })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async addResponseToCollaborationRequestInDatabase(
+    customId: string,
+    email: string,
+    response: string
+  ) {
+    try {
+      return await this.notificationModel.model
+        .findOneAndUpdate(
+          {
+            customId,
+            "to.email": email,
+            "statusHistory.status": {
+              $not: {
+                $in: [
+                  notificationConstants.collaborationRequestStatusTypes
+                    .accepted,
+                  notificationConstants.collaborationRequestStatusTypes
+                    .declined,
+                  notificationConstants.collaborationRequestStatusTypes.revoked
+                ]
+              }
+            }
+          },
+          {
+            $push: {
+              statusHistory: {
+                status: response,
+                date: Date.now()
+              }
+            }
+          },
+          {
+            fields: "customId from"
+          }
+        )
         .lean()
         .exec();
     } catch (error) {
