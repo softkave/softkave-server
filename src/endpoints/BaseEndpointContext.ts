@@ -1,5 +1,6 @@
 import { IBlock } from "mongo/block";
 import BlockModel from "mongo/block/BlockModel";
+import { INotification } from "mongo/notification";
 import NotificationModel from "mongo/notification/NotificationModel";
 import { ServerError } from "utils/errors";
 import logger from "utils/logger";
@@ -9,19 +10,13 @@ import UserModel from "../mongo/user/UserModel";
 import { IServerRequest } from "../utils/types";
 import { InvalidCredentialsError } from "./user/errors";
 import { IBaseUserTokenData } from "./user/UserToken";
-import { notificationConstants } from "./notification/constants";
-import { INotification } from "mongo/notification";
 
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (blockID: string) => Promise<IBlock>;
-  addResponseToCollaborationRequestInDatabase: (
-    customId: string,
-    email: string,
-    response: string
-  ) => Promise<INotification>;
+  getNotificationByID: (id: string) => Promise<INotification>;
 }
 
 export interface IBaseEndpointContextParameters {
@@ -88,41 +83,10 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     }
   }
 
-  public async addResponseToCollaborationRequestInDatabase(
-    customId: string,
-    email: string,
-    response: string
-  ) {
+  public async getNotificationByID(id: string) {
     try {
       return await this.notificationModel.model
-        .findOneAndUpdate(
-          {
-            customId,
-            "to.email": email,
-            "statusHistory.status": {
-              $not: {
-                $in: [
-                  notificationConstants.collaborationRequestStatusTypes
-                    .accepted,
-                  notificationConstants.collaborationRequestStatusTypes
-                    .declined,
-                  notificationConstants.collaborationRequestStatusTypes.revoked
-                ]
-              }
-            }
-          },
-          {
-            $push: {
-              statusHistory: {
-                status: response,
-                date: Date.now()
-              }
-            }
-          },
-          {
-            fields: "customId from"
-          }
-        )
+        .findOne({ notificationID: id })
         .lean()
         .exec();
     } catch (error) {

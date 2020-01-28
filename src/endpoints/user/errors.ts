@@ -36,3 +36,9 @@ export class UserDoesNotExistError extends OperationError {
   public name = "UserDoesNotExistError";
   public message = "User does not exist";
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class CollaborationRequestDoesNotExistError extends OperationError {
+  public name = "CollaborationRequestDoesNotExistError";
+  public message = "This collaboration request does not exist";
+}
