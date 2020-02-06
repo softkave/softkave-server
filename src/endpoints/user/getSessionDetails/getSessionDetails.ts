@@ -1,6 +1,8 @@
 import { IGetSessionDetailsContext } from "./types";
 
-async function getSessionDetails(context: IGetSessionDetailsContext) {
+async function getSessionDetails(
+  context: IGetSessionDetailsContext
+): Promise<any> {
   const notificationCount = await context.getNotificationCount(
     context.data.user.email
   );
