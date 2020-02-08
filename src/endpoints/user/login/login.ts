@@ -1,4 +1,6 @@
 import argon2 from "argon2";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
 import { validate } from "../../../utils/joiUtils";
 import { userEndpoints } from "../constants";
 import { UserDoesNotExistError } from "../errors";
@@ -11,7 +13,14 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
   const userData = await context.getUserByEmail(loginDetails.email);
 
   if (userData) {
-    await argon2.verify(userData.hash, loginDetails.password);
+    try {
+      await argon2.verify(userData.hash, loginDetails.password);
+    } catch (error) {
+      logger.error(error);
+
+      // TODO: find a better error type for this error
+      throw new ServerError();
+    }
   } else {
     throw new UserDoesNotExistError();
   }

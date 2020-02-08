@@ -9,10 +9,10 @@ async function respondToCollaborationRequest(
 ): Promise<void> {
   const data = validate(context.data, respondToCollaborationRequestJoiSchema);
   const user = await context.getUser();
-  const customId = data.requestID;
+  const customId = data.customId;
   const email = user.email;
   const response = data.response;
-  const request = await context.addResponseToCollaborationRequestInDatabase(
+  const request = await context.addResponseToCollaborationRequestToStorage(
     customId,
     email,
     response
@@ -26,7 +26,9 @@ async function respondToCollaborationRequest(
 
   if (!ownerBlock) {
     // if the org does not exist or has been deleted
-    await context.deleteCollaborationRequestInDatabase(request.customId);
+    // TODO: should we log something here?
+    // TODO: figure our log points, i.e, what are the things we should be logging?
+    await context.deleteCollaborationRequestInStorage(request.customId);
   } else if (
     response === notificationConstants.collaborationRequestStatusTypes.accepted
   ) {

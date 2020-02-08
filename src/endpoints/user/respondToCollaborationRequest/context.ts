@@ -24,7 +24,7 @@ export default class RespondToCollaborationRequestContext
     this.data = p.data;
   }
 
-  public async addResponseToCollaborationRequestInDatabase(
+  public async addResponseToCollaborationRequestToStorage(
     customId: string,
     email: string,
     response: string
@@ -67,9 +67,9 @@ export default class RespondToCollaborationRequestContext
     }
   }
 
-  public async deleteCollaborationRequestInDatabase(id: string) {
+  public async deleteCollaborationRequestInStorage(id: string) {
     try {
-      this.notificationModel.model.deleteOne({ customId: id }).exec();
+      await this.notificationModel.model.deleteOne({ customId: id }).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
@@ -77,8 +77,10 @@ export default class RespondToCollaborationRequestContext
   }
 
   public async addOrgToUser(orgID: string, userID: string) {
+    // TODO: how do you capture push? and what of the password history logs?
+    this.updateUser({});
     try {
-      this.userModel.model
+      await this.userModel.model
         .updateOne({ customId: userID }, { $push: { orgs: orgID } })
         .exec();
     } catch (error) {

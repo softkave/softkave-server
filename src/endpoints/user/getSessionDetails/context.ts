@@ -1,31 +1,20 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import {
-  IGetSessionDetailsParameters,
-  IGetSessionDetailsContext
-} from "./types";
-import logger from "utils/logger";
 import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import { IGetSessionDetailsContext } from "./types";
 
+// tslint:disable-next-line: no-empty-interface
 export interface IGetSessionDetailsContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IGetSessionDetailsParameters;
-}
+  extends IBaseEndpointContextParameters {}
 
 export default class GetSessionDetails extends BaseEndpointContext
   implements IGetSessionDetailsContext {
-  public data: IGetSessionDetailsParameters;
-
-  constructor(p: IGetSessionDetailsContextParameters) {
-    super(p);
-    this.data = p.data;
-  }
-
-  public async getNotificationCount(email: string) {
+  public async getNotificationsCount(email: string) {
     try {
       return await this.notificationModel.model
-        .estimatedDocumentCount({
+        .countDocuments({
           "to.email": email
         })
         .lean()
@@ -36,10 +25,10 @@ export default class GetSessionDetails extends BaseEndpointContext
     }
   }
 
-  public async getAssignedTaskCount(customId: string) {
+  public async getAssignedTasksCount(customId: string) {
     try {
       return await this.blockModel.model
-        .estimatedDocumentCount({
+        .countDocuments({
           ["taskCollaborators.userId"]: customId,
           type: "task"
         })
@@ -51,6 +40,6 @@ export default class GetSessionDetails extends BaseEndpointContext
   }
 
   public getOrgsCount(UOL: number) {
-    return UOL;
+    return Promise.resolve(UOL);
   }
 }

@@ -1,7 +1,10 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IChangePasswordParameters } from "../changePassword/types";
+import {
+  IChangePasswordParameters,
+  IChangePasswordResult
+} from "../changePassword/types";
 
 export interface IChangePasswordWithTokenContext extends IBaseEndpointContext {
   data: IChangePasswordParameters;
-  changePassword: () => Promise<void>;
+  changePassword: (password: string) => Promise<IChangePasswordResult>;
 }

@@ -3,6 +3,7 @@ import { validate } from "../../../utils/joiUtils";
 import { userEndpoints } from "../constants";
 import { UserDoesNotExistError } from "../errors";
 import UserToken from "../UserToken";
+import { addEntryToPasswordDateLog } from "../utils";
 import { IForgotPasswordContext } from "./types";
 import { forgotPasswordJoiSchema } from "./validation";
 
@@ -31,17 +32,20 @@ async function forgotPassword(context: IForgotPasswordContext) {
     expires: expiration.valueOf()
   });
 
-  await sendChangePasswordEmail({
+  await context.sendChangePasswordEmail({
     expiration,
     emailAddress: user.email,
     query: { t: token }
   });
 
-  user.forgotPasswordHistory = addEntryToPasswordDateLog(
+  const forgotPasswordHistory = addEntryToPasswordDateLog(
     user.forgotPasswordHistory
   );
 
-  user.save();
+  context.updateUser({ forgotPasswordHistory }).catch(() => {
+    // TODOL should we log something here?
+    // Fire and forget
+  });
 }
 
 export default forgotPassword;

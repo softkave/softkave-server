@@ -17,5 +17,7 @@ export default class ChangePasswordContext extends BaseEndpointContext
     this.data = p.data;
   }
 
-  public saveUserPasswordHash(hash: string) {}
+  public async saveUserPasswordHash(hash: string) {
+    await this.updateUser({ hash });
+  }
 }

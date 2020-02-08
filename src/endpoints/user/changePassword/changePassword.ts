@@ -10,12 +10,12 @@ async function changePassword(context: IChangePasswordContext) {
   const result = validate(context.data, changePasswordJoiSchema);
   const passwordValue = result.password;
   const user = await context.getUser();
-  user.hash = await argon2.hash(passwordValue);
-  user.changePasswordHistory = addEntryToPasswordDateLog(
+  const hash = await argon2.hash(passwordValue);
+  const changePasswordHistory = addEntryToPasswordDateLog(
     user.changePasswordHistory
   );
 
-  await context.saveUserPasswordHash(user.hash);
+  await context.updateUser({ hash, changePasswordHistory });
 
   return {
     user,

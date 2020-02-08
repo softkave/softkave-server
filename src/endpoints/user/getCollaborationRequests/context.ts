@@ -15,7 +15,7 @@ export default class GetCollaborationRequestsContext extends BaseEndpointContext
     super(p);
   }
 
-  public async getCollaborationRequestsFromDatabase(userEmail: string) {
+  public async getCollaborationRequestsFromStorage(userEmail: string) {
     try {
       const requests = await this.notificationModel.model
         .find({

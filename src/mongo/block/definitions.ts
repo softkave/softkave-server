@@ -96,6 +96,42 @@ export interface IBlock {
   subTasks: ISubTask[];
 }
 
+interface INBlock {
+  customId: string;
+  name: string;
+  lowerCasedName: string;
+  description: string;
+  expectedEndAt: number;
+  createdAt: number;
+  color: string;
+  updatedAt: number;
+  type: BlockType;
+
+  parents: string; // - updated from string[]
+
+  createdBy: string;
+
+  taskCollaborationType: ITaskCollaborationData; // - deprecate
+
+  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborators: ITaskCollaborator[];
+  priority: string;
+
+  isBacklog: boolean; // - deprecate
+
+  tasks: string[];
+  groups: string[];
+  projects: string[];
+
+  groupTaskContext: string[];
+  groupProjectContext: string[];
+
+  roles: IBlockRole[]; // - deprecate for now
+  subTasks: ISubTask[]; // - should sub-tasks be their own blocks?
+
+  labels: string[]; // - new
+}
+
 const blockSchema = {
   customId: { type: String, unique: true },
   name: {

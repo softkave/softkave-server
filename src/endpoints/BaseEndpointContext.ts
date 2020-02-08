@@ -1,3 +1,4 @@
+import merge from "lodash/merge";
 import { IBlock } from "mongo/block";
 import BlockModel from "mongo/block/BlockModel";
 import { INotification } from "mongo/notification";
@@ -17,6 +18,8 @@ export interface IBaseEndpointContext {
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (blockID: string) => Promise<IBlock>;
   getNotificationByID: (id: string) => Promise<INotification>;
+
+  updateUser: (data: Partial<IUser>) => Promise<void>;
 }
 
 export interface IBaseEndpointContextParameters {
@@ -73,7 +76,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     try {
       return await this.blockModel.model
         .findOne({
-          blockID
+          customId: blockID
         })
         .lean()
         .exec();
@@ -86,8 +89,22 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
   public async getNotificationByID(id: string) {
     try {
       return await this.notificationModel.model
-        .findOne({ notificationID: id })
+        .findOne({ customId: id })
         .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async updateUser(data: Partial<IUser>) {
+    const user = await this.getUser();
+    merge(user, data);
+
+    try {
+      await this.userModel.model
+        .updateOne({ customId: user.customId }, data)
         .exec();
     } catch (error) {
       logger.error(error);

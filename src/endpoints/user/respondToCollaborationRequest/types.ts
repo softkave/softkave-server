@@ -3,18 +3,18 @@ import { CollaborationRequestResponse } from "endpoints/notification/constants";
 import { INotification } from "mongo/notification";
 
 export interface IRespondToCollaborationRequestParameters {
-  requestID: string;
+  customId: string;
   response: CollaborationRequestResponse;
 }
 
 export interface IRespondToCollaborationRequestContext
   extends IBaseEndpointContext {
   data: IRespondToCollaborationRequestParameters;
-  addResponseToCollaborationRequestInDatabase: (
+  addResponseToCollaborationRequestToStorage: (
     customId: string,
     email: string,
     response: string
   ) => Promise<INotification>;
-  deleteCollaborationRequestInDatabase: (id: string) => Promise<void>;
+  deleteCollaborationRequestInStorage: (id: string) => Promise<void>;
   addOrgToUser: (orgID: string, userID: string) => Promise<void>;
 }

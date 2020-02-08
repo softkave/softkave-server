@@ -12,7 +12,7 @@ async function changePasswordWithToken(
     throw new InvalidCredentialsError();
   }
 
-  return context.changePassword();
+  return context.changePassword(context.data.password);
 }
 
 export default changePasswordWithToken;

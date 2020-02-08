@@ -3,15 +3,10 @@ import { IGetSessionDetailsContext } from "./types";
 async function getSessionDetails(
   context: IGetSessionDetailsContext
 ): Promise<any> {
-  const notificationCount = await context.getNotificationCount(
-    context.data.user.email
-  );
-  const assignedTaskCount = await context.getAssignedTaskCount(
-    context.data.user.customId
-  );
-  const organisationsCount = context.getOrgsCount(
-    context.data.user.orgs.length
-  );
+  const user = await context.getUser();
+  const notificationCount = await context.getNotificationsCount(user.email);
+  const assignedTaskCount = await context.getAssignedTasksCount(user.customId);
+  const organisationsCount = context.getOrgsCount(user.orgs.length);
 
   return {
     notificationCount,

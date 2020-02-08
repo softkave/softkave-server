@@ -2,7 +2,7 @@ import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import { INotification } from "mongo/notification";
 
 export interface IGetCollaborationRequestsContext extends IBaseEndpointContext {
-  getCollaborationRequestsFromDatabase: (
+  getCollaborationRequestsFromStorage: (
     userEmail: string
   ) => Promise<INotification[]>;
 }
