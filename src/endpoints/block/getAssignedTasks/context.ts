@@ -16,7 +16,7 @@ export default class GetAssignedTasksContext extends BaseEndpointContext
     super(p);
   }
 
-  public async getAssignedTasksFromDatabase() {
+  public async getAssignedTasksFromStorage() {
     try {
       const user = await this.getUser();
 

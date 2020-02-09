@@ -1,14 +1,22 @@
+import moment from "moment";
+import { INotification } from "mongo/notification";
+import { IUser } from "mongo/user";
+import appInfo from "res/appInfo";
+import { indexArray } from "utils/functionUtils";
+import { validate } from "utils/joiUtils";
+import logger from "utils/logger";
+import canReadBlock from "../canReadBlock";
+import {
+  CollaborationRequestSentBeforeError,
+  CollaboratorExistsInOrgError
+} from "../errors";
 import { IAddCollaboratorsContext } from "./types";
+import { addCollaboratorsJoiSchema } from "./validation";
 
-// TODO:  define all any types
-
-function isRequestAccepted(request: any) {
+function isRequestAccepted(request: INotification) {
   if (Array.isArray(request.statusHistory)) {
-    return !!request.statusHistory.find((status: any) => {
-      return (
-        status.status ===
-        notificationConstants.collaborationRequestStatusTypes.accepted
-      );
+    return !!request.statusHistory.find(status => {
+      return status.status === "accepted";
     });
   }
 
@@ -18,18 +26,16 @@ function isRequestAccepted(request: any) {
 async function addCollaborators(
   context: IAddCollaboratorsContext
 ): Promise<void> {
-  const result = validate({ collaborators }, addCollaboratorJoiSchema);
-  collaborators = result.collaborators;
+  const result = validate(context.data, addCollaboratorsJoiSchema);
+  const collaborators = result.collaborators;
+  const user = await context.getUser();
+  const block = await context.getBlockByID(result.customId);
 
-  await accessControlCheck({
-    user,
-    block,
-    accessControlModel,
-    actionName: blockActionsMap.ADD_COLLABORATOR
-  });
+  // TODO: should we pass only the block ID, since that's all it uses?
+  await canReadBlock({ user, block });
 
   const collaboratorsEmailArr = collaborators.map((collaborator: any) => {
-    return collaborator.email.toLowerCase();
+    return collaborator.email;
   });
 
   const indexedNewCollaborators = indexArray(collaborators, {
@@ -40,26 +46,12 @@ async function addCollaborators(
     })
   });
 
-  const existingUsersQuery = {
-    email: {
-      $in: collaboratorsEmailArr
-    }
-    // orgs: block.customId
-  };
-
-  const existingUsers = await userModel.model
-    .find(existingUsersQuery, "email orgs")
-    .lean()
-    .exec();
-
-  // const indexedExistingUsers = indexArray(existingUsers, {
-  //   path: "email"
-  // });
+  const existingUsers = await context.getUserListByEmail(collaboratorsEmailArr);
 
   const indexedExistingUsers = {};
   const existingUsersInOrg = [];
 
-  existingUsers.forEach((existingUser: Partial<IUser>) => {
+  existingUsers.forEach((existingUser: IUser) => {
     indexedExistingUsers[existingUser.email] = existingUser;
 
     if (existingUser.orgs!.indexOf(block.customId) !== -1) {
@@ -72,43 +64,30 @@ async function addCollaborators(
       const indexedNewCollaborator =
         indexedNewCollaborators[existingUser.email];
 
-      return new OperationError(
-        notificationErrorFields.sendingRequestToAnExistingCollaborator,
-        notificationErrorMessages.sendingRequestToAnExistingCollaborator,
-        `collaborators.${indexedNewCollaborator.index}.email`
-      );
+      return new CollaboratorExistsInOrgError({
+        field: `collaborators.${indexedNewCollaborator.index}.email`
+      });
     });
 
     throw errors;
   }
 
-  const existingCollabReqQuery = {
-    "to.email": {
-      $in: collaboratorsEmailArr
-    },
-    "from.blockId": block.customId
-  };
-
-  const existingCollaborationRequests = await notificationModel.model
-    .find(existingCollabReqQuery, "to.email createdAt")
-    .lean()
-    .exec();
+  const existingCollaborationRequests = await context.getExistingCollaborationRequests(
+    collaboratorsEmailArr,
+    block.customId
+  );
 
   if (existingCollaborationRequests.length > 0) {
     const errors = existingCollaborationRequests.map((request: any) => {
       const indexedNewCollaborator = indexedNewCollaborators[request.to.email];
       if (isRequestAccepted(request)) {
-        return new OperationError(
-          notificationErrorFields.sendingRequestToAnExistingCollaborator,
-          notificationErrorMessages.sendingRequestToAnExistingCollaborator,
-          `collaborators.${indexedNewCollaborator.index}.email`
-        );
+        return new CollaboratorExistsInOrgError({
+          field: `collaborators.${indexedNewCollaborator.index}.email`
+        });
       } else {
-        return new OperationError(
-          notificationErrorFields.requestHasBeenSentBefore,
-          notificationErrorMessages.requestHasBeenSentBefore,
-          `collaborators.${indexedNewCollaborator.index}.email`
-        );
+        return new CollaborationRequestSentBeforeError({
+          field: `collaborators.${indexedNewCollaborator.index}.email`
+        });
       }
     });
 
@@ -122,7 +101,6 @@ async function addCollaborators(
       You have been invited by ${user.name} to collaborate in ${block.name}.
     `;
 
-    // TODO: Define type
     return {
       customId: request.customId,
       from: {
@@ -137,25 +115,25 @@ async function addCollaborators(
       to: {
         email: request.email.toLowerCase()
       },
-      type: notificationConstants.notificationTypes.collaborationRequest,
+      type: "collab-req",
       expiresAt: request.expiresAt || null,
       statusHistory: [
         {
-          status: notificationConstants.collaborationRequestStatusTypes.pending,
+          status: "pending",
           date: Date.now()
         }
       ]
-    };
+    } as INotification;
   });
 
-  await notificationModel.model.insertMany(collaborationRequests);
+  await context.saveNotifications(collaborationRequests);
 
   // TODO: maybe deffer sending email till end of day
   sendEmails(collaborationRequests);
 
-  function sendEmails(collaborationRequestsParam: any) {
-    const emailPromises = collaborationRequestsParam.map((request: any) => {
-      return sendCollabRequestEmail({
+  function sendEmails(collaborationRequestsParam: INotification[]) {
+    const emailPromises = collaborationRequestsParam.map(request => {
+      return context.sendCollaborationRequestEmail({
         email: request.to.email,
         senderName: user.name,
         senderOrg: block.name,
@@ -168,28 +146,23 @@ async function addCollaborators(
     });
 
     // TODO: Resend collaboration requests that have not been sent or that failed
-    emailPromises.forEach(async (promise: Promise<any>, index: number) => {
-      try {
-        await promise;
-        const request = collaborationRequestsParam[index];
-        notificationModel
-          .newModel()
-          .updateOne(
-            {
-              customId: request.customId
-            },
-            {
-              $push: {
-                sentEmailHistory: {
-                  date: Date.now()
-                }
-              }
-            }
-          )
-          .exec();
-      } catch (error) {
-        console.error(error);
-      }
+    emailPromises.forEach(async (promise: Promise<void>, index: number) => {
+      promise
+        .then(() => {
+          const request: INotification = collaborationRequestsParam[index];
+          const sentEmailHistory = request.sentEmailHistory.concat({
+            date: Date.now()
+          });
+
+          context.updateNotificationByID(request.customId, {
+            sentEmailHistory
+          });
+        })
+        .catch(error => {
+          // Fire and forget
+          // TODO: log the time endpoints and specific operations take, for improvements
+          logger.error(error);
+        });
     });
   }
 }

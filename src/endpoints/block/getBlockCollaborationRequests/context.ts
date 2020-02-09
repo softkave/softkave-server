@@ -1,19 +1,39 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import {
+  IGetBlockCollaborationRequestsContext,
+  IGetBlockCollaborationRequestsParameters
+} from "./types";
 
-export interface IAddBlockContextParameters
+export interface IGetBlockCollaborationRequestsContextParameters
   extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
+  data: IGetBlockCollaborationRequestsParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
+export default class GetBlockCollaborationRequestsContext
+  extends BaseEndpointContext
+  implements IGetBlockCollaborationRequestsContext {
+  public data: IGetBlockCollaborationRequestsParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: IGetBlockCollaborationRequestsContextParameters) {
     super(p);
     this.data = p.data;
+  }
+
+  public async getCollaborationRequestsFromStorage(blockID: string) {
+    try {
+      return await this.notificationModel.model
+        .find({
+          "from.blockId": blockID
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
   }
 }

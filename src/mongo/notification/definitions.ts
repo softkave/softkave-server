@@ -24,8 +24,17 @@ const notificationToSchema = {
   email: String
 };
 
+export type CollaborationRequestStatusType =
+  | "accepted"
+  | "declined"
+  | "revoked"
+  | "pending"
+  | "expired";
+
+export type CollaborationRequestResponse = "accepted" | "declined";
+
 export interface INotificationStatus {
-  status: string;
+  status: CollaborationRequestStatusType;
   date: number;
 }
 
@@ -42,6 +51,8 @@ const notificationSentEmailHistorySchema = {
   date: Number
 };
 
+export type NotificationType = "collab-req" | "remove-collaborator";
+
 export interface INotification {
   customId: string;
   from: INotificationFrom;
@@ -50,7 +61,7 @@ export interface INotification {
   readAt: number;
   to: INotificationTo;
   expiresAt: number;
-  type: string;
+  type: NotificationType;
   statusHistory: INotificationStatus[];
   sentEmailHistory: INotificationSentEmailHistoryItem[];
 }

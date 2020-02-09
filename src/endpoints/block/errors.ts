@@ -36,3 +36,17 @@ export class BlockExistsError extends OperationError {
     }
   }
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class CollaboratorExistsInOrgError extends OperationError {
+  public name = "CollaboratorExistsInOrgError";
+  public message =
+    "A collaborator with this email address exists in this organization";
+}
+
+// tslint:disable-next-line: max-classes-per-file
+export class CollaborationRequestSentBeforeError extends OperationError {
+  public name = "CollaborationRequestSentBeforeError";
+  public message =
+    "A collaboration request has been sent before to this email address";
+}

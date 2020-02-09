@@ -1,3 +1,6 @@
 import Joi from "joi";
+import blockValidationSchemas from "../validation";
 
-export const getUserDataJoiSchema = Joi.object().keys({});
+export const deleteBlockJoiSchema = Joi.object().keys({
+  customId: blockValidationSchemas.blockID
+});

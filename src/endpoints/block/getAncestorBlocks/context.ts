@@ -15,7 +15,7 @@ export default class GetAncestorBlocksContext extends BaseEndpointContext
     super(p);
   }
 
-  public async getAncestorBlocksFromDatabase() {
+  public async getAncestorBlocksFromStorage() {
     try {
       const user = await this.getUser();
       const organizationIDs = Array.isArray(user.orgs) ? user.orgs : [];

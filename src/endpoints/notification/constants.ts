@@ -7,17 +7,6 @@ const collaborationRequestRevoked = "revoked";
 const collaborationRequestPending = "pending";
 const collaborationRequestExpired = "expired";
 
-export type CollaborationRequestStatusType =
-  | typeof collaborationRequestAccepted
-  | typeof collaborationRequestDeclined
-  | typeof collaborationRequestExpired
-  | typeof collaborationRequestPending
-  | typeof collaborationRequestRevoked;
-
-export type CollaborationRequestResponse =
-  | typeof collaborationRequestAccepted
-  | typeof collaborationRequestDeclined;
-
 export const notificationConstants = {
   notificationTypes: {
     collaborationRequest: notificationTypeCollaborationRequest,

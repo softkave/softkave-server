@@ -119,10 +119,13 @@ interface INBlock {
 
   isBacklog: boolean; // - deprecate
 
+  // can we remove these fields and fetch the counts and the children using parent field instead
   tasks: string[];
   groups: string[];
   projects: string[];
 
+  // can we consolidate all the groups?
+  // like - groups: { customId: string, taskContext: number, projectContext: number }
   groupTaskContext: string[];
   groupProjectContext: string[];
 

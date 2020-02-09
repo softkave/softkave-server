@@ -1,10 +1,11 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 
 export interface IDeleteBlockParameters {
-  blockID: string;
+  customId: string;
 }
 
 export interface IDeleteBlockContext extends IBaseEndpointContext {
   data: IDeleteBlockParameters;
-  deleteBlockInDatabase: (blockID: string) => Promise<void>;
+  deleteBlockInStorage: (customId: string) => Promise<void>;
+  deleteBlockChildrenInStorage: (customId: string) => Promise<void>;
 }

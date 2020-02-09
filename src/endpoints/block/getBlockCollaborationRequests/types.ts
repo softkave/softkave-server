@@ -1,15 +1,18 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
+import { INotification } from "mongo/notification";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface IGetBlockCollaborationRequestsParameters {
+  customId: string;
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
+export interface IGetBlockCollaborationRequestsContext
+  extends IBaseEndpointContext {
+  data: IGetBlockCollaborationRequestsParameters;
+  getCollaborationRequestsFromStorage: (
+    blockID: string
+  ) => Promise<INotification[]>;
 }
 
-export interface IAddBlockResult {
-  block: IBlock;
+export interface IGetBlockCollaborationRequestsResult {
+  requests: INotification[];
 }

@@ -11,7 +11,7 @@ async function getBlockChildren(
     ? data.typeList
     : blockConstants.blockTypesArray;
   const blocks = await context.getBlockChildrenFromDatabase(
-    data.blockID,
+    data.customId,
     typeList
   );
 

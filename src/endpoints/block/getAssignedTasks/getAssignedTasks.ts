@@ -3,7 +3,7 @@ import { IGetAssignedTasksContext, IGetAssignedTasksResult } from "./types";
 async function getUserData(
   context: IGetAssignedTasksContext
 ): Promise<IGetAssignedTasksResult> {
-  const blocks = await context.getAssignedTasksFromDatabase();
+  const blocks = await context.getAssignedTasksFromStorage();
 
   return {
     blocks

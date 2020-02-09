@@ -4,6 +4,7 @@ import { validationSchemas } from "utils/validationUtils";
 import { blockConstants } from "../constants";
 
 const newCollaboratorSchema = Joi.object().keys({
+  customId: validationSchemas.uuid,
   email: Joi.string()
     .required()
     .trim()
@@ -12,12 +13,16 @@ const newCollaboratorSchema = Joi.object().keys({
   body: Joi.string()
     .min(notificationConstants.minAddCollaboratorMessageLength)
     .max(notificationConstants.maxAddCollaboratorMessageLength),
-  expiresAt: Joi.number(),
-  customId: validationSchemas.uuid
+  expiresAt: Joi.number()
 });
 
-export const newCollaboratorsListSchema = Joi.array()
+const newCollaboratorsListSchema = Joi.array()
   .items(newCollaboratorSchema)
   .min(blockConstants.minAddCollaboratorValuesLength)
   .max(blockConstants.maxAddCollaboratorValuesLength)
   .unique("email");
+
+export const addCollaboratorsJoiSchema = Joi.object().keys({
+  customId: validationSchemas.uuid,
+  collaborators: newCollaboratorsListSchema
+});

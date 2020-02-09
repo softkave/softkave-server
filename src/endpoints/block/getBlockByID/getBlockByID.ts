@@ -6,7 +6,7 @@ async function getUserData(
   context: IGetBlockByIDContext
 ): Promise<IGetBlockByIDResult> {
   const data = validate(context.data, getBlockByIDJoiSchema);
-  const block = await context.getBlockByID(data.blockID);
+  const block = await context.getBlockByID(data.customId);
   return { block };
 }
 

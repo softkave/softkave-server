@@ -16,11 +16,15 @@ export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
-  getBlockByID: (blockID: string) => Promise<IBlock>;
-  getNotificationByID: (id: string) => Promise<INotification>;
+  getBlockByID: (customId: string) => Promise<IBlock>;
+  getNotificationByID: (customId: string) => Promise<INotification>;
 
   updateUser: (data: Partial<IUser>) => Promise<void>;
-  updateBlockByID: (id: string, data: Partial<IBlock>) => Promise<void>;
+  updateBlockByID: (customId: string, data: Partial<IBlock>) => Promise<void>;
+  updateNotificationByID: (
+    customId: string,
+    data: Partial<INotification>
+  ) => Promise<void>;
 }
 
 export interface IBaseEndpointContextParameters {
@@ -118,6 +122,18 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
   public async updateBlockByID(customId: string, data: Partial<IBlock>) {
     try {
       await this.blockModel.model.updateOne({ customId }, data).exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async updateNotificationByID(
+    customId: string,
+    data: Partial<INotification>
+  ) {
+    try {
+      await this.notificationModel.model.updateOne({ customId }, data).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
