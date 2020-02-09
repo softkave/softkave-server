@@ -1,15 +1,15 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
+import { ICollaborator } from "mongo/user";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface IGetBlockCollaboratorsParameters {
+  customId: string;
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
+export interface IGetBlockCollaboratorsContext extends IBaseEndpointContext {
+  data: IGetBlockCollaboratorsParameters;
+  getBlockCollaborators: (blockID: string) => Promise<ICollaborator[]>;
 }
 
-export interface IAddBlockResult {
-  block: IBlock;
+export interface IGetBlockCollaboratorsResult {
+  collaborators: ICollaborator[];
 }

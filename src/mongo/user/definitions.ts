@@ -26,7 +26,13 @@ export interface IUser {
   rootBlockId: string;
   orgs: string[];
   color: string;
-  // roles: IUserRole[];
+}
+
+export interface ICollaborator {
+  customId: string;
+  name: string;
+  email: string;
+  color: string;
 }
 
 export interface IUserDocument extends Document, IUser {}
@@ -56,6 +62,8 @@ const userSchema = {
   rootBlockId: String,
   orgs: [String],
   color: String,
+
+  // TODO: ??
   roles: [userRoleSchema],
   changePasswordTokenIDs: [String]
 };
