@@ -1,4 +1,7 @@
+import { notificationConstants } from "endpoints/notification/constants";
 import Joi from "joi";
+import { validationSchemas } from "utils/validationUtils";
+import { blockConstants } from "../constants";
 
 const newCollaboratorSchema = Joi.object().keys({
   email: Joi.string()
@@ -10,13 +13,11 @@ const newCollaboratorSchema = Joi.object().keys({
     .min(notificationConstants.minAddCollaboratorMessageLength)
     .max(notificationConstants.maxAddCollaboratorMessageLength),
   expiresAt: Joi.number(),
-  customId: joiSchemas.uuidSchema
+  customId: validationSchemas.uuid
 });
 
-// TODO: Implement test for unique items
-const newCollaboratorsListSchema = Joi.array()
+export const newCollaboratorsListSchema = Joi.array()
   .items(newCollaboratorSchema)
   .min(blockConstants.minAddCollaboratorValuesLength)
-  .max(blockConstants.maxAddCollaboratorValuesLength);
-
-export const getUserDataJoiSchema = Joi.object().keys({});
+  .max(blockConstants.maxAddCollaboratorValuesLength)
+  .unique("email");

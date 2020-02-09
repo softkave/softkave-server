@@ -1,4 +1,4 @@
-import { IAddCollaboratorsContext, IAddCollaboratorsResult } from "./types";
+import { IAddCollaboratorsContext } from "./types";
 
 // TODO:  define all any types
 
@@ -15,20 +15,9 @@ function isRequestAccepted(request: any) {
   return false;
 }
 
-const addCollaboratorJoiSchema = Joi.object().keys({
-  collaborators: addCollaboratorCollaboratorsSchema
-});
-
-interface INewCollaborator {
-  email: string;
-  body: string;
-  expiresAt: number;
-  customId: string;
-}
-
 async function addCollaborators(
   context: IAddCollaboratorsContext
-): Promise<IAddCollaboratorsResult> {
+): Promise<void> {
   const result = validate({ collaborators }, addCollaboratorJoiSchema);
   collaborators = result.collaborators;
 

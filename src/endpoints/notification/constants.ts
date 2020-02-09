@@ -6,6 +6,7 @@ const collaborationRequestDeclined = "declined";
 const collaborationRequestRevoked = "revoked";
 const collaborationRequestPending = "pending";
 const collaborationRequestExpired = "expired";
+
 export type CollaborationRequestStatusType =
   | typeof collaborationRequestAccepted
   | typeof collaborationRequestDeclined
@@ -17,7 +18,7 @@ export type CollaborationRequestResponse =
   | typeof collaborationRequestAccepted
   | typeof collaborationRequestDeclined;
 
-const notificationConstants = {
+export const notificationConstants = {
   notificationTypes: {
     collaborationRequest: notificationTypeCollaborationRequest,
     removeCollaborator: notificationTypeRemoveCollaborator
@@ -42,49 +43,4 @@ const notificationConstants = {
   },
   minAddCollaboratorMessageLength: 0,
   maxAddCollaboratorMessageLength: 500
-};
-
-const notificationFromFieldNames = {
-  userId: "userId",
-  name: "name",
-  blockId: "blockId",
-  blockName: "blockName",
-  blockType: "blockType"
-};
-
-const notificationToFieldNames = {
-  email: "email",
-  userId: "userId"
-};
-
-const notificationStatusHistoryFieldNames = {
-  status: "status",
-  date: "date"
-};
-
-const notificationSendEmailHistoryFieldNames = {
-  date: "date"
-};
-
-const notificationFieldNames = {
-  customId: "customId",
-  from: "from",
-  createdAt: "createdAt",
-  body: "body",
-  readAt: "readAt",
-  to: "to",
-  expiresAt: "expiresAt",
-  type: "type",
-  statusHistory: "statusHistory",
-  sentEmailHistory: "sentEmailHistory",
-  root: "root"
-};
-
-export {
-  notificationConstants,
-  notificationFieldNames,
-  notificationFromFieldNames,
-  notificationToFieldNames,
-  notificationSendEmailHistoryFieldNames,
-  notificationStatusHistoryFieldNames
 };

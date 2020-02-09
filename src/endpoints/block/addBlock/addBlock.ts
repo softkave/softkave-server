@@ -1,79 +1,62 @@
-import { IGetUserDataContext, IGetUserDataResult } from "./types";
+import { IBlock } from "mongo/block";
+import { validate } from "utils/joiUtils";
+import canReadBlock from "../canReadBlock";
+import blockValidationSchemas from "../validation";
+import { IAddBlockContext, IAddBlockResult } from "./types";
 
-const addBlockJoiSchema = Joi.object().keys({
-  block: blockJoiSchema
-});
+async function addBlock(context: IAddBlockContext): Promise<IAddBlockResult> {
+  const data = validate(context.data, blockValidationSchemas.newBlock);
+  const newBlock = data.block;
+  const user = await context.getUser();
 
-export interface IAddBlockParameters {
-  blockModel: BlockModel;
-  user: IUserDocument;
-  block: IBlockDocument;
-  accessControlModel: AccessControlModel;
-}
-
-async function getUserData(
-  context: IGetUserDataContext
-): Promise<IGetUserDataResult> {
-  let { block: validatedBlock } = validate({ block }, addBlockJoiSchema);
-
-  if (validatedBlock.type === blockConstants.blockTypes.root) {
-    throw blockError.invalidBlockType;
-  }
-
-  if (validatedBlock.type === blockConstants.blockTypes.org) {
-    const result = await addBlockToDB({
-      block: validatedBlock,
-      blockModel,
-      user
-    });
+  if (newBlock.type === "org") {
+    const org = await context.addBlockToStorage(newBlock);
 
     // TODO: scrub for orgs that are not added to user and add or clean them
-    // Continuation: you can do this when user tries to read them, or add them again
-    await addOrgIDToUser({ user, ID: result.customId });
+    //    you can do this when user tries to read them, or add them again
+    // TODO: scrub all data that failed it's pipeline
+
+    if (user.orgs.includes(org.customId)) {
+      const orgIDs = user.orgs.concat(org.customId);
+      await context.updateUser({ orgs: orgIDs });
+    } else {
+      // TODO: should we log an error because it means the user already has the org
+    }
+
     return {
-      block: result
+      block: org
     };
   }
 
-  if (!blockHasParents(validatedBlock)) {
-    throw new OperationError(
-      validationErrorFields.dataInvalid,
-      validationErrorMessages.dataInvalid
+  const rootParentId = newBlock.parents;
+  const rootParent = await context.getBlockByID(rootParentId);
+
+  await canReadBlock({ user, block: rootParent });
+
+  const block = await context.addBlockToStorage(newBlock);
+  const pluralizedType = `${block.type}s`;
+  const immediateParentID = TODO;
+  const immediateParent: IBlock = TODO;
+
+  // TODO: implement a more efficient way, like using $addToSet
+  const update: Partial<IBlock> = {
+    [pluralizedType]: [].concat(immediateParent[pluralizedType], block.customId)
+  };
+
+  if (block.type === "group") {
+    update.groupTaskContext = immediateParent.groupTaskContext.concat(
+      block.customId
+    );
+    update.groupProjectContext = immediateParent.groupProjectContext.concat(
+      block.customId
     );
   }
 
-  const rootParentId = validatedBlock.parents[0];
-  const rootParent = await blockModel.model
-    .findOne({ customId: rootParentId })
-    .lean()
-    .exec();
-
-  await canReadBlock({ user, block: rootParent });
-  validatedBlock = await addBlockToDB({
-    block: validatedBlock,
-    blockModel,
-    user
-  });
-  const pluralizedType = `${validatedBlock.type}s`;
-  const update = {
-    [pluralizedType]: validatedBlock.customId
-  };
-
-  if (validatedBlock.type === blockConstants.blockTypes.group) {
-    update.groupTaskContext = validatedBlock.customId;
-    update.groupProjectContext = validatedBlock.customId;
-  }
-
-  await blockModel.model
-    .updateOne(
-      { customId: getImmediateParentID(validatedBlock) },
-      { $addToSet: update }
-    )
-    .exec();
+  await context.updateBlockByID(immediateParent.customId, update);
 
   return {
-    block: validatedBlock
+    block
   };
 }
 
-export default getUserData;
+export default addBlock;

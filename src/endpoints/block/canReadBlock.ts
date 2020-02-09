@@ -1,6 +1,6 @@
+import { IUser } from "mongo/user";
 import { IBlock } from "../../mongo/block";
-import { IUser } from "../user/user";
-import userError from "../user/userError";
+import { PermissionDeniedError } from "../errors";
 import { blockConstants } from "./constants";
 
 export interface ICanReadBlockParameters {
@@ -27,7 +27,7 @@ async function canReadBlock({ block, user }: ICanReadBlockParameters) {
     }
   }
 
-  throw userError.permissionDenied;
+  throw new PermissionDeniedError();
 }
 
 export default canReadBlock;

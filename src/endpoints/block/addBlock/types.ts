@@ -8,6 +8,7 @@ export interface IAddBlockParameters {
 
 export interface IAddBlockContext extends IBaseEndpointContext {
   data: IAddBlockParameters;
+  addBlockToStorage: (newBlock: INewBlockInput) => Promise<IBlock>;
 }
 
 export interface IAddBlockResult {

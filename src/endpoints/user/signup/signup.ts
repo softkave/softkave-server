@@ -25,7 +25,7 @@ async function signup(context: ISignupContext): Promise<ISignupResult> {
   };
 
   const user = await context.saveUser(value);
-  await context.createUserRootBlock(user);
+  await context.createUserRootBlock();
 
   return {
     user,

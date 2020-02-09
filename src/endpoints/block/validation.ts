@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { BlockType } from "mongo/block";
 import { regEx, validationSchemas } from "../../utils/validationUtils";
 import { blockConstants } from "./constants";
 
@@ -18,9 +19,10 @@ const taskCollaboratorsListSchema = Joi.array()
   .unique("userId")
   .items(taskCollaboratorSchema);
 
+const availableTypes = ["group", "org", "project", "task"] as BlockType[];
 const blockType = Joi.string()
   .lowercase()
-  .valid(blockConstants.blockTypesArray);
+  .valid(availableTypes);
 
 const blockChildrenIDList = Joi.array()
   .items(validationSchemas.uuid)
@@ -82,7 +84,11 @@ const type = blockType;
 const parents = Joi.array()
   .items(validationSchemas.uuid)
   .unique()
-  .max(blockConstants.maxParentsLength);
+  .max(blockConstants.maxParentsLength)
+  .when("type", {
+    is: Joi.string().valid(["group", "project", "task"] as BlockType[]),
+    then: Joi.required()
+  });
 
 const createdBy = validationSchemas.uuid;
 const taskCollaborationData = taskCollaborationDataSchema;
@@ -120,7 +126,7 @@ const block = Joi.object().keys({
   type: blockType
 });
 
-const newBlock = {
+const newBlock = Joi.object().keys({
   name,
   customId: blockID,
   description,
@@ -135,7 +141,7 @@ const newBlock = {
   groups,
   projects,
   tasks
-};
+});
 
 const blockValidationSchemas = {
   name,

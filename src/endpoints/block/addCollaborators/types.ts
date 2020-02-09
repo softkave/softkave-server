@@ -1,15 +1,15 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
+
+interface INewCollaboratorInput {
+  email: string;
+  body: string;
+  expiresAt: number;
+}
 
 export interface IAddCollaboratorsParameters {
-  block: INewBlockInput;
+  collaborators: INewCollaboratorInput[];
 }
 
 export interface IAddCollaboratorsContext extends IBaseEndpointContext {
   data: IAddCollaboratorsParameters;
-}
-
-export interface IAddCollaboratorsResult {
-  block: IBlock;
 }
