@@ -1,29 +1,27 @@
-import { IGetUserDataContext, IGetUserDataResult } from "./types";
+import randomColor from "randomcolor";
+import uuid from "uuid/v4";
+import { INewBlockInput } from "../types";
+import { ICreateRootBlockContext, ICreateRootBlockResult } from "./types";
 
-async function getUserData(
-  context: IGetUserDataContext
-): Promise<IGetUserDataResult> {
-  let rootBlock = {
+async function createRootBlock(
+  context: ICreateRootBlockContext
+): Promise<ICreateRootBlockResult> {
+  const user = await context.getUser();
+  const rootBlockInput: INewBlockInput = {
     customId: uuid(),
     name: `root_${user.customId}`,
-    createdAt: Date.now(),
     color: randomColor(),
-    type: blockConstants.blockTypes.root,
-    createdBy: user.customId
+    type: "root"
   };
 
-  // TODO: redefine IBlock to make the non-required fields optional
-  rootBlock = await addBlockTodDB({
-    user,
-    blockModel,
-    block: rootBlock as IBlock
-  });
-  user.rootBlockId = rootBlock.customId;
-  await user.save();
+  const rootBlock = await context.addBlockToStorage(rootBlockInput);
+
+  // TODO: should we remove the user if the root block fails?
+  await context.updateUser({ rootBlockId: rootBlock.customId });
 
   return {
     block: rootBlock
   };
 }
 
-export default getUserData;
+export default createRootBlock;

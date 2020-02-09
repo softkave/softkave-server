@@ -75,17 +75,4 @@ export default class RespondToCollaborationRequestContext
       throw new ServerError();
     }
   }
-
-  public async addOrgToUser(orgID: string, userID: string) {
-    // TODO: how do you capture push? and what of the password history logs?
-    this.updateUser({});
-    try {
-      await this.userModel.model
-        .updateOne({ customId: userID }, { $push: { orgs: orgID } })
-        .exec();
-    } catch (error) {
-      logger.error(error);
-      throw new ServerError();
-    }
-  }
 }

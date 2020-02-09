@@ -16,5 +16,4 @@ export interface IRespondToCollaborationRequestContext
     response: string
   ) => Promise<INotification>;
   deleteCollaborationRequestInStorage: (id: string) => Promise<void>;
-  addOrgToUser: (orgID: string, userID: string) => Promise<void>;
 }

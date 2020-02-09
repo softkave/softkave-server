@@ -42,7 +42,3 @@ export const collaborationRequestResponseSchema = Joi.string()
   .trim()
   .lowercase()
   .valid(["accepted", "declined"]);
-
-export const collaborationRequestSchema = Joi.object().keys({
-  readAt: Joi.number()
-});

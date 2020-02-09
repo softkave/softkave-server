@@ -1,17 +1,13 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { BlockType, IBlock } from "mongo/block";
+import { BlockType } from "mongo/block";
 
 export interface IBlockExistsParameters {
-  blockName: string;
-  blockType: BlockType;
-  blockParents: string[];
+  name: string;
+  type: BlockType;
+  parent: string;
 }
 
 export interface IBlockExistsContext extends IBaseEndpointContext {
   data: IBlockExistsParameters;
-  doesBlockInDatabase: (p: IBlockExistsParameters) => Promise<boolean>;
-}
-
-export interface IBlockExistsResult {
-  block: IBlock;
+  doesBlockExistInStorage: (p: IBlockExistsParameters) => Promise<boolean>;
 }

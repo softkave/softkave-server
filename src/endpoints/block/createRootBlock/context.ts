@@ -1,19 +1,28 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockParameters, ICreateRootBlockContext } from "./types";
+import addBlockToDatabase from "../addBlockToDatabase/addBlockToDatabase";
+import AddBlockToDatabaseContext from "../addBlockToDatabase/context";
+import { INewBlockInput } from "../types";
+import { ICreateRootBlockContext } from "./types";
 
+// tslint:disable-next-line: no-empty-interface
 export interface ICreateRootBlockContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
-}
+  extends IBaseEndpointContextParameters {}
 
 export default class CreateRootBlockContext extends BaseEndpointContext
   implements ICreateRootBlockContext {
-  public data: IAddBlockParameters;
+  public async addBlockToStorage(newBlock: INewBlockInput) {
+    const result = await addBlockToDatabase(
+      new AddBlockToDatabaseContext({
+        req: this.req,
+        blockModel: this.blockModel,
+        notificationModel: this.notificationModel,
+        userModel: this.userModel,
+        data: { block: newBlock }
+      })
+    );
 
-  constructor(p: ICreateRootBlockContextParameters) {
-    super(p);
-    this.data = p.data;
+    return result.block;
   }
 }

@@ -1,20 +1,20 @@
-import { IUserDocument } from "../user";
-import NotificationModel from "mongo/notification/NotificationModel";
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
+
+export interface ICollaborationRequestUpdate {
+  readAt: number;
+}
 
 export interface IUpdateCollaborationRequestParameters {
   customId: string;
-  data: any;
-  user: IUserDocument;
-  notificationModel: NotificationModel;
+  data: ICollaborationRequestUpdate;
 }
 
 export interface IUpdateCollaborationRequestContext
   extends IBaseEndpointContext {
   data: IUpdateCollaborationRequestParameters;
-  getUserNotificationAndUpdate: (
+  updateNotificationInStorage: (
     customId: string,
     email: string,
-    data: any
-  ) => Promise<any>;
+    data: ICollaborationRequestUpdate
+  ) => Promise<void>;
 }

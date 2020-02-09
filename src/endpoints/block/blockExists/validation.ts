@@ -1,3 +1,8 @@
 import Joi from "joi";
+import blockValidationSchemas from "../validation";
 
-export const getUserDataJoiSchema = Joi.object().keys({});
+export const blockExistsJoiSchema = Joi.object().keys({
+  name: blockValidationSchemas.lowerCasedName,
+  type: blockValidationSchemas.type,
+  parent: blockValidationSchemas.parents
+});

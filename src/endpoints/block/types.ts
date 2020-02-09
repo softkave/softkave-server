@@ -17,7 +17,7 @@ export interface INewBlockInput {
   type: BlockType;
 
   // TODO: should we only leave the first parent and find another way to implement the parent list?
-  parents: string[];
+  parents?: string[];
   priority?: string;
 
   // TODO: should we remove isBacklog?

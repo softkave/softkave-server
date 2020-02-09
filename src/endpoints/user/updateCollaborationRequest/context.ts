@@ -1,12 +1,12 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import {
-  IUpdateCollaborationRequestParameters,
-  IUpdateCollaborationRequestContext
-} from "./types";
-import logger from "utils/logger";
 import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import {
+  IUpdateCollaborationRequestContext,
+  IUpdateCollaborationRequestParameters
+} from "./types";
 
 export interface IUpdateCollaborationRequestContextParameters
   extends IBaseEndpointContextParameters {
@@ -22,22 +22,19 @@ export default class UpdateCollaborationRequest extends BaseEndpointContext
     this.data = p.data;
   }
 
-  public async getUserNotificationAndUpdate(
+  public async updateNotificationInStorage(
     customId: string,
     email: string,
     data: any
   ) {
     try {
       return await this.notificationModel.model
-        .findOneAndUpdate(
+        .updateOne(
           {
             customId,
             "to.email": email
           },
-          data,
-          {
-            fields: "customId"
-          }
+          data
         )
         .lean()
         .exec();

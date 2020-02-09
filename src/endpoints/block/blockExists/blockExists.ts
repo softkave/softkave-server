@@ -1,39 +1,10 @@
-import { IGetUserDataContext, IGetUserDataResult } from "./types";
+import { validate } from "utils/joiUtils";
+import { IBlockExistsContext } from "./types";
+import { blockExistsJoiSchema } from "./validation";
 
-export interface IBlockExistsParameters {
-  block: IBlock;
-  blockModel: BlockModel;
+async function blockExists(context: IBlockExistsContext): Promise<boolean> {
+  const result = validate(context.data, blockExistsJoiSchema);
+  return context.doesBlockExistInStorage(result);
 }
 
-const blockExistsJoiSchema = Joi.object().keys({
-  block: blockJoiSchema
-});
-
-async function getUserData(
-  context: IGetUserDataContext
-): Promise<IGetUserDataResult> {
-  const result = validate({ block }, blockExistsJoiSchema);
-  block = result.block;
-
-  const { name, type, customId, parents } = block;
-  const blockExistQuery: any = {
-    type: type.toLowerCase(),
-    lowerCasedName: name.toLowerCase()
-  };
-
-  if (parents) {
-    blockExistQuery.parents = parents;
-  }
-
-  if (customId) {
-    blockExistQuery.customId = customId;
-  }
-
-  const blockExistsResult = await blockModel.model
-    .findOne(blockExistQuery, "customId")
-    .exec();
-
-  return blockExistsResult;
-}
-
-export default getUserData;
+export default blockExists;

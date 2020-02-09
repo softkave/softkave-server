@@ -1,10 +1,6 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import {
-  IBlock,
-  ISubTask,
-  ITaskCollaborationData,
-  ITaskCollaborator
-} from "mongo/block";
+import { IBlock } from "mongo/block";
+import { IBlockExistsParameters } from "../blockExists/types";
 import { INewBlockInput } from "../types";
 
 export interface IAddBlockToDatabaseParameters {
@@ -13,8 +9,8 @@ export interface IAddBlockToDatabaseParameters {
 
 export interface IAddBlockToDatabaseContext extends IBaseEndpointContext {
   data: IAddBlockToDatabaseParameters;
-  saveBlock: (block: IBlock) => Promise<void>;
-  doesBlockExist: (block: IBlock) => Promise<boolean>;
+  saveBlock: (block: IBlock) => Promise<IBlock>;
+  doesBlockExist: (block: IBlockExistsParameters) => Promise<boolean>;
 }
 
 export interface IAddBlockToDatabaseResult {

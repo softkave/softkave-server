@@ -1,3 +1,4 @@
+import { IBlock } from "mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
@@ -12,7 +13,7 @@ export interface ISignupContext extends IBaseEndpointContext {
   data: INewUserInput;
   userExists: (email: string) => Promise<boolean>;
   saveUser: (user: INewUser) => Promise<IUser>;
-  createUserRootBlock: (user: IUser) => Promise<string>;
+  createUserRootBlock: () => Promise<IBlock>;
 }
 
 export interface INewUser {

@@ -34,12 +34,14 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
   protected userModel: UserModel;
   protected blockModel: BlockModel;
   protected notificationModel: NotificationModel;
+  protected p: IBaseEndpointContextParameters;
 
   constructor(p: IBaseEndpointContextParameters) {
     this.req = p.req;
     this.userModel = p.userModel;
     this.blockModel = p.blockModel;
     this.notificationModel = p.notificationModel;
+    this.p = p;
   }
 
   public async getUser() {

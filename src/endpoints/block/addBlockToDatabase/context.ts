@@ -1,6 +1,13 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
+import { IBlock } from "mongo/block";
+import mongoConstants from "mongo/constants";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import blockExists from "../blockExists/blockExists";
+import BlockExistsContext from "../blockExists/context";
+import { IBlockExistsParameters } from "../blockExists/types";
 import {
   IAddBlockToDatabaseContext,
   IAddBlockToDatabaseParameters
@@ -20,5 +27,33 @@ export default class AddBlockToDatabaseContext extends BaseEndpointContext
     this.data = p.data;
   }
 
-  public async saveBlock() {}
+  public async saveBlock(b: IBlock) {
+    try {
+      const block = new this.blockModel.model(b);
+      await block.save();
+
+      return block;
+    } catch (error) {
+      // Adding a block fails with code 11000 if unique fields like customId
+      if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+        // TODO: Implement a way to get a new customId and retry
+        throw new ServerError();
+      }
+
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async doesBlockExist(p: IBlockExistsParameters) {
+    return blockExists(
+      new BlockExistsContext({
+        req: this.req,
+        blockModel: this.blockModel,
+        notificationModel: this.notificationModel,
+        userModel: this.userModel,
+        data: p
+      })
+    );
+  }
 }

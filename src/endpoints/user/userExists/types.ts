@@ -1,10 +1,10 @@
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
-export interface IUserExistsInput {
+export interface IUserExistsParameters {
   email: string;
 }
 
 export interface IUserExistsContext extends IBaseEndpointContext {
-  data: IUserExistsInput;
+  data: IUserExistsParameters;
   doesUserExistInDatabase: (email: string) => Promise<boolean>;
 }

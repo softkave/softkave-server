@@ -1,8 +1,9 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import { IBlock } from "mongo/block";
+import { INewBlockInput } from "../types";
 
 export interface ICreateRootBlockContext extends IBaseEndpointContext {
-  addBlockToDatabase: () => Promise<void>;
+  addBlockToStorage: (newBlock: INewBlockInput) => Promise<IBlock>;
 }
 
 export interface ICreateRootBlockResult {

@@ -1,3 +1,1 @@
-import Joi from "joi";
-
-export const getUserDataJoiSchema = Joi.object().keys({});
+// Validation for new blocks is provided in validation file

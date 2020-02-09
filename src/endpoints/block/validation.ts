@@ -61,6 +61,8 @@ const name = Joi.string()
   .min(blockConstants.minNameLength)
   .max(blockConstants.maxNameLength);
 
+const lowerCasedName = name.lowercase();
+
 const description = Joi.string()
   .min(blockConstants.minDescriptionLength)
   .max(blockConstants.maxDescriptionLength)
@@ -98,7 +100,7 @@ const subTasks = Joi.array()
   .max(blockConstants.maxSubTasksLength);
 
 const block = Joi.object().keys({
-  // TODO: blockID or just id
+  // TODO: blockID OR just id OR customId
   blockID,
   name,
   description,
@@ -118,8 +120,26 @@ const block = Joi.object().keys({
   type: blockType
 });
 
+const newBlock = {
+  name,
+  customId: blockID,
+  description,
+  expectedEndAt,
+  color,
+  type,
+  parents,
+  priority,
+  taskCollaborationData,
+  taskCollaborators,
+  subTasks,
+  groups,
+  projects,
+  tasks
+};
+
 const blockValidationSchemas = {
   name,
+  lowerCasedName,
   blockID,
   expectedEndAt,
   description,
@@ -137,6 +157,7 @@ const blockValidationSchemas = {
   updatedAt,
   type,
   block,
+  newBlock,
   blockTypesList: blockTypesSchema
 };
 

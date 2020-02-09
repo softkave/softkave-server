@@ -32,7 +32,12 @@ async function respondToCollaborationRequest(
   } else if (
     response === notificationConstants.collaborationRequestStatusTypes.accepted
   ) {
-    await context.addOrgToUser(ownerBlock.customId, user.customId);
+    if (user.orgs.includes(ownerBlock.customId)) {
+      const orgIDs = user.orgs.concat(ownerBlock.customId);
+      await context.updateUser({ orgs: orgIDs });
+    } else {
+      // TODO: should we log an error because it means the user already has the org
+    }
   }
 }
 
