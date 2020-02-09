@@ -154,9 +154,13 @@ async function addCollaborators(
             date: Date.now()
           });
 
-          context.updateNotificationByID(request.customId, {
-            sentEmailHistory
-          });
+          context
+            .updateNotificationByID(request.customId, {
+              sentEmailHistory
+            })
+            .catch(error => {
+              logger.error(error);
+            });
         })
         .catch(error => {
           // Fire and forget

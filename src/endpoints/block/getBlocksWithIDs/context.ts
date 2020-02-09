@@ -1,18 +1,23 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import {
+  IGetBlocksWithCustomIDsContext,
+  IGetBlocksWithCustomIDsParameters
+} from "./types";
 
-export interface IAddBlockContextParameters
+export interface IGetBlocksWithCustomIDsContextParameters
   extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
+  data: IGetBlocksWithCustomIDsParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
+export default class GetBlocksWithCustomIDsContext extends BaseEndpointContext
+  implements IGetBlocksWithCustomIDsContext {
+  public data: IGetBlocksWithCustomIDsParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: IGetBlocksWithCustomIDsContextParameters) {
     super(p);
     this.data = p.data;
   }

@@ -18,6 +18,7 @@ const notificationFromSchema = {
 
 export interface INotificationTo {
   email: string;
+  userId: string;
 }
 
 const notificationToSchema = {
@@ -58,12 +59,12 @@ export interface INotification {
   from: INotificationFrom;
   createdAt: number;
   body: string;
-  readAt: number;
   to: INotificationTo;
-  expiresAt: number;
   type: NotificationType;
-  statusHistory: INotificationStatus[];
-  sentEmailHistory: INotificationSentEmailHistoryItem[];
+  readAt?: number;
+  expiresAt?: number;
+  statusHistory?: INotificationStatus[];
+  sentEmailHistory?: INotificationSentEmailHistoryItem[];
 }
 
 const notificationSchema = {

@@ -15,11 +15,14 @@ import { IBaseUserTokenData } from "./user/UserToken";
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
+  getUserByCustomID: (customID: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (customId: string) => Promise<IBlock>;
+  getBlockListWithIDs: (customIDs: string[]) => Promise<IBlock[]>;
   getNotificationByID: (customId: string) => Promise<INotification>;
 
   updateUser: (data: Partial<IUser>) => Promise<void>;
+  updateUserByID: (customID: string, data: Partial<IUser>) => Promise<void>;
   updateBlockByID: (customId: string, data: Partial<IBlock>) => Promise<void>;
   updateNotificationByID: (
     customId: string,
@@ -79,6 +82,20 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     }
   }
 
+  public async getUserByCustomID(customId: string) {
+    try {
+      return await this.userModel.model
+        .findOne({
+          customId
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
   public async getBlockByID(blockID: string) {
     try {
       return await this.blockModel.model
@@ -87,6 +104,19 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
         })
         .lean()
         .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async getBlockListWithIDs(customIDs: string[]) {
+    try {
+      const query = {
+        customId: { $in: customIDs }
+      };
+
+      return await this.blockModel.model.find(query).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
@@ -113,6 +143,15 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
       await this.userModel.model
         .updateOne({ customId: user.customId }, data)
         .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async updateUserByID(customId: string, data: Partial<IUser>) {
+    try {
+      await this.userModel.model.updateOne({ customId }, data).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();

@@ -105,6 +105,10 @@ const subTasks = Joi.array()
   .min(blockConstants.minSubTasksLength)
   .max(blockConstants.maxSubTasksLength);
 
+export const groupContext = Joi.string()
+  .lowercase()
+  .valid(blockConstants.groupContextsArray);
+
 const block = Joi.object().keys({
   // TODO: blockID OR just id OR customId
   blockID,
@@ -164,6 +168,7 @@ const blockValidationSchemas = {
   type,
   block,
   newBlock,
+  groupContext,
   blockTypesList: blockTypesSchema
 };
 

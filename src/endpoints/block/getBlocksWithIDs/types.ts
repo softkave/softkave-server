@@ -1,15 +1,14 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface IGetBlocksWithCustomIDsParameters {
+  customIDs: string[];
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
+export interface IGetBlocksWithCustomIDsContext extends IBaseEndpointContext {
+  data: IGetBlocksWithCustomIDsParameters;
 }
 
-export interface IAddBlockResult {
-  block: IBlock;
+export interface IGetBlocksWithCustomIDsResult {
+  blocks: IBlock[];
 }

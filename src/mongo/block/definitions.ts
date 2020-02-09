@@ -68,7 +68,7 @@ export interface ITaskCollaborationData {
 
 export type BlockType = "root" | "org" | "project" | "group" | "task";
 
-export interface IBlock {
+export interface IOldBlock {
   customId: string;
   name: string;
   lowerCasedName: string;
@@ -96,7 +96,7 @@ export interface IBlock {
   subTasks: ISubTask[];
 }
 
-interface INBlock {
+export interface IBlock {
   customId: string;
   name: string;
   lowerCasedName: string;
@@ -107,17 +107,18 @@ interface INBlock {
   updatedAt: number;
   type: BlockType;
 
-  parents: string; // - updated from string[]
+  parent: string; // - updated from string[]
+  // rootBlockID: string; // - new
 
   createdBy: string;
 
-  taskCollaborationType: ITaskCollaborationData; // - deprecate
+  // taskCollaborationType: ITaskCollaborationData; // - deprecate
 
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
   priority: string;
 
-  isBacklog: boolean; // - deprecate
+  // isBacklog: boolean; // - deprecate
 
   // can we remove these fields and fetch the counts and the children using parent field instead
   tasks: string[];
@@ -129,10 +130,10 @@ interface INBlock {
   groupTaskContext: string[];
   groupProjectContext: string[];
 
-  roles: IBlockRole[]; // - deprecate for now
+  // roles: IBlockRole[]; // - deprecate for now
   subTasks: ISubTask[]; // - should sub-tasks be their own blocks?
 
-  labels: string[]; // - new
+  // labels: string[]; // - new
 }
 
 const blockSchema = {

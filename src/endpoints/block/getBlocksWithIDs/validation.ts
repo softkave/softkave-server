@@ -1,3 +1,10 @@
 import Joi from "joi";
+import { blockConstants } from "../constants";
 
-export const getUserDataJoiSchema = Joi.object().keys({});
+export const getBlocksWithIDsJoiSchema = Joi.object().keys({
+  customIDs: Joi.array()
+    .items(Joi.string().uuid())
+    .min(1)
+    .max(blockConstants.maxGetBlocksWithCustomIDs)
+    .unique()
+});

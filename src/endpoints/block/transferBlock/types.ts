@@ -1,15 +1,13 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { INewBlockInput } from "../types";
 
-export interface IAddBlockParameters {
-  block: INewBlockInput;
+export interface ITransferBlockParameters {
+  sourceBlock: string;
+  draggedBlock: string;
+  destinationBlock: string;
+  dropPosition?: number;
+  groupContext?: "task" | "project";
 }
 
-export interface IAddBlockContext extends IBaseEndpointContext {
-  data: IAddBlockParameters;
-}
-
-export interface IAddBlockResult {
-  block: IBlock;
+export interface ITransferBlockContext extends IBaseEndpointContext {
+  data: ITransferBlockParameters;
 }
