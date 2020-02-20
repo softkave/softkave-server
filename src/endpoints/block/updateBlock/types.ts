@@ -14,7 +14,7 @@ export interface IUpdateBlockInput {
   priority: string;
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
-  parents: string[];
+  parent: string;
   groups: string[];
   projects: string[];
   tasks: string[];
@@ -48,5 +48,9 @@ export interface IUpdateBlockContext extends IBaseEndpointContext {
     blockID: string,
     data: IDirectUpdateBlockInput
   ) => Promise<void>;
-  transferBlock: (block: IBlock, destinationBlockID: string) => Promise<void>;
+  transferBlock: (
+    block: IBlock,
+    sourceBlockID: string,
+    destinationBlockID: string
+  ) => Promise<void>;
 }

@@ -1,18 +1,18 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import { ITransferBlockContext, ITransferBlockParameters } from "./types";
 
-export interface IAddBlockContextParameters
+export interface ITransferBlockContextParameters
   extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
+  data: ITransferBlockParameters;
 }
 
-export default class AddBlockContext extends BaseEndpointContext
-  implements IAddBlockContext {
-  public data: IAddBlockParameters;
+export default class TransferBlockContext extends BaseEndpointContext
+  implements ITransferBlockContext {
+  public data: ITransferBlockParameters;
 
-  constructor(p: IAddBlockContextParameters) {
+  constructor(p: ITransferBlockContextParameters) {
     super(p);
     this.data = p.data;
   }

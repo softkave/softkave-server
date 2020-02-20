@@ -12,6 +12,11 @@ import { IServerRequest } from "../utils/types";
 import { InvalidCredentialsError } from "./user/errors";
 import { IBaseUserTokenData } from "./user/UserToken";
 
+export interface IBulkUpdateByIDItem<T> {
+  id: string;
+  data: Partial<T>;
+}
+
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
@@ -27,6 +32,10 @@ export interface IBaseEndpointContext {
   updateNotificationByID: (
     customId: string,
     data: Partial<INotification>
+  ) => Promise<void>;
+
+  bulkUpdateBlocksByID: (
+    blocks: Array<IBulkUpdateByIDItem<IBlock>>
   ) => Promise<void>;
 }
 
@@ -173,6 +182,21 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
   ) {
     try {
       await this.notificationModel.model.updateOne({ customId }, data).exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async bulkUpdateBlocksByID(
+    blocks: Array<IBulkUpdateByIDItem<IBlock>>
+  ) {
+    try {
+      await this.blockModel.model.bulkWrite(
+        blocks.map(b => ({
+          updateOne: { filter: { customId: b.id }, update: b.data }
+        }))
+      );
     } catch (error) {
       logger.error(error);
       throw new ServerError();

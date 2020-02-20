@@ -44,18 +44,10 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
   await context.updateBlock(data.blockID, update);
 
-  if (hasBlockParentsChanged(block, update)) {
-    await context.transferBlock(block);
-
-    await transferBlock({
-      accessControlModel,
-      user,
-      blockModel,
-      draggedBlock: block,
-      sourceBlock: { customId: getImmediateParentID(block) },
-      destinationBlock: { customId: getImmediateParentID(update as IBlock) },
-      draggedBlockType: block.type
-    });
+  if (block.parent !== blockData.parent) {
+    const sourceBlockID = block.parent;
+    const destinationBlockID = blockData.parent;
+    await context.transferBlock(block, sourceBlockID, destinationBlockID);
   }
 }
 

@@ -1,6 +1,11 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "endpoints/BaseEndpointContext";
+import { IBlock } from "mongo/block";
+import { ServerError } from "utils/errors";
+import logger from "utils/logger";
+import TransferBlockContext from "../transferBlock/context";
+import transferBlock from "../transferBlock/transferBlock";
 import {
   IDirectUpdateBlockInput,
   IUpdateBlockContext,
@@ -22,11 +27,36 @@ export default class UpdateBlockContext extends BaseEndpointContext
   }
 
   public async updateBlock(blockID: string, data: IDirectUpdateBlockInput) {
-    await blockModel.model.updateOne(
-      {
-        customId: block.customId
-      },
-      update
+    try {
+      await this.blockModel.model.updateOne(
+        {
+          customId: blockID
+        },
+        data
+      );
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async transferBlock(
+    block: IBlock,
+    sourceBlockID: string,
+    destinationBlockID: string
+  ) {
+    await transferBlock(
+      new TransferBlockContext({
+        blockModel: this.blockModel,
+        notificationModel: this.notificationModel,
+        userModel: this.userModel,
+        req: this.req,
+        data: {
+          sourceBlock: sourceBlockID,
+          draggedBlock: block.customId,
+          destinationBlock: destinationBlockID
+        }
+      })
     );
   }
 }
