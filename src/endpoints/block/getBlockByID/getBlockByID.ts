@@ -2,7 +2,7 @@ import { validate } from "utils/joiUtils";
 import { IGetBlockByIDContext, IGetBlockByIDResult } from "./types";
 import { getBlockByIDJoiSchema } from "./validation";
 
-async function getUserData(
+async function getBlockByID(
   context: IGetBlockByIDContext
 ): Promise<IGetBlockByIDResult> {
   const data = validate(context.data, getBlockByIDJoiSchema);
@@ -10,4 +10,4 @@ async function getUserData(
   return { block };
 }
 
-export default getUserData;
+export default getBlockByID;

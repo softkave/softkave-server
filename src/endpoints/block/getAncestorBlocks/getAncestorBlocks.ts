@@ -1,6 +1,6 @@
 import { IGetAncestorBlocksContext, IGetAncestorBlocksResult } from "./types";
 
-async function getUserData(
+async function getAncestorBlocks(
   context: IGetAncestorBlocksContext
 ): Promise<IGetAncestorBlocksResult> {
   const blocks = await context.getAncestorBlocksFromStorage();
@@ -10,4 +10,4 @@ async function getUserData(
   };
 }
 
-export default getUserData;
+export default getAncestorBlocks;

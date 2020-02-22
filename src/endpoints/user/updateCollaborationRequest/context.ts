@@ -13,7 +13,8 @@ export interface IUpdateCollaborationRequestContextParameters
   data: IUpdateCollaborationRequestParameters;
 }
 
-export default class UpdateCollaborationRequest extends BaseEndpointContext
+export default class UpdateCollaborationRequestContext
+  extends BaseEndpointContext
   implements IUpdateCollaborationRequestContext {
   public data: IUpdateCollaborationRequestParameters;
 

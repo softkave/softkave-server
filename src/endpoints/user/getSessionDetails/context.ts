@@ -9,7 +9,7 @@ import { IGetSessionDetailsContext } from "./types";
 export interface IGetSessionDetailsContextParameters
   extends IBaseEndpointContextParameters {}
 
-export default class GetSessionDetails extends BaseEndpointContext
+export default class GetSessionDetailsContext extends BaseEndpointContext
   implements IGetSessionDetailsContext {
   public async getNotificationsCount(email: string) {
     try {

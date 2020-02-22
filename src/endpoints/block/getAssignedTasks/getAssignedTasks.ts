@@ -1,6 +1,6 @@
 import { IGetAssignedTasksContext, IGetAssignedTasksResult } from "./types";
 
-async function getUserData(
+async function getAssignedTasks(
   context: IGetAssignedTasksContext
 ): Promise<IGetAssignedTasksResult> {
   const blocks = await context.getAssignedTasksFromStorage();
@@ -10,4 +10,4 @@ async function getUserData(
   };
 }
 
-export default getUserData;
+export default getAssignedTasks;

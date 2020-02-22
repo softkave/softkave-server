@@ -4,7 +4,7 @@ import canReadBlock from "../canReadBlock";
 import { IDeleteBlockContext } from "./types";
 import { deleteBlockJoiSchema } from "./validation";
 
-async function getUserData(context: IDeleteBlockContext): Promise<void> {
+async function deleteBlock(context: IDeleteBlockContext): Promise<void> {
   const data = validate(context.data, deleteBlockJoiSchema);
   const user = await context.getUser();
   const block = await context.getBlockByID(data.customId);
@@ -59,4 +59,4 @@ async function getUserData(context: IDeleteBlockContext): Promise<void> {
   await context.deleteBlockInStorage(block.customId);
 }
 
-export default getUserData;
+export default deleteBlock;
