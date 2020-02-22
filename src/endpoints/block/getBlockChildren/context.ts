@@ -26,14 +26,13 @@ export default class GetBlockChildrenContext extends BaseEndpointContext
   ) {
     try {
       const blocks = await this.blockModel.model.find({
-        parents: {
-          $size: getParentsLength(parentBlock) + 1,
-          $eq: parentBlock.customId
-        },
+        parent: blockID,
         type: {
-          $in: types
+          $in: typeList
         }
       });
+
+      return blocks;
     } catch (error) {
       logger.error(error);
       throw new ServerError();

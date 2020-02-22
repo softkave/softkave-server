@@ -3,19 +3,19 @@ import BaseEndpointContext, {
 } from "endpoints/BaseEndpointContext";
 import { ServerError } from "utils/errors";
 import logger from "utils/logger";
-import { IGetAncestorBlocksContext } from "./types";
+import { IGetRootBlocksContext } from "./types";
 
 // tslint:disable-next-line: no-empty-interface
-export interface IGetAncestorBlocksContextParameters
+export interface IGetRootBlocksContextParameters
   extends IBaseEndpointContextParameters {}
 
-export default class GetAncestorBlocksContext extends BaseEndpointContext
-  implements IGetAncestorBlocksContext {
-  constructor(p: IGetAncestorBlocksContextParameters) {
+export default class GetRootBlocksContext extends BaseEndpointContext
+  implements IGetRootBlocksContext {
+  constructor(p: IGetRootBlocksContextParameters) {
     super(p);
   }
 
-  public async getAncestorBlocksFromStorage() {
+  public async getRootBlocksFromStorage() {
     try {
       const user = await this.getUser();
       const organizationIDs = Array.isArray(user.orgs) ? user.orgs : [];

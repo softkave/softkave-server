@@ -8,16 +8,16 @@ import {
   IGetBlockCollaboratorsParameters
 } from "./types";
 
-export interface IGetBlockContextParameters
+export interface IGetBlockCollaboratorsContextParameters
   extends IBaseEndpointContextParameters {
   data: IGetBlockCollaboratorsParameters;
 }
 
-export default class GetBlockContext extends BaseEndpointContext
+export default class GetBlockCollaboratorsContext extends BaseEndpointContext
   implements IGetBlockCollaboratorsContext {
   public data: IGetBlockCollaboratorsParameters;
 
-  constructor(p: IGetBlockContextParameters) {
+  constructor(p: IGetBlockCollaboratorsContextParameters) {
     super(p);
     this.data = p.data;
   }
