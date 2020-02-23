@@ -29,6 +29,7 @@ export default async function taskCollaborationDataScript() {
     ) {
       const update: any = {};
       update.taskCollaborationData = {
+        // @ts-ignore
         ...doc.taskCollaborationType,
         collaborationType: "collective"
       };

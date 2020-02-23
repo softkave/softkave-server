@@ -3,8 +3,8 @@ import MongoModel, {
 } from "../MongoModel";
 import blockSchema, { IBlockDocument } from "./definitions";
 
-const modelName = "block";
-const collectionName = "blocks";
+const modelName = "block-v2";
+const collectionName = "blocks-v2";
 
 class BlockModel extends MongoModel<IBlockDocument> {
   constructor({ connection }: IDerivedMongoModelInitializationProps) {

@@ -135,67 +135,6 @@ export interface IBlock {
   // labels: string[]; // - new
 }
 
-const oldBlockSchema = {
-  customId: { type: String, unique: true },
-  name: {
-    type: String,
-    index: true
-  },
-
-  // TODO: Think on, should we retain lowercased names so that we can retain the
-  // user formatting of the block name?
-  // TODO: Define type for blockSchema and other mongo schemas
-  lowerCasedName: {
-    type: String,
-    index: true,
-    lowercase: true
-  } as SchemaTypeOpts<StringConstructor>,
-  description: String,
-  expectedEndAt: Number,
-  createdAt: {
-    type: Number,
-    default: Date.now
-  },
-  color: String,
-  updatedAt: Number,
-  type: {
-    type: String,
-    index: true,
-    lowercase: true
-  },
-  parents: {
-    type: [String],
-    index: true
-  },
-  createdBy: {
-    type: String,
-    index: true
-  },
-
-  // deprecate
-  taskCollaborationType: mongoTaskCollaborationDataSchema,
-
-  taskCollaborationData: mongoTaskCollaborationDataSchema,
-  taskCollaborators: {
-    type: [blockTaskCollaboratorDataSchema],
-    index: true
-  },
-  // linkedBlocks: {
-  //   type: [linkedBlocksSchema]
-  // },
-  subTasks: {
-    type: [mongoSubTaskSchema]
-  },
-  priority: String,
-  isBacklog: Boolean,
-  tasks: [String],
-  groups: [String],
-  projects: [String],
-  groupTaskContext: [String],
-  groupProjectContext: [String]
-  // roles: [blockRoleSchema]
-};
-
 // TODO: Define type for blockSchema and other mongo schemas
 const blockSchema = {
   customId: { type: String, unique: true },
