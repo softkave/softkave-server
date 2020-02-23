@@ -2,8 +2,8 @@ import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import { INotification } from "mongo/notification";
 
 export interface IRemoveCollaboratorParameters {
-  blockID: string;
-  collaboratorID: string;
+  customId: string;
+  collaborator: string;
 }
 
 export interface IRemoveCollaboratorContext extends IBaseEndpointContext {

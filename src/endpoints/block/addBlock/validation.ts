@@ -1,3 +1,1 @@
-import Joi from "joi";
-
-export const getUserDataJoiSchema = Joi.object().keys({});
+// Uses validation schema declared in the validations file

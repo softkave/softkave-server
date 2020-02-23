@@ -21,7 +21,6 @@ const userSchema = `
     createdAt: Float
     lastNotificationCheckTime: Float
     color: String
-    # roles: [UserRole]
     orgs: [String]
   }
 
@@ -30,13 +29,11 @@ const userSchema = `
     email: String!
     password: String!
     color: String!
-    # roles: [UserRoleInput]
   }
 
   input UserUpdateInput {
     name: String
     lastNotificationCheckTime: Float
-    # roles: [UserRoleInput]
   }
 
   type UserQueryResult {
@@ -84,10 +81,12 @@ const userSchema = `
     getCollaborationRequests: GetCollaborationRequestsResponse
     respondToCollaborationRequest (
       customId: String!, response: String!): RespondToCollaborationRequestResponse
+
     updateCollaborationRequest (
       customId: String!,
       data: UpdateCollaborationRequestInput!
     ): ErrorOnlyResponse
+
     getUserData: UserQueryResult
     getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult
     getSessionDetails: SessionDetails

@@ -9,8 +9,10 @@ const blockData = Joi.object().keys({
   priority: blockValidationSchemas.priority,
   taskCollaborationData: blockValidationSchemas.taskCollaborationData,
   taskCollaborators: blockValidationSchemas.taskCollaborators,
-  parents: blockValidationSchemas.parents,
+  parent: blockValidationSchemas.parent,
   groups: blockValidationSchemas.groups,
+  groupTaskContext: blockValidationSchemas.groups,
+  groupProjectContext: blockValidationSchemas.groups,
   projects: blockValidationSchemas.projects,
   tasks: blockValidationSchemas.tasks,
   subTasks: blockValidationSchemas.subTasks

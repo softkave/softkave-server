@@ -14,31 +14,31 @@ export const blockTaskCollaboratorDataSchema = {
   assignedBy: String
 };
 
-export interface IBlockRole {
-  roleName: string;
-  createdBy: string;
-  createdAt: number;
-}
+// export interface IBlockRole {
+//   roleName: string;
+//   createdBy: string;
+//   createdAt: number;
+// }
 
-export const blockRoleSchema = {
-  roleName: String,
-  createdBy: String,
-  createdAt: String
-};
+// export const blockRoleSchema = {
+//   roleName: String,
+//   createdBy: String,
+//   createdAt: String
+// };
 
-export interface ILinkedBlock {
-  blockId: string;
-  reason: string;
-  createdBy: string;
-  createdAt: number;
-}
+// export interface ILinkedBlock {
+//   blockId: string;
+//   reason: string;
+//   createdBy: string;
+//   createdAt: number;
+// }
 
-export const linkedBlocksSchema = {
-  blockId: String,
-  reason: String,
-  createdBy: String,
-  createdAt: Number
-};
+// export const linkedBlocksSchema = {
+//   blockId: String,
+//   reason: String,
+//   createdBy: String,
+//   createdAt: Number
+// };
 
 export interface ISubTask {
   customId: string;
@@ -54,21 +54,21 @@ export const mongoSubTaskSchema = {
   completedAt: Number
 };
 
-export const mongoTaskCollaborationDataSchema = {
-  collaborationType: { type: String, default: "collective" }, // "individual" OR "collective"
-  completedAt: Number,
-  completedBy: String
-};
-
 export interface ITaskCollaborationData {
   collaborationType: "individual" | "collective";
   completedAt?: number;
   completedBy?: string;
 }
 
+export const mongoTaskCollaborationDataSchema = {
+  collaborationType: { type: String, default: "collective" }, // "individual" OR "collective"
+  completedAt: Number,
+  completedBy: String
+};
+
 export type BlockType = "root" | "org" | "project" | "group" | "task";
 
-export interface IOldBlock {
+interface IOldBlock {
   customId: string;
   name: string;
   lowerCasedName: string;
@@ -80,9 +80,7 @@ export interface IOldBlock {
   type: BlockType;
   parents: string[];
   createdBy: string;
-
   taskCollaborationType: ITaskCollaborationData; // deprecate
-
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
   priority: string;
@@ -92,7 +90,7 @@ export interface IOldBlock {
   projects: string[];
   groupTaskContext: string[];
   groupProjectContext: string[];
-  roles: IBlockRole[];
+  // roles: IBlockRole[];
   subTasks: ISubTask[];
 }
 
@@ -108,17 +106,17 @@ export interface IBlock {
   type: BlockType;
 
   parent: string; // - updated from string[]
-  // rootBlockID: string; // - new
+  rootBlockID: string; // - new
 
   createdBy: string;
 
-  // taskCollaborationType: ITaskCollaborationData; // - deprecate
+  // taskCollaborationType: ITaskCollaborationData; // - deprecated
 
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
   priority: string;
 
-  // isBacklog: boolean; // - deprecate
+  // isBacklog: boolean; // - deprecated
 
   // can we remove these fields and fetch the counts and the children using parent field instead
   tasks: string[];
@@ -130,13 +128,14 @@ export interface IBlock {
   groupTaskContext: string[];
   groupProjectContext: string[];
 
-  // roles: IBlockRole[]; // - deprecate for now
+  // roles: IBlockRole[]; // - deprecated for now
+
   subTasks: ISubTask[]; // - should sub-tasks be their own blocks?
 
   // labels: string[]; // - new
 }
 
-const blockSchema = {
+const oldBlockSchema = {
   customId: { type: String, unique: true },
   name: {
     type: String,
@@ -181,9 +180,9 @@ const blockSchema = {
     type: [blockTaskCollaboratorDataSchema],
     index: true
   },
-  linkedBlocks: {
-    type: [linkedBlocksSchema]
-  },
+  // linkedBlocks: {
+  //   type: [linkedBlocksSchema]
+  // },
   subTasks: {
     type: [mongoSubTaskSchema]
   },
@@ -193,8 +192,60 @@ const blockSchema = {
   groups: [String],
   projects: [String],
   groupTaskContext: [String],
-  groupProjectContext: [String],
-  roles: [blockRoleSchema]
+  groupProjectContext: [String]
+  // roles: [blockRoleSchema]
+};
+
+// TODO: Define type for blockSchema and other mongo schemas
+const blockSchema = {
+  customId: { type: String, unique: true },
+  name: {
+    type: String,
+    index: true
+  },
+  lowerCasedName: {
+    type: String,
+    index: true,
+    lowercase: true
+  } as SchemaTypeOpts<StringConstructor>,
+  description: String,
+  expectedEndAt: Number,
+  createdAt: {
+    type: Number,
+    default: Date.now
+  },
+  color: String,
+  updatedAt: Number,
+  type: {
+    type: String,
+    index: true,
+    lowercase: true
+  },
+  parent: {
+    type: String,
+    index: true
+  },
+  rootBlockID: {
+    type: String
+  },
+  createdBy: {
+    type: String,
+    index: true
+  },
+  taskCollaborationData: mongoTaskCollaborationDataSchema,
+  taskCollaborators: {
+    type: [blockTaskCollaboratorDataSchema],
+    index: true
+  },
+  subTasks: {
+    type: [mongoSubTaskSchema]
+  },
+  priority: String,
+  tasks: [String],
+  groups: [String],
+  projects: [String],
+  groupTaskContext: [String],
+  groupProjectContext: [String]
 };
 
 export default blockSchema;

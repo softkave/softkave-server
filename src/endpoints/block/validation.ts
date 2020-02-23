@@ -19,10 +19,10 @@ const taskCollaboratorsListSchema = Joi.array()
   .unique("userId")
   .items(taskCollaboratorSchema);
 
-const availableTypes = ["group", "org", "project", "task"] as BlockType[];
+const userUpdateableTypes = ["group", "org", "project", "task"] as BlockType[];
 const blockType = Joi.string()
   .lowercase()
-  .valid(availableTypes);
+  .valid(userUpdateableTypes);
 
 const blockChildrenIDList = Joi.array()
   .items(validationSchemas.uuid)
@@ -73,22 +73,22 @@ const description = Joi.string()
     is: "task",
     then: Joi.required()
   });
+
 const expectedEndAt = Joi.number();
 const createdAt = Joi.number();
 const color = Joi.string()
   .trim()
   .lowercase()
   .regex(regEx.hexColorPattern);
+
 const updatedAt = Joi.number();
 const type = blockType;
-const parents = Joi.array()
-  .items(validationSchemas.uuid)
-  .unique()
-  .max(blockConstants.maxParentsLength)
-  .when("type", {
-    is: Joi.string().valid(["group", "project", "task"] as BlockType[]),
-    then: Joi.required()
-  });
+const parent = validationSchemas.uuid.when("type", {
+  is: Joi.string().valid(["group", "project", "task"] as BlockType[]),
+  then: Joi.required()
+});
+
+const rootBlockID = parent;
 
 const createdBy = validationSchemas.uuid;
 const taskCollaborationData = taskCollaborationDataSchema;
@@ -109,42 +109,24 @@ export const groupContext = Joi.string()
   .lowercase()
   .valid(blockConstants.groupContextsArray);
 
-const block = Joi.object().keys({
-  // TODO: blockID OR just id OR customId
-  blockID,
-  name,
-  description,
-  expectedEndAt,
-  createdAt,
-  color,
-  updatedAt,
-  parents,
-  createdBy,
-  subTasks,
-  priority,
-  taskCollaborationData: taskCollaborationDataSchema,
-  taskCollaborators: taskCollaboratorsListSchema,
-  tasks: blockChildrenIDList,
-  groups: blockChildrenIDList,
-  projects: blockChildrenIDList,
-  type: blockType
-});
-
 const newBlock = Joi.object().keys({
   name,
-  customId: blockID,
   description,
   expectedEndAt,
   color,
   type,
-  parents,
+  parent,
+  rootBlockID,
   priority,
   taskCollaborationData,
   taskCollaborators,
   subTasks,
   groups,
   projects,
-  tasks
+  tasks,
+  customId: blockID,
+  groupTaskContext: groups,
+  groupProjectContext: groups
 });
 
 const blockValidationSchemas = {
@@ -163,10 +145,10 @@ const blockValidationSchemas = {
   groups,
   projects,
   subTasks,
-  parents,
+  parent,
+  rootBlockID,
   updatedAt,
   type,
-  block,
   newBlock,
   groupContext,
   blockTypesList: blockTypesSchema

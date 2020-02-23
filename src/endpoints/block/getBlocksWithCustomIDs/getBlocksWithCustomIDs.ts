@@ -1,4 +1,5 @@
 import { validate } from "utils/joiUtils";
+import canReadBlock from "../canReadBlock";
 import {
   IGetBlocksWithCustomIDsContext,
   IGetBlocksWithCustomIDsResult
@@ -9,10 +10,12 @@ async function getBlocksWithCustomIDs(
   context: IGetBlocksWithCustomIDsContext
 ): Promise<IGetBlocksWithCustomIDsResult> {
   const result = validate(context.data, getBlocksWithIDsJoiSchema);
-  const blockCustomIDs = result.customIDs;
+  const blockCustomIDs = result.customIds;
+  const user = await context.getUser();
   const blocks = await context.getBlockListWithIDs(blockCustomIDs);
+  const permittedBlocks = blocks.filter(block => canReadBlock({ block, user }));
 
-  return { blocks };
+  return { blocks: permittedBlocks };
 }
 
 export default getBlocksWithCustomIDs;

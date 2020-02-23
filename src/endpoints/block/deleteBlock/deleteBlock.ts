@@ -12,13 +12,7 @@ async function deleteBlock(context: IDeleteBlockContext): Promise<void> {
   await canReadBlock({ user, block });
   await context.deleteBlockChildrenInStorage(block.customId);
 
-  // await blockModel.model
-  //   .deleteMany({
-  //     $or: [{ customId: block.customId }, { parents: block.customId }]
-  //   })
-  //   .exec();
-
-  const immediateParentID = TODO;
+  const immediateParentID = block.parent;
   const parent = await context.getBlockByID(immediateParentID);
   const pluralizedType = `${block.type}s`;
   const typeContainer = parent[pluralizedType];

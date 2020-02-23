@@ -68,3 +68,9 @@ export class DraggedBlockDoesNotExistInSourceBlockError extends OperationError {
   public name = "DraggedBlockDoesNotExistInSourceBlockError";
   public message = "The dragged block does not exist in the source block";
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class BlockDoesNotExistError extends OperationError {
+  public name = "BlockDoesNotExistError";
+  public message = "Block does not exist";
+}

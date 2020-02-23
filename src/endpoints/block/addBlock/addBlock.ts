@@ -28,15 +28,14 @@ async function addBlock(context: IAddBlockContext): Promise<IAddBlockResult> {
     };
   }
 
-  const rootParentId = newBlock.parents;
-  const rootParent = await context.getBlockByID(rootParentId);
+  const rootParent = await context.getBlockByID(newBlock.rootBlockID);
 
   await canReadBlock({ user, block: rootParent });
 
   const block = await context.addBlockToStorage(newBlock);
   const pluralizedType = `${block.type}s`;
-  const immediateParentID = TODO;
-  const immediateParent: IBlock = TODO;
+  const immediateParentID = block.parent;
+  const immediateParent: IBlock = await context.getBlockByID(immediateParentID);
 
   // TODO: implement a more efficient way, like using $addToSet
   const update: Partial<IBlock> = {
@@ -52,6 +51,8 @@ async function addBlock(context: IAddBlockContext): Promise<IAddBlockResult> {
     );
   }
 
+  // TODO: scrub for blocks or other resources that don't get added completely, like if a step failed
+  // TODO: analyze all the net calls you're making and look for ways to reduce them
   await context.updateBlockByID(immediateParent.customId, update);
 
   return {

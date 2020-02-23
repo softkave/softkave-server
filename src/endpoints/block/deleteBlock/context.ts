@@ -31,7 +31,7 @@ export default class DeleteBlockContext extends BaseEndpointContext
   public async deleteBlockChildrenInStorage(customId: string) {
     try {
       // TODO: revise all DB block access for modified fields as part of the rewrite
-      await this.blockModel.model.deleteMany({ parents: customId }).exec();
+      await this.blockModel.model.deleteMany({ parent: customId }).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();

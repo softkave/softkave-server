@@ -17,14 +17,11 @@ export interface INewBlockInput {
   type: BlockType;
 
   // TODO: should we only leave the first parent and find another way to implement the parent list?
-  parents?: string[];
+  parent?: string;
+  rootBlockID?: string;
   priority?: string;
-
-  // TODO: should we remove isBacklog?
-  // isBacklog: boolean;
   taskCollaborationData?: ITaskCollaborationData;
   taskCollaborators?: ITaskCollaborator[];
-  // linkedBlocks: ILinkedBlock[];
   subTasks?: ISubTask[];
 
   // TODO: should we leave these here or implement them another way?
@@ -33,6 +30,6 @@ export interface INewBlockInput {
   tasks?: string[];
 
   // TODO: should we get rid of these too?
-  // groupTaskContext?: string[];
-  // groupProjectContext?: string[];
+  groupTaskContext?: string[];
+  groupProjectContext?: string[];
 }

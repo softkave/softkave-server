@@ -14,11 +14,12 @@ async function revokeCollaborationRequests(
   const data = validate(context.data, revokeRequestJoiSchema);
 
   // TODO: what if block does not exist?
-  const block = await context.getBlockByID(data.blockID);
+  const block = await context.getBlockByID(data.customId);
   const user = await context.getUser();
-  const request = await context.getNotificationByID(data.requestID);
 
   canReadBlock({ block, user });
+
+  const request = await context.getNotificationByID(data.request);
 
   if (!request || request.from.blockId !== block.customId) {
     throw new CollaborationRequestDoesNotExistError();

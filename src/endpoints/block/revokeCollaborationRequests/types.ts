@@ -1,8 +1,8 @@
 import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 
 export interface IRevokeCollaborationRequestsParameters {
-  requestID: string;
-  blockID: string;
+  request: string;
+  customId: string;
 }
 
 export interface IRevokeCollaborationRequestsContext

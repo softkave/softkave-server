@@ -12,12 +12,12 @@ async function removeCollaborator(
 ): Promise<void> {
   const result = validate(context.data, removeCollaboratorJoiSchema);
   const user = await context.getUser();
-  const block = await context.getBlockByID(result.blockID);
+  const block = await context.getBlockByID(result.customId);
 
   canReadBlock({ user, block });
 
   const fetchedCollaborator = await context.getUserByCustomID(
-    result.collaboratorID
+    result.collaborator
   );
 
   if (!fetchedCollaborator) {

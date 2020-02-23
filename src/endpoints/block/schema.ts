@@ -13,20 +13,6 @@ const blockSchema = `
     assignedAt: Float
   }
 
-  type LinkedBlock{
-    blockId: String
-    reason: String
-    createdBy: String
-    createdAt: Float
-  }
-
-  input LinkedBlockInput{
-    blockId: String!
-    reason: String
-    createdBy: String!
-    createdAt: Float!
-  }
-
   type SubTask{
     customId: String
     description: String
@@ -39,30 +25,6 @@ const blockSchema = `
     description: String!
     completedBy: String
     completedAt: Float
-  }
-
-  type AccessControl {
-    orgId: String
-    actionName: String
-    permittedRoles: [String]
-  }
-
-  input AccessControlInput {
-    orgId: String!
-    actionName: String!
-    permittedRoles: [String]!
-  }
-
-  type BlockRole {
-    roleName: String
-    createdBy: String
-    createdAt: String
-  }
-
-  input BlockRoleInput {
-    roleName: String
-    createdBy: String
-    createdAt: String
   }
 
   type TaskCollaborationData {
@@ -86,20 +48,17 @@ const blockSchema = `
     color: String
     updatedAt: Float
     type: String
-    parents: [String]
+    parent: String
+    rootBlockID: String
     createdBy: String
     taskCollaborationData: TaskCollaborationData
     taskCollaborators: [BlockTaskCollaboratorData]
-    linkedBlocks: [LinkedBlock]
     priority: String
-    isBacklog: Boolean
     groups: [String]
     projects: [String]
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-    # accessControl: [AccessControl]
-    # roles: [BlockRole]
     subTasks: [SubTask]
   }
 
@@ -124,12 +83,11 @@ const blockSchema = `
     expectedEndAt: Float
     color: String
     type: String!
-    parents: [String!]
+    parent: String
+    rootBlockID: String!
     priority: String
-    isBacklog: Boolean
     taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    linkedBlocks: [LinkedBlockInput]
     subTasks: [SubTaskInput]
     groups: [String]
     projects: [String]
@@ -144,16 +102,14 @@ const blockSchema = `
     expectedEndAt: Float
     color: String
     priority: String
-    isBacklog: Boolean
     taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
-    parents: [String!]
+    parent: String
     groups: [String]
     projects: [String]
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
-    linkedBlocks: [LinkedBlockInput]
     subTasks: [SubTaskInput]
   }
 
@@ -222,53 +178,43 @@ const blockSchema = `
   type BlockQuery {
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
     updateBlock (
-      block: BlockParamInput!,
+      customId: String!,
       data: UpdateBlockInput!
     ) : ErrorOnlyResponse
-    deleteBlock (block: BlockParamInput!) : ErrorOnlyResponse
+
+    deleteBlock (customId: String!) : ErrorOnlyResponse
     getRoleBlocks: MultipleBlocksOpResponse
-    getBlocks (block: [BlockParamInput!]!) : MultipleBlocksOpResponse
     getBlockChildren (
-      block: BlockParamInput!,
-      types: [String!],
-      isBacklog: Boolean
+      customId: String!,
+      typeList: [String!]
     ) : MultipleBlocksOpResponse
+
     addCollaborators (
-      block: BlockParamInput!,
+      customId: String!,
       collaborators: [AddCollaboratorInput!]!,
     ) : ErrorOnlyResponse
+
     removeCollaborator (
-      block: BlockParamInput!,
+      customId: String!,
       collaborator: String!
     ) : ErrorOnlyResponse
-    getCollaborators (block: BlockParamInput!) : GetCollaboratorsResponse
-    getCollabRequests (block: BlockParamInput!) : GetCollaborationRequestsResponse
-    toggleTask (block: BlockParamInput!, data: Boolean!) : ErrorOnlyResponse
-    revokeRequest (block: BlockParamInput!, request: String!) : ErrorOnlyResponse
-    createRootBlock: SingleBlockOpResponse
+
+    getBlockCollaborators (customId: String!) : GetCollaboratorsResponse
+    getBlockCollaborationRequests (customId: String!) : GetCollaborationRequestsResponse
+
+    # toggleTask (customId: String!, data: Boolean!) : ErrorOnlyResponse
+
+    revokeCollaborationRequest (customId: String!, request: String!) : ErrorOnlyResponse
     transferBlock (
-      sourceBlock: BlockParamInput!,
-      draggedBlock: BlockParamInput!,
-      destinationBlock: BlockParamInput,
-      dropPosition: Float!,
-      draggedBlockType: String!,
+      sourceBlock: String!,
+      draggedBlock: String!,
+      destinationBlock: String!,
+      dropPosition: Float,
       groupContext: String
     ): ErrorOnlyResponse
-    updateAccessControlData (
-      block: BlockParamInput!,
-      accessControlData: [AccessControlInput!]!
-    ) : ErrorOnlyResponse
-    # updateRoles (
-    #  block: BlockParamInput!,
-    #  roles: [String!]!
-    # ) : ErrorOnlyResponse
-    assignRole (
-      block: BlockParamInput!,
-      collaborator: String!,
-      roleName: String!
-    ) : ErrorOnlyResponse
+
     getAssignedTasks: MultipleBlocksOpResponse
-    getBlocksWithCustomIDs (customIDs: [String!]!): MultipleBlocksOpResponse
+    getBlocksWithCustomIds (customIds: [String!]!): MultipleBlocksOpResponse
   }
 `;
 

@@ -38,7 +38,7 @@ export interface IDirectUpdateBlockInput {
 }
 
 export interface IUpdateBlockParameters {
-  blockID: string;
+  customId: string;
   data: IUpdateBlockInput;
 }
 

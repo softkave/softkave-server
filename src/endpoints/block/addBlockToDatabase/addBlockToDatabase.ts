@@ -40,7 +40,6 @@ async function addBlockToDatabase(
     }
   }
 
-  // TODO: cleanout
   const block: IBlock = {
     customId: inputBlock.customId,
     name: inputBlock.name,
@@ -51,21 +50,17 @@ async function addBlockToDatabase(
     color: inputBlock.color,
     updatedAt: undefined,
     type: inputBlock.type,
-    parents: inputBlock.parents,
+    parent: inputBlock.parent,
+    rootBlockID: inputBlock.rootBlockID,
     createdBy: user.customId,
-
-    // taskCollaborationType: ITaskCollaborationData; // deprecate
-
     taskCollaborationData: inputBlock.taskCollaborationData,
     taskCollaborators: inputBlock.taskCollaborators,
     priority: inputBlock.priority,
-    // isBacklog: boolean;
     tasks: inputBlock.tasks,
     groups: inputBlock.groups,
     projects: inputBlock.projects,
-    // groupTaskContext: string[];
-    // groupProjectContext: string[];
-    // roles: IBlockRole[];
+    groupTaskContext: inputBlock.groupTaskContext,
+    groupProjectContext: inputBlock.groupProjectContext,
     subTasks: inputBlock.subTasks
   };
 

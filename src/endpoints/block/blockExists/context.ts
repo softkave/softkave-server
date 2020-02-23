@@ -19,12 +19,10 @@ export default class BlockExistsContext extends BaseEndpointContext
     this.data = p.data;
   }
 
-  public async doesBlockExistInStorage(p) {
+  public async getBlockByName(name) {
     try {
-      return await this.blockModel.model.exists({
-        lowerCasedName: p.name,
-        type: p.type,
-        parent: p.parent
+      return await this.blockModel.model.findOne({
+        lowerCasedName: name.toLowerCase()
       });
     } catch (error) {
       logger.error(error);

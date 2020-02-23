@@ -20,14 +20,14 @@ export interface IBulkUpdateByIDItem<T> {
 export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
-  getUserByCustomID: (customID: string) => Promise<IUser>;
+  getUserByCustomID: (customId: string) => Promise<IUser>;
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (customId: string) => Promise<IBlock>;
-  getBlockListWithIDs: (customIDs: string[]) => Promise<IBlock[]>;
+  getBlockListWithIDs: (customIds: string[]) => Promise<IBlock[]>;
   getNotificationByID: (customId: string) => Promise<INotification>;
 
   updateUser: (data: Partial<IUser>) => Promise<void>;
-  updateUserByID: (customID: string, data: Partial<IUser>) => Promise<void>;
+  updateUserByID: (customId: string, data: Partial<IUser>) => Promise<void>;
   updateBlockByID: (customId: string, data: Partial<IBlock>) => Promise<void>;
   updateNotificationByID: (
     customId: string,
@@ -119,10 +119,10 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     }
   }
 
-  public async getBlockListWithIDs(customIDs: string[]) {
+  public async getBlockListWithIDs(customIds: string[]) {
     try {
       const query = {
-        customId: { $in: customIDs }
+        customId: { $in: customIds }
       };
 
       return await this.blockModel.model.find(query).exec();

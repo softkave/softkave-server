@@ -2,7 +2,7 @@ import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import { IBlock } from "mongo/block";
 
 export interface IGetBlocksWithCustomIDsParameters {
-  customIDs: string[];
+  customIds: string[];
 }
 
 export interface IGetBlocksWithCustomIDsContext extends IBaseEndpointContext {

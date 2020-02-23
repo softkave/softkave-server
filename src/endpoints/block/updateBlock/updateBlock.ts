@@ -1,4 +1,5 @@
 import { validate } from "utils/joiUtils";
+import canReadBlock from "../canReadBlock";
 import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
@@ -6,7 +7,9 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const data = validate(context.data, updateBlockJoiSchema);
   const blockData = data.data;
   const user = await context.getUser();
-  const block = await context.getBlockByID(data.blockID);
+  const block = await context.getBlockByID(data.customId);
+
+  canReadBlock({ user, block });
 
   // TODO: do access control check in all the endpoints
 
@@ -42,7 +45,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     }
   }
 
-  await context.updateBlock(data.blockID, update);
+  await context.updateBlock(data.customId, update);
 
   if (block.parent !== blockData.parent) {
     const sourceBlockID = block.parent;
