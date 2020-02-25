@@ -11,7 +11,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
   canReadBlock({ user, block });
 
-  // TODO: do access control check in all the endpoints
+  // TODO: update only the fields available in data
 
   const update: IDirectUpdateBlockInput = {
     name: blockData.name,

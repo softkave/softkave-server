@@ -1,4 +1,4 @@
-const indexSchema = `
+const endpointSchema = `
   type Query {
     user: UserQuery
     block: BlockQuery
@@ -10,4 +10,4 @@ const indexSchema = `
   }
 `;
 
-export default indexSchema;
+export default endpointSchema;

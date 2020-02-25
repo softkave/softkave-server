@@ -1,9 +1,9 @@
+import { PermissionDeniedError } from "endpoints/errors";
 import { userEndpoints } from "../endpoints/user/constants";
 import {
   InvalidCredentialsError,
   LoginAgainError
 } from "../endpoints/user/errors";
-import userError from "../endpoints/user/userError";
 import UserToken from "../endpoints/user/UserToken";
 import { IUser } from "../mongo/user";
 import UserModel from "../mongo/user/UserModel";
@@ -41,7 +41,7 @@ async function getUserFromRequest({
   user = await userModel.model.findOne(query).exec();
 
   if (!user) {
-    throw userError.permissionDenied;
+    throw new PermissionDeniedError();
   }
 
   req.fullUserData = user;

@@ -173,6 +173,8 @@ export default async function oldBlocksToNewBlocksScript() {
       docsCount++;
     }
 
+    // TODO: drop old block model
+
     const endedInMs = Date.now();
     const timeTakenInMs = startedInMs - endedInMs;
     const timeTakenInSecs = timeTakenInMs / 1000;

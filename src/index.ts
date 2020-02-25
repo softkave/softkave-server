@@ -4,10 +4,9 @@ import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
 import oldBlocksToNewBlocksScript from "scripts/oldBlocksToNewBlocks";
-import { IndexOperations, indexSchema } from "./endpoints";
+import { EndpointController, indexSchema } from "./endpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
-import AccessControlModel from "./mongo/access-control/AccessControlModel";
 import BlockModel from "./mongo/block/BlockModel";
 import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
@@ -17,10 +16,6 @@ import appInfo from "./res/appInfo";
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
-  connection: connection.getConnection()
-});
-
-const accessControlModel = new AccessControlModel({
   connection: connection.getConnection()
 });
 
@@ -70,11 +65,10 @@ app.use(
   graphqlHTTP({
     graphiql,
     schema: indexSchema,
-    rootValue: new IndexOperations({
+    rootValue: new EndpointController({
       blockModel,
       notificationModel,
-      userModel,
-      accessControlModel
+      userModel
     })
   })
 );
