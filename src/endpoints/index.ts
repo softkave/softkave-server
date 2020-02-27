@@ -1,5 +1,5 @@
 import { buildSchema } from "graphql";
-import { utilitySchema } from "../utils/schema-utils";
+import { utilitySchema } from "../utilities/schema-utils";
 import blockSchema from "./block/schema";
 import EndpointController from "./controller";
 import endpointSchema from "./schema";

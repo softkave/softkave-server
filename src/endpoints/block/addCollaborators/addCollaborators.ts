@@ -1,10 +1,10 @@
 import moment from "moment";
-import { INotification } from "mongo/notification";
-import { IUser } from "mongo/user";
-import appInfo from "res/appInfo";
-import { indexArray } from "utils/functionUtils";
-import { validate } from "utils/joiUtils";
-import logger from "utils/logger";
+import { INotification } from "../../../mongo/notification";
+import { IUser } from "../../../mongo/user";
+import appInfo from "../../../res/appInfo";
+import { indexArray } from "../../../utilities/functionUtils";
+import { validate } from "../../../utilities/joiUtils";
+import logger from "../../../utilities/logger";
 import canReadBlock from "../canReadBlock";
 import {
   CollaborationRequestSentBeforeError,

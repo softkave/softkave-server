@@ -1,5 +1,5 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBlock } from "../../../mongo/block";
 import { IBlockExistsParameters } from "../blockExists/types";
 import { INewBlockInput } from "../types";
 

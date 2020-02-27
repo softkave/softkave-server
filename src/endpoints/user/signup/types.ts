@@ -1,4 +1,4 @@
-import { IBlock } from "mongo/block";
+import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 

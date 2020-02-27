@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { regEx, validationSchemas } from "../../utils/validationUtils";
+import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { userConstants } from "./constants";
 
 const email = Joi.string()

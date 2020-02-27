@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import sendChangePasswordEmail, {
   ISendChangePasswordEmailParameters
 } from "../sendChangePasswordEmail";

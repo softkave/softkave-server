@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import { IGetChangePasswordTokenDataContext } from "./types";
 
 // tslint:disable-next-line: no-empty-interface

@@ -1,5 +1,5 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IUser } from "mongo/user";
+import { IUser } from "../../../mongo/user";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IChangePasswordParameters {
   password: string;

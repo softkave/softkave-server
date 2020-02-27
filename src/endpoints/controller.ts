@@ -1,6 +1,6 @@
-import BlockModel from "mongo/block/BlockModel";
-import NotificationModel from "mongo/notification/NotificationModel";
-import UserModel from "mongo/user/UserModel";
+import BlockModel from "../mongo/block/BlockModel";
+import NotificationModel from "../mongo/notification/NotificationModel";
+import UserModel from "../mongo/user/UserModel";
 import BlockController from "./block/controller";
 import UserController from "./user/controller";
 

@@ -1,9 +1,9 @@
+import { IBlock } from "../../../mongo/block";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
 import TransferBlockContext from "../transferBlock/context";
 import transferBlock from "../transferBlock/transferBlock";
 import {

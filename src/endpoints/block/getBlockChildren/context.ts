@@ -1,9 +1,9 @@
+import { BlockType } from "../../../mongo/block";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { BlockType } from "mongo/block";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
 import { IGetBlockChildrenContext, IGetBlockChildrenParameters } from "./types";
 
 export interface IGetBlockChildrenContextParameters

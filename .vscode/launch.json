@@ -3,8 +3,7 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
-  "configurations": [
-    {
+  "configurations": [{
       // Find a way to automate this
       "type": "node",
       "request": "attach",
@@ -19,6 +18,8 @@
       "name": "Launch Program",
       "program": "${workspaceFolder}/src/index.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
+      // "program": "npm run build-ts",
+      // "preLaunchTask": "npm run build-ts",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "envFile": "${workspaceFolder}/.env"
     }

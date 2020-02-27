@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
-import { validate } from "../../../utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
 import { userEndpoints } from "../constants";
 import { EmailAddressNotAvailableError } from "../errors";
 import UserToken from "../UserToken";

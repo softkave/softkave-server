@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import { ILoginContext, ILoginParameters } from "./types";
 
 export interface ILoginContextParameters

@@ -1,5 +1,5 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { BlockType, IBlock } from "mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IBlockExistsParameters {
   name: string;

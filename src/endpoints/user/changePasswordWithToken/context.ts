@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import changePassword from "../changePassword/changePassword";
 import ChangePasswordContext from "../changePassword/context";
 import { IChangePasswordParameters } from "../changePassword/types";

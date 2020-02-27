@@ -1,8 +1,8 @@
 import Joi from "joi";
 import trim from "validator/lib/trim";
 import { userConstants } from "../../endpoints/user/constants";
-import { validate } from "../../utils/joiUtils";
-import { regEx } from "../../utils/validationUtils";
+import { validate } from "../../utilities/joiUtils";
+import { regEx } from "../../utilities/validationUtils";
 
 export const emailSchema = Joi.string()
   .required()

@@ -1,7 +1,7 @@
-import { BlockType } from "mongo/block";
+import { BlockType } from "../../mongo/block";
 import OperationError, {
   IOperationErrorParameters
-} from "../../utils/OperationError";
+} from "../../utilities/OperationError";
 
 export interface IBlockExistsErrorParameters extends IOperationErrorParameters {
   blockType?: BlockType;

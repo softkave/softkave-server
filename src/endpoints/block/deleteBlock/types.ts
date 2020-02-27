@@ -1,4 +1,4 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IDeleteBlockParameters {
   customId: string;

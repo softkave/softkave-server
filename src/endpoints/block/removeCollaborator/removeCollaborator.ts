@@ -1,8 +1,8 @@
-import { UserDoesNotExistError } from "endpoints/user/errors";
-import { INotification } from "mongo/notification";
-import { validate } from "utils/joiUtils";
-import logger from "utils/logger";
 import uuid = require("uuid");
+import { INotification } from "../../../mongo/notification";
+import { validate } from "../../../utilities/joiUtils";
+import logger from "../../../utilities/logger";
+import { UserDoesNotExistError } from "../../user/errors";
 import canReadBlock from "../canReadBlock";
 import { IRemoveCollaboratorContext } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";

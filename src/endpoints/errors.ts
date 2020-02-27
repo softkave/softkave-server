@@ -1,4 +1,4 @@
-import OperationError from "utils/OperationError";
+import OperationError from "../utilities/OperationError";
 
 export class InvalidRequestError extends OperationError {
   public name = "InvalidRequestError";

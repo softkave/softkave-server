@@ -1,5 +1,5 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
+import { IBlock } from "../../../mongo/block";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IGetBlockByIDParameters {
   customId: string;

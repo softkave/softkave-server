@@ -1,14 +1,14 @@
 import merge from "lodash/merge";
-import { IBlock } from "mongo/block";
-import BlockModel from "mongo/block/BlockModel";
-import { INotification } from "mongo/notification";
-import NotificationModel from "mongo/notification/NotificationModel";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
 import getUserFromRequest from "../middlewares/getUserFromRequest";
+import { IBlock } from "../mongo/block";
+import BlockModel from "../mongo/block/BlockModel";
+import { INotification } from "../mongo/notification";
+import NotificationModel from "../mongo/notification/NotificationModel";
 import { IUser } from "../mongo/user";
 import UserModel from "../mongo/user/UserModel";
-import { IServerRequest } from "../utils/types";
+import { ServerError } from "../utilities/errors";
+import logger from "../utilities/logger";
+import { IServerRequest } from "../utilities/types";
 import { InvalidCredentialsError } from "./user/errors";
 import { IBaseUserTokenData } from "./user/UserToken";
 

@@ -1,10 +1,10 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import {
   IBlock,
   ISubTask,
   ITaskCollaborationData,
   ITaskCollaborator
-} from "mongo/block";
+} from "../../../mongo/block";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IUpdateBlockInput {
   name: string;

@@ -1,5 +1,5 @@
-import ErrorList from "../utils/ErrorList";
-import OperationError from "../utils/OperationError";
+import ErrorList from "../utilities/ErrorList";
+import OperationError from "../utilities/OperationError";
 
 export default interface IServerResponse {
   errors: ErrorList;

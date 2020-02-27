@@ -1,9 +1,9 @@
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { notificationConstants } from "endpoints/notification/constants";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
+import { notificationConstants } from "../../notification/constants";
 import {
   IRespondToCollaborationRequestContext,
   IRespondToCollaborationRequestParameters

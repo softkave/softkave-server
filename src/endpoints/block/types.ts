@@ -3,7 +3,7 @@ import {
   ISubTask,
   ITaskCollaborationData,
   ITaskCollaborator
-} from "mongo/block";
+} from "../../mongo/block";
 
 export interface INewBlockInput {
   name: string;

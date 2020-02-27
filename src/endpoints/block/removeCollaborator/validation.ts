@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { validationSchemas } from "utils/validationUtils";
+import { validationSchemas } from "../../../utilities/validationUtils";
 import blockValidationSchemas from "../validation";
 
 export const removeCollaboratorJoiSchema = Joi.object().keys({

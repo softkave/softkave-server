@@ -1,9 +1,9 @@
+import { INotification } from "../../../mongo/notification";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { INotification } from "mongo/notification";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
 import {
   IRemoveCollaboratorContext,
   IRemoveCollaboratorParameters

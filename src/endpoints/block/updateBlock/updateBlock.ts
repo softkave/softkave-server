@@ -1,4 +1,4 @@
-import { validate } from "utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
 import { updateBlockJoiSchema } from "./validation";

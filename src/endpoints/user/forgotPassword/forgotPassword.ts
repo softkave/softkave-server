@@ -1,5 +1,5 @@
 import moment = require("moment");
-import { validate } from "../../../utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
 import { userEndpoints } from "../constants";
 import { UserDoesNotExistError } from "../errors";
 import UserToken from "../UserToken";

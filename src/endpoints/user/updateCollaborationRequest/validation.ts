@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { validationSchemas } from "utils/validationUtils";
+import { validationSchemas } from "../../../utilities/validationUtils";
 
 export const updateCollaborationRequestSchema = Joi.object().keys({
   customId: validationSchemas.uuid,

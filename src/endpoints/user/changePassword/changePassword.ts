@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import { validate } from "utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
 import { userEndpoints } from "../constants";
 import UserToken from "../UserToken";
 import { addEntryToPasswordDateLog } from "../utils";

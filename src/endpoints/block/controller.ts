@@ -1,7 +1,7 @@
-import { IEndpointControllerProps } from "endpoints/controller";
-import BlockModel from "mongo/block/BlockModel";
-import NotificationModel from "mongo/notification/NotificationModel";
-import UserModel from "mongo/user/UserModel";
+import BlockModel from "../../mongo/block/BlockModel";
+import NotificationModel from "../../mongo/notification/NotificationModel";
+import UserModel from "../../mongo/user/UserModel";
+import { IEndpointControllerProps } from "../controller";
 import addBlock from "./addBlock/addBlock";
 import AddBlockContext from "./addBlock/context";
 import addCollaborators from "./addCollaborators/addCollaborators";

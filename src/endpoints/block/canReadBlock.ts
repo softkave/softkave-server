@@ -1,5 +1,5 @@
-import { IUser } from "mongo/user";
 import { IBlock } from "../../mongo/block";
+import { IUser } from "../../mongo/user";
 import { PermissionDeniedError } from "../errors";
 import { blockConstants } from "./constants";
 import { BlockDoesNotExistError } from "./errors";

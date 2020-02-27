@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import addBlockToDatabase from "../addBlockToDatabase/addBlockToDatabase";
 import AddBlockToDatabaseContext from "../addBlockToDatabase/context";
 import { INewBlockInput } from "../types";

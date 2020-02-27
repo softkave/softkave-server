@@ -1,4 +1,4 @@
-import { BlockType } from "mongo/block";
+import { BlockType } from "../../mongo/block";
 
 const priorityNotImportant = "not important";
 const priorityImportant = "important";

@@ -1,4 +1,4 @@
-import { validate } from "../../../utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
 import { IUpdateUserContext } from "./types";
 import { updateUserJoiSchema } from "./validation";
 

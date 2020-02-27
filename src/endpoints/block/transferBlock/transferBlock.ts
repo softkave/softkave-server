@@ -1,5 +1,5 @@
-import { IBlock } from "mongo/block";
-import { validate } from "utils/joiUtils";
+import { IBlock } from "../../../mongo/block";
+import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { DraggedBlockDoesNotExistInSourceBlockError } from "../errors";
 import { ITransferBlockContext } from "./types";

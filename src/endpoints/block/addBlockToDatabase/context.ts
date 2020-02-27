@@ -1,10 +1,10 @@
+import { IBlock } from "../../../mongo/block";
+import mongoConstants from "../../../mongo/constants";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { IBlock } from "mongo/block";
-import mongoConstants from "mongo/constants";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
 import blockExists from "../blockExists/blockExists";
 import BlockExistsContext from "../blockExists/context";
 import { IBlockExistsParameters } from "../blockExists/types";

@@ -1,6 +1,6 @@
 import Joi from "joi";
-import { BlockType } from "mongo/block";
-import { regEx, validationSchemas } from "../../utils/validationUtils";
+import { BlockType } from "../../mongo/block";
+import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { blockConstants } from "./constants";
 
 const taskCollaboratorSchema = Joi.object().keys({

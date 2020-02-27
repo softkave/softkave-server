@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+
 import {
   CredentialsExpiredError,
   InvalidCredentialsError
 } from "../endpoints/user/errors";
-import { ServerError } from "../utils/errors";
-import logger from "../utils/logger";
+import { ServerError } from "../utilities/errors";
+import logger from "../utilities/logger";
 
 function handleErrors(err: Error | any, req: Request, res: Response) {
   if (err.name === JsonWebTokenError.name) {

@@ -1,7 +1,7 @@
 import argon2 from "argon2";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
-import { validate } from "../../../utils/joiUtils";
+import { ServerError } from "../../../utilities/errors";
+import { validate } from "../../../utilities/joiUtils";
+import logger from "../../../utilities/logger";
 import { userEndpoints } from "../constants";
 import { UserDoesNotExistError } from "../errors";
 import UserToken from "../UserToken";

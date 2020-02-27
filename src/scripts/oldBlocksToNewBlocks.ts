@@ -1,4 +1,5 @@
-import { getImmediateParentID, getRootBlockID } from "endpoints/block/utils";
+import { Document } from "mongoose";
+import { getImmediateParentID, getRootBlockID } from "../endpoints/block/utils";
 import {
   blockTaskCollaboratorDataSchema,
   BlockType,
@@ -8,13 +9,12 @@ import {
   ITaskCollaborator,
   mongoSubTaskSchema,
   mongoTaskCollaborationDataSchema
-} from "mongo/block";
-import MongoModel, {
-  IDerivedMongoModelInitializationProps
-} from "mongo/MongoModel";
-import { Document } from "mongoose";
+} from "../mongo/block";
 import NewBlockModel from "../mongo/block/BlockModel";
 import connection from "../mongo/defaultConnection";
+import MongoModel, {
+  IDerivedMongoModelInitializationProps
+} from "../mongo/MongoModel";
 
 interface IOldBlock {
   customId: string;

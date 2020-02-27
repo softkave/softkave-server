@@ -1,4 +1,4 @@
-import { PermissionDeniedError } from "endpoints/errors";
+import { PermissionDeniedError } from "../endpoints/errors";
 import { userEndpoints } from "../endpoints/user/constants";
 import {
   InvalidCredentialsError,
@@ -7,7 +7,7 @@ import {
 import UserToken from "../endpoints/user/UserToken";
 import { IUser } from "../mongo/user";
 import UserModel from "../mongo/user/UserModel";
-import { IServerRequest } from "../utils/types";
+import { IServerRequest } from "../utilities/types";
 
 export interface IGetUserFromRequestParamters {
   req: IServerRequest;

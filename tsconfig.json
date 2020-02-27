@@ -2,14 +2,28 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    // "allowSyntheticDefaultImports": true,
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
+    // "strict": true,
     "outDir": "dist",
-    "experimentalDecorators": true,
-    "baseUrl": "src"
+    // "rootDir": "src",
+    // "experimentalDecorators": true,
+    // "baseUrl": "./src",
+    // "paths": {
+    //   "*": [
+    //     "../node_modules/*",
+    //     "*"
+    //   ]
+    // }
   },
   "lib": ["es2015"],
-  "exclude": ["node_modules", "dist", "email-templates", "features", "iterations"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "email-templates",
+    "features",
+    "iterations"
+  ]
 }

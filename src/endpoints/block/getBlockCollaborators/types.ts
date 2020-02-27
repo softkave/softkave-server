@@ -1,5 +1,5 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { ICollaborator } from "mongo/user";
+import { ICollaborator } from "../../../mongo/user";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IGetBlockCollaboratorsParameters {
   customId: string;

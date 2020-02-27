@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import { IGetBlockByIDContext, IGetBlockByIDParameters } from "./types";
 
 export interface IGetBlockByIDContextParameters

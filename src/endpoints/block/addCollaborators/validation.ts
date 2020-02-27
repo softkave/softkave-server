@@ -1,6 +1,6 @@
-import { notificationConstants } from "endpoints/notification/constants";
+import { notificationConstants } from "../../notification/constants";
 import Joi from "joi";
-import { validationSchemas } from "utils/validationUtils";
+import { validationSchemas } from "../../../utilities/validationUtils";
 import { blockConstants } from "../constants";
 
 const newCollaboratorSchema = Joi.object().keys({

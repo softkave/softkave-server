@@ -1,5 +1,5 @@
-import { CollaborationRequestDoesNotExistError } from "endpoints/user/errors";
-import { validate } from "utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
+import { CollaborationRequestDoesNotExistError } from "../../user/errors";
 import canReadBlock from "../canReadBlock";
 import {
   CollaborationRequestAcceptedAlreadyError,

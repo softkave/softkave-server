@@ -1,5 +1,5 @@
-import { notificationConstants } from "endpoints/notification/constants";
-import { validate } from "utils/joiUtils";
+import { validate } from "../../../utilities/joiUtils";
+import { notificationConstants } from "../../notification/constants";
 import { CollaborationRequestDoesNotExistError } from "../errors";
 import { IRespondToCollaborationRequestContext } from "./types";
 import { respondToCollaborationRequestJoiSchema } from "./validation";

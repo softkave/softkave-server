@@ -1,4 +1,4 @@
-import { IEndpointControllerProps } from "endpoints/controller";
+import { IEndpointControllerProps } from "../controller";
 import changePassword from "./changePassword/changePassword";
 import ChangePasswordContext from "./changePassword/context";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";

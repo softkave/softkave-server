@@ -1,8 +1,8 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
 import {
   CollaborationRequestResponse,
   INotification
-} from "mongo/notification";
+} from "../../../mongo/notification";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IRespondToCollaborationRequestParameters {
   customId: string;

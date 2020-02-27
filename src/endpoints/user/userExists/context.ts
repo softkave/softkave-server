@@ -1,5 +1,5 @@
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "../../BaseEndpointContext";

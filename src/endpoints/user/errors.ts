@@ -1,4 +1,4 @@
-import OperationError from "../../utils/OperationError";
+import OperationError from "../../utilities/OperationError";
 import { userErrorActions } from "./constants";
 
 export class EmailAddressNotAvailableError extends OperationError {

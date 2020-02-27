@@ -1,8 +1,8 @@
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+} from "../../BaseEndpointContext";
 import { IDeleteBlockContext, IDeleteBlockParameters } from "./types";
 
 export interface IDeleteBlockContextParameters

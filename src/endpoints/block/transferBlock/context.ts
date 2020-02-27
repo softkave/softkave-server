@@ -1,6 +1,6 @@
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
-} from "endpoints/BaseEndpointContext";
+} from "../../BaseEndpointContext";
 import { ITransferBlockContext, ITransferBlockParameters } from "./types";
 
 export interface ITransferBlockContextParameters

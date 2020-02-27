@@ -1,11 +1,11 @@
-import CreateRootBlockContext from "endpoints/block/createRootBlock/context";
-import createRootBlock from "endpoints/block/createRootBlock/createRootBlock";
-import mongoConstants from "mongo/constants";
-import { ServerError } from "utils/errors";
-import logger from "utils/logger";
+import mongoConstants from "../../../mongo/constants";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "../../BaseEndpointContext";
+import CreateRootBlockContext from "../../block/createRootBlock/context";
+import createRootBlock from "../../block/createRootBlock/createRootBlock";
 import UserExistsContext from "../userExists/context";
 import userExists from "../userExists/userExists";
 import { INewUser, INewUserInput, ISignupContext } from "./types";

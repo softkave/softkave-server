@@ -1,4 +1,4 @@
-import { IBlock } from "mongo/block";
+import { IBlock } from "../../../mongo/block";
 import { BlockExistsError } from "../errors";
 import { IAddBlockToDatabaseContext, IAddBlockToDatabaseResult } from "./types";
 

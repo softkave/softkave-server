@@ -1,6 +1,6 @@
-import { IBaseEndpointContext } from "endpoints/BaseEndpointContext";
-import { INotification } from "mongo/notification";
-import { IUser } from "mongo/user";
+import { INotification } from "../../../mongo/notification";
+import { IUser } from "../../../mongo/user";
+import { IBaseEndpointContext } from "../../BaseEndpointContext";
 import { ISendCollaborationRequestEmailProps } from "../sendCollabRequestEmail";
 
 interface INewCollaboratorInput {
