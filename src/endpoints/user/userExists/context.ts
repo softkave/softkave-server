@@ -21,7 +21,7 @@ export default class UserExistsContext extends BaseEndpointContext
 
   public async doesUserExistInDatabase(email: string) {
     try {
-      return this.userModel.model.exists({ email });
+      return await this.userModel.model.exists({ email });
     } catch (error) {
       logger.error(error);
       throw new ServerError();

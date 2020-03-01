@@ -4,6 +4,7 @@ const utilitySchema = `
     message: String
     type: String
     action: String
+    name: String
   }
 
   type ErrorOnlyResponse {

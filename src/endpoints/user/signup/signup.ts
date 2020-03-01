@@ -8,7 +8,7 @@ import { INewUser, ISignupContext, ISignupResult } from "./types";
 import { newUserInputSchema } from "./validation";
 
 async function signup(context: ISignupContext): Promise<ISignupResult> {
-  const newUserInput = validate(context.data, newUserInputSchema);
+  const newUserInput = validate(context.data.user, newUserInputSchema);
   const userExists = await context.userExists(newUserInput.email);
 
   if (userExists) {

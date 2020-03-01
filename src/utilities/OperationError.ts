@@ -8,6 +8,7 @@ class OperationError extends Error {
   public field: string;
   public message: string;
   public action: string;
+  public type: string;
   public name = "OperationError";
 
   constructor(p: IOperationErrorParameters = {}) {
@@ -18,6 +19,7 @@ class OperationError extends Error {
 
     // recommended action for the client
     this.action = p.action;
+    this.type = this.name;
   }
 }
 

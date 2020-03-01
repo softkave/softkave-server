@@ -8,7 +8,7 @@ import {
 import { ServerError } from "../utilities/errors";
 import logger from "../utilities/logger";
 
-function handleErrors(err: Error | any, req: Request, res: Response) {
+function handleErrors(err: Error | any, req: Request, res: Response, next) {
   if (err.name === JsonWebTokenError.name) {
     res.status(200).send({
       errors: [new InvalidCredentialsError()]

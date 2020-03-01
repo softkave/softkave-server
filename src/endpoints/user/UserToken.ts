@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { IUser } from "../../mongo/user";
 import { userConstants } from "./constants";
+import { LoginAgainError } from "./errors";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -46,13 +47,23 @@ export default class UserToken {
   }
 
   public static decodeToken(token: string): IBaseUserTokenData {
-    return jwt.verify(token, JWT_SECRET, {
+    const tokenData = jwt.verify(token, JWT_SECRET, {
       ignoreExpiration: true
     }) as IBaseUserTokenData;
+
+    UserToken.checkVersion(tokenData);
+    return tokenData;
   }
 
   public static containsAudience(tokenData: IBaseUserTokenData, aud: string) {
+    UserToken.checkVersion(tokenData);
     const audience = tokenData.aud;
     return !!audience.find(nextAud => nextAud === "*" || nextAud === aud);
+  }
+
+  public static checkVersion(tokenData: IBaseUserTokenData) {
+    if (!tokenData.version) {
+      throw new LoginAgainError();
+    }
   }
 }

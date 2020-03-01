@@ -57,6 +57,7 @@
     "foreman": "^3.0.1",
     "jest": "^24.9.0",
     "nodemon": "^1.18.4",
+    "request-promise": "^4.2.5",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0"

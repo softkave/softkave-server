@@ -9,8 +9,12 @@ export interface INewUserInput {
   color: string;
 }
 
+export interface ISignupArgData {
+  user: INewUserInput;
+}
+
 export interface ISignupContext extends IBaseEndpointContext {
-  data: INewUserInput;
+  data: ISignupArgData;
   userExists: (email: string) => Promise<boolean>;
   saveUser: (user: INewUser) => Promise<IUser>;
   createUserRootBlock: () => Promise<IBlock>;

@@ -1,4 +1,5 @@
 import { IEndpointControllerProps } from "../controller";
+import { wrapEndpoint } from "../utils";
 import changePassword from "./changePassword/changePassword";
 import ChangePasswordContext from "./changePassword/context";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";
@@ -34,128 +35,154 @@ export default class UserController {
   }
 
   public signup(data, req) {
-    return signup(
-      new SignupContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      signup(
+        new SignupContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public changePassword(data, req) {
-    return changePassword(
-      new ChangePasswordContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      changePassword(
+        new ChangePasswordContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public changePasswordWithToken(data, req) {
-    return changePasswordWithToken(
-      new ChangePasswordWithTokenContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      changePasswordWithToken(
+        new ChangePasswordWithTokenContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public forgotPassword(data, req) {
-    return forgotPassword(
-      new ForgotPasswordContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      forgotPassword(
+        new ForgotPasswordContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getChangePasswordTokenData(data, req) {
-    return getChangePasswordTokenData(
-      new GetChangePasswordTokenDataContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getChangePasswordTokenData(
+        new GetChangePasswordTokenDataContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public getCollaborationRequests(data, req) {
-    return getCollaborationRequests(
-      new GetCollaborationRequestsContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getCollaborationRequests(
+        new GetCollaborationRequestsContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public getSessionDetails(data, req) {
-    return getSessionDetails(
-      new GetSessionDetailsContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getSessionDetails(
+        new GetSessionDetailsContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public getUserData(data, req) {
-    return getUserData(
-      new GetUserDataContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getUserData(
+        new GetUserDataContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public login(data, req) {
-    return login(
-      new LoginContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      login(
+        new LoginContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public respondToCollaborationRequest(data, req) {
-    return respondToCollaborationRequest(
-      new RespondToCollaborationRequestContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      respondToCollaborationRequest(
+        new RespondToCollaborationRequestContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public updateCollaborationRequest(data, req) {
-    return updateCollaborationRequest(
-      new UpdateCollaborationRequestContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      updateCollaborationRequest(
+        new UpdateCollaborationRequestContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public updateUser(data, req) {
-    return updateUser(
-      new UpdateUserContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      updateUser(
+        new UpdateUserContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public userExists(data, req) {
-    return userExists(
-      new UserExistsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      userExists(
+        new UserExistsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 }

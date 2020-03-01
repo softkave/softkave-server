@@ -2,6 +2,7 @@ import BlockModel from "../../mongo/block/BlockModel";
 import NotificationModel from "../../mongo/notification/NotificationModel";
 import UserModel from "../../mongo/user/UserModel";
 import { IEndpointControllerProps } from "../controller";
+import { wrapEndpoint } from "../utils";
 import addBlock from "./addBlock/addBlock";
 import AddBlockContext from "./addBlock/context";
 import addCollaborators from "./addCollaborators/addCollaborators";
@@ -47,150 +48,180 @@ export default class BlockController {
   }
 
   public addBlock(data, req) {
-    return addBlock(
-      new AddBlockContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      addBlock(
+        new AddBlockContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public addCollaborators(data, req) {
-    return addCollaborators(
-      new AddCollaboratorsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      addCollaborators(
+        new AddCollaboratorsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public blockExists(data, req) {
-    return blockExists(
-      new BlockExistsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      blockExists(
+        new BlockExistsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public deleteBlock(data, req) {
-    return deleteBlock(
-      new DeleteBlockContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      deleteBlock(
+        new DeleteBlockContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getRootBlocks(data, req) {
-    return getRootBlocks(
-      new GetRootBlocksContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getRootBlocks(
+        new GetRootBlocksContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public getAssignedTasks(data, req) {
-    return getAssignedTasks(
-      new GetAssignedTasksContext({
-        req,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getAssignedTasks(
+        new GetAssignedTasksContext({
+          req,
+          ...this.props
+        })
+      )
     );
   }
 
   public getBlockByID(data, req) {
-    return getBlockByID(
-      new GetBlockByIDContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getBlockByID(
+        new GetBlockByIDContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getBlockChildren(data, req) {
-    return getBlockChildren(
-      new GetBlockChildrenContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getBlockChildren(
+        new GetBlockChildrenContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getBlockCollaborationRequests(data, req) {
-    return getBlockCollaborationRequests(
-      new GetBlockCollaborationRequestsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getBlockCollaborationRequests(
+        new GetBlockCollaborationRequestsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getBlockCollaborators(data, req) {
-    return getBlockCollaborators(
-      new GetBlockCollaboratorsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getBlockCollaborators(
+        new GetBlockCollaboratorsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public getBlocksWithCustomIDs(data, req) {
-    return getBlocksWithCustomIDs(
-      new GetBlocksWithCustomIDsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      getBlocksWithCustomIDs(
+        new GetBlocksWithCustomIDsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public removeCollaborator(data, req) {
-    return removeCollaborator(
-      new RemoveCollaboratorContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      removeCollaborator(
+        new RemoveCollaboratorContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public revokeCollaborationRequests(data, req) {
-    return revokeCollaborationRequests(
-      new RevokeCollaborationRequestsContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      revokeCollaborationRequests(
+        new RevokeCollaborationRequestsContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public transferBlock(data, req) {
-    return transferBlock(
-      new TransferBlockContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      transferBlock(
+        new TransferBlockContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 
   public updateBlock(data, req) {
-    return updateBlock(
-      new UpdateBlockContext({
-        req,
-        data,
-        ...this.props
-      })
+    return wrapEndpoint(data, req, () =>
+      updateBlock(
+        new UpdateBlockContext({
+          req,
+          data,
+          ...this.props
+        })
+      )
     );
   }
 }

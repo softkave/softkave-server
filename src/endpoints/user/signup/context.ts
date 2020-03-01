@@ -8,16 +8,16 @@ import CreateRootBlockContext from "../../block/createRootBlock/context";
 import createRootBlock from "../../block/createRootBlock/createRootBlock";
 import UserExistsContext from "../userExists/context";
 import userExists from "../userExists/userExists";
-import { INewUser, INewUserInput, ISignupContext } from "./types";
+import { INewUser, ISignupArgData, ISignupContext } from "./types";
 
 export interface ISignupContextParameters
   extends IBaseEndpointContextParameters {
-  data: INewUserInput;
+  data: ISignupArgData;
 }
 
 export default class SignupContext extends BaseEndpointContext
   implements ISignupContext {
-  public data: INewUserInput;
+  public data: ISignupArgData;
 
   constructor(p: ISignupContextParameters) {
     super(p);
