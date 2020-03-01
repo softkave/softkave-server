@@ -6,7 +6,7 @@ import { ICreateRootBlockContext, ICreateRootBlockResult } from "./types";
 async function createRootBlock(
   context: ICreateRootBlockContext
 ): Promise<ICreateRootBlockResult> {
-  const user = await context.getUser();
+  const user = await context.data.user;
   const rootBlockInput: INewBlockInput = {
     customId: uuid(),
     name: `root_${user.customId}`,

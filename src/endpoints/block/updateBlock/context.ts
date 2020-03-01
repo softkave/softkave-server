@@ -28,12 +28,14 @@ export default class UpdateBlockContext extends BaseEndpointContext
 
   public async updateBlock(blockID: string, data: IDirectUpdateBlockInput) {
     try {
-      await this.blockModel.model.updateOne(
-        {
-          customId: blockID
-        },
-        data
-      );
+      await this.blockModel.model
+        .updateOne(
+          {
+            customId: blockID
+          },
+          data
+        )
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();

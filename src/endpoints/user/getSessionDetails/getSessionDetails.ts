@@ -1,17 +1,17 @@
-import { IGetSessionDetailsContext } from "./types";
+import { IGetSessionDetailsContext, IGetSessionDetailsResult } from "./types";
 
 async function getSessionDetails(
   context: IGetSessionDetailsContext
-): Promise<any> {
+): Promise<IGetSessionDetailsResult> {
   const user = await context.getUser();
-  const notificationCount = await context.getNotificationsCount(user.email);
-  const assignedTaskCount = await context.getAssignedTasksCount(user.customId);
-  const organisationsCount = context.getOrgsCount(user.orgs.length);
+  const notificationsCount = await context.getNotificationsCount(user.email);
+  const assignedTasksCount = await context.getAssignedTasksCount(user.customId);
+  const organizationsCount = await context.getOrgsCount(user.orgs.length);
 
   return {
-    notificationCount,
-    assignedTaskCount,
-    organisationsCount
+    notificationsCount,
+    assignedTasksCount,
+    organizationsCount
   };
 }
 

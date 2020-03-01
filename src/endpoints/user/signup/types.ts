@@ -17,7 +17,7 @@ export interface ISignupContext extends IBaseEndpointContext {
   data: ISignupArgData;
   userExists: (email: string) => Promise<boolean>;
   saveUser: (user: INewUser) => Promise<IUser>;
-  createUserRootBlock: () => Promise<IBlock>;
+  createUserRootBlock: (user: IUser) => Promise<IBlock>;
 }
 
 export interface INewUser {

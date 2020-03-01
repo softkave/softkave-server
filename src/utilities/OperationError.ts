@@ -19,6 +19,8 @@ class OperationError extends Error {
 
     // recommended action for the client
     this.action = p.action;
+
+    // TODO: not reflecting, how do we fix it, or should we just stick with name?
     this.type = this.name;
   }
 }

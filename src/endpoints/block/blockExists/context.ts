@@ -21,9 +21,11 @@ export default class BlockExistsContext extends BaseEndpointContext
 
   public async getBlockByName(name) {
     try {
-      return await this.blockModel.model.findOne({
-        lowerCasedName: name.toLowerCase()
-      });
+      return await this.blockModel.model
+        .findOne({
+          lowerCasedName: name.toLowerCase()
+        })
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();

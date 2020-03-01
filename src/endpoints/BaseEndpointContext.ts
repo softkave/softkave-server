@@ -18,6 +18,8 @@ export interface IBulkUpdateByIDItem<T> {
 }
 
 export interface IBaseEndpointContext {
+  addUserToReq: (user: IUser) => void;
+
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getUserByCustomID: (customId: string) => Promise<IUser>;
@@ -59,6 +61,10 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     this.blockModel = p.blockModel;
     this.notificationModel = p.notificationModel;
     this.p = p;
+  }
+
+  public addUserToReq(user: IUser) {
+    this.req.fullUserData = user;
   }
 
   public async getUser() {

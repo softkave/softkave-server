@@ -25,12 +25,14 @@ export default class GetBlockChildrenContext extends BaseEndpointContext
     typeList: BlockType[]
   ) {
     try {
-      const blocks = await this.blockModel.model.find({
-        parent: blockID,
-        type: {
-          $in: typeList
-        }
-      });
+      const blocks = await this.blockModel.model
+        .find({
+          parent: blockID,
+          type: {
+            $in: typeList
+          }
+        })
+        .exec();
 
       return blocks;
     } catch (error) {

@@ -35,15 +35,18 @@ export default class UserToken {
       ...p.additionalData
     };
 
-    return jwt.sign(
-      {
-        sub: subject,
-        aud: p.audience || [],
-        version: userConstants.currentTokenVersion,
-        exp: p.expires ? p.expires / 1000 : undefined
-      },
-      JWT_SECRET
-    );
+    const payload: object = {
+      sub: subject,
+      aud: p.audience || [],
+      version: userConstants.currentTokenVersion
+    };
+
+    if (p.expires) {
+      // @ts-ignore
+      payload.exp = p.expires / 1000;
+    }
+
+    return jwt.sign(payload, JWT_SECRET);
   }
 
   public static decodeToken(token: string): IBaseUserTokenData {

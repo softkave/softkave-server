@@ -17,7 +17,6 @@ export default class GetSessionDetailsContext extends BaseEndpointContext
         .countDocuments({
           "to.email": email
         })
-        .lean()
         .exec();
     } catch (error) {
       logger.error(error);

@@ -26,7 +26,7 @@ async function getUserFromRequest({
     return req.fullUserData;
   }
 
-  if (!req.user || UserToken.containsAudience(req.user, audience)) {
+  if (!req.user || !UserToken.containsAudience(req.user, audience)) {
     if (required) {
       throw new InvalidCredentialsError();
     }

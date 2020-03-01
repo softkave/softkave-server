@@ -1,4 +1,5 @@
 import mongoConstants from "../../../mongo/constants";
+import { IUser } from "../../../mongo/user";
 import { ServerError } from "../../../utilities/errors";
 import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
@@ -24,9 +25,10 @@ export default class SignupContext extends BaseEndpointContext
     this.data = p.data;
   }
 
-  public async createUserRootBlock() {
+  public async createUserRootBlock(user: IUser) {
     const result = await createRootBlock(
       new CreateRootBlockContext({
+        data: { user },
         req: this.req,
         notificationModel: this.notificationModel,
         blockModel: this.blockModel,

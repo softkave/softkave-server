@@ -20,9 +20,14 @@ const taskCollaboratorsListSchema = Joi.array()
   .items(taskCollaboratorSchema);
 
 const userUpdateableTypes = ["group", "org", "project", "task"] as BlockType[];
-const blockType = Joi.string()
+const userUpdateableblockTypeSchema = Joi.string()
   .lowercase()
   .valid(userUpdateableTypes);
+
+const fullBlockTypes = [...userUpdateableTypes, "root"] as BlockType[];
+const fullBlockTypeSchema = Joi.string()
+  .lowercase()
+  .valid(fullBlockTypes);
 
 const blockChildrenIDList = Joi.array()
   .items(validationSchemas.uuid)
@@ -55,7 +60,7 @@ const taskCollaborationDataSchema = Joi.object().keys({
 const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)
   .unique()
-  .items(blockType);
+  .items(userUpdateableblockTypeSchema);
 
 const blockID = validationSchemas.uuid;
 const name = Joi.string()
@@ -82,7 +87,6 @@ const color = Joi.string()
   .regex(regEx.hexColorPattern);
 
 const updatedAt = Joi.number();
-const type = blockType;
 const parent = validationSchemas.uuid.when("type", {
   is: Joi.string().valid(["group", "project", "task"] as BlockType[]),
   then: Joi.required()
@@ -114,7 +118,6 @@ const newBlock = Joi.object().keys({
   description,
   expectedEndAt,
   color,
-  type,
   parent,
   rootBlockID,
   priority,
@@ -126,7 +129,8 @@ const newBlock = Joi.object().keys({
   tasks,
   customId: blockID,
   groupTaskContext: groups,
-  groupProjectContext: groups
+  groupProjectContext: groups,
+  type: userUpdateableblockTypeSchema
 });
 
 const blockValidationSchemas = {
@@ -148,10 +152,11 @@ const blockValidationSchemas = {
   parent,
   rootBlockID,
   updatedAt,
-  type,
   newBlock,
   groupContext,
-  blockTypesList: blockTypesSchema
+  blockTypesList: blockTypesSchema,
+  type: userUpdateableblockTypeSchema,
+  fullBlockType: fullBlockTypeSchema
 };
 
 export default blockValidationSchemas;
