@@ -1,3 +1,4 @@
+import { IBlock } from "../../../mongo/block";
 import {
   CollaborationRequestResponse,
   INotification
@@ -18,4 +19,8 @@ export interface IRespondToCollaborationRequestContext
     response: string
   ) => Promise<INotification>;
   deleteCollaborationRequestInStorage: (id: string) => Promise<void>;
+}
+
+export interface IRespondToCollaborationRequestResult {
+  block: IBlock;
 }

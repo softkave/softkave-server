@@ -198,11 +198,12 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     blocks: Array<IBulkUpdateByIDItem<IBlock>>
   ) {
     try {
-      await this.blockModel.model.bulkWrite(
-        blocks.map(b => ({
-          updateOne: { filter: { customId: b.id }, update: b.data }
-        }))
-      );
+      const opts = blocks.map(b => ({
+        updateOne: { filter: { customId: b.id }, update: b.data }
+      }));
+
+      const result = await this.blockModel.model.bulkWrite(opts);
+      console.log("completed");
     } catch (error) {
       logger.error(error);
       throw new ServerError();

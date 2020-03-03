@@ -24,7 +24,9 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     groups: blockData.groups,
     projects: blockData.projects,
     tasks: blockData.tasks,
-    subTasks: blockData.subTasks
+    subTasks: blockData.subTasks,
+    groupProjectContext: blockData.groupProjectContext,
+    groupTaskContext: blockData.groupTaskContext
   };
 
   const subTasks = update.subTasks;
@@ -45,7 +47,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     }
   }
 
-  await context.updateBlock(data.customId, update);
+  await context.updateBlockByID(data.customId, update);
 
   if (block.parent !== blockData.parent) {
     const sourceBlockID = block.parent;

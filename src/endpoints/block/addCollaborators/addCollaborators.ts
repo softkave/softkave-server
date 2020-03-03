@@ -122,7 +122,8 @@ async function addCollaborators(
           status: "pending",
           date: Date.now()
         }
-      ]
+      ],
+      sentEmailHistory: []
     } as INotification;
   });
 
@@ -130,6 +131,20 @@ async function addCollaborators(
 
   // TODO: maybe deffer sending email till end of day
   sendEmails(collaborationRequests);
+
+  function updateSentEmailHistory(request: INotification) {
+    const sentEmailHistory = request.sentEmailHistory.concat({
+      date: Date.now()
+    });
+
+    context
+      .updateNotificationByID(request.customId, {
+        sentEmailHistory
+      })
+      .catch(error => {
+        logger.error(error);
+      });
+  }
 
   function sendEmails(collaborationRequestsParam: INotification[]) {
     const emailPromises = collaborationRequestsParam.map(request => {
@@ -150,17 +165,7 @@ async function addCollaborators(
       promise
         .then(() => {
           const request: INotification = collaborationRequestsParam[index];
-          const sentEmailHistory = request.sentEmailHistory.concat({
-            date: Date.now()
-          });
-
-          context
-            .updateNotificationByID(request.customId, {
-              sentEmailHistory
-            })
-            .catch(error => {
-              logger.error(error);
-            });
+          updateSentEmailHistory(request);
         })
         .catch(error => {
           // Fire and forget

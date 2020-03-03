@@ -9,6 +9,7 @@ const blockData = Joi.object().keys({
   priority: blockValidationSchemas.priority,
   taskCollaborationData: blockValidationSchemas.taskCollaborationData,
   taskCollaborators: blockValidationSchemas.taskCollaborators,
+  type: blockValidationSchemas.type,
   parent: blockValidationSchemas.parent,
   groups: blockValidationSchemas.groups,
   groupTaskContext: blockValidationSchemas.groups,
@@ -19,6 +20,6 @@ const blockData = Joi.object().keys({
 });
 
 export const updateBlockJoiSchema = Joi.object().keys({
-  blockData,
-  blockID: blockValidationSchemas.blockID
+  data: blockData,
+  customId: blockValidationSchemas.blockID
 });

@@ -13,32 +13,37 @@ async function deleteBlock(context: IDeleteBlockContext): Promise<void> {
   await context.deleteBlockChildrenInStorage(block.customId);
 
   const immediateParentID = block.parent;
-  const parent = await context.getBlockByID(immediateParentID);
-  const pluralizedType = `${block.type}s`;
-  const typeContainer = parent[pluralizedType];
-  const blockIndexInParent = typeContainer.indexOf(block.customId);
 
-  typeContainer.splice(blockIndexInParent);
+  if (immediateParentID) {
+    const parent = await context.getBlockByID(immediateParentID);
+    const pluralizedType = `${block.type}s`;
+    const typeContainer = parent[pluralizedType];
+    const blockIndexInParent = typeContainer.indexOf(block.customId);
 
-  const update: Partial<IBlock> = {
-    [pluralizedType]: typeContainer
-  };
+    typeContainer.splice(blockIndexInParent, 1);
 
-  if (block.type === "group") {
-    const groupTaskContext = parent.groupTaskContext;
-    const groupProjectContext = parent.groupProjectContext;
-    const blockIndexInGroupTaskContext = groupTaskContext.indexOf(
-      block.customId
-    );
-    const blockIndexInGroupProjectContext = groupProjectContext.indexOf(
-      block.customId
-    );
+    const update: Partial<IBlock> = {
+      [pluralizedType]: typeContainer
+    };
 
-    groupTaskContext.splice(blockIndexInGroupTaskContext, 1);
-    groupProjectContext.splice(blockIndexInGroupProjectContext, 1);
+    if (block.type === "group") {
+      const groupTaskContext = parent.groupTaskContext;
+      const groupProjectContext = parent.groupProjectContext;
+      const blockIndexInGroupTaskContext = groupTaskContext.indexOf(
+        block.customId
+      );
+      const blockIndexInGroupProjectContext = groupProjectContext.indexOf(
+        block.customId
+      );
+
+      groupTaskContext.splice(blockIndexInGroupTaskContext, 1);
+      groupProjectContext.splice(blockIndexInGroupProjectContext, 1);
+      update.groupTaskContext = groupTaskContext;
+      update.groupProjectContext = groupProjectContext;
+    }
+
+    await context.updateBlockByID(parent.customId, update);
   }
-
-  await context.updateBlockByID(parent.customId, update);
 
   if (block.type === "org") {
     const orgIndex = user.orgs.indexOf(block.customId);

@@ -5,8 +5,8 @@ import blockValidationSchemas from "../validation";
 import { IAddBlockContext, IAddBlockResult } from "./types";
 
 async function addBlock(context: IAddBlockContext): Promise<IAddBlockResult> {
-  const data = validate(context.data, blockValidationSchemas.newBlock);
-  const newBlock = data.block;
+  const data = validate(context.data.block, blockValidationSchemas.newBlock);
+  const newBlock = data;
   const user = await context.getUser();
 
   if (newBlock.type === "org") {
@@ -16,7 +16,7 @@ async function addBlock(context: IAddBlockContext): Promise<IAddBlockResult> {
     //    you can do this when user tries to read them, or add them again
     // TODO: scrub all data that failed it's pipeline
 
-    if (user.orgs.includes(org.customId)) {
+    if (!user.orgs.includes(org.customId)) {
       const orgIDs = user.orgs.concat(org.customId);
       await context.updateUser({ orgs: orgIDs });
     } else {

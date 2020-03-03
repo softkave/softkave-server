@@ -1,16 +1,10 @@
 import { IBlock } from "../../../mongo/block";
-import { ServerError } from "../../../utilities/errors";
-import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
   IBaseEndpointContextParameters
 } from "../../BaseEndpointContext";
 import TransferBlockContext from "../transferBlock/context";
 import transferBlock from "../transferBlock/transferBlock";
-import {
-  IDirectUpdateBlockInput,
-  IUpdateBlockContext,
-  IUpdateBlockParameters
-} from "./types";
+import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
 
 export interface IUpdateBlockContextParameters
   extends IBaseEndpointContextParameters {
@@ -24,22 +18,6 @@ export default class UpdateBlockContext extends BaseEndpointContext
   constructor(p: IUpdateBlockContextParameters) {
     super(p);
     this.data = p.data;
-  }
-
-  public async updateBlock(blockID: string, data: IDirectUpdateBlockInput) {
-    try {
-      await this.blockModel.model
-        .updateOne(
-          {
-            customId: blockID
-          },
-          data
-        )
-        .exec();
-    } catch (error) {
-      logger.error(error);
-      throw new ServerError();
-    }
   }
 
   public async transferBlock(

@@ -84,7 +84,7 @@ const blockSchema = `
     color: String
     type: String!
     parent: String
-    rootBlockID: String!
+    rootBlockID: String
     priority: String
     taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
@@ -104,6 +104,7 @@ const blockSchema = `
     priority: String
     taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]
+    type: String!
     parent: String
     groups: [String]
     projects: [String]
@@ -183,7 +184,7 @@ const blockSchema = `
     ) : ErrorOnlyResponse
 
     deleteBlock (customId: String!) : ErrorOnlyResponse
-    getRoleBlocks: MultipleBlocksOpResponse
+    getRootBlocks: MultipleBlocksOpResponse
     getBlockChildren (
       customId: String!,
       typeList: [String!]

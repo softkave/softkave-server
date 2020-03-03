@@ -8,7 +8,7 @@ import { transferBlockJoiSchema } from "./validation";
 async function transferBlock(context: ITransferBlockContext): Promise<void> {
   const result = validate(context.data, transferBlockJoiSchema);
 
-  const dropPosition = result.dropPosition;
+  const dropPosition = result.dropPosition || 0;
   const groupContext = result.groupContext;
   const blockIDs = [result.draggedBlock, result.sourceBlock];
 
@@ -24,15 +24,15 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
 
   blocks.forEach(block => {
     switch (block.customId) {
-      case sourceBlock.customId:
+      case result.sourceBlock:
         sourceBlock = block;
         break;
 
-      case draggedBlock.customId:
+      case result.draggedBlock:
         draggedBlock = block;
         break;
 
-      case destinationBlock.customId:
+      case result.destinationBlock:
         destinationBlock = block;
         break;
     }

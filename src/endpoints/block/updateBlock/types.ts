@@ -1,4 +1,5 @@
 import {
+  BlockType,
   IBlock,
   ISubTask,
   ITaskCollaborationData,
@@ -14,6 +15,7 @@ export interface IUpdateBlockInput {
   priority: string;
   taskCollaborationData: ITaskCollaborationData;
   taskCollaborators: ITaskCollaborator[];
+  type: BlockType;
   parent: string;
   groups: string[];
   projects: string[];
@@ -35,6 +37,8 @@ export interface IDirectUpdateBlockInput {
   projects: string[];
   tasks: string[];
   subTasks: ISubTask[];
+  groupTaskContext: string[];
+  groupProjectContext: string[];
 }
 
 export interface IUpdateBlockParameters {
@@ -44,10 +48,6 @@ export interface IUpdateBlockParameters {
 
 export interface IUpdateBlockContext extends IBaseEndpointContext {
   data: IUpdateBlockParameters;
-  updateBlock: (
-    blockID: string,
-    data: IDirectUpdateBlockInput
-  ) => Promise<void>;
   transferBlock: (
     block: IBlock,
     sourceBlockID: string,
