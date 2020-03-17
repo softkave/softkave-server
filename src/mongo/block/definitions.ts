@@ -67,32 +67,7 @@ export const mongoTaskCollaborationDataSchema = {
 };
 
 export type BlockType = "root" | "org" | "project" | "group" | "task";
-
-interface IOldBlock {
-  customId: string;
-  name: string;
-  lowerCasedName: string;
-  description: string;
-  expectedEndAt: number;
-  createdAt: number;
-  color: string;
-  updatedAt: number;
-  type: BlockType;
-  parents: string[];
-  createdBy: string;
-  taskCollaborationType: ITaskCollaborationData; // deprecate
-  taskCollaborationData: ITaskCollaborationData;
-  taskCollaborators: ITaskCollaborator[];
-  priority: string;
-  isBacklog: boolean;
-  tasks: string[];
-  groups: string[];
-  projects: string[];
-  groupTaskContext: string[];
-  groupProjectContext: string[];
-  // roles: IBlockRole[];
-  subTasks: ISubTask[];
-}
+export type BlockLandingPage = "tasks" | "projects" | "self";
 
 export interface IBlock {
   customId: string;
@@ -133,6 +108,8 @@ export interface IBlock {
   subTasks: ISubTask[]; // - should sub-tasks be their own blocks?
 
   // labels: string[]; // - new
+
+  landingPage?: BlockLandingPage;
 }
 
 // TODO: Define type for blockSchema and other mongo schemas
