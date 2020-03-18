@@ -161,7 +161,8 @@ const blockSchema = {
   groups: [String],
   projects: [String],
   groupTaskContext: [String],
-  groupProjectContext: [String]
+  groupProjectContext: [String],
+  landingPage: String
 };
 
 export default blockSchema;

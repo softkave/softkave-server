@@ -60,6 +60,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     subTasks: [SubTask]
+    landingPage: String
   }
 
   type BlockResponse {
@@ -167,8 +168,6 @@ const blockSchema = `
 
   type GetBlockLandingPageResponse {
     errors: [Error]
-
-    # TODO: should we convert this to an enum
     page: String
   }
 
@@ -223,7 +222,7 @@ const blockSchema = `
 
     getAssignedTasks: MultipleBlocksOpResponse
     getBlocksWithCustomIds (customIds: [String!]!): MultipleBlocksOpResponse
-    getBlockLandingPage: (customId: String!): GetBlockLandingPageResponse
+    getBlockLandingPage (customId: String!): GetBlockLandingPageResponse
   }
 `;
 
