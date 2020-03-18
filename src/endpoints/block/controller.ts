@@ -21,6 +21,8 @@ import GetBlockCollaborationRequestsContext from "./getBlockCollaborationRequest
 import getBlockCollaborationRequests from "./getBlockCollaborationRequests/getBlockCollaborationRequests";
 import GetBlockCollaboratorsContext from "./getBlockCollaborators/context";
 import getBlockCollaborators from "./getBlockCollaborators/getBlockCollaborators";
+import GetBlockLandingPageContext from "./getBlockLandingPage/context";
+import getBlockLandingPage from "./getBlockLandingPage/handler";
 import GetBlocksWithCustomIDsContext from "./getBlocksWithCustomIDs/context";
 import getBlocksWithCustomIDs from "./getBlocksWithCustomIDs/getBlocksWithCustomIDs";
 import GetRootBlocksContext from "./getRootBlocks/context";
@@ -221,6 +223,14 @@ export default class BlockController {
           data,
           ...this.props
         })
+      )
+    );
+  }
+
+  public getBlockLandingPage(data, req) {
+    return wrapEndpoint(data, req, () =>
+      getBlockLandingPage(
+        new GetBlockLandingPageContext({ req, data, ...this.props })
       )
     );
   }

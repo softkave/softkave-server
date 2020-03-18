@@ -60,6 +60,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     subTasks: [SubTask]
+    landingPage: String
   }
 
   type BlockResponse {
@@ -165,6 +166,11 @@ const blockSchema = `
     collaborators: [Collaborator]
   }
 
+  type GetBlockLandingPageResponse {
+    errors: [Error]
+    page: String
+  }
+
   input AddCollaboratorInput {
     email: String!
     body: String
@@ -216,6 +222,7 @@ const blockSchema = `
 
     getAssignedTasks: MultipleBlocksOpResponse
     getBlocksWithCustomIds (customIds: [String!]!): MultipleBlocksOpResponse
+    getBlockLandingPage (customId: String!): GetBlockLandingPageResponse
   }
 `;
 
