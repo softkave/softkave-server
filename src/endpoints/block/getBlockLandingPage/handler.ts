@@ -23,26 +23,20 @@ async function getBlockLandingPage(
   let pageType: BlockLandingPage = "self";
 
   const hasGroups = Array.isArray(block.groups) && block.groups.length > 0;
+  const hasTasks = Array.isArray(block.tasks) && block.tasks.length > 0;
+  const hasProjects =
+    Array.isArray(block.projects) && block.projects.length > 0;
 
-  if (block.type !== "org") {
-    switch (block.type) {
-      case "project":
-        if (hasGroups) {
-          pageType = "tasks";
-        }
-        break;
-
-      case "group":
-      case "task":
-      default:
-        pageType = "self";
-    }
-  } else {
+  if (block.type === "org") {
     if (hasGroups) {
       pageType = await context.queryBlockLandingInDB(block);
-    } else {
-      pageType = "self";
     }
+  } else if (block.type === "project" && hasGroups) {
+    pageType = "tasks";
+  } else if (hasTasks) {
+    pageType = "tasks";
+  } else if (hasProjects) {
+    pageType = "projects";
   }
 
   if (block.landingPage !== pageType) {
