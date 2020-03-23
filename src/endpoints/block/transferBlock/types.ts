@@ -1,3 +1,4 @@
+import { BlockGroupContext } from "../../../mongo/block";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface ITransferBlockParameters {
@@ -5,7 +6,7 @@ export interface ITransferBlockParameters {
   draggedBlock: string;
   destinationBlock: string;
   dropPosition?: number;
-  groupContext?: "task" | "project";
+  groupContext?: BlockGroupContext;
 }
 
 export interface ITransferBlockContext extends IBaseEndpointContext {

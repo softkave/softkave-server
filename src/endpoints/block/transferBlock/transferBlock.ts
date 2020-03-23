@@ -42,6 +42,8 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
 
   if (result.destinationBlock !== result.sourceBlock) {
     canReadBlock({ user, block: destinationBlock });
+  } else {
+    destinationBlock = sourceBlock;
   }
 
   const draggedBlockContainerName = `${draggedBlock.type}s`;
@@ -63,16 +65,14 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
     sourceBlockUpdates[draggedBlockContainerName] = draggedBlockContainer;
 
     if (groupContext && draggedBlock.type === "group") {
-      const groupContextContainerName =
-        groupContext === "project" ? "groupProjectContext" : "groupTaskContext";
-      const groupContextContainer = sourceBlock[groupContextContainerName];
+      const groupContextContainer = sourceBlock[groupContext];
       const draggedBlockIndexInGroupContext = groupContextContainer.indexOf(
         draggedBlock.customId
       );
 
       groupContextContainer.splice(draggedBlockIndexInGroupContext, 1);
       groupContextContainer.splice(dropPosition, 0, draggedBlock.customId);
-      sourceBlockUpdates[groupContextContainerName] = groupContextContainer;
+      sourceBlockUpdates[groupContext] = groupContextContainer;
     }
 
     await context.updateBlockByID(sourceBlock.customId, sourceBlockUpdates);
