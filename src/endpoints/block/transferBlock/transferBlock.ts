@@ -56,7 +56,7 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
   }
 
   if (sourceBlock.customId === destinationBlock.customId) {
-    const sourceBlockUpdates: Partial<IBlock> = {};
+    const sourceBlockUpdates: Partial<IBlock> = { updatedAt: Date.now() };
 
     draggedBlockContainer.splice(draggedBlockIndexInSourceBlock, 1);
     draggedBlockContainer.splice(dropPosition, 0, draggedBlock.customId);
@@ -80,11 +80,13 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
     // Ignores paremeters' groupContext and dropPosition
 
     const draggedBlockUpdates: Partial<IBlock> = {
+      updatedAt: Date.now(),
       parent: destinationBlock.customId
     };
 
     draggedBlockContainer.splice(draggedBlockIndexInSourceBlock, 1);
     const sourceBlockUpdates: Partial<IBlock> = {
+      updatedAt: Date.now(),
       [draggedBlockContainerName]: draggedBlockContainer
     };
 
@@ -92,6 +94,7 @@ async function transferBlock(context: ITransferBlockContext): Promise<void> {
       destinationBlock[draggedBlockContainerName];
     destinationBlockContainer.splice(dropPosition, 0, draggedBlock.customId);
     const destinationBlockUpdates: Partial<IBlock> = {
+      updatedAt: Date.now(),
       [draggedBlockContainerName]: destinationBlockContainer
     };
 
