@@ -10,7 +10,7 @@ const taskCollaboratorSchema = Joi.object().keys({
 
   // Allow null because sometimes, the value from the API or in DB is null,
   // and it leads to a false validation error
-  completedAt: Joi.number().allow(null)
+  completedAt: Joi.number().allow(null),
 });
 
 const taskCollaboratorsListSchema = Joi.array()
@@ -25,9 +25,7 @@ const userUpdateableblockTypeSchema = Joi.string()
   .valid(userUpdateableTypes);
 
 const fullBlockTypes = [...userUpdateableTypes, "root"] as BlockType[];
-const fullBlockTypeSchema = Joi.string()
-  .lowercase()
-  .valid(fullBlockTypes);
+const fullBlockTypeSchema = Joi.string().lowercase().valid(fullBlockTypes);
 
 const blockChildrenIDList = Joi.array()
   .items(validationSchemas.uuid)
@@ -35,16 +33,14 @@ const blockChildrenIDList = Joi.array()
   .max(blockConstants.maxChildrenCount);
 
 const subTasksSchema = Joi.object().keys({
-  customId: Joi.string()
-    .uuid()
-    .required(),
+  customId: Joi.string().uuid().required(),
   description: Joi.string()
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
     .trim()
     .required(),
   completedBy: Joi.string().uuid(),
-  completedAt: Joi.number()
+  completedAt: Joi.number(),
 });
 
 const taskCollaborationDataSchema = Joi.object().keys({
@@ -52,9 +48,18 @@ const taskCollaborationDataSchema = Joi.object().keys({
     .lowercase()
     .valid(blockConstants.taskCollaborationData),
   completedAt: Joi.number().allow(null),
-  completedBy: Joi.string()
-    .uuid()
-    .allow(null)
+  completedBy: Joi.string().uuid().allow(null),
+});
+
+const labelSchema = Joi.object().keys({
+  name: Joi.string()
+    .lowercase()
+    .min(blockConstants.minLabelNameLength)
+    .max(blockConstants.maxLabelNameLength)
+    .required(),
+  description: Joi.string()
+    .max(blockConstants.maxLabelDescriptionLength)
+    .allow(null),
 });
 
 const blockTypesSchema = Joi.array()
@@ -76,20 +81,17 @@ const description = Joi.string()
   .trim()
   .when("type", {
     is: "task",
-    then: Joi.required()
+    then: Joi.required(),
   });
 
 const expectedEndAt = Joi.number();
 const createdAt = Joi.number();
-const color = Joi.string()
-  .trim()
-  .lowercase()
-  .regex(regEx.hexColorPattern);
+const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
 
 const updatedAt = Joi.number();
 const parent = validationSchemas.uuid.when("type", {
   is: Joi.string().valid(["group", "project", "task"] as BlockType[]),
-  then: Joi.required()
+  then: Joi.required(),
 });
 
 const rootBlockID = parent;
@@ -130,7 +132,7 @@ const newBlock = Joi.object().keys({
   customId: blockID,
   groupTaskContext: groups,
   groupProjectContext: groups,
-  type: userUpdateableblockTypeSchema
+  type: userUpdateableblockTypeSchema,
 });
 
 const blockValidationSchemas = {
@@ -156,7 +158,7 @@ const blockValidationSchemas = {
   groupContext,
   blockTypesList: blockTypesSchema,
   type: userUpdateableblockTypeSchema,
-  fullBlockType: fullBlockTypeSchema
+  fullBlockType: fullBlockTypeSchema,
 };
 
 export default blockValidationSchemas;

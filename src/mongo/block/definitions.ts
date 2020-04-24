@@ -11,7 +11,7 @@ export const blockTaskCollaboratorDataSchema = {
   userId: String,
   completedAt: Number,
   assignedAt: Number,
-  assignedBy: String
+  assignedBy: String,
 };
 
 // export interface IBlockRole {
@@ -51,7 +51,7 @@ export const mongoSubTaskSchema = {
   customId: String,
   description: String,
   completedBy: String,
-  completedAt: Number
+  completedAt: Number,
 };
 
 export interface ITaskCollaborationData {
@@ -63,7 +63,43 @@ export interface ITaskCollaborationData {
 export const mongoTaskCollaborationDataSchema = {
   collaborationType: { type: String, default: "collective" }, // "individual" OR "collective"
   completedAt: Number,
-  completedBy: String
+  completedBy: String,
+};
+
+export interface IBlockLabel {
+  name: string;
+  description?: string;
+  createdBy?: string;
+  createdAt?: number;
+  updatedBy?: string;
+  updatedAt?: number;
+}
+
+export const mongoblockLabelSchema = {
+  name: { type: String },
+  description: { type: String },
+  createdBy: { type: String },
+  createdAt: { type: Number },
+  updatedBy: { type: String },
+  updatedAt: { type: Number },
+};
+
+export interface IBlockStatus {
+  name: string;
+  description?: string;
+  createdBy?: string;
+  createdAt?: number;
+  updatedBy?: string;
+  updatedAt?: number;
+}
+
+export const mongoblockStatusSchema = {
+  name: { type: String },
+  description: { type: String },
+  createdBy: { type: String },
+  createdAt: { type: Number },
+  updatedBy: { type: String },
+  updatedAt: { type: Number },
 };
 
 export type BlockType = "root" | "org" | "project" | "group" | "task";
@@ -108,7 +144,10 @@ export interface IBlock {
 
   subTasks: ISubTask[]; // - should sub-tasks be their own blocks?
 
-  // labels: string[]; // - new
+  availableStatus?: IBlockStatus[];
+  availableLabels?: IBlockLabel[];
+  status: string;
+  labels?: string[];
 
   landingPage?: BlockLandingPage;
 }
@@ -118,44 +157,44 @@ const blockSchema = {
   customId: { type: String, unique: true },
   name: {
     type: String,
-    index: true
+    index: true,
   },
   lowerCasedName: {
     type: String,
     index: true,
-    lowercase: true
+    lowercase: true,
   } as SchemaTypeOpts<StringConstructor>,
   description: String,
   expectedEndAt: Number,
   createdAt: {
     type: Number,
-    default: Date.now
+    default: Date.now,
   },
   color: String,
   updatedAt: Number,
   type: {
     type: String,
     index: true,
-    lowercase: true
+    lowercase: true,
   },
   parent: {
     type: String,
-    index: true
+    index: true,
   },
   rootBlockID: {
-    type: String
+    type: String,
   },
   createdBy: {
     type: String,
-    index: true
+    index: true,
   },
   taskCollaborationData: mongoTaskCollaborationDataSchema,
   taskCollaborators: {
     type: [blockTaskCollaboratorDataSchema],
-    index: true
+    index: true,
   },
   subTasks: {
-    type: [mongoSubTaskSchema]
+    type: [mongoSubTaskSchema],
   },
   priority: String,
   tasks: [String],
@@ -163,7 +202,11 @@ const blockSchema = {
   projects: [String],
   groupTaskContext: [String],
   groupProjectContext: [String],
-  landingPage: String
+  landingPage: String,
+  availableLabels: [mongoblockLabelSchema],
+  availableStatus: [mongoblockStatusSchema],
+  status: { type: String },
+  labels: { type: [String] },
 };
 
 export default blockSchema;

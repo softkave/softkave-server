@@ -1,3 +1,5 @@
+// Keeping for possible implementation of the feature as a separate endpoint in the future
+
 // import Joi from "joi";
 // import pick from "lodash/pick";
 // import AccessControlModel from "../../mongo/access-control/AccessControlModel";
