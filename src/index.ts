@@ -8,9 +8,7 @@ import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import BlockModel from "./mongo/block/BlockModel";
 import connection from "./mongo/defaultConnection";
-import LabelModel from "./mongo/label/LabelModel";
 import NotificationModel from "./mongo/notification/NotificationModel";
-import StatusModel from "./mongo/status/StatusModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
 
@@ -19,8 +17,6 @@ const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
   connection: connection.getConnection(),
 });
-const labelModel = new LabelModel({ connection: connection.getConnection() });
-const statusModel = new StatusModel({ connection: connection.getConnection() });
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -72,8 +68,6 @@ app.use(
       blockModel,
       notificationModel,
       userModel,
-      labelModel,
-      statusModel,
     }),
   })
 );
@@ -87,8 +81,6 @@ connection.wait().then(async () => {
   await userModel.model.ensureIndexes();
   await blockModel.model.ensureIndexes();
   await notificationModel.model.ensureIndexes();
-  await statusModel.model.ensureIndexes();
-  await labelModel.model.ensureIndexes();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
