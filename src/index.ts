@@ -8,16 +8,19 @@ import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import BlockModel from "./mongo/block/BlockModel";
 import connection from "./mongo/defaultConnection";
+import LabelModel from "./mongo/label/LabelModel";
 import NotificationModel from "./mongo/notification/NotificationModel";
+import StatusModel from "./mongo/status/StatusModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
-// import oldBlocksToNewBlocksScript from "./scripts/oldBlocksToNewBlocks";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
-  connection: connection.getConnection()
+  connection: connection.getConnection(),
 });
+const labelModel = new LabelModel({ connection: connection.getConnection() });
+const statusModel = new StatusModel({ connection: connection.getConnection() });
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -39,7 +42,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const corsOption = {
   origin: whiteListedCorsOrigins,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 if (process.env.NODE_ENV === "production") {
@@ -50,13 +53,13 @@ app.use(cors(corsOption));
 app.use(
   expressJwt({
     secret: JWT_SECRET,
-    credentialsRequired: false
+    credentialsRequired: false,
   })
 );
 
 app.use(
   bodyParser.json({
-    type: "application/json"
+    type: "application/json",
   })
 );
 
@@ -68,8 +71,10 @@ app.use(
     rootValue: new EndpointController({
       blockModel,
       notificationModel,
-      userModel
-    })
+      userModel,
+      labelModel,
+      statusModel,
+    }),
   })
 );
 
@@ -82,9 +87,8 @@ connection.wait().then(async () => {
   await userModel.model.ensureIndexes();
   await blockModel.model.ensureIndexes();
   await notificationModel.model.ensureIndexes();
-
-  // Scripts
-  // await oldBlocksToNewBlocksScript();
+  await statusModel.model.ensureIndexes();
+  await labelModel.model.ensureIndexes();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

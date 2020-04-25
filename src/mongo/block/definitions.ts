@@ -67,7 +67,9 @@ export const mongoTaskCollaborationDataSchema = {
 };
 
 export interface IBlockLabel {
+  customId: string;
   name: string;
+  color: string;
   description?: string;
   createdBy?: string;
   createdAt?: number;
@@ -76,7 +78,9 @@ export interface IBlockLabel {
 }
 
 export const mongoblockLabelSchema = {
+  customId: { type: String },
   name: { type: String },
+  color: { type: String },
   description: { type: String },
   createdBy: { type: String },
   createdAt: { type: Number },
@@ -85,6 +89,7 @@ export const mongoblockLabelSchema = {
 };
 
 export interface IBlockStatus {
+  customId: string;
   name: string;
   description?: string;
   createdBy?: string;
@@ -94,6 +99,7 @@ export interface IBlockStatus {
 }
 
 export const mongoblockStatusSchema = {
+  customId: { type: String },
   name: { type: String },
   description: { type: String },
   createdBy: { type: String },

@@ -70,6 +70,7 @@ const blockConstants = {
   minLabelNameLength: 1,
   maxLabelNameLength: 70,
   maxLabelDescriptionLength: 300,
+  maxAvailableLabels: 20,
 };
 
 const blockTaskCollaboratorFieldNames = {
