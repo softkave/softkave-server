@@ -152,7 +152,7 @@ export interface IBlock {
 
   availableStatus?: IBlockStatus[];
   availableLabels?: IBlockLabel[];
-  status: string;
+  status?: string;
   labels?: string[];
 
   landingPage?: BlockLandingPage;

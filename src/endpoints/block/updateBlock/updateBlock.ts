@@ -2,6 +2,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
 import { updateBlockJoiSchema } from "./validation";
+import { label } from "joi";
 
 async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const data = validate(context.data, updateBlockJoiSchema);
@@ -26,7 +27,11 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     tasks: blockData.tasks,
     subTasks: blockData.subTasks,
     groupProjectContext: blockData.groupProjectContext,
-    groupTaskContext: blockData.groupTaskContext
+    groupTaskContext: blockData.groupTaskContext,
+    availableStatus: blockData.availableStatus,
+    availableLabel: blockData.availableLabel,
+    status: blockData.status,
+    label: blockData.label,
   };
 
   const subTasks = update.subTasks;
@@ -34,7 +39,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
   if (Array.isArray(subTasks) && subTasks.length > 0) {
     const areSubTasksCompleted = !!!subTasks.find(
-      subTask => !!!subTask.completedAt
+      (subTask) => !!!subTask.completedAt
     );
 
     if (areSubTasksCompleted !== !!update.taskCollaborationData.completedAt) {
@@ -42,7 +47,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
       update.taskCollaborationData = {
         ...update.taskCollaborationData,
         completedAt: areSubTasksCompleted ? now : null,
-        completedBy: areSubTasksCompleted ? user.customId : null
+        completedBy: areSubTasksCompleted ? user.customId : null,
       };
     }
   }

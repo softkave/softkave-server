@@ -39,6 +39,49 @@ const blockSchema = `
     completedBy: String
   }
 
+  type StatusData {
+    customId: String
+    name: String
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  input StatusInput {
+    customId: String!
+    name: String!
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  type LabelData {
+    customId: String
+    name: String
+    color: String
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  input LabelInput {
+    customId: String!
+    name: String!
+    color: String
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+
   type Block {
     customId: String
     name: String
@@ -61,6 +104,10 @@ const blockSchema = `
     groupProjectContext: [String]
     subTasks: [SubTask]
     landingPage: String
+    availableStatus: [StatusData]
+    availableLabel: [LabelData]
+    status: String
+    label: [String]
   }
 
   type BlockResponse {
@@ -95,6 +142,10 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+    availableStatus: [StatusInput]
+    availableLabel: [LabelInput]
+    status: String
+    label: [String]
   }
 
   input UpdateBlockInput {

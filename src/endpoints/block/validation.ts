@@ -60,7 +60,38 @@ const labelSchema = Joi.object().keys({
   description: Joi.string()
     .max(blockConstants.maxLabelDescriptionLength)
     .allow(null),
+  color: Joi.string().trim().lowercase().regex(regEx.hexColorPattern),
+  createdAt: Joi.number().allow(null),
+  createdBy: Joi.string().uuid().allow(null),
+  updatedAt: Joi.number().allow(null),
+  updatedBy: Joi.string().uuid().allow(null),
 });
+
+const statusSchema = Joi.object().keys({
+  name: Joi.string()
+    .lowercase()
+    .min(blockConstants.minLabelNameLength)
+    .max(blockConstants.maxLabelNameLength)
+    .required(),
+  description: Joi.string()
+    .max(blockConstants.maxLabelDescriptionLength)
+    .allow(null),
+  createdAt: Joi.number().allow(null),
+  createdBy: Joi.string().uuid().allow(null),
+  updatedAt: Joi.number().allow(null),
+  updatedBy: Joi.string().uuid().allow(null),
+});
+
+
+const statusListSchema = Joi.array()
+  // Uncompleted code
+  // TODO: unique comperator
+  .items(statusSchema);
+
+const LabelListSchema = Joi.array()
+  // Uncompleted code
+  // TODO: unique comperator
+  .items(labelSchema);
 
 const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)
@@ -159,6 +190,10 @@ const blockValidationSchemas = {
   blockTypesList: blockTypesSchema,
   type: userUpdateableblockTypeSchema,
   fullBlockType: fullBlockTypeSchema,
+  statusSchema,
+  labelSchema,
+  statusListSchema,
+  LabelListSchema,
 };
 
 export default blockValidationSchemas;
