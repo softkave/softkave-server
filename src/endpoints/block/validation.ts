@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { BlockType } from "../../mongo/block";
+import { BlockType, IBlockLabel, IBlockStatus } from "../../mongo/block";
 import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { blockConstants } from "./constants";
 
@@ -84,15 +84,17 @@ const statusSchema = Joi.object().keys({
 
 const statusListSchema = Joi.array()
   .max(blockConstants.maxAvailableLabels)
-  // Uncompleted code
-  // TODO: unique comperator
-  .items(statusSchema);
+  .items(statusSchema)
+  .unique((a: IBlockStatus, b: IBlockStatus) => {
+    return a.customId === b.customId || a.name === b.name;
+  });
 
 const LabelListSchema = Joi.array()
   .max(blockConstants.maxAvailableLabels)
-  // Uncompleted code
-  // TODO: unique comperator
-  .items(labelSchema);
+  .items(labelSchema)
+  .unique((a: IBlockLabel, b: IBlockLabel) => {
+    return a.customId === b.customId || a.name === b.name;
+  });
 
 const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)
