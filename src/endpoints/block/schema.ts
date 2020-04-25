@@ -73,7 +73,7 @@ const blockSchema = `
   input LabelInput {
     customId: String!
     name: String!
-    color: String
+    color: String!
     description: String
     createdBy: String
     createdAt: Float
@@ -105,7 +105,7 @@ const blockSchema = `
     subTasks: [SubTask]
     landingPage: String
     availableStatus: [StatusData]
-    availableLabel: [LabelData]
+    availableLabels: [LabelData]
     status: String
     label: [String]
   }
@@ -143,7 +143,7 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     availableStatus: [StatusInput]
-    availableLabel: [LabelInput]
+    availableLabels: [LabelInput]
     status: String
     label: [String]
   }
@@ -164,6 +164,10 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     subTasks: [SubTaskInput]
+    availableStatus: [StatusInput]
+    availableLabels: [LabelInput]
+    status: String
+    label: [String]
   }
 
   type CollabRequestFrom {

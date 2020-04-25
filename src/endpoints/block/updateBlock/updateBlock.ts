@@ -2,7 +2,6 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
 import { updateBlockJoiSchema } from "./validation";
-import { label } from "joi";
 
 async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const data = validate(context.data, updateBlockJoiSchema);
@@ -29,7 +28,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     groupProjectContext: blockData.groupProjectContext,
     groupTaskContext: blockData.groupTaskContext,
     availableStatus: blockData.availableStatus,
-    availableLabel: blockData.availableLabel,
+    availableLabels: blockData.availableLabels,
     status: blockData.status,
     label: blockData.label,
   };

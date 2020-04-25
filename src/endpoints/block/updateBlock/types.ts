@@ -26,7 +26,7 @@ export interface IUpdateBlockInput {
   groupProjectContext: string[];
   subTasks: ISubTask[];
   availableStatus: IBlockStatus[];
-  availableLabel: IBlockLabel[];
+  availableLabels: IBlockLabel[];
   status: string;
   label: string[];
 }
@@ -46,7 +46,7 @@ export interface IDirectUpdateBlockInput {
   groupTaskContext: string[];
   groupProjectContext: string[];
   availableStatus: IBlockStatus[];
-  availableLabel: IBlockLabel[];
+  availableLabels: IBlockLabel[];
   status: string;
   label: string[];
 }

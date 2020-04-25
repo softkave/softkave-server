@@ -1,4 +1,4 @@
-import Joi, { label } from "joi";
+import Joi from "joi";
 import blockValidationSchemas from "../validation";
 
 const blockData = Joi.object().keys({
@@ -19,8 +19,8 @@ const blockData = Joi.object().keys({
   subTasks: blockValidationSchemas.subTasks,
   availableStatus: blockValidationSchemas.statusListSchema,
   availableLabel: blockValidationSchemas.LabelListSchema,
-  status: status,
-  label: label,
+  status: blockValidationSchemas.statusSchema,
+  label: blockValidationSchemas.labelSchema,
 });
 
 export const updateBlockJoiSchema = Joi.object().keys({

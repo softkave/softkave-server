@@ -82,13 +82,14 @@ const statusSchema = Joi.object().keys({
   updatedBy: Joi.string().uuid().allow(null),
 });
 
-
 const statusListSchema = Joi.array()
+  .max(blockConstants.maxAvailableLabels)
   // Uncompleted code
   // TODO: unique comperator
   .items(statusSchema);
 
 const LabelListSchema = Joi.array()
+  .max(blockConstants.maxAvailableLabels)
   // Uncompleted code
   // TODO: unique comperator
   .items(labelSchema);
