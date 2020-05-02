@@ -11,6 +11,8 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
+import addDefaultStatusToExistingOrgs from "./scripts/addDefaultStatusToExistingOrgs";
+import addStatusToTasksWithoutOne from "./scripts/addStatusToTasksWithoutOne";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -81,6 +83,10 @@ connection.wait().then(async () => {
   await userModel.model.ensureIndexes();
   await blockModel.model.ensureIndexes();
   await notificationModel.model.ensureIndexes();
+
+  // scripts
+  // addDefaultStatusToExistingOrgs();
+  // addStatusToTasksWithoutOne();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

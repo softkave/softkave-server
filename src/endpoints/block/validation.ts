@@ -52,6 +52,7 @@ const taskCollaborationDataSchema = Joi.object().keys({
 });
 
 const labelSchema = Joi.object().keys({
+  customId: Joi.string().uuid().required(),
   name: Joi.string()
     .lowercase()
     .min(blockConstants.minLabelNameLength)
@@ -62,12 +63,13 @@ const labelSchema = Joi.object().keys({
     .allow(null),
   color: Joi.string().trim().lowercase().regex(regEx.hexColorPattern),
   createdAt: Joi.number().allow(null),
-  createdBy: Joi.string().uuid().allow(null),
+  createdBy: Joi.string().uuid().allow("system", null),
   updatedAt: Joi.number().allow(null),
-  updatedBy: Joi.string().uuid().allow(null),
+  updatedBy: Joi.string().uuid().allow("system", null),
 });
 
 const statusSchema = Joi.object().keys({
+  customId: Joi.string().uuid().required(),
   name: Joi.string()
     .lowercase()
     .min(blockConstants.minLabelNameLength)
@@ -77,9 +79,11 @@ const statusSchema = Joi.object().keys({
     .max(blockConstants.maxLabelDescriptionLength)
     .allow(null),
   createdAt: Joi.number().allow(null),
-  createdBy: Joi.string().uuid().allow(null),
+  createdBy: Joi.string().uuid().allow("system", null),
   updatedAt: Joi.number().allow(null),
-  updatedBy: Joi.string().uuid().allow(null),
+
+  // TODO: allowing "system" allows boycotting the real data which can be exploited
+  updatedBy: Joi.string().uuid().allow("system", null),
 });
 
 const statusListSchema = Joi.array()
@@ -117,6 +121,11 @@ const description = Joi.string()
     is: "task",
     then: Joi.required(),
   });
+
+const updateDescription = Joi.string()
+  .min(blockConstants.minDescriptionLength)
+  .max(blockConstants.maxDescriptionLength)
+  .trim();
 
 const expectedEndAt = Joi.number();
 const createdAt = Joi.number();
@@ -197,6 +206,7 @@ const blockValidationSchemas = {
   labelSchema,
   statusListSchema,
   LabelListSchema,
+  updateDescription,
 };
 
 export default blockValidationSchemas;

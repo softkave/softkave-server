@@ -1,16 +1,18 @@
 import Joi from "joi";
+import { validationSchemas } from "../../../utilities/validationUtils";
+import { blockConstants } from "../constants";
 import blockValidationSchemas from "../validation";
 
 const blockData = Joi.object().keys({
   name: blockValidationSchemas.name,
-  description: blockValidationSchemas.description,
+  description: blockValidationSchemas.updateDescription,
   expectedEndAt: blockValidationSchemas.expectedEndAt,
   color: blockValidationSchemas.color,
   priority: blockValidationSchemas.priority,
   taskCollaborationData: blockValidationSchemas.taskCollaborationData,
   taskCollaborators: blockValidationSchemas.taskCollaborators,
   type: blockValidationSchemas.type,
-  parent: blockValidationSchemas.parent,
+  parent: validationSchemas.uuid,
   groups: blockValidationSchemas.groups,
   groupTaskContext: blockValidationSchemas.groups,
   groupProjectContext: blockValidationSchemas.groups,
@@ -18,9 +20,11 @@ const blockData = Joi.object().keys({
   tasks: blockValidationSchemas.tasks,
   subTasks: blockValidationSchemas.subTasks,
   availableStatus: blockValidationSchemas.statusListSchema,
-  availableLabel: blockValidationSchemas.LabelListSchema,
-  status: blockValidationSchemas.statusSchema,
-  label: blockValidationSchemas.labelSchema,
+  availableLabels: blockValidationSchemas.LabelListSchema,
+  status: validationSchemas.uuid,
+  labels: Joi.array()
+    .items(validationSchemas.uuid)
+    .max(blockConstants.maxAvailableLabels),
 });
 
 export const updateBlockJoiSchema = Joi.object().keys({
