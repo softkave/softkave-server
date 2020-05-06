@@ -61,7 +61,7 @@ export default async function addStatusToTasksWithoutOne() {
       const lastStatus = availableStatus[availableStatus.length - 1];
 
       if (status0) {
-        if (doc.taskCollaborationData?.completedAt > 0) {
+        if (!!doc.taskCollaborationData!.completedAt) {
           doc.status = lastStatus.customId;
         } else {
           doc.status = status0.customId;
