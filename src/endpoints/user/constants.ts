@@ -1,19 +1,19 @@
 export const userConstants = {
   minNameLength: 1,
   maxNameLength: 300,
-  minPasswordLength: 5,
+  minPasswordLength: 7,
   maxPasswordLength: 20,
 
-  currentTokenVersion: 2
+  currentTokenVersion: 2,
 };
 
 export const userEndpoints = {
   changePassword: "change-password",
-  login: "login"
+  login: "login",
 };
 
 export const userErrorActions = {
-  loginAgain: "login-again"
+  loginAgain: "login-again",
 };
 
 export const userFieldNames = {
@@ -27,5 +27,5 @@ export const userFieldNames = {
   lastNotificationCheckTime: "lastNotificationCheckTime",
   rootBlockId: "rootBlockId",
   orgs: "orgs",
-  color: "color"
+  color: "color",
 };

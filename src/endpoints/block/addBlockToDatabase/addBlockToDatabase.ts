@@ -15,7 +15,7 @@ async function addBlockToDatabase(
       // TODO: error field names should not be hardcoded
       throw new BlockExistsError({
         blockType: inputBlock.type,
-        field: "block.name"
+        field: "name",
       });
     }
   }
@@ -26,7 +26,7 @@ async function addBlockToDatabase(
   // Adding other information to sub-tasks
   if (Array.isArray(subTasks) && subTasks.length > 0) {
     const areSubTasksCompleted = !!!subTasks.find(
-      subTask => !!!subTask.completedAt
+      (subTask) => !!!subTask.completedAt
     );
 
     if (
@@ -35,7 +35,7 @@ async function addBlockToDatabase(
       inputBlock.taskCollaborationData = {
         ...inputBlock.taskCollaborationData,
         completedAt: areSubTasksCompleted ? now : null,
-        completedBy: areSubTasksCompleted ? user.customId : null
+        completedBy: areSubTasksCompleted ? user.customId : null,
       };
     }
   }
@@ -61,13 +61,13 @@ async function addBlockToDatabase(
     projects: inputBlock.projects,
     groupTaskContext: inputBlock.groupTaskContext,
     groupProjectContext: inputBlock.groupProjectContext,
-    subTasks: inputBlock.subTasks
+    subTasks: inputBlock.subTasks,
   };
 
   const savedBlock = await context.saveBlock(block);
 
   return {
-    block: savedBlock
+    block: savedBlock,
   };
 }
 

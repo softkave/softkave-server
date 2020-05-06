@@ -27,6 +27,12 @@ export class InvalidEmailAddressError extends OperationError {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+export class InvalidEmailOrPasswordError extends OperationError {
+  public name = "InvalidEmailOrPasswordError";
+  public message = "Invalid email or password";
+}
+
+// tslint:disable-next-line: max-classes-per-file
 export class LoginAgainError extends OperationError {
   public name = "LoginAgainError";
   public message = "Please login again";

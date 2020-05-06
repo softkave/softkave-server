@@ -176,6 +176,12 @@ const newBlock = Joi.object().keys({
   groupTaskContext: groups,
   groupProjectContext: groups,
   type: userUpdateableblockTypeSchema,
+  availableStatus: statusListSchema,
+  availableLabels: LabelListSchema,
+  status: validationSchemas.uuid,
+  labels: Joi.array()
+    .items(validationSchemas.uuid)
+    .max(blockConstants.maxAvailableLabels),
 });
 
 const blockValidationSchemas = {

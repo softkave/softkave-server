@@ -3,7 +3,7 @@ import { ServerError } from "../../../utilities/errors";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { userEndpoints } from "../constants";
-import { UserDoesNotExistError } from "../errors";
+import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { ILoginContext, ILoginResult } from "./types";
 import { loginJoiSchema } from "./validation";
@@ -22,15 +22,15 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
       throw new ServerError();
     }
   } else {
-    throw new UserDoesNotExistError();
+    throw new InvalidEmailOrPasswordError();
   }
 
   return {
     user: userData,
     token: UserToken.newToken({
       user: userData,
-      audience: [userEndpoints.login]
-    })
+      audience: [userEndpoints.login],
+    }),
   };
 }
 

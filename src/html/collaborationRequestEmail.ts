@@ -4,7 +4,7 @@ import {
   getFooterHTML,
   getHeaderHTML,
   getHeaderText,
-  getTemplateStylesHTML
+  getTemplateStylesHTML,
 } from "./helpers";
 
 export const collaborationRequestEmailTitle = "Collaboration Request";
@@ -60,14 +60,14 @@ export function collaborationRequestEmailHTML(
           props.message
             ? `
             <p>
-              <b>Message :-</b><br />
+              <b>Message</b><br />
               ${props.message}
             </p>
           `
             : ""
         }
         <p>
-          <b>Expiration :-</b><br />
+          <b>Expiration</b><br />
           ${getExpiration(props, true)}
         </p>
         <p>
@@ -124,7 +124,7 @@ export function collaborationRequestEmailText(
     `\n${
       props.recipientIsUser ? `Login` : `Signup`
     } > Open app menu > Notifications`,
-    `\n\n${getEndGreeting()}`
+    `\n\n${getEndGreeting()}`,
   ];
 
   return textBlocks.join("");
