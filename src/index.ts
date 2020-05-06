@@ -86,7 +86,7 @@ connection.wait().then(async () => {
 
   // scripts
   // await addDefaultStatusToExistingOrgs();
-  await addStatusToTasksWithoutOne();
+  // await addStatusToTasksWithoutOne();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
