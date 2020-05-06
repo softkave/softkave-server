@@ -85,7 +85,7 @@ connection.wait().then(async () => {
   await notificationModel.model.ensureIndexes();
 
   // scripts
-  await addDefaultStatusToExistingOrgs();
+  // await addDefaultStatusToExistingOrgs();
   await addStatusToTasksWithoutOne();
 
   app.listen(port, () => {

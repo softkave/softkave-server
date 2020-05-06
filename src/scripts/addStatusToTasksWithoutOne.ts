@@ -12,7 +12,10 @@ export default async function addStatusToTasksWithoutOne() {
   await blockModel.model.ensureIndexes();
 
   const cursor = blockModel.model
-    .find({ type: "task", status: { $in: [null, undefined] } })
+    .find({
+      type: "task",
+      // status: { $in: [null, undefined] }
+    })
     // .find({ type: "task" })
     .cursor();
 
@@ -35,10 +38,16 @@ export default async function addStatusToTasksWithoutOne() {
       }
 
       if (!doc.status) {
+        const availableStatus = org.availableStatus || [];
         const status0 = (org.availableStatus || [])[0];
+        const lastStatus = availableStatus[availableStatus.length - 1];
 
         if (status0) {
-          doc.status = status0.customId;
+          if (doc.taskCollaborationData?.completedAt >= 0) {
+            doc.status = lastStatus.customId;
+          } else {
+            doc.status = status0.customId;
+          }
         }
       }
 
