@@ -34,28 +34,39 @@ export default async function addStatusToTasksWithoutOne() {
           .findOne({ customId: doc.rootBlockID })
           .exec();
 
+        if (!org) {
+          console.log("found a task without an org");
+          continue;
+        }
+
         cachedOrgs[org.customId] = org;
       }
 
-      if (!doc.status) {
-        const availableStatus = org.availableStatus || [];
-        const status0 = (org.availableStatus || [])[0];
-        const lastStatus = availableStatus[availableStatus.length - 1];
+      // if (!doc.status) {
+      //   const availableStatus = org.availableStatus || [];
+      //   const status0 = (org.availableStatus || [])[0];
+      //   const lastStatus = availableStatus[availableStatus.length - 1];
 
-        if (status0) {
-          if (doc.taskCollaborationData?.completedAt >= 0) {
-            doc.status = lastStatus.customId;
-          } else {
-            doc.status = status0.customId;
-          }
+      //   if (status0) {
+      //     if (doc.taskCollaborationData?.completedAt >= 0) {
+      //       doc.status = lastStatus.customId;
+      //     } else {
+      //       doc.status = status0.customId;
+      //     }
+      //   }
+      // }
+
+      const availableStatus = org.availableStatus || [];
+      const status0 = (org.availableStatus || [])[0];
+      const lastStatus = availableStatus[availableStatus.length - 1];
+
+      if (status0) {
+        if (doc.taskCollaborationData?.completedAt >= 0) {
+          doc.status = lastStatus.customId;
+        } else {
+          doc.status = status0.customId;
         }
       }
-
-      // const status0 = (org.availableStatus || [])[0];
-
-      // if (status0) {
-      //   doc.status = status0.customId;
-      // }
 
       await doc.save();
       docsCount++;
