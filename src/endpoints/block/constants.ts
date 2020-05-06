@@ -29,29 +29,29 @@ const blockConstants = {
     blockTypeOrg,
     blockTypeProject,
     blockTypeTask,
-    blockTypeRoot
+    blockTypeRoot,
   ] as BlockType[],
   priorityValuesArray: [
     priorityNotImportant,
     priorityImportant,
-    priorityVeryImportant
+    priorityVeryImportant,
   ],
   priorityTypes: {
     [priorityImportant]: priorityImportant,
     [priorityNotImportant]: priorityNotImportant,
-    [priorityVeryImportant]: priorityVeryImportant
+    [priorityVeryImportant]: priorityVeryImportant,
   },
   groupContextsArray: [groupTaskContext, groupProjectContext],
   groupContexts: {
     groupTaskContext,
-    groupProjectContext
+    groupProjectContext,
   },
   blockTypes: {
     [blockTypeGroup]: blockTypeGroup,
     [blockTypeOrg]: blockTypeOrg,
     [blockTypeProject]: blockTypeProject,
     [blockTypeRoot]: blockTypeRoot,
-    [blockTypeTask]: blockTypeTask
+    [blockTypeTask]: blockTypeTask,
   },
   minLinkedBlockReasonLength: 0,
   maxLinkedBlockReasonLength: 250,
@@ -64,14 +64,20 @@ const blockConstants = {
   minSubTasksLength: 0,
   maxSubTasksLength: 50,
   taskCollaborationData: ["individual", "collective"],
-  maxGetBlocksWithCustomIDs: 50
+  maxGetBlocksWithCustomIDs: 50,
+
+  // label
+  minLabelNameLength: 1,
+  maxLabelNameLength: 70,
+  maxLabelDescriptionLength: 300,
+  maxAvailableLabels: 20,
 };
 
 const blockTaskCollaboratorFieldNames = {
   userId: "userId",
   completedAt: "completedAt",
   assignedAt: "assignedAt",
-  assignedBy: "assignedBy"
+  assignedBy: "assignedBy",
 };
 
 const blockFieldNames = {
@@ -91,7 +97,7 @@ const blockFieldNames = {
   projects: "projects",
   tasks: "tasks",
   groupTaskContext: "groupTaskContext",
-  groupProjectContext: "groupProjectContext"
+  groupProjectContext: "groupProjectContext",
 };
 
 export { blockConstants, blockFieldNames, blockTaskCollaboratorFieldNames };

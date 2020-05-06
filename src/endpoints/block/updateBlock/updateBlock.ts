@@ -1,7 +1,28 @@
+import { getDataFromObject } from "../../../utilities/functionUtils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
 import { updateBlockJoiSchema } from "./validation";
+
+const directUpdateFields = [
+  "name",
+  "description",
+  "expectedEndAt",
+  "color",
+  "priority",
+  "taskCollaborationData",
+  "taskCollaborators",
+  "groups",
+  "projects",
+  "tasks",
+  "subTasks",
+  "groupProjectContext",
+  "groupTaskContext",
+  "availableStatus",
+  "availableLabels",
+  "status",
+  "labels",
+];
 
 async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const data = validate(context.data, updateBlockJoiSchema);
@@ -13,43 +34,34 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
   // TODO: update only the fields available in data
 
-  const update: IDirectUpdateBlockInput = {
-    name: blockData.name,
-    description: blockData.description,
-    expectedEndAt: blockData.expectedEndAt,
-    color: blockData.color,
-    priority: blockData.priority,
-    taskCollaborationData: blockData.taskCollaborationData,
-    taskCollaborators: blockData.taskCollaborators,
-    groups: blockData.groups,
-    projects: blockData.projects,
-    tasks: blockData.tasks,
-    subTasks: blockData.subTasks,
-    groupProjectContext: blockData.groupProjectContext,
-    groupTaskContext: blockData.groupTaskContext
-  };
-
+  const update = getDataFromObject(
+    blockData,
+    directUpdateFields
+  ) as IDirectUpdateBlockInput;
   const subTasks = update.subTasks;
   const now = Date.now();
 
   if (Array.isArray(subTasks) && subTasks.length > 0) {
     const areSubTasksCompleted = !!!subTasks.find(
-      subTask => !!!subTask.completedAt
+      (subTask) => !!!subTask.completedAt
     );
 
-    if (areSubTasksCompleted !== !!update.taskCollaborationData.completedAt) {
+    const taskCollaborationData =
+      update.taskCollaborationData || block.taskCollaborationData;
+
+    if (areSubTasksCompleted !== !!taskCollaborationData.completedAt) {
       // TODO: should we still keep this or find a better way to implement it?
       update.taskCollaborationData = {
-        ...update.taskCollaborationData,
+        ...taskCollaborationData,
         completedAt: areSubTasksCompleted ? now : null,
-        completedBy: areSubTasksCompleted ? user.customId : null
+        completedBy: areSubTasksCompleted ? user.customId : null,
       };
     }
   }
 
   await context.updateBlockByID(data.customId, update);
 
-  if (block.parent !== blockData.parent) {
+  if (blockData.parent && block.parent !== blockData.parent) {
     const sourceBlockID = block.parent;
     const destinationBlockID = blockData.parent;
     await context.transferBlock(block, sourceBlockID, destinationBlockID);

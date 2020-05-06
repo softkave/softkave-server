@@ -39,6 +39,49 @@ const blockSchema = `
     completedBy: String
   }
 
+  type StatusData {
+    customId: String
+    name: String
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  input StatusInput {
+    customId: String!
+    name: String!
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  type LabelData {
+    customId: String
+    name: String
+    color: String
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+  input LabelInput {
+    customId: String!
+    name: String!
+    color: String!
+    description: String
+    createdBy: String
+    createdAt: Float
+    updatedBy: String
+    updatedAt: Float
+  }
+
+
   type Block {
     customId: String
     name: String
@@ -61,6 +104,10 @@ const blockSchema = `
     groupProjectContext: [String]
     subTasks: [SubTask]
     landingPage: String
+    availableStatus: [StatusData]
+    availableLabels: [LabelData]
+    status: String
+    labels: [String]
   }
 
   type BlockResponse {
@@ -95,6 +142,10 @@ const blockSchema = `
     tasks: [String]
     groupTaskContext: [String]
     groupProjectContext: [String]
+    availableStatus: [StatusInput]
+    availableLabels: [LabelInput]
+    status: String
+    labels: [String]
   }
 
   input UpdateBlockInput {
@@ -113,6 +164,10 @@ const blockSchema = `
     groupTaskContext: [String]
     groupProjectContext: [String]
     subTasks: [SubTaskInput]
+    availableStatus: [StatusInput]
+    availableLabels: [LabelInput]
+    status: String
+    labels: [String]
   }
 
   type CollabRequestFrom {

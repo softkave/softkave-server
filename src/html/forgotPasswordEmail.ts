@@ -4,7 +4,7 @@ import {
   getFooterHTML,
   getHeaderHTML,
   getHeaderText,
-  getTemplateStylesHTML
+  getTemplateStylesHTML,
 } from "./helpers";
 
 export const forgotPasswordEmailTitle = "Change Your Password";
@@ -40,19 +40,13 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
           Copy the following link, and visit in your browser :-<br />
           <a href="${props.link}">${props.link}</a>
         </p>
-        <div>
-          <strong>This link expires :-</strong>
-          <ul>
-            ${
-              /*
-              TODO: Waiting to implement revoking used forgot password tokens
-              <li><strong>Immediately after you change your password</strong> OR</li> */ ""
-            }
-            <li><strong>In ${props.expiration.fromNow(
-              true
-            )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}</strong></li>
-          </ul>
-        </div>
+        <p>
+          <strong>
+          This link expires in ${props.expiration.fromNow(
+            true
+          )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}
+          </strong>
+        </p>
         <p>
           If you did not request a change of password, please ignore this
           mail.<br />
@@ -81,7 +75,7 @@ export function forgotPasswordEmailText(props: IForgotPasswordEmailProps) {
     )}`,
     `\n\nIf you did not request a change of password, please ignore this mail.`,
     `\nAlso, do not share this link with anybody, as they will be able to`,
-    `\n\n${getEndGreeting()}`
+    `\n\n${getEndGreeting()}`,
   ];
 
   return textBlocks.join("");

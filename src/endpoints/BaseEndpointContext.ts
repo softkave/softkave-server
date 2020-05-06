@@ -71,7 +71,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     return getUserFromRequest({
       req: this.req,
       userModel: this.userModel,
-      required: true
+      required: true,
     });
   }
 
@@ -87,7 +87,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     try {
       return await this.userModel.model
         .findOne({
-          email
+          email,
         })
         .lean()
         .exec();
@@ -101,7 +101,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     try {
       return await this.userModel.model
         .findOne({
-          customId
+          customId,
         })
         .lean()
         .exec();
@@ -115,7 +115,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     try {
       return await this.blockModel.model
         .findOne({
-          customId: blockID
+          customId: blockID,
         })
         .lean()
         .exec();
@@ -128,7 +128,7 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
   public async getBlockListWithIDs(customIds: string[]) {
     try {
       const query = {
-        customId: { $in: customIds }
+        customId: { $in: customIds },
       };
 
       return await this.blockModel.model.find(query).exec();
@@ -198,12 +198,11 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
     blocks: Array<IBulkUpdateByIDItem<IBlock>>
   ) {
     try {
-      const opts = blocks.map(b => ({
-        updateOne: { filter: { customId: b.id }, update: b.data }
+      const opts = blocks.map((b) => ({
+        updateOne: { filter: { customId: b.id }, update: b.data },
       }));
 
-      const result = await this.blockModel.model.bulkWrite(opts);
-      console.log("completed");
+      await this.blockModel.model.bulkWrite(opts);
     } catch (error) {
       logger.error(error);
       throw new ServerError();

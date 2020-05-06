@@ -1,9 +1,11 @@
 import {
   BlockType,
   IBlock,
+  IBlockLabel,
+  IBlockStatus,
   ISubTask,
   ITaskCollaborationData,
-  ITaskCollaborator
+  ITaskCollaborator,
 } from "../../../mongo/block";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
@@ -23,6 +25,10 @@ export interface IUpdateBlockInput {
   groupTaskContext: string[];
   groupProjectContext: string[];
   subTasks: ISubTask[];
+  availableStatus: IBlockStatus[];
+  availableLabels: IBlockLabel[];
+  status: string;
+  labels: string[];
 }
 
 export interface IDirectUpdateBlockInput {
@@ -39,6 +45,10 @@ export interface IDirectUpdateBlockInput {
   subTasks: ISubTask[];
   groupTaskContext: string[];
   groupProjectContext: string[];
+  availableStatus: IBlockStatus[];
+  availableLabels: IBlockLabel[];
+  status: string;
+  labels: string[];
 }
 
 export interface IUpdateBlockParameters {

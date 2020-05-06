@@ -11,12 +11,13 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
-// import oldBlocksToNewBlocksScript from "./scripts/oldBlocksToNewBlocks";
+import addDefaultStatusToExistingOrgs from "./scripts/addDefaultStatusToExistingOrgs";
+import addStatusToTasksWithoutOne from "./scripts/addStatusToTasksWithoutOne";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
-  connection: connection.getConnection()
+  connection: connection.getConnection(),
 });
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -39,7 +40,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const corsOption = {
   origin: whiteListedCorsOrigins,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 if (process.env.NODE_ENV === "production") {
@@ -50,13 +51,13 @@ app.use(cors(corsOption));
 app.use(
   expressJwt({
     secret: JWT_SECRET,
-    credentialsRequired: false
+    credentialsRequired: false,
   })
 );
 
 app.use(
   bodyParser.json({
-    type: "application/json"
+    type: "application/json",
   })
 );
 
@@ -68,8 +69,8 @@ app.use(
     rootValue: new EndpointController({
       blockModel,
       notificationModel,
-      userModel
-    })
+      userModel,
+    }),
   })
 );
 
@@ -83,8 +84,9 @@ connection.wait().then(async () => {
   await blockModel.model.ensureIndexes();
   await notificationModel.model.ensureIndexes();
 
-  // Scripts
-  // await oldBlocksToNewBlocksScript();
+  // scripts
+  // addDefaultStatusToExistingOrgs();
+  // addStatusToTasksWithoutOne();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
