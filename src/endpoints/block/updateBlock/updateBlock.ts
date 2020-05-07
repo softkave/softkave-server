@@ -105,6 +105,9 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
   await context.updateBlockByID(data.customId, update);
 
+  // TODO: should we send an email if you're the one who assigned it to yourself?
+  // TODO: how should we respect the user and not spam them? -- user settings
+
   const assignedUsersDiffResult = diffAssignedUsers(block, data.data);
   const newlyAssignedUsers = assignedUsersDiffResult.newUsers;
 
