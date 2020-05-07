@@ -23,6 +23,7 @@ export interface IBaseEndpointContext {
   getUser: () => Promise<IUser>;
   getUserByEmail: (email: string) => Promise<IUser>;
   getUserByCustomID: (customId: string) => Promise<IUser>;
+  getUsersByID: (userIDs: string[]) => Promise<IUser[]>;
   getRequestToken: () => IBaseUserTokenData;
   getBlockByID: (customId: string) => Promise<IBlock>;
   getBlockListWithIDs: (customIds: string[]) => Promise<IBlock[]>;
@@ -203,6 +204,17 @@ export default class BaseEndpointContext implements IBaseEndpointContext {
       }));
 
       await this.blockModel.model.bulkWrite(opts);
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async getUsersByID(userIDs: string[]) {
+    try {
+      return await this.userModel.model
+        .find({ customId: { $in: userIDs } })
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();

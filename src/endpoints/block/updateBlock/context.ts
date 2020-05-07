@@ -1,9 +1,12 @@
 import { IBlock } from "../../../mongo/block";
+import { IUser } from "../../../mongo/user";
+import appInfo from "../../../res/appInfo";
 import BaseEndpointContext, {
-  IBaseEndpointContextParameters
+  IBaseEndpointContextParameters,
 } from "../../BaseEndpointContext";
 import TransferBlockContext from "../transferBlock/context";
 import transferBlock from "../transferBlock/transferBlock";
+import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
 
 export interface IUpdateBlockContextParameters
@@ -34,9 +37,25 @@ export default class UpdateBlockContext extends BaseEndpointContext
         data: {
           sourceBlock: sourceBlockID,
           draggedBlock: block.customId,
-          destinationBlock: destinationBlockID
-        }
+          destinationBlock: destinationBlockID,
+        },
       })
     );
+  }
+
+  public async sendAssignedTaskEmailNotification(
+    org: IBlock,
+    task: IBlock,
+    assigner: IUser,
+    assignee: IUser
+  ) {
+    return sendAssignedTaskEmailNotification({
+      email: assignee.email,
+      senderOrg: org.name,
+      assignee: assignee.name,
+      assigner: assigner.name,
+      loginLink: appInfo.loginLink,
+      taskDescription: task.description,
+    });
   }
 }

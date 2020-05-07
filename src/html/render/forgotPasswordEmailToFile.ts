@@ -4,7 +4,7 @@ import appInfo from "../../res/appInfo";
 import {
   forgotPasswordEmailHTML,
   forgotPasswordEmailText,
-  IForgotPasswordEmailProps
+  IForgotPasswordEmailProps,
 } from "../forgotPasswordEmail";
 
 const forgotPasswordHTMLTemplateFile =
@@ -15,7 +15,7 @@ const forgotPasswordTextTemplateFile =
 export default function renderForgotPasswordEmailToFile() {
   const props: IForgotPasswordEmailProps = {
     expiration: moment().add(2, "days"),
-    link: `${appInfo.clientDomain}/change-password?t=12345`
+    link: `${appInfo.clientDomain}/change-password?t=12345`,
   };
 
   const existingUserHTML = forgotPasswordEmailHTML(props);
