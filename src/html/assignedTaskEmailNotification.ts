@@ -35,7 +35,7 @@ export function assignedTaskEmailNotificationHTML(
       <div class="email-body">
         <div class="email-content-center">
           <p>
-            You have been assigned to a task on <b>${
+            You have been assigned to a task in <b>${
               props.senderOrg
             }</b> by <b>${props.assigner}</b>.
           </p>
@@ -65,11 +65,11 @@ export function assignedTaskEmailNotificationText(
 ) {
   const textBlocks = [
     `${getHeaderText(assignedTaskEmailNotificationTitle)}`,
-    `\n\nYou have been assigned to a task on ${props.senderOrg} by ${props.assigner}.`,
+    `\n\nYou have been assigned to a task in ${props.senderOrg} by ${props.assigner}.`,
     `\n\nTo view the assigned task, login to your account using ${props.loginLink}.`,
     `\n\nThen, open the app menu, goto Notifications.`,
     `If you are not ${props.assignee}. Please, ignore this mail`,
   ];
 
-  textBlocks.join("");
+  return textBlocks.join("");
 }

@@ -126,8 +126,14 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
       // TODO: what else should we do if the user does not exist?
       if (assignee) {
         context
-          .sendAssignedTaskEmailNotification(org, data as any, user, assignee)
+          .sendAssignedTaskEmailNotification(
+            org,
+            data.data.description || block.description,
+            user,
+            assignee
+          )
           .catch((error) => {
+            console.error(error);
             // TODO: how should we handle the error?
           });
       }

@@ -71,7 +71,7 @@ export interface IUpdateBlockContext extends IBaseEndpointContext {
   ) => Promise<void>;
   sendAssignedTaskEmailNotification: (
     org: IBlock,
-    task: IBlock,
+    taskDescription: string,
     assigner: IUser,
     assignee: IUser
   ) => Promise<void>;
