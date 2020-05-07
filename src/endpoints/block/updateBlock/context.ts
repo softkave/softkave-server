@@ -49,6 +49,7 @@ export default class UpdateBlockContext extends BaseEndpointContext
     assigner: IUser,
     assignee: IUser
   ) {
+    // console.log({ org, task, assigner, assignee });
     return sendAssignedTaskEmailNotification({
       email: assignee.email,
       senderOrg: org.name,

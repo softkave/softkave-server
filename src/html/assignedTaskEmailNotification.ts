@@ -5,7 +5,7 @@ import {
   getTemplateStylesHTML,
 } from "./helpers";
 
-export const assignedTaskEmailNotificationTitle = "Assigned Task";
+export const assignedTaskEmailNotificationTitle = "Assigned Task Notification";
 
 export interface IAssignedTaskEmailNotificationProps {
   assignee: string;
