@@ -1,7 +1,16 @@
-import { getDataFromObject } from "../../../utilities/functionUtils";
+import { IBlock } from "../../../mongo/block";
+import {
+  getDataFromObject,
+  indexArray,
+} from "../../../utilities/functionUtils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
-import { IDirectUpdateBlockInput, IUpdateBlockContext } from "./types";
+import {
+  IDirectUpdateBlockInput,
+  ITaskAssignedUsersDiff,
+  IUpdateBlockContext,
+  IUpdateBlockInput,
+} from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
 const directUpdateFields = [
@@ -23,6 +32,41 @@ const directUpdateFields = [
   "status",
   "labels",
 ];
+
+const diffAssignedUsers = (
+  block: IBlock,
+  data: IUpdateBlockInput
+): ITaskAssignedUsersDiff => {
+  const existingTaskCollaborators = block.taskCollaborators || [];
+  const incomingTaskCollaborators = data.taskCollaborators || [];
+  const existingAssignedUsers = indexArray(existingTaskCollaborators, {
+    path: "userId",
+  });
+  const incomingAssigendUsers = indexArray(incomingTaskCollaborators, {
+    path: "userId",
+  });
+
+  const newAssignedUsers = incomingTaskCollaborators.filter((user) => {
+    if (!existingAssignedUsers[user.userId]) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  const removedAssignedUsers = existingTaskCollaborators.filter((user) => {
+    if (!incomingAssigendUsers[user.userId]) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  return {
+    newUsers: newAssignedUsers,
+    removedUsers: removedAssignedUsers,
+  };
+};
 
 async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const data = validate(context.data, updateBlockJoiSchema);
@@ -60,6 +104,32 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   }
 
   await context.updateBlockByID(data.customId, update);
+
+  const assignedUsersDiffResult = diffAssignedUsers(block, data.data);
+  const newlyAssignedUsers = assignedUsersDiffResult.newUsers;
+
+  if (newlyAssignedUsers.length > 0) {
+    const newAssignees = await context.getUsersByID(
+      newlyAssignedUsers.map((assignedUser) => assignedUser.userId)
+    );
+    const org = await context.getBlockByID(block.rootBlockID);
+    const assigneesMap = indexArray(newAssignees, { path: "customId" });
+
+    // TODO: what should we do if any of the above calls fail?
+
+    assignedUsersDiffResult.newUsers.forEach((assignedUser) => {
+      const assignee = assigneesMap[assignedUser.userId];
+
+      // TODO: what else should we do if the user does not exist?
+      if (assignee) {
+        context
+          .sendAssignedTaskEmailNotification(org, data as any, user, assignee)
+          .catch((error) => {
+            // TODO: how should we handle the error?
+          });
+      }
+    });
+  }
 
   if (blockData.parent && block.parent !== blockData.parent) {
     const sourceBlockID = block.parent;

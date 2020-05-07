@@ -1,10 +1,10 @@
+import fs from "fs";
+import appInfo from "../../res/appInfo";
 import {
-  IAssignedTaskEmailNotificationProps,
   assignedTaskEmailNotificationHTML,
   assignedTaskEmailNotificationText,
+  IAssignedTaskEmailNotificationProps,
 } from "../assignedTaskEmailNotification";
-import appInfo from "../../res/appInfo";
-import fs from "fs";
 
 const assignedTaskNotificationHTMLTemplateFile =
   "email-templates/templates/assigned-task-notification-html.html";
@@ -17,6 +17,7 @@ export default function renderAssignedTaskEmailToFile() {
     assigner: "Ajayi Solomon",
     senderOrg: "Softkave",
     loginLink: `${appInfo.clientDomain}/login`,
+    taskDescription: "did you know the earth is flat? prove it's not!",
   };
 
   const existingUserHTML = assignedTaskEmailNotificationHTML(props);

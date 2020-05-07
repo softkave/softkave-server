@@ -1,18 +1,18 @@
 import {
-  getTemplateStylesHTML,
-  getHeaderText,
   getFooterHTML,
   getHeaderHTML,
+  getHeaderText,
+  getTemplateStylesHTML,
 } from "./helpers";
 
 export const assignedTaskEmailNotificationTitle = "Assigned Task";
 
 export interface IAssignedTaskEmailNotificationProps {
-  assignee?: string;
-  assigner?: string;
+  assignee: string;
+  assigner: string;
   senderOrg: string;
   loginLink: string;
-  // recipientIsUser: boolean;
+  taskDescription: string;
 }
 
 export function assignedTaskEmailNotificationHTML(
@@ -40,19 +40,18 @@ export function assignedTaskEmailNotificationHTML(
             }</b> by <b>${props.assigner}</b>.
           </p>
           <p>
-            To view the assigned task,
-            <a href="${props.loginLink}">Login to your account here</a>.
+            <b>Task Description</b><br />
+            ${props.taskDescription}
           </p>
           <p>
-            Open the app menu, goto Notifications and you'll find the request
-            there.<br />
-            Login > Open app menu > Notifications
+            To view the assigned task,
+            <a href="${props.loginLink}">Login to your account here</a>.
           </p>
           <hr>
           <p class="email-header">
             If you are not ${props.assignee}. Please, ignore this mail
           </p>
-  
+
         </div>
       </div>
      ${getFooterHTML()}

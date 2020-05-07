@@ -6,7 +6,7 @@ Message :-
 How are you Isaac, we had a talk yesterday, this is our official offer.
 
 Expiration :-
-This request is set to expire in a month, on 12/07/2019 08:34PM.
+This request is set to expire in a month, on 06/07/2020 03:21AM.
 
 To respond to this request,
 Login to your account using :-

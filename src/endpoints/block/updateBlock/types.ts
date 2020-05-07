@@ -7,6 +7,7 @@ import {
   ITaskCollaborationData,
   ITaskCollaborator,
 } from "../../../mongo/block";
+import { IUser } from "../../../mongo/user";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
 
 export interface IUpdateBlockInput {
@@ -51,6 +52,11 @@ export interface IDirectUpdateBlockInput {
   labels: string[];
 }
 
+export interface ITaskAssignedUsersDiff {
+  newUsers: ITaskCollaborator[];
+  removedUsers: ITaskCollaborator[];
+}
+
 export interface IUpdateBlockParameters {
   customId: string;
   data: IUpdateBlockInput;
@@ -62,5 +68,11 @@ export interface IUpdateBlockContext extends IBaseEndpointContext {
     block: IBlock,
     sourceBlockID: string,
     destinationBlockID: string
+  ) => Promise<void>;
+  sendAssignedTaskEmailNotification: (
+    org: IBlock,
+    task: IBlock,
+    assigner: IUser,
+    assignee: IUser
   ) => Promise<void>;
 }
