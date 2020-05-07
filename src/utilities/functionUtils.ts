@@ -108,3 +108,21 @@ export function immutableAdd(list: any[], item: any, dropPosition?: number) {
 
   return list;
 }
+
+export function getDataFromObject(
+  obj: object,
+  fields: string[],
+  addEmpty?: boolean
+) {
+  const result = {};
+
+  fields.forEach((field) => {
+    const data = get(obj, field);
+
+    if ((data !== null && data !== undefined) || addEmpty) {
+      result[field] = data;
+    }
+  });
+
+  return result;
+}

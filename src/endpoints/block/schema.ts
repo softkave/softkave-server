@@ -107,7 +107,7 @@ const blockSchema = `
     availableStatus: [StatusData]
     availableLabels: [LabelData]
     status: String
-    label: [String]
+    labels: [String]
   }
 
   type BlockResponse {
@@ -145,7 +145,7 @@ const blockSchema = `
     availableStatus: [StatusInput]
     availableLabels: [LabelInput]
     status: String
-    label: [String]
+    labels: [String]
   }
 
   input UpdateBlockInput {
@@ -167,7 +167,7 @@ const blockSchema = `
     availableStatus: [StatusInput]
     availableLabels: [LabelInput]
     status: String
-    label: [String]
+    labels: [String]
   }
 
   type CollabRequestFrom {
