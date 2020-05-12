@@ -1,8 +1,10 @@
 import {
   BlockType,
+  IBlockLabel,
+  IBlockStatus,
   ISubTask,
   ITaskCollaborationData,
-  ITaskCollaborator
+  ITaskCollaborator,
 } from "../../mongo/block";
 
 export interface INewBlockInput {
@@ -19,6 +21,7 @@ export interface INewBlockInput {
   // TODO: should we only leave the first parent and find another way to implement the parent list?
   parent?: string;
   rootBlockID?: string;
+  boardId?: string;
   priority?: string;
   taskCollaborationData?: ITaskCollaborationData;
   taskCollaborators?: ITaskCollaborator[];
@@ -32,4 +35,9 @@ export interface INewBlockInput {
   // TODO: should we get rid of these too?
   groupTaskContext?: string[];
   groupProjectContext?: string[];
+
+  availableStatus?: IBlockStatus[];
+  availableLabels?: IBlockLabel[];
+  status?: string;
+  labels?: string[];
 }

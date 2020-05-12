@@ -93,6 +93,7 @@ const blockSchema = `
     type: String
     parent: String
     rootBlockID: String
+    boardId: String
     createdBy: String
     taskCollaborationData: TaskCollaborationData
     taskCollaborators: [BlockTaskCollaboratorData]
@@ -133,6 +134,7 @@ const blockSchema = `
     type: String!
     parent: String
     rootBlockID: String
+    boardId: String
     priority: String
     taskCollaborationData: TaskCollaborationDataInput
     taskCollaborators: [BlockTaskCollaboratorDataInput]

@@ -172,6 +172,7 @@ const newBlock = Joi.object().keys({
   groups,
   projects,
   tasks,
+  boardId: parent,
   customId: blockID,
   groupTaskContext: groups,
   groupProjectContext: groups,

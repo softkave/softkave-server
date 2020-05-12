@@ -8,12 +8,12 @@ import {
   ITaskCollaborationData,
   ITaskCollaborator,
   mongoSubTaskSchema,
-  mongoTaskCollaborationDataSchema
+  mongoTaskCollaborationDataSchema,
 } from "../mongo/block";
 import NewBlockModel from "../mongo/block/BlockModel";
 import connection from "../mongo/defaultConnection";
 import MongoModel, {
-  IDerivedMongoModelInitializationProps
+  IDerivedMongoModelInitializationProps,
 } from "../mongo/MongoModel";
 
 interface IOldBlock {
@@ -48,7 +48,7 @@ const oldBlockSchema = {
   customId: { type: String, unique: true },
   name: {
     type: String,
-    index: true
+    index: true,
   },
 
   // TODO: Think on, should we retain lowercased names so that we can retain the
@@ -57,28 +57,28 @@ const oldBlockSchema = {
   lowerCasedName: {
     type: String,
     index: true,
-    lowercase: true
+    lowercase: true,
   },
   description: String,
   expectedEndAt: Number,
   createdAt: {
     type: Number,
-    default: Date.now
+    default: Date.now,
   },
   color: String,
   updatedAt: Number,
   type: {
     type: String,
     index: true,
-    lowercase: true
+    lowercase: true,
   },
   parents: {
     type: [String],
-    index: true
+    index: true,
   },
   createdBy: {
     type: String,
-    index: true
+    index: true,
   },
 
   // deprecate
@@ -87,10 +87,10 @@ const oldBlockSchema = {
   taskCollaborationData: mongoTaskCollaborationDataSchema,
   taskCollaborators: {
     type: [blockTaskCollaboratorDataSchema],
-    index: true
+    index: true,
   },
   subTasks: {
-    type: [mongoSubTaskSchema]
+    type: [mongoSubTaskSchema],
   },
   priority: String,
   isBacklog: Boolean,
@@ -98,7 +98,7 @@ const oldBlockSchema = {
   groups: [String],
   projects: [String],
   groupTaskContext: [String],
-  groupProjectContext: [String]
+  groupProjectContext: [String],
 };
 
 const oldModelName = "block";
@@ -110,7 +110,7 @@ class OldBlockModel extends MongoModel<IOldBlockDocument> {
       connection: props.connection,
       modelName: oldModelName,
       collectionName: oldCollectionName,
-      rawSchema: oldBlockSchema
+      rawSchema: oldBlockSchema,
     });
   }
 }
@@ -120,15 +120,17 @@ export default async function oldBlocksToNewBlocksScript() {
 
   console.log(`script - ${__filename} - started`);
 
+  throw new Error("implementation details is incorrect, check boardId field");
+
   let docsCount = 0;
   const startedInMs = Date.now();
 
   const oldBlockModel = new OldBlockModel({
-    connection: connection.getConnection()
+    connection: connection.getConnection(),
   });
 
   const newBlockModel = new NewBlockModel({
-    connection: connection.getConnection()
+    connection: connection.getConnection(),
   });
 
   await oldBlockModel.model.ensureIndexes();
@@ -163,7 +165,8 @@ export default async function oldBlocksToNewBlocksScript() {
         projects: doc.projects,
         groupTaskContext: doc.groupTaskContext,
         groupProjectContext: doc.groupProjectContext,
-        subTasks: doc.subTasks
+        subTasks: doc.subTasks,
+        boardId: null, // this is wrong, blocks except orgs should have boardIds
       };
 
       const newBlockDocument = new newBlockModel.model(newBlock);

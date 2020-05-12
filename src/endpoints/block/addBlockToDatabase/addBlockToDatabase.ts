@@ -62,6 +62,11 @@ async function addBlockToDatabase(
     groupTaskContext: inputBlock.groupTaskContext,
     groupProjectContext: inputBlock.groupProjectContext,
     subTasks: inputBlock.subTasks,
+    boardId: inputBlock.boardId,
+    availableLabels: inputBlock.availableLabels,
+    availableStatus: inputBlock.availableStatus,
+    labels: inputBlock.labels,
+    status: inputBlock.status,
   };
 
   const savedBlock = await context.saveBlock(block);

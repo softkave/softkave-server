@@ -123,8 +123,11 @@ export interface IBlock {
   updatedAt: number;
   type: BlockType;
 
-  parent: string; // - updated from string[]
-  rootBlockID: string; // - new
+  parent: string;
+
+  // org and project are the only board-able block types for now
+  boardId: string; // pointer to the org or project the block is a child of
+  rootBlockID: string;
 
   createdBy: string;
 
@@ -188,6 +191,9 @@ const blockSchema = {
     index: true,
   },
   rootBlockID: {
+    type: String,
+  },
+  boardId: {
     type: String,
   },
   createdBy: {

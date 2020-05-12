@@ -1,4 +1,5 @@
 import { IBlock } from "../../../mongo/block";
+import { IUser } from "../../../mongo/user";
 import {
   getDataFromObject,
   indexArray,
@@ -7,7 +8,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import {
   IDirectUpdateBlockInput,
-  ITaskAssignedUsersDiff,
+  ITaskAssigneesDiff,
   IUpdateBlockContext,
   IUpdateBlockInput,
 } from "./types";
@@ -36,7 +37,7 @@ const directUpdateFields = [
 const diffAssignedUsers = (
   block: IBlock,
   data: IUpdateBlockInput
-): ITaskAssignedUsersDiff => {
+): ITaskAssigneesDiff => {
   const existingTaskCollaborators = block.taskCollaborators || [];
   const incomingTaskCollaborators = data.taskCollaborators || [];
   const existingAssignedUsers = indexArray(existingTaskCollaborators, {
@@ -63,8 +64,8 @@ const diffAssignedUsers = (
   });
 
   return {
-    newUsers: newAssignedUsers,
-    removedUsers: removedAssignedUsers,
+    newAssignees: newAssignedUsers,
+    removedAssignees: removedAssignedUsers,
   };
 };
 
@@ -109,7 +110,7 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   // TODO: how should we respect the user and not spam them? -- user settings
 
   const assignedUsersDiffResult = diffAssignedUsers(block, data.data);
-  const newlyAssignedUsers = assignedUsersDiffResult.newUsers;
+  const newlyAssignedUsers = assignedUsersDiffResult.newAssignees;
 
   if (newlyAssignedUsers.length > 0) {
     const newAssignees = await context.getUsersByID(
@@ -120,11 +121,11 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
 
     // TODO: what should we do if any of the above calls fail?
 
-    assignedUsersDiffResult.newUsers.forEach((assignedUser) => {
-      const assignee = assigneesMap[assignedUser.userId];
+    assignedUsersDiffResult.newAssignees.forEach((assignedUser) => {
+      const assignee: IUser = assigneesMap[assignedUser.userId];
 
       // TODO: what else should we do if the user does not exist?
-      if (assignee) {
+      if (assignee && assignee.customId !== user.customId) {
         context
           .sendAssignedTaskEmailNotification(
             org,

@@ -52,9 +52,9 @@ export interface IDirectUpdateBlockInput {
   labels: string[];
 }
 
-export interface ITaskAssignedUsersDiff {
-  newUsers: ITaskCollaborator[];
-  removedUsers: ITaskCollaborator[];
+export interface ITaskAssigneesDiff {
+  newAssignees: ITaskCollaborator[];
+  removedAssignees: ITaskCollaborator[];
 }
 
 export interface IUpdateBlockParameters {
