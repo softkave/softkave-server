@@ -16,13 +16,15 @@ async function getBlockChildren(
   const typeList = Array.isArray(data.typeList)
     ? data.typeList
     : blockConstants.blockTypesArray;
+
   const blocks = await context.getBlockChildrenFromDatabase(
     data.customId,
-    typeList
+    typeList,
+    data.useBoardId
   );
 
   return {
-    blocks
+    blocks,
   };
 }
 

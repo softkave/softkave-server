@@ -250,7 +250,8 @@ const blockSchema = `
     getRootBlocks: MultipleBlocksOpResponse
     getBlockChildren (
       customId: String!,
-      typeList: [String!]
+      typeList: [String!],
+      useBoardId: Boolean
     ) : MultipleBlocksOpResponse
 
     addCollaborators (

@@ -2,7 +2,7 @@ import { BlockType } from "../../../mongo/block";
 import { ServerError } from "../../../utilities/errors";
 import logger from "../../../utilities/logger";
 import BaseEndpointContext, {
-  IBaseEndpointContextParameters
+  IBaseEndpointContextParameters,
 } from "../../BaseEndpointContext";
 import { IGetBlockChildrenContext, IGetBlockChildrenParameters } from "./types";
 
@@ -22,17 +22,23 @@ export default class GetBlockChildrenContext extends BaseEndpointContext
 
   public async getBlockChildrenFromDatabase(
     blockID: string,
-    typeList: BlockType[]
+    typeList: BlockType[],
+    useBoardId?: boolean
   ) {
     try {
-      const blocks = await this.blockModel.model
-        .find({
-          parent: blockID,
-          type: {
-            $in: typeList
-          }
-        })
-        .exec();
+      const query: any = {
+        type: {
+          $in: typeList,
+        },
+      };
+
+      if (useBoardId) {
+        query.boardId = blockID;
+      } else {
+        query.parent = blockID;
+      }
+
+      const blocks = await this.blockModel.model.find(query).exec();
 
       return blocks;
     } catch (error) {
