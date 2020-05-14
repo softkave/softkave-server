@@ -84,7 +84,7 @@ connection.wait().then(async () => {
   await notificationModel.model.ensureIndexes();
 
   // scripts
-  // await addBoardIdToBlocks();
+  await addBoardIdToBlocks();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
