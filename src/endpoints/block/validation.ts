@@ -35,9 +35,9 @@ const blockChildrenIDList = Joi.array()
 const subTasksSchema = Joi.object().keys({
   customId: Joi.string().uuid().required(),
   description: Joi.string()
+    .trim()
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
-    .trim()
     .required(),
   completedBy: Joi.string().uuid(),
   completedAt: Joi.number(),
@@ -51,16 +51,20 @@ const taskCollaborationDataSchema = Joi.object().keys({
   completedBy: Joi.string().uuid().allow(null),
 });
 
+// TODO: run trim on all string inputs
 const labelSchema = Joi.object().keys({
   customId: Joi.string().uuid().required(),
   name: Joi.string()
     .lowercase()
+    .trim()
     .min(blockConstants.minLabelNameLength)
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
-    .max(blockConstants.maxLabelDescriptionLength)
-    .allow(null),
+    .allow("", null)
+    .trim()
+    .min(blockConstants.minLabelDescriptionLength)
+    .max(blockConstants.maxLabelDescriptionLength),
   color: Joi.string().trim().lowercase().regex(regEx.hexColorPattern),
   createdAt: Joi.number().allow(null),
   createdBy: Joi.string().uuid().allow("system", null),
@@ -71,13 +75,16 @@ const labelSchema = Joi.object().keys({
 const statusSchema = Joi.object().keys({
   customId: Joi.string().uuid().required(),
   name: Joi.string()
+    .trim()
     .lowercase()
     .min(blockConstants.minLabelNameLength)
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
-    .max(blockConstants.maxLabelDescriptionLength)
-    .allow(null),
+    .allow("", null)
+    .trim()
+    .min(blockConstants.minLabelDescriptionLength)
+    .max(blockConstants.maxLabelDescriptionLength),
   createdAt: Joi.number().allow(null),
   createdBy: Joi.string().uuid().allow("system", null),
   updatedAt: Joi.number().allow(null),
@@ -88,17 +95,18 @@ const statusSchema = Joi.object().keys({
 
 const statusListSchema = Joi.array()
   .max(blockConstants.maxAvailableLabels)
-  .items(statusSchema)
-  .unique((a: IBlockStatus, b: IBlockStatus) => {
-    return a.customId === b.customId || a.name === b.name;
-  });
+  .items(statusSchema);
+// TODO: should labels and statuses be unique?
+// .unique((a: IBlockStatus, b: IBlockStatus) => {
+//   return a.customId === b.customId || a.name === b.name;
+// });
 
 const LabelListSchema = Joi.array()
   .max(blockConstants.maxAvailableLabels)
-  .items(labelSchema)
-  .unique((a: IBlockLabel, b: IBlockLabel) => {
-    return a.customId === b.customId || a.name === b.name;
-  });
+  .items(labelSchema);
+// .unique((a: IBlockLabel, b: IBlockLabel) => {
+//   return a.customId === b.customId || a.name === b.name;
+// });
 
 const blockTypesSchema = Joi.array()
   .max(blockConstants.blockTypesArray.length)

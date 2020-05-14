@@ -14,6 +14,7 @@ import {
 } from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
+// TODO: how to handle some fields that are for specific block types, like availableStatus and orgs
 const directUpdateFields = [
   "name",
   "description",

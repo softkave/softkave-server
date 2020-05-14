@@ -69,6 +69,7 @@ const blockConstants = {
   // label
   minLabelNameLength: 1,
   maxLabelNameLength: 70,
+  minLabelDescriptionLength: 0,
   maxLabelDescriptionLength: 300,
   maxAvailableLabels: 20,
 };
