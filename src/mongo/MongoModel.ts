@@ -9,6 +9,7 @@ export interface IMongoModelParameters {
   modelName: string;
   collectionName: string;
   connection: mongoose.Connection;
+  schemaOptions?: mongoose.SchemaOptions;
 }
 
 type Waiter = () => void;
@@ -28,11 +29,12 @@ class MongoModel<DocumentType extends mongoose.Document = any> {
     connection,
     rawSchema,
     modelName,
-    collectionName
+    collectionName,
+    schemaOptions,
   }: IMongoModelParameters) {
     this.connection = connection;
     this.rawSchema = rawSchema;
-    this.schema = new mongoose.Schema(rawSchema);
+    this.schema = new mongoose.Schema(rawSchema, schemaOptions);
     this.modelName = modelName;
     this.collectionName = collectionName;
     this.model = this.newModel();
@@ -56,7 +58,7 @@ class MongoModel<DocumentType extends mongoose.Document = any> {
   }
 
   public waitTillReady() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.queueWaiter(resolve);
     });
   }
@@ -66,7 +68,7 @@ class MongoModel<DocumentType extends mongoose.Document = any> {
   }
 
   private callWaiters() {
-    this.waitingQueue.forEach(cb => cb());
+    this.waitingQueue.forEach((cb) => cb());
   }
 }
 

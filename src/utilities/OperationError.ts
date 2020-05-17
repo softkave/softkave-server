@@ -2,14 +2,14 @@ export interface IOperationErrorParameters {
   message?: string;
   field?: string;
   action?: string;
+  value?: any;
 }
 
 class OperationError extends Error {
   public field: string;
   public message: string;
   public action: string;
-  public type: string;
-  public name = "OperationError";
+  public value: string;
 
   constructor(p: IOperationErrorParameters = {}) {
     super(p.message);
@@ -20,8 +20,9 @@ class OperationError extends Error {
     // recommended action for the client
     this.action = p.action;
 
-    // TODO: not reflecting, how do we fix it, or should we just stick with name?
-    this.type = this.name;
+    if (p.value) {
+      this.value = JSON.stringify(p.value);
+    }
   }
 }
 

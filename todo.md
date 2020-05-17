@@ -9,6 +9,8 @@
 9. write scripts to clean permissions to blocks that have been deleted
 10. change password mutation should ask for current password
 11. Remove nf or find a way to use it
+12. Test not allowing action on an expired collaboration request
+13. Redesign the collaboration request and forgot password email
 
 - set up prettier or airbnb style guide
 - use rbac for roles (role to user, role to permission | action, role to block, etc)

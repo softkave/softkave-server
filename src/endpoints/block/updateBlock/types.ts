@@ -4,7 +4,7 @@ import {
   IBlockLabel,
   IBlockStatus,
   ISubTask,
-  ITaskCollaborationData,
+  ITaskCollaborationType,
   ITaskCollaborator,
 } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
@@ -16,7 +16,7 @@ export interface IUpdateBlockInput {
   expectedEndAt: number;
   color: string;
   priority: string;
-  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborationData: ITaskCollaborationType;
   taskCollaborators: ITaskCollaborator[];
   type: BlockType;
   parent: string;
@@ -38,7 +38,7 @@ export interface IDirectUpdateBlockInput {
   expectedEndAt: number;
   color: string;
   priority: string;
-  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborationData: ITaskCollaborationType;
   taskCollaborators: ITaskCollaborator[];
   groups: string[];
   projects: string[];
@@ -74,5 +74,5 @@ export interface IUpdateBlockContext extends IBaseEndpointContext {
     taskDescription: string,
     assigner: IUser,
     assignee: IUser
-  ) => Promise<void>;
+  ) => Promise<any>;
 }

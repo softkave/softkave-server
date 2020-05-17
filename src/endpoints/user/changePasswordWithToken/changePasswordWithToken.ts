@@ -1,5 +1,9 @@
 import { userEndpoints } from "../constants";
-import { InvalidCredentialsError, UserDoesNotExistError } from "../errors";
+import {
+  CredentialsExpiredError,
+  InvalidCredentialsError,
+  UserDoesNotExistError,
+} from "../errors";
 import UserToken from "../UserToken";
 import { IChangePasswordWithTokenContext } from "./types";
 
@@ -10,6 +14,10 @@ async function changePasswordWithToken(
 
   if (!UserToken.containsAudience(tokenData, userEndpoints.changePassword)) {
     throw new InvalidCredentialsError();
+  }
+
+  if (Date.now() > tokenData.exp * 1000) {
+    throw new CredentialsExpiredError();
   }
 
   const user = await context.getUserByEmail(tokenData.sub.email);

@@ -15,17 +15,3 @@ export const userEndpoints = {
 export const userErrorActions = {
   loginAgain: "login-again",
 };
-
-export const userFieldNames = {
-  customId: "customId",
-  name: "name",
-  email: "email",
-  hash: "hash",
-  createdAt: "createdAt",
-  forgotPasswordHistory: "forgotPasswordHistory",
-  changePasswordHistory: "changePasswordHistory",
-  lastNotificationCheckTime: "lastNotificationCheckTime",
-  rootBlockId: "rootBlockId",
-  orgs: "orgs",
-  color: "color",
-};

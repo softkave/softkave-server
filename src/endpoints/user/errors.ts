@@ -3,7 +3,7 @@ import { userErrorActions } from "./constants";
 
 export class EmailAddressNotAvailableError extends OperationError {
   public name = "EmailAddressNotAvailableError";
-  public message = "This email address is not available";
+  public message = "Email address is not available";
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -48,5 +48,5 @@ export class UserDoesNotExistError extends OperationError {
 // tslint:disable-next-line: max-classes-per-file
 export class CollaborationRequestDoesNotExistError extends OperationError {
   public name = "CollaborationRequestDoesNotExistError";
-  public message = "This collaboration request does not exist";
+  public message = "Collaboration request does not exist";
 }

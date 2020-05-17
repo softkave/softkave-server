@@ -3,6 +3,9 @@ import cors from "cors";
 import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
+// import multer from "multer";
+// import multerS3 from "multer-s3";
+// import { nanoid } from "nanoid";
 import { EndpointController, indexSchema } from "./endpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
@@ -11,7 +14,7 @@ import connection from "./mongo/defaultConnection";
 import NotificationModel from "./mongo/notification/NotificationModel";
 import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
-import addBoardIdToBlocks from "./scripts/addBoardIdToBlocks";
+// import aws from "./res/aws";
 
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
@@ -54,6 +57,40 @@ app.use(
   })
 );
 
+// 3 months in secs -- 60 secs * 60 mins * 24 hours * 30 days * 3 months
+// const maxAge = 60 * 60 * 24 * 30 * 3;
+
+// // 5 mb in bytes -- 1024 bytes * 1024 kb * 5 mb
+// const maxFileSize = 1024 * 1024 * 5;
+// const s3 = new aws.S3();
+// const multerS3Storage = multerS3({
+//   s3,
+//   bucket:
+//     process.env.NODE_ENV === "production"
+//       ? "softkave-files"
+//       : "softkave-files-dev",
+//   acl: "private",
+//   cacheControl: `max-age=${maxAge}`,
+//   contentType: multerS3.AUTO_CONTENT_TYPE,
+//   key(req, file, cb) {
+//     const fileKey = file.filename + `-${nanoid()}`;
+//     cb(null, fileKey);
+//   },
+// });
+
+// const upload = multer({
+//   storage: multerS3Storage,
+//   limits: {
+//     fileSize: maxFileSize,
+//   },
+// });
+
+// app.post("/upload", upload.array("files", 5), (req, res, next) => {
+//   // req.files is array of `photos` files
+//   // req.body will contain the text fields, if there were any
+//   console.dir({ req });
+// });
+
 app.use(
   bodyParser.json({
     type: "application/json",
@@ -84,7 +121,6 @@ connection.wait().then(async () => {
   await notificationModel.model.ensureIndexes();
 
   // scripts
-  // await addBoardIdToBlocks();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

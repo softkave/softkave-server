@@ -74,31 +74,12 @@ const blockConstants = {
   maxAvailableLabels: 20,
 };
 
-const blockTaskCollaboratorFieldNames = {
-  userId: "userId",
-  completedAt: "completedAt",
-  assignedAt: "assignedAt",
-  assignedBy: "assignedBy",
+const labelConstants = {
+  minNameLength: 0,
+  maxNameLength: 0,
+  minDescriptionLength: 0,
+  maxDescriptionLength: 0,
+  maxLabels: 0,
 };
 
-const blockFieldNames = {
-  customId: "customId",
-  name: "name",
-  description: "description",
-  expectedEndAt: "expectedEndAt",
-  createdAt: "createdAt",
-  color: "color",
-  updatedAt: "updatedAt",
-  type: "type",
-  parent: "parent",
-  createdBy: "createdBy",
-  taskCollaborators: "taskCollaborators",
-  priority: "priority",
-  groups: "groups",
-  projects: "projects",
-  tasks: "tasks",
-  groupTaskContext: "groupTaskContext",
-  groupProjectContext: "groupProjectContext",
-};
-
-export { blockConstants, blockFieldNames, blockTaskCollaboratorFieldNames };
+export { blockConstants };

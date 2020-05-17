@@ -43,8 +43,8 @@ export const blockTaskCollaboratorDataSchema = {
 export interface ISubTask {
   customId: string;
   description: string;
-  completedBy: string;
-  completedAt: number;
+  completedBy?: string;
+  completedAt?: number;
 }
 
 export const mongoSubTaskSchema = {
@@ -54,7 +54,7 @@ export const mongoSubTaskSchema = {
   completedAt: Number,
 };
 
-export interface ITaskCollaborationData {
+export interface ITaskCollaborationType {
   collaborationType: "individual" | "collective";
   completedAt?: number;
   completedBy?: string;
@@ -118,6 +118,9 @@ export interface IBlock {
   lowerCasedName: string;
   description: string;
   expectedEndAt: number;
+
+  dueAt: string;
+
   createdAt: number;
   color: string;
   updatedAt: number;
@@ -129,25 +132,33 @@ export interface IBlock {
   boardId: string; // pointer to the org or project the block is a child of
   rootBlockID: string;
 
+  rootBlockId: string;
+
   createdBy: string;
 
   // taskCollaborationType: ITaskCollaborationData; // - deprecated
 
-  taskCollaborationData: ITaskCollaborationData;
+  taskCollaborationData: ITaskCollaborationType;
   taskCollaborators: ITaskCollaborator[];
+
+  collaborationType: ITaskCollaborationType;
+  assignees: ITaskCollaborator[];
+
   priority: string;
 
   // isBacklog: boolean; // - deprecated
 
   // can we remove these fields and fetch the counts and the children using parent field instead
-  tasks: string[];
-  groups: string[];
-  projects: string[];
+  tasks: string[]; // remove
+  groups: string[]; // remove
+  projects: string[]; // remove
 
   // can we consolidate all the groups?
   // like - groups: { customId: string, taskContext: number, projectContext: number }
   groupTaskContext: string[];
   groupProjectContext: string[];
+
+  groupsOrder: string[];
 
   // roles: IBlockRole[]; // - deprecated for now
 
@@ -155,10 +166,15 @@ export interface IBlock {
 
   availableStatus?: IBlockStatus[];
   availableLabels?: IBlockLabel[];
+
   status?: string;
   labels?: string[];
 
-  landingPage?: BlockLandingPage;
+  landingPage?: BlockLandingPage; // remove
+
+  isDeleted?: boolean;
+  deletedAt?: string;
+  deletedBy?: string;
 }
 
 // TODO: Define type for blockSchema and other mongo schemas

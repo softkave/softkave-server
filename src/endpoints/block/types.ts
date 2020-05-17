@@ -3,7 +3,7 @@ import {
   IBlockLabel,
   IBlockStatus,
   ISubTask,
-  ITaskCollaborationData,
+  ITaskCollaborationType,
   ITaskCollaborator,
 } from "../../mongo/block";
 
@@ -23,7 +23,7 @@ export interface INewBlockInput {
   rootBlockID?: string;
   boardId?: string;
   priority?: string;
-  taskCollaborationData?: ITaskCollaborationData;
+  taskCollaborationData?: ITaskCollaborationType;
   taskCollaborators?: ITaskCollaborator[];
   subTasks?: ISubTask[];
 

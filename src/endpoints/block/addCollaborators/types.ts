@@ -25,5 +25,5 @@ export interface IAddCollaboratorsContext extends IBaseEndpointContext {
   saveNotifications: (notifications: INotification[]) => Promise<void>;
   sendCollaborationRequestEmail: (
     p: ISendCollaborationRequestEmailProps
-  ) => Promise<void>;
+  ) => Promise<any>;
 }
