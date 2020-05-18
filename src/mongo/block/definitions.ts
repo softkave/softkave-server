@@ -119,7 +119,7 @@ export interface IBlock {
   description: string;
   expectedEndAt: number;
 
-  dueAt: string;
+  // dueAt: string;
 
   createdAt: number;
   color: string;
@@ -132,7 +132,7 @@ export interface IBlock {
   boardId: string; // pointer to the org or project the block is a child of
   rootBlockID: string;
 
-  rootBlockId: string;
+  // rootBlockId: string;
 
   createdBy: string;
 
@@ -141,8 +141,8 @@ export interface IBlock {
   taskCollaborationData: ITaskCollaborationType;
   taskCollaborators: ITaskCollaborator[];
 
-  collaborationType: ITaskCollaborationType;
-  assignees: ITaskCollaborator[];
+  // collaborationType: ITaskCollaborationType;
+  // assignees: ITaskCollaborator[];
 
   priority: string;
 
@@ -158,7 +158,7 @@ export interface IBlock {
   groupTaskContext: string[];
   groupProjectContext: string[];
 
-  groupsOrder: string[];
+  // groupsOrder: string[];
 
   // roles: IBlockRole[]; // - deprecated for now
 
@@ -172,9 +172,9 @@ export interface IBlock {
 
   landingPage?: BlockLandingPage; // remove
 
-  isDeleted?: boolean;
-  deletedAt?: string;
-  deletedBy?: string;
+  // isDeleted?: boolean;
+  // deletedAt?: string;
+  // deletedBy?: string;
 }
 
 // TODO: Define type for blockSchema and other mongo schemas
