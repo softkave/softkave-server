@@ -16,6 +16,8 @@ import UserModel from "./mongo/user/UserModel";
 import appInfo from "./res/appInfo";
 // import aws from "./res/aws";
 
+console.log("server initialization");
+
 const userModel = new UserModel({ connection: connection.getConnection() });
 const blockModel = new BlockModel({ connection: connection.getConnection() });
 const notificationModel = new NotificationModel({
