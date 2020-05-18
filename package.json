@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npm run build && npm run serve-distribution",
-    "build": "npm run build-ts",
-    "build-ts": "tsc",
-    "watch-ts": "tsc -w",
-    "serve-distribution": "node dist/index.js",
+    "start": "npm run serve",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "serve": "node dist/index.js",
     "test": "jest",
     "render-email-templates": "tsc --project email-templates/tsconfig.json && node email-templates/code/email-templates/index.js"
   },
   "engines": {
-    "node": "12.16.3"
+    "node": "12.x"
   },
   "dependencies": {
     "@types/body-parser": "^1.17.0",
