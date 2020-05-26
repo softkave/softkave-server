@@ -14,24 +14,29 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
 
   if (userData) {
     try {
-      await argon2.verify(userData.hash, loginDetails.password);
+      const passwordMatch = await argon2.verify(
+        userData.hash,
+        loginDetails.password
+      );
+
+      if (passwordMatch) {
+        return {
+          user: userData,
+          token: UserToken.newToken({
+            user: userData,
+            audience: [userEndpoints.login],
+          }),
+        };
+      }
     } catch (error) {
       logger.error(error);
 
       // TODO: find a better error type for this error
       throw new ServerError();
     }
-  } else {
-    throw new InvalidEmailOrPasswordError();
   }
 
-  return {
-    user: userData,
-    token: UserToken.newToken({
-      user: userData,
-      audience: [userEndpoints.login],
-    }),
-  };
+  throw new InvalidEmailOrPasswordError();
 }
 
 export default login;
