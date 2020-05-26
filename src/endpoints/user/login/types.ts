@@ -1,5 +1,6 @@
 import { IUser } from "../../../mongo/user";
 import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IPublicUserData } from "../types";
 
 export interface ILoginParameters {
   email: string;
@@ -11,6 +12,6 @@ export interface ILoginContext extends IBaseEndpointContext {
 }
 
 export interface ILoginResult {
-  user: IUser;
+  user: IPublicUserData;
   token: string;
 }

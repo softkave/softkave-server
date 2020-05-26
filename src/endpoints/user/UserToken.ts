@@ -3,8 +3,6 @@ import { IUser } from "../../mongo/user";
 import { userConstants } from "./constants";
 import { LoginAgainError } from "./errors";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export interface IUserTokenSubject {
   id: string;
   email: string;
@@ -32,13 +30,13 @@ export default class UserToken {
       id: p.user.customId,
       email: p.user.email,
       changePasswordHistory: p.user.changePasswordHistory,
-      ...p.additionalData
+      ...p.additionalData,
     };
 
     const payload: object = {
       sub: subject,
       aud: p.audience || [],
-      version: userConstants.currentTokenVersion
+      version: userConstants.currentTokenVersion,
     };
 
     if (p.expires) {
@@ -46,12 +44,12 @@ export default class UserToken {
       payload.exp = p.expires / 1000;
     }
 
-    return jwt.sign(payload, JWT_SECRET);
+    return jwt.sign(payload, process.env.JWT_SECRET);
   }
 
   public static decodeToken(token: string): IBaseUserTokenData {
-    const tokenData = jwt.verify(token, JWT_SECRET, {
-      ignoreExpiration: true
+    const tokenData = jwt.verify(token, process.env.JWT_SECRET, {
+      ignoreExpiration: true,
     }) as IBaseUserTokenData;
 
     UserToken.checkVersion(tokenData);
@@ -61,7 +59,7 @@ export default class UserToken {
   public static containsAudience(tokenData: IBaseUserTokenData, aud: string) {
     UserToken.checkVersion(tokenData);
     const audience = tokenData.aud;
-    return !!audience.find(nextAud => nextAud === "*" || nextAud === aud);
+    return !!audience.find((nextAud) => nextAud === "*" || nextAud === aud);
   }
 
   public static checkVersion(tokenData: IBaseUserTokenData) {

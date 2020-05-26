@@ -5,6 +5,7 @@ import logger from "../../../utilities/logger";
 import { userEndpoints } from "../constants";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
+import { getPublicUserData } from "../utils";
 import { ILoginContext, ILoginResult } from "./types";
 import { loginJoiSchema } from "./validation";
 
@@ -21,7 +22,7 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
 
       if (passwordMatch) {
         return {
-          user: userData,
+          user: getPublicUserData(userData),
           token: UserToken.newToken({
             user: userData,
             audience: [userEndpoints.login],
@@ -29,7 +30,8 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
         };
       }
     } catch (error) {
-      logger.error(error);
+      // logger.error(error);
+      console.error(error);
 
       // TODO: find a better error type for this error
       throw new ServerError();
