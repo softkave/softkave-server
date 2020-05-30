@@ -1,11 +1,18 @@
 import MongoConnection from "./MongoConnection";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const options = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-};
+let conn: MongoConnection = null;
 
-const connection = new MongoConnection(MONGODB_URI, options);
+export function getDefaultConnection() {
+  if (conn) {
+    return conn;
+  }
 
-export default connection;
+  const MONGODB_URI = process.env.MONGODB_URI;
+  const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  };
+
+  conn = new MongoConnection(MONGODB_URI, options);
+  return conn;
+}

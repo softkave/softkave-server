@@ -9,18 +9,12 @@ const blockData = Joi.object().keys({
   expectedEndAt: blockValidationSchemas.expectedEndAt,
   color: blockValidationSchemas.color,
   priority: blockValidationSchemas.priority,
-  taskCollaborationData: blockValidationSchemas.taskCollaborationData,
-  taskCollaborators: blockValidationSchemas.taskCollaborators,
+  assignees: blockValidationSchemas.assignees,
   type: blockValidationSchemas.type,
   parent: validationSchemas.uuid,
-  groups: blockValidationSchemas.groups,
-  groupTaskContext: blockValidationSchemas.groups,
-  groupProjectContext: blockValidationSchemas.groups,
-  projects: blockValidationSchemas.projects,
-  tasks: blockValidationSchemas.tasks,
   subTasks: blockValidationSchemas.subTasks,
   availableStatus: blockValidationSchemas.statusListSchema,
-  availableLabels: blockValidationSchemas.LabelListSchema,
+  availableLabels: blockValidationSchemas.labelListSchema,
   status: validationSchemas.uuid,
   labels: Joi.array()
     .items(validationSchemas.uuid)
@@ -29,5 +23,5 @@ const blockData = Joi.object().keys({
 
 export const updateBlockJoiSchema = Joi.object().keys({
   data: blockData,
-  customId: blockValidationSchemas.blockID,
+  customId: blockValidationSchemas.blockId,
 });

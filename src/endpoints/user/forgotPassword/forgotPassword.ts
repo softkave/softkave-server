@@ -1,16 +1,16 @@
 import moment = require("moment");
 import { validate } from "../../../utilities/joiUtils";
-import { userEndpoints } from "../constants";
+import { userJWTEndpoints } from "../constants";
 import { UserDoesNotExistError } from "../errors";
 import UserToken from "../UserToken";
 import { addEntryToPasswordDateLog } from "../utils";
-import { IForgotPasswordContext } from "./types";
+import { ForgotPasswordEndpoint } from "./types";
 import { forgotPasswordJoiSchema } from "./validation";
 
-async function forgotPassword(context: IForgotPasswordContext) {
-  const result = validate(context.data, forgotPasswordJoiSchema);
+const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
+  const result = validate(instData.data, forgotPasswordJoiSchema);
   const emailValue = result.email;
-  const user = await context.getUserByEmail(emailValue);
+  const user = await context.user.getUserByEmail(context.models, emailValue);
 
   if (!user) {
     throw new UserDoesNotExistError({ field: "email" });
@@ -25,27 +25,28 @@ async function forgotPassword(context: IForgotPasswordContext) {
 
   // TODO: the expiration duration should be defined in a config file, not here
   const expiration = moment(initTime).add(2, "days");
-
   const token = UserToken.newToken({
     user,
-    audience: [userEndpoints.changePassword],
-    expires: expiration.valueOf()
+    audience: [userJWTEndpoints.changePassword],
+    expires: expiration.valueOf(),
   });
 
   await context.sendChangePasswordEmail({
     expiration,
     emailAddress: user.email,
-    query: { t: token }
+    query: { t: token },
   });
 
   const forgotPasswordHistory = addEntryToPasswordDateLog(
     user.forgotPasswordHistory
   );
 
-  context.updateUser({ forgotPasswordHistory }).catch(() => {
-    // TODOL should we log something here?
-    // Fire and forget
-  });
-}
+  context.session
+    .updateUser(context.models, instData, { forgotPasswordHistory })
+    .catch(() => {
+      // TODO: should we log something here?
+      // Fire and forget
+    });
+};
 
 export default forgotPassword;

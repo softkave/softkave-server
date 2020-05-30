@@ -6,7 +6,7 @@ import { LoginAgainError } from "./errors";
 export interface IUserTokenSubject {
   id: string;
   email: string;
-  changePasswordHistory: number[];
+  passwordLastChangedAt: string;
 }
 
 export interface IBaseUserTokenData {
@@ -29,7 +29,7 @@ export default class UserToken {
     const subject: IUserTokenSubject = {
       id: p.user.customId,
       email: p.user.email,
-      changePasswordHistory: p.user.changePasswordHistory,
+      passwordLastChangedAt: p.user.passwordLastChangedAt,
       ...p.additionalData,
     };
 

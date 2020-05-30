@@ -1,20 +1,28 @@
-import MongoModel, {
-  IDerivedMongoModelInitializationProps,
-} from "../MongoModel";
+import { Connection } from "mongoose";
+import { getDefaultConnection } from "../defaultConnection";
+import MongoModel from "../MongoModel";
 import auditLogSchema, { IAuditLogDocument } from "./definitions";
 
 const modelName = "audit-log";
 const collectionName = "audit-logs";
 
-class AuditLogModel extends MongoModel<IAuditLogDocument> {
-  constructor({ connection }: IDerivedMongoModelInitializationProps) {
-    super({
-      connection,
-      modelName,
-      collectionName,
-      rawSchema: auditLogSchema,
-    });
+let auditlogModel: IAuditLogModel = null;
+
+export function getAuditLogModel(
+  conn: Connection = getDefaultConnection().getConnection()
+) {
+  if (auditlogModel) {
+    return auditlogModel;
   }
+
+  auditlogModel = new MongoModel<IAuditLogDocument>({
+    modelName,
+    collectionName,
+    rawSchema: auditLogSchema,
+    connection: conn,
+  });
+
+  return auditlogModel;
 }
 
-export default AuditLogModel;
+export interface IAuditLogModel extends MongoModel<IAuditLogDocument> {}

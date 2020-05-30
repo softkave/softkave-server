@@ -1,19 +1,13 @@
-import { notificationConstants } from "../../notification/constants";
 import Joi from "joi";
 import { validationSchemas } from "../../../utilities/validationUtils";
+import { notificationConstants } from "../../notification/constants";
 import { blockConstants } from "../constants";
 
 const newCollaboratorSchema = Joi.object().keys({
   customId: validationSchemas.uuid,
-  email: Joi.string()
-    .required()
-    .trim()
-    .email()
-    .lowercase(),
-  body: Joi.string()
-    .min(notificationConstants.minAddCollaboratorMessageLength)
-    .max(notificationConstants.maxAddCollaboratorMessageLength),
-  expiresAt: Joi.number()
+  email: Joi.string().required().trim().email().lowercase(),
+  body: Joi.string().max(notificationConstants.maxAddCollaboratorMessageLength),
+  expiresAt: Joi.number(),
 });
 
 const newCollaboratorsListSchema = Joi.array()
@@ -24,5 +18,5 @@ const newCollaboratorsListSchema = Joi.array()
 
 export const addCollaboratorsJoiSchema = Joi.object().keys({
   customId: validationSchemas.uuid,
-  collaborators: newCollaboratorsListSchema
+  collaborators: newCollaboratorsListSchema,
 });

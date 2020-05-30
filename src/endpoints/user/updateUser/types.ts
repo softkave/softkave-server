@@ -1,4 +1,5 @@
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { Endpoint } from "../../types";
+import { IBaseContext } from "../../contexts/BaseContext";
 
 export interface IUpdateUserParameters {
   name?: string;
@@ -7,6 +8,4 @@ export interface IUpdateUserParameters {
   color?: string;
 }
 
-export interface IUpdateUserContext extends IBaseEndpointContext {
-  data: IUpdateUserParameters;
-}
+export type UpdateUserEndpoint = Endpoint<IBaseContext, IUpdateUserParameters>;

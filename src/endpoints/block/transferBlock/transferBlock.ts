@@ -1,109 +1,49 @@
 import { IBlock } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
-import { DraggedBlockDoesNotExistInSourceBlockError } from "../errors";
-import { ITransferBlockContext } from "./types";
+import { TransferBlockEndpoint } from "./types";
 import { transferBlockJoiSchema } from "./validation";
 
-async function transferBlock(context: ITransferBlockContext): Promise<void> {
-  const result = validate(context.data, transferBlockJoiSchema);
+const transferBlock: TransferBlockEndpoint = async (context, instData) => {
+  const data = validate(instData.data, transferBlockJoiSchema);
+  const blockIds = [data.draggedBlockId, data.destinationBlockId];
+  const user = await context.session.getUser(context.models, instData);
+  const blocks = await context.block.bulkGetBlocksByIds(
+    context.models,
+    blockIds
+  );
 
-  const dropPosition = result.dropPosition || 0;
-  const groupContext = result.groupContext;
-  const blockIDs = [result.draggedBlock, result.sourceBlock];
-
-  if (result.destinationBlock !== result.sourceBlock) {
-    blockIDs.push(result.destinationBlock);
-  }
-
-  const blocks = await context.getBlockListWithIDs(blockIDs);
-  let sourceBlock: IBlock;
   let draggedBlock: IBlock;
   let destinationBlock: IBlock;
-  const user = await context.getUser();
 
-  blocks.forEach(block => {
+  blocks.forEach((block) => {
     switch (block.customId) {
-      case result.sourceBlock:
-        sourceBlock = block;
-        break;
-
-      case result.draggedBlock:
+      case data.draggedBlockId:
         draggedBlock = block;
         break;
 
-      case result.destinationBlock:
+      case data.destinationBlockId:
         destinationBlock = block;
         break;
     }
   });
 
-  canReadBlock({ user, block: sourceBlock });
+  canReadBlock({ user, block: draggedBlock });
 
-  if (result.destinationBlock !== result.sourceBlock) {
-    canReadBlock({ user, block: destinationBlock });
-  } else {
-    destinationBlock = sourceBlock;
+  if (draggedBlock.parent === destinationBlock.parent) {
+    return;
   }
 
-  const draggedBlockContainerName = `${draggedBlock.type}s`;
-  const draggedBlockContainer: string[] =
-    sourceBlock[draggedBlockContainerName];
-  const draggedBlockIndexInSourceBlock = draggedBlockContainer.indexOf(
-    draggedBlock.customId
+  const draggedBlockUpdates: Partial<IBlock> = {
+    updatedAt: new Date().toString(),
+    parent: destinationBlock.customId,
+  };
+
+  await context.block.updateBlockById(
+    context.models,
+    draggedBlock.customId,
+    draggedBlockUpdates
   );
-
-  if (draggedBlockIndexInSourceBlock === -1) {
-    throw new DraggedBlockDoesNotExistInSourceBlockError();
-  }
-
-  if (sourceBlock.customId === destinationBlock.customId) {
-    const sourceBlockUpdates: Partial<IBlock> = { updatedAt: Date.now() };
-
-    draggedBlockContainer.splice(draggedBlockIndexInSourceBlock, 1);
-    draggedBlockContainer.splice(dropPosition, 0, draggedBlock.customId);
-    sourceBlockUpdates[draggedBlockContainerName] = draggedBlockContainer;
-
-    if (groupContext && draggedBlock.type === "group") {
-      const groupContextContainer = sourceBlock[groupContext];
-      const draggedBlockIndexInGroupContext = groupContextContainer.indexOf(
-        draggedBlock.customId
-      );
-
-      groupContextContainer.splice(draggedBlockIndexInGroupContext, 1);
-      groupContextContainer.splice(dropPosition, 0, draggedBlock.customId);
-      sourceBlockUpdates[groupContext] = groupContextContainer;
-    }
-
-    await context.updateBlockByID(sourceBlock.customId, sourceBlockUpdates);
-  } else {
-    // Ignores paremeters' groupContext and dropPosition
-
-    const draggedBlockUpdates: Partial<IBlock> = {
-      updatedAt: Date.now(),
-      parent: destinationBlock.customId
-    };
-
-    draggedBlockContainer.splice(draggedBlockIndexInSourceBlock, 1);
-    const sourceBlockUpdates: Partial<IBlock> = {
-      updatedAt: Date.now(),
-      [draggedBlockContainerName]: draggedBlockContainer
-    };
-
-    const destinationBlockContainer =
-      destinationBlock[draggedBlockContainerName];
-    destinationBlockContainer.splice(dropPosition, 0, draggedBlock.customId);
-    const destinationBlockUpdates: Partial<IBlock> = {
-      updatedAt: Date.now(),
-      [draggedBlockContainerName]: destinationBlockContainer
-    };
-
-    await context.bulkUpdateBlocksByID([
-      { id: draggedBlock.customId, data: draggedBlockUpdates },
-      { id: sourceBlock.customId, data: sourceBlockUpdates },
-      { id: destinationBlock.customId, data: destinationBlockUpdates }
-    ]);
-  }
-}
+};
 
 export default transferBlock;

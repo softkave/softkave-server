@@ -1,27 +1,33 @@
 import randomColor from "randomcolor";
 import uuid from "uuid/v4";
+import { BlockType } from "../../../mongo/block";
 import { INewBlockInput } from "../types";
-import { ICreateRootBlockContext, ICreateRootBlockResult } from "./types";
+import { CreateRootBlockEndpoint } from "./types";
 
-async function createRootBlock(
-  context: ICreateRootBlockContext
-): Promise<ICreateRootBlockResult> {
-  const user = await context.data.user;
+const createRootBlock: CreateRootBlockEndpoint = async (context, instData) => {
+  const user = await instData.data.user;
   const rootBlockInput: INewBlockInput = {
     customId: uuid(),
     name: `root_${user.customId}`,
     color: randomColor(),
-    type: "root"
+    type: BlockType.Root,
   };
 
-  const rootBlock = await context.addBlockToStorage(rootBlockInput);
+  const result = await context.addBlock(context, {
+    ...instData,
+    data: { block: rootBlockInput },
+  });
+
+  const rootBlock = result.block;
 
   // TODO: should we remove the user if the root block fails?
-  await context.updateUser({ rootBlockId: rootBlock.customId });
+  await context.session.updateUser(context.models, instData, {
+    rootBlockId: rootBlock.customId,
+  });
 
   return {
-    block: rootBlock
+    block: rootBlock,
   };
-}
+};
 
 export default createRootBlock;

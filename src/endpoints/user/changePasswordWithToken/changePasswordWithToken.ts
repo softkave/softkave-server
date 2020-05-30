@@ -1,18 +1,19 @@
-import { userEndpoints } from "../constants";
+import { userJWTEndpoints } from "../constants";
 import {
   CredentialsExpiredError,
   InvalidCredentialsError,
   UserDoesNotExistError,
 } from "../errors";
 import UserToken from "../UserToken";
-import { IChangePasswordWithTokenContext } from "./types";
+import { ChangePasswordWithTokenEndpoint } from "./types";
 
-async function changePasswordWithToken(
-  context: IChangePasswordWithTokenContext
-) {
-  const tokenData = context.getRequestToken();
+const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
+  context,
+  instData
+) => {
+  const tokenData = context.session.getRequestToken(context.models, instData);
 
-  if (!UserToken.containsAudience(tokenData, userEndpoints.changePassword)) {
+  if (!UserToken.containsAudience(tokenData, userJWTEndpoints.changePassword)) {
     throw new InvalidCredentialsError();
   }
 
@@ -20,15 +21,17 @@ async function changePasswordWithToken(
     throw new CredentialsExpiredError();
   }
 
-  const user = await context.getUserByEmail(tokenData.sub.email);
+  const user = await context.user.getUserByEmail(
+    context.models,
+    tokenData.sub.email
+  );
 
   if (!user) {
     throw new UserDoesNotExistError();
   }
 
-  context.addUserToReq(user);
-
-  return context.changePassword(context.data.password);
-}
+  context.session.addUserToSession(context.models, instData, user);
+  return context.changePassword(context, instData);
+};
 
 export default changePasswordWithToken;

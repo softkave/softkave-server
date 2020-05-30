@@ -1,8 +1,7 @@
-import BaseEndpointContext, {
-  IBaseEndpointContextParameters
-} from "../../BaseEndpointContext";
+import BaseContext from "../../contexts/BaseContext";
+import { IBaseEndpointContextParameters } from "../../contexts/BaseEndpointContext";
 import sendChangePasswordEmail, {
-  ISendChangePasswordEmailParameters
+  ISendChangePasswordEmailParameters,
 } from "../sendChangePasswordEmail";
 import { IForgotPasswordContext, IForgotPasswordParameters } from "./types";
 
@@ -11,16 +10,11 @@ export interface IForgotPasswordContextParameters
   data: IForgotPasswordParameters;
 }
 
-export default class ForgotPasswordContext extends BaseEndpointContext
+export default class ForgotPasswordContext extends BaseContext
   implements IForgotPasswordContext {
-  public data: IForgotPasswordParameters;
-
-  constructor(p: IForgotPasswordContextParameters) {
-    super(p);
-    this.data = p.data;
-  }
-
-  public async sendChangePasswordEmail(p: ISendChangePasswordEmailParameters) {
-    await sendChangePasswordEmail(p);
+  public async sendChangePasswordEmail(
+    props: ISendChangePasswordEmailParameters
+  ) {
+    await sendChangePasswordEmail(props);
   }
 }

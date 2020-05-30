@@ -1,6 +1,9 @@
 import { Document } from "mongoose";
+import { BlockType } from "../block";
 
-export interface INotificationFrom {
+export const notificationSchemaVersion = 1; // increment when you make changes that are not backward compatible
+
+export interface INotificationFrom0 {
   userId: string;
   name: string;
   blockId: string;
@@ -8,87 +11,127 @@ export interface INotificationFrom {
   blockType: string;
 }
 
+export interface ICollaborationRequestFrom {
+  userId: string;
+  name: string;
+  blockId: string;
+  blockName: string;
+  blockType: BlockType;
+}
+
 const notificationFromSchema = {
   userId: String,
   name: String,
   blockId: String,
   blockName: String,
-  blockType: String
+  blockType: String,
+};
+
+const collaborationRequestFromSchema = {
+  userId: String,
+  name: String,
+  blockId: String,
+  blockName: String,
 };
 
 export interface INotificationTo {
   email: string;
-  userId: string;
 }
 
 const notificationToSchema = {
-  email: String
+  email: String,
 };
 
-export type CollaborationRequestStatusType =
-  | "accepted"
-  | "declined"
-  | "revoked"
-  | "pending"
-  | "expired";
-
-export type CollaborationRequestResponse = "accepted" | "declined";
-
-export interface INotificationStatus {
-  status: CollaborationRequestStatusType;
-  date: number;
+export enum CollaborationRequestStatusType {
+  Accepted = "accepted",
+  Declined = "declined",
+  Revoked = "revoked",
+  Pending = "pending",
 }
 
-const notificationStatusHistorySchema = {
+export interface ICollaborationRequestStatus {
+  status: CollaborationRequestStatusType;
+  date: string;
+}
+
+const collaborationRequestStatusHistorySchema = {
   status: String,
-  date: Number
+  date: String,
 };
 
 export interface INotificationSentEmailHistoryItem {
-  date: number;
+  date: string;
 }
 
 const notificationSentEmailHistorySchema = {
-  date: Number
+  date: String,
 };
 
-export type NotificationType = "collab-req" | "remove-collaborator";
+export enum NotificationType {
+  CollaborationRequest = "collab-req",
+  RemoveCollaborator = "remove-collaborator",
+  OrgDeleted = "org-deleted",
+}
 
-export interface INotification {
+export interface INotification0 {
   customId: string;
-  from: INotificationFrom;
+  from: ICollaborationRequestFrom;
   createdAt: number;
   body: string;
   to: INotificationTo;
   type: NotificationType;
   readAt?: number;
   expiresAt?: number;
-  statusHistory?: INotificationStatus[];
+  statusHistory?: ICollaborationRequestStatus[];
   sentEmailHistory?: INotificationSentEmailHistoryItem[];
 }
 
-const notificationSchema = {
+export interface INotification {
+  customId: string;
+  to: INotificationTo;
+  body: string;
+  collaborationRequestFrom?: ICollaborationRequestFrom;
+  createdAt: string;
+  type: NotificationType;
+  readAt?: string;
+  expiresAt?: string;
+  statusHistory?: ICollaborationRequestStatus[];
+  sentEmailHistory?: INotificationSentEmailHistoryItem[];
+}
+
+export const notificationSchema0 = {
   customId: { type: String, unique: true },
   from: {
     type: notificationFromSchema,
-    index: true
+    index: true,
   },
   createdAt: {
     type: Number,
-    default: Date.now
+    default: Date.now,
   },
   body: String,
   readAt: Number,
   to: {
     type: notificationToSchema,
-    index: true
+    index: true,
   },
   expiresAt: Number,
   type: String,
+  statusHistory: [collaborationRequestStatusHistorySchema],
+  sentEmailHistory: [notificationSentEmailHistorySchema],
+};
 
-  // status: pending | revoked | accepted | rejected | expired
-  statusHistory: [notificationStatusHistorySchema],
-  sentEmailHistory: [notificationSentEmailHistorySchema]
+const notificationSchema = {
+  customId: { type: String },
+  to: { type: notificationToSchema },
+  body: { type: String },
+  collaborationRequestFrom: { type: collaborationRequestFromSchema },
+  createdAt: { type: String },
+  type: { type: String },
+  readAt: { type: String },
+  expiresAt: { type: String },
+  statusHistory: { type: collaborationRequestStatusHistorySchema },
+  sentEmailHistory: { type: notificationSentEmailHistorySchema },
 };
 
 export default notificationSchema;

@@ -1,34 +1,46 @@
 import { Document } from "mongoose";
 
+export const auditLogSchemaVersion = 1; // increment when you make changes that are not backward compatible
+
+export enum System {
+  System = "system",
+}
+
 export interface IAuditLogChange {
   customId: string;
   newValue: any;
   oldValue: any;
 }
 
-const resourceTypes = {
-  user: "user",
-  org: "org",
-  group: "group",
-  project: "project",
-};
-
 export enum AuditLogResourceType {
   User = "user",
   Org = "org",
   Group = "group",
-  Project = "project",
+  Board = "board",
   Task = "task",
   Status = "status",
   Label = "label",
-  CollaborationRequest = "collaboration-request",
+  CollaborationRequest = "collab-req",
+  CollaboratorRemoved = "remove-collaborator",
 }
 
 export enum AuditLogActionType {
   Create = "create",
   Update = "update",
   Delete = "delete",
+  Revoke = "revoke",
+  Remove = "remove",
+  Decline = "decline",
 }
+
+// export enum AuditLogSystemJustification {
+//   ParentDeleted = "parent-deleted",
+//   ParentRestored = "parent-restored",
+// }
+
+// export interface IAuditLogCollateralChangeMeta {
+//   initialResourceId: string;
+// }
 
 export interface IAuditLog {
   customId: string;
@@ -37,17 +49,22 @@ export interface IAuditLog {
   resourceId: string;
   resourceType: AuditLogResourceType;
   userId: string;
-  organizationId: string;
   createdAt: Date;
+  ipAddress: string; // should we respect do not track?
+  requestedWithDoNotTrack: boolean;
+  userAgent: string;
+  organizationId?: string;
   change?: IAuditLogChange;
+  resourceOwnerId?: string; // for status and labels, and other "inside" resources
+
+  // isSystemActioned?: boolean;
+  // systemJustification?: AuditLogSystemJustification;
+
+  // meta: any[];
+  // tags: string[];
 
   // justification: string; // why were they allowed to perform this action?
   // reason: string;
-  // meta: any;
-  // ipAddress: string; // respect do not track?
-  // requestedWithDoNotTrack: boolean;
-  // // operatingSystem: string;
-  // userAgent: string;
   // chainId: string; // or threadId, if the action is part of a series of actions
 
   // serverId: string;
@@ -95,6 +112,10 @@ const auditLogSchema = {
   userId: { type: String },
   organizationId: { type: String },
   createdAt: { type: Date },
+  ipAddress: { type: String },
+  requestedWithDoNotTrack: { type: Boolean },
+  userAgent: { type: Boolean },
+  resourceOwnerId: { type: String },
 };
 
 export default auditLogSchema;

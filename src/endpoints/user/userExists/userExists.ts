@@ -1,7 +1,7 @@
-import { IUserExistsContext } from "./types";
+import { UserExistsEndpoint } from "./types";
 
-async function userExists(context: IUserExistsContext): Promise<boolean> {
-  return context.doesUserExistInDatabase(context.data.email);
-}
+const userExists: UserExistsEndpoint = async (context, instData) => {
+  return context.user.userExists(context.models, instData.data.email);
+};
 
 export default userExists;

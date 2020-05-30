@@ -1,5 +1,6 @@
 import { BlockType, IBlock } from "../../../mongo/block";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IBlockExistsParameters {
   name: string;
@@ -7,7 +8,8 @@ export interface IBlockExistsParameters {
   parent?: string;
 }
 
-export interface IBlockExistsContext extends IBaseEndpointContext {
-  data: IBlockExistsParameters;
-  getBlockByName: (name: string) => Promise<IBlock>;
-}
+export type BlockExistsEndpoint = Endpoint<
+  IBaseContext,
+  IBlockExistsParameters,
+  boolean
+>;

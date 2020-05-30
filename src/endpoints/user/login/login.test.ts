@@ -1,40 +1,52 @@
 import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
-import { userEndpoints } from "../constants";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { IEndpointInstanceData } from "../../contexts/types";
+import { userJWTEndpoints } from "../constants";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
 import login from "./login";
-import { ILoginContext } from "./types";
+import { ILoginParameters } from "./types";
 
 const userEmail = "ywordk@gmail.com";
 const correctPassword = "01234567";
 const incorrectPassword = "abcdefgh";
 
-const getContext = ({ useIncorrectPassword = false } = {}) => {
-  const context: ILoginContext = ({
+const getInstanceData = ({ useIncorrectPassword = false } = {}) => {
+  const instData: IEndpointInstanceData<ILoginParameters> = {
     data: {
       email: userEmail,
       password: useIncorrectPassword ? incorrectPassword : correctPassword,
     },
-    async getUserByEmail(email) {
-      const user = ({
-        email: userEmail,
-        hash: await argon2.hash(correctPassword),
-        customId: "",
-        name: "Abayomi Akintomide",
-        createdAt: 0,
-        forgotPasswordHistory: [],
-        changePasswordHistory: [],
-        lastNotificationCheckTime: 0,
-        rootBlockId: "",
-        orgs: [""],
-        color: "",
-      } as unknown) as IUser;
+    req: {} as any,
+  };
 
-      return user;
-    },
-  } as unknown) as ILoginContext;
+  return instData;
+};
+
+const getContext = () => {
+  const context: IBaseContext = {
+    user: {
+      async getUserByEmail() {
+        const user = {
+          email: userEmail,
+          hash: await argon2.hash(correctPassword),
+          customId: "",
+          name: "Abayomi Akintomide",
+          createdAt: new Date().toString(),
+          forgotPasswordHistory: [],
+          passwordLastChangedAt: new Date().toString(),
+          notificationsLastCheckedAt: new Date().toString(),
+          rootBlockId: "",
+          orgs: [{ customId: "" }],
+          color: "",
+        } as IUser;
+
+        return user;
+      },
+    } as any,
+  } as any;
 
   return context;
 };
@@ -44,21 +56,23 @@ beforeAll(() => {
 });
 
 test("prevents login if password is incorrect", async () => {
-  const context = getContext({ useIncorrectPassword: true });
-  await expect(login(context)).rejects.toThrowError(
+  const context = getContext();
+  const instData = getInstanceData({ useIncorrectPassword: true });
+  await expect(login(context, instData)).rejects.toThrowError(
     InvalidEmailOrPasswordError
   );
 });
 
 test("allow login if password is correct", async () => {
   const context = getContext();
-  const user = await context.getUserByEmail(userEmail);
+  const instData = getInstanceData();
+  const user = await context.user.getUserByEmail(context.models, userEmail);
   const publicUserData = getPublicUserData(user);
-  await expect(login(context)).resolves.toMatchObject({
+  await expect(login(context, instData)).resolves.toMatchObject({
     user: publicUserData,
     token: UserToken.newToken({
       user,
-      audience: [userEndpoints.login],
+      audience: [userJWTEndpoints.login],
     }),
   });
 });

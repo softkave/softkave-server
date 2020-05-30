@@ -1,11 +1,11 @@
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IDeleteBlockParameters {
   customId: string;
 }
 
-export interface IDeleteBlockContext extends IBaseEndpointContext {
-  data: IDeleteBlockParameters;
-  deleteBlockInStorage: (customId: string) => Promise<void>;
-  deleteBlockChildrenInStorage: (customId: string) => Promise<void>;
-}
+export type DeleteBlockEndpoint = Endpoint<
+  IBaseContext,
+  IDeleteBlockParameters
+>;

@@ -1,46 +1,15 @@
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
-import BaseEndpointContext, {
-  IBaseEndpointContextParameters,
-} from "../../BaseEndpointContext";
-import TransferBlockContext from "../transferBlock/context";
+import BaseContext from "../../contexts/BaseContext";
 import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
-import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
+import { IUpdateBlockContext } from "./types";
 
-export interface IUpdateBlockContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IUpdateBlockParameters;
-}
-
-export default class UpdateBlockContext extends BaseEndpointContext
+export default class UpdateBlockContext extends BaseContext
   implements IUpdateBlockContext {
-  public data: IUpdateBlockParameters;
-
-  constructor(p: IUpdateBlockContextParameters) {
-    super(p);
-    this.data = p.data;
-  }
-
-  public async transferBlock(
-    block: IBlock,
-    sourceBlockID: string,
-    destinationBlockID: string
-  ) {
-    await transferBlock(
-      new TransferBlockContext({
-        blockModel: this.blockModel,
-        notificationModel: this.notificationModel,
-        userModel: this.userModel,
-        req: this.req,
-        data: {
-          sourceBlock: sourceBlockID,
-          draggedBlock: block.customId,
-          destinationBlock: destinationBlockID,
-        },
-      })
-    );
+  public async transferBlock(context, instData) {
+    await transferBlock(context, instData);
   }
 
   public async sendAssignedTaskEmailNotification(

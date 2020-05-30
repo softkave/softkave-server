@@ -1,16 +1,18 @@
 import { IUser } from "../../../mongo/user";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IChangePasswordParameters {
   password: string;
-}
-
-export interface IChangePasswordContext extends IBaseEndpointContext {
-  data: IChangePasswordParameters;
-  saveUserPasswordHash: (hash: string) => Promise<void>;
 }
 
 export interface IChangePasswordResult {
   user: IUser;
   token: string;
 }
+
+export type ChangePasswordEndpoint = Endpoint<
+  IBaseContext,
+  IChangePasswordParameters,
+  IChangePasswordResult
+>;

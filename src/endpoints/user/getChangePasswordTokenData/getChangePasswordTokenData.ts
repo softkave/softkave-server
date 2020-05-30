@@ -1,17 +1,15 @@
-import { userEndpoints } from "../constants";
+import { userJWTEndpoints } from "../constants";
 import { InvalidCredentialsError } from "../errors";
 import UserToken from "../UserToken";
-import {
-  IGetChangePasswordTokenDataContext,
-  IGetChangePasswordTokenDataResult
-} from "./types";
+import { GetChangePasswordTokenDataEndpoint } from "./types";
 
-async function getChangePasswordTokenData(
-  context: IGetChangePasswordTokenDataContext
-): Promise<IGetChangePasswordTokenDataResult> {
-  const tokenData = context.getRequestToken();
+const getChangePasswordTokenData: GetChangePasswordTokenDataEndpoint = async (
+  context,
+  instData
+) => {
+  const tokenData = context.session.getRequestToken(context.models, instData);
 
-  if (!UserToken.containsAudience(tokenData, userEndpoints.changePassword)) {
+  if (!UserToken.containsAudience(tokenData, userJWTEndpoints.changePassword)) {
     throw new InvalidCredentialsError();
   }
 
@@ -20,8 +18,8 @@ async function getChangePasswordTokenData(
   return {
     email: tokenData.sub.email,
     issuedAt: tokenData.iat,
-    expires: tokenData.exp
+    expires: tokenData.exp,
   };
-}
+};
 
 export default getChangePasswordTokenData;

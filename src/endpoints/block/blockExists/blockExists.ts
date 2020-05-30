@@ -1,15 +1,14 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
-import { IBlockExistsContext } from "./types";
+import { BlockExistsEndpoint } from "./types";
 import { blockExistsJoiSchema } from "./validation";
 
 // TODO: Very Important: Check if the blocks or any other resource exists before performing
 // operations on them
-
-async function blockExists(context: IBlockExistsContext): Promise<boolean> {
-  const result = validate(context.data, blockExistsJoiSchema);
-  const user = await context.getUser();
-  const block = await context.getBlockByName(result.name);
+const blockExists: BlockExistsEndpoint = async (context, instData) => {
+  const data = validate(instData.data, blockExistsJoiSchema);
+  const user = await context.session.getUser(context.models, instData);
+  const block = await context.block.getBlockByName(context.models, data.name);
 
   if (!block) {
     return false;
@@ -17,13 +16,13 @@ async function blockExists(context: IBlockExistsContext): Promise<boolean> {
 
   canReadBlock({ user, block });
 
-  if (result.parent && result.parent !== block.parent) {
+  if (data.parent && data.parent !== block.parent) {
     return false;
-  } else if (result.type && result.type !== block.type) {
+  } else if (data.type && data.type !== block.type) {
     return false;
   }
 
   return true;
-}
+};
 
 export default blockExists;

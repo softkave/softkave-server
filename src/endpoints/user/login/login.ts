@@ -1,17 +1,19 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
 import { validate } from "../../../utilities/joiUtils";
-import logger from "../../../utilities/logger";
-import { userEndpoints } from "../constants";
+import { userJWTEndpoints } from "../constants";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
-import { ILoginContext, ILoginResult } from "./types";
+import { LoginEndpoint } from "./types";
 import { loginJoiSchema } from "./validation";
 
-async function login(context: ILoginContext): Promise<ILoginResult> {
-  const loginDetails = validate(context.data, loginJoiSchema);
-  const userData = await context.getUserByEmail(loginDetails.email);
+const login: LoginEndpoint = async (context, instData) => {
+  const loginDetails = validate(instData.data, loginJoiSchema);
+  const userData = await context.user.getUserByEmail(
+    context.models,
+    loginDetails.email
+  );
 
   if (userData) {
     try {
@@ -25,7 +27,7 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
           user: getPublicUserData(userData),
           token: UserToken.newToken({
             user: userData,
-            audience: [userEndpoints.login],
+            audience: [userJWTEndpoints.login],
           }),
         };
       }
@@ -39,6 +41,6 @@ async function login(context: ILoginContext): Promise<ILoginResult> {
   }
 
   throw new InvalidEmailOrPasswordError();
-}
+};
 
 export default login;

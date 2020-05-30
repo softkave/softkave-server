@@ -1,9 +1,10 @@
 import { IBlock } from "../../../mongo/block";
-import {
-  CollaborationRequestResponse,
-  INotification
-} from "../../../mongo/notification";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { INotification } from "../../../mongo/notification";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseEndpointContext } from "../../contexts/BaseEndpointContext";
+import { Endpoint } from "../../types";
+
+export type CollaborationRequestResponse = "accepted" | "declined";
 
 export interface IRespondToCollaborationRequestParameters {
   customId: string;
@@ -24,3 +25,9 @@ export interface IRespondToCollaborationRequestContext
 export interface IRespondToCollaborationRequestResult {
   block: IBlock;
 }
+
+export type RespondToCollaborationRequestEndpoint = Endpoint<
+  IBaseContext,
+  IRespondToCollaborationRequestParameters,
+  IRespondToCollaborationRequestResult
+>;

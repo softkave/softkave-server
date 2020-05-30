@@ -1,6 +1,11 @@
-import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import {
+  CreateRootBlockEndpoint,
+  ICreateRootBlockContext,
+} from "../../block/createRootBlock/types";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
+import { UserExistsEndpoint } from "../userExists/types";
 
 export interface INewUserInput {
   name: string;
@@ -13,22 +18,18 @@ export interface ISignupArgData {
   user: INewUserInput;
 }
 
-export interface ISignupContext extends IBaseEndpointContext {
-  data: ISignupArgData;
-  userExists: (email: string) => Promise<boolean>;
-  saveUser: (user: INewUser) => Promise<IUser>;
-  createUserRootBlock: (user: IUser) => Promise<IBlock>;
-}
-
-export interface INewUser {
-  customId: string;
-  hash: string;
-  name: string;
-  email: string;
-  color: string;
+export interface ISignupContext extends ICreateRootBlockContext {
+  userExists: UserExistsEndpoint;
+  createUserRootBlock: CreateRootBlockEndpoint;
 }
 
 export interface ISignupResult {
   user: IUser;
   token: string;
 }
+
+export type SignupEndpoint = Endpoint<
+  ISignupContext,
+  ISignupArgData,
+  ISignupResult
+>;

@@ -1,10 +1,12 @@
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IUserExistsParameters {
   email: string;
 }
 
-export interface IUserExistsContext extends IBaseEndpointContext {
-  data: IUserExistsParameters;
-  doesUserExistInDatabase: (email: string) => Promise<boolean>;
-}
+export type UserExistsEndpoint = Endpoint<
+  IBaseContext,
+  IUserExistsParameters,
+  boolean
+>;

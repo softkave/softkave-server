@@ -1,8 +1,8 @@
 import { IUser } from "../../mongo/user";
 import { IPublicUserData } from "./types";
 
-export function addEntryToPasswordDateLog(arr: number[]) {
-  arr.push(Date.now());
+export function addEntryToPasswordDateLog(arr: string[]) {
+  arr.push(new Date().toString());
 
   if (arr.length > 5) {
     arr.shift();
@@ -17,8 +17,13 @@ export const getPublicUserData = (user: IUser): IPublicUserData => {
     createdAt: user.createdAt,
     customId: user.customId,
     email: user.email,
-    lastNotificationCheckTime: user.lastNotificationCheckTime,
+    notificationsLastCheckedAt: user.notificationsLastCheckedAt,
     name: user.name,
     orgs: user.orgs,
+    rootBlockId: user.rootBlockId,
   };
+};
+
+export const userIsPartOfOrg = (user: IUser, orgId: string) => {
+  return user.orgs.findIndex((org) => org.customId === orgId) !== -1;
 };

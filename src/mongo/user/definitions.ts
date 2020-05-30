@@ -1,20 +1,8 @@
 import { Document } from "mongoose";
 
-export interface IUserRole {
-  roleName: string;
-  orgId: string;
-  assignedAt: number;
-  assignedBy: string;
-}
+export const userSchemaVersion = 2; // increment when you make changes that are not backward compatible
 
-const userRoleSchema = {
-  roleName: String,
-  orgId: String,
-  assignedAt: Number,
-  assignedBy: String
-};
-
-export interface IUser {
+export interface IUser0 {
   customId: string;
   name: string;
   email: string;
@@ -28,33 +16,48 @@ export interface IUser {
   color: string;
 }
 
-export interface ICollaborator {
+export interface IUserOrg {
+  customId: string;
+}
+
+export const userOrgSchema = {
+  customId: { type: String },
+};
+
+export interface IUser {
   customId: string;
   name: string;
   email: string;
+  hash: string;
+  createdAt: string;
+  forgotPasswordHistory: string[];
+  passwordLastChangedAt: string;
+  rootBlockId: string;
+  orgs: IUserOrg[];
   color: string;
+  notificationsLastCheckedAt?: string;
 }
 
 export interface IUserDocument extends Document, IUser {}
 
-const userSchema = {
+export const userSchema0 = {
   customId: { type: String, unique: true },
   name: {
-    type: String
+    type: String,
   },
   email: {
     type: String,
     unique: true,
     index: true,
-    lowercase: true
+    lowercase: true,
   },
   hash: {
     type: String,
-    index: true
+    index: true,
   },
   createdAt: {
     type: Number,
-    default: Date.now
+    default: Date.now,
   },
   forgotPasswordHistory: [Number],
   changePasswordHistory: [Number],
@@ -62,10 +65,21 @@ const userSchema = {
   rootBlockId: String,
   orgs: [String],
   color: String,
+  changePasswordTokenIDs: [String],
+};
 
-  // TODO: ??
-  roles: [userRoleSchema],
-  changePasswordTokenIDs: [String]
+const userSchema = {
+  customId: { type: String, unique: true },
+  name: { type: String },
+  email: { type: String, unique: true },
+  hash: { type: String },
+  createdAt: { type: String },
+  forgotPasswordHistory: { type: [Number] },
+  passwordLastChangedAt: { type: String },
+  rootBlockId: { type: String },
+  orgs: { type: [userOrgSchema] },
+  color: { type: String },
+  notificationsLastCheckedAt: { type: Number },
 };
 
 export default userSchema;

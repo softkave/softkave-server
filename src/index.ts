@@ -6,23 +6,25 @@ import expressJwt from "express-jwt";
 // import multer from "multer";
 // import multerS3 from "multer-s3";
 // import { nanoid } from "nanoid";
-import { EndpointController, indexSchema } from "./endpoints";
+import { indexSchema } from "./endpoints";
+import { getEndpointController } from "./endpoints/controller";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
-import BlockModel from "./mongo/block/BlockModel";
-import connection from "./mongo/defaultConnection";
-import NotificationModel from "./mongo/notification/NotificationModel";
-import UserModel from "./mongo/user/UserModel";
+import { getAuditLogModel } from "./mongo/audit-log";
+import { getBlockModel } from "./mongo/block";
+import { getDefaultConnection } from "./mongo/defaultConnection";
+import { getNotificationModel } from "./mongo/notification";
+import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
 // import aws from "./res/aws";
 
 console.log("server initialization");
 
-const userModel = new UserModel({ connection: connection.getConnection() });
-const blockModel = new BlockModel({ connection: connection.getConnection() });
-const notificationModel = new NotificationModel({
-  connection: connection.getConnection(),
-});
+const connection = getDefaultConnection();
+const userModel = getUserModel();
+const blockModel = getBlockModel();
+const notificationModel = getNotificationModel();
+const auditLogModel = getAuditLogModel();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -104,11 +106,7 @@ app.use(
   graphqlHTTP({
     graphiql,
     schema: indexSchema,
-    rootValue: new EndpointController({
-      blockModel,
-      notificationModel,
-      userModel,
-    }),
+    rootValue: getEndpointController(),
   })
 );
 
@@ -116,11 +114,11 @@ app.use(handleErrors);
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
-  // TODO: should we move to createIndex?
-  // although createIndex most likely creates the indexes all over again, find out more, to be sure.
-  await userModel.model.ensureIndexes();
-  await blockModel.model.ensureIndexes();
-  await notificationModel.model.ensureIndexes();
+
+  await userModel.waitTillReady();
+  await blockModel.waitTillReady();
+  await notificationModel.waitTillReady();
+  await auditLogModel.waitTillReady();
 
   // scripts
 

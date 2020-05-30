@@ -1,31 +1,27 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
-import { blockConstants } from "../constants";
-import { IGetBlockChildrenContext, IGetBlockChildrenResult } from "./types";
+import { GetBlockChildrenEndpoint } from "./types";
 import { getBlockChildrenJoiSchema } from "./validation";
 
-async function getBlockChildren(
-  context: IGetBlockChildrenContext
-): Promise<IGetBlockChildrenResult> {
-  const data = validate(context.data, getBlockChildrenJoiSchema);
-  const user = await context.getUser();
-  const block = await context.getBlockByID(data.customId);
+const getBlockChildren: GetBlockChildrenEndpoint = async (
+  context,
+  instData
+) => {
+  const data = validate(instData.data, getBlockChildrenJoiSchema);
+  const user = await context.session.getUser(context.models, instData);
+  const block = await context.block.getBlockById(context.models, data.customId);
 
   canReadBlock({ user, block });
 
-  const typeList = Array.isArray(data.typeList)
-    ? data.typeList
-    : blockConstants.blockTypesArray;
-
-  const blocks = await context.getBlockChildrenFromDatabase(
+  const blocks = await context.block.getBlockChildren(
+    context.models,
     data.customId,
-    typeList,
-    data.useBoardId
+    data.typeList
   );
 
   return {
     blocks,
   };
-}
+};
 
 export default getBlockChildren;

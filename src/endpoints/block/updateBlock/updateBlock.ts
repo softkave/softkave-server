@@ -1,46 +1,21 @@
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import {
-  getDataFromObject,
-  indexArray,
-} from "../../../utilities/functionUtils";
+import { indexArray } from "../../../utilities/functionUtils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import {
-  IDirectUpdateBlockInput,
   ITaskAssigneesDiff,
-  IUpdateBlockContext,
   IUpdateBlockInput,
+  UpdateBlockEndpoint,
 } from "./types";
 import { updateBlockJoiSchema } from "./validation";
-
-// TODO: how to handle some fields that are for specific block types, like availableStatus and orgs
-const directUpdateFields = [
-  "name",
-  "description",
-  "expectedEndAt",
-  "color",
-  "priority",
-  "taskCollaborationData",
-  "taskCollaborators",
-  "groups",
-  "projects",
-  "tasks",
-  "subTasks",
-  "groupProjectContext",
-  "groupTaskContext",
-  "availableStatus",
-  "availableLabels",
-  "status",
-  "labels",
-];
 
 const diffAssignedUsers = (
   block: IBlock,
   data: IUpdateBlockInput
 ): ITaskAssigneesDiff => {
-  const existingTaskCollaborators = block.taskCollaborators || [];
-  const incomingTaskCollaborators = data.taskCollaborators || [];
+  const existingTaskCollaborators = block.assignees || [];
+  const incomingTaskCollaborators = data.assignees || [];
   const existingAssignedUsers = indexArray(existingTaskCollaborators, {
     path: "userId",
   });
@@ -70,42 +45,21 @@ const diffAssignedUsers = (
   };
 };
 
-async function updateBlock(context: IUpdateBlockContext): Promise<void> {
-  const data = validate(context.data, updateBlockJoiSchema);
-  const blockData = data.data;
-  const user = await context.getUser();
-  const block = await context.getBlockByID(data.customId);
+const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
+  const data = validate(instData.data, updateBlockJoiSchema);
+  const updateData = data.data;
+  const user = await context.session.getUser(context.models, instData);
+  const block = await context.block.getBlockById(context.models, data.customId);
 
   canReadBlock({ user, block });
 
-  // TODO: update only the fields available in data
-
-  const update = getDataFromObject(
-    blockData,
-    directUpdateFields
-  ) as IDirectUpdateBlockInput;
-  const subTasks = update.subTasks;
-  const now = Date.now();
-
-  if (Array.isArray(subTasks) && subTasks.length > 0) {
-    const areSubTasksCompleted = !!!subTasks.find(
-      (subTask) => !!!subTask.completedAt
-    );
-
-    const taskCollaborationData =
-      update.taskCollaborationData || block.taskCollaborationData;
-
-    if (areSubTasksCompleted !== !!taskCollaborationData.completedAt) {
-      // TODO: should we still keep this or find a better way to implement it?
-      update.taskCollaborationData = {
-        ...taskCollaborationData,
-        completedAt: areSubTasksCompleted ? now : null,
-        completedBy: areSubTasksCompleted ? user.customId : null,
-      };
-    }
-  }
-
-  await context.updateBlockByID(data.customId, update);
+  const parent = updateData.parent;
+  delete updateData.parent;
+  await context.block.updateBlockById(
+    context.models,
+    data.customId,
+    updateData
+  );
 
   // TODO: should we send an email if you're the one who assigned it to yourself?
   // TODO: how should we respect the user and not spam them? -- user settings
@@ -114,10 +68,14 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
   const newlyAssignedUsers = assignedUsersDiffResult.newAssignees;
 
   if (newlyAssignedUsers.length > 0) {
-    const newAssignees = await context.getUsersByID(
+    const newAssignees = await context.user.bulkGetUsersById(
+      context.models,
       newlyAssignedUsers.map((assignedUser) => assignedUser.userId)
     );
-    const org = await context.getBlockByID(block.rootBlockID);
+    const org = await context.block.getBlockById(
+      context.models,
+      block.rootBlockId
+    );
     const assigneesMap = indexArray(newAssignees, { path: "customId" });
 
     // TODO: what should we do if any of the above calls fail?
@@ -142,11 +100,12 @@ async function updateBlock(context: IUpdateBlockContext): Promise<void> {
     });
   }
 
-  if (blockData.parent && block.parent !== blockData.parent) {
-    const sourceBlockID = block.parent;
-    const destinationBlockID = blockData.parent;
-    await context.transferBlock(block, sourceBlockID, destinationBlockID);
+  if (parent && block.parent !== parent) {
+    await context.transferBlock(context, {
+      ...instData,
+      data: { destinationBlockId: parent, draggedBlockId: block.customId },
+    });
   }
-}
+};
 
 export default updateBlock;

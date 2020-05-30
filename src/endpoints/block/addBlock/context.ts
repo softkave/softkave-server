@@ -1,36 +1,10 @@
-import BaseEndpointContext, {
-  IBaseEndpointContextParameters
-} from "../../BaseEndpointContext";
-import addBlockToDatabase from "../addBlockToDatabase/addBlockToDatabase";
-import AddBlockToDatabaseContext from "../addBlockToDatabase/context";
-import { INewBlockInput } from "../types";
-import { IAddBlockContext, IAddBlockParameters } from "./types";
+import InternalAddBlockContext from "../internalAddBlock/context";
+import internalAddBlock from "../internalAddBlock/internalAddBlock";
+import { IAddBlockContext } from "./types";
 
-export interface IAddBlockContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IAddBlockParameters;
-}
-
-export default class AddBlockContext extends BaseEndpointContext
+export default class AddBlockContext extends InternalAddBlockContext
   implements IAddBlockContext {
-  public data: IAddBlockParameters;
-
-  constructor(p: IAddBlockContextParameters) {
-    super(p);
-    this.data = p.data;
-  }
-
-  public async addBlockToStorage(newBlock: INewBlockInput) {
-    const result = await addBlockToDatabase(
-      new AddBlockToDatabaseContext({
-        req: this.req,
-        blockModel: this.blockModel,
-        notificationModel: this.notificationModel,
-        userModel: this.userModel,
-        data: { block: newBlock }
-      })
-    );
-
-    return result.block;
+  public async addBlock(context, instData) {
+    return await internalAddBlock(context, instData);
   }
 }

@@ -1,17 +1,16 @@
 import { PermissionDeniedError } from "../endpoints/errors";
-import { userEndpoints } from "../endpoints/user/constants";
+import { userJWTEndpoints } from "../endpoints/user/constants";
 import {
   InvalidCredentialsError,
-  LoginAgainError
+  LoginAgainError,
 } from "../endpoints/user/errors";
 import UserToken from "../endpoints/user/UserToken";
-import { IUser } from "../mongo/user";
-import UserModel from "../mongo/user/UserModel";
+import { IUser, IUserModel } from "../mongo/user";
 import { IServerRequest } from "../utilities/types";
 
 export interface IGetUserFromRequestParamters {
   req: IServerRequest;
-  userModel: UserModel;
+  userModel: IUserModel;
   audience?: string;
   required?: boolean;
 }
@@ -20,10 +19,10 @@ async function getUserFromRequest({
   req,
   userModel,
   required,
-  audience = userEndpoints.login
+  audience = userJWTEndpoints.login,
 }: IGetUserFromRequestParamters) {
-  if (req.fullUserData) {
-    return req.fullUserData;
+  if (req.userData) {
+    return req.userData;
   }
 
   if (!req.user || !UserToken.containsAudience(req.user, audience)) {
@@ -35,7 +34,7 @@ async function getUserFromRequest({
   const userTokenData = req.user;
   let user: IUser = null;
   const query = {
-    customId: userTokenData.sub.id
+    customId: userTokenData.sub.id,
   };
 
   user = await userModel.model.findOne(query).exec();
@@ -44,18 +43,10 @@ async function getUserFromRequest({
     throw new PermissionDeniedError();
   }
 
-  req.fullUserData = user;
+  req.userData = user;
 
-  if (Array.isArray(user.changePasswordHistory)) {
-    if (Array.isArray(userTokenData.sub.changePasswordHistory)) {
-      user.changePasswordHistory.forEach((time: number, index: number) => {
-        if (time !== userTokenData.sub.changePasswordHistory[index]) {
-          throw new LoginAgainError();
-        }
-      });
-    } else {
-      throw new LoginAgainError();
-    }
+  if (user.passwordLastChangedAt !== userTokenData.sub.passwordLastChangedAt) {
+    throw new LoginAgainError();
   }
 
   return user;

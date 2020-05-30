@@ -1,55 +1,31 @@
 import {
-  BlockType,
   IBlock,
+  IBlockAssignedLabel,
   IBlockLabel,
   IBlockStatus,
   ISubTask,
-  ITaskCollaborationType,
   ITaskCollaborator,
 } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
+import { TransferBlockEndpoint } from "../transferBlock/types";
 
 export interface IUpdateBlockInput {
-  name: string;
-  description: string;
-  expectedEndAt: number;
-  color: string;
-  priority: string;
-  taskCollaborationData: ITaskCollaborationType;
-  taskCollaborators: ITaskCollaborator[];
-  type: BlockType;
-  parent: string;
-  groups: string[];
-  projects: string[];
-  tasks: string[];
-  groupTaskContext: string[];
-  groupProjectContext: string[];
-  subTasks: ISubTask[];
-  availableStatus: IBlockStatus[];
-  availableLabels: IBlockLabel[];
-  status: string;
-  labels: string[];
-}
-
-export interface IDirectUpdateBlockInput {
-  name: string;
-  description: string;
-  expectedEndAt: number;
-  color: string;
-  priority: string;
-  taskCollaborationData: ITaskCollaborationType;
-  taskCollaborators: ITaskCollaborator[];
-  groups: string[];
-  projects: string[];
-  tasks: string[];
-  subTasks: ISubTask[];
-  groupTaskContext: string[];
-  groupProjectContext: string[];
-  availableStatus: IBlockStatus[];
-  availableLabels: IBlockLabel[];
-  status: string;
-  labels: string[];
+  name?: string;
+  description?: string;
+  color?: string;
+  priority?: string;
+  parent?: string;
+  subTasks?: ISubTask[];
+  dueAt?: string;
+  assignees?: ITaskCollaborator[];
+  boardStatuses?: IBlockStatus[];
+  boardLabels?: IBlockLabel[];
+  status?: string;
+  statusAssignedBy?: string;
+  statusAssignedAt?: string;
+  labels?: IBlockAssignedLabel[];
 }
 
 export interface ITaskAssigneesDiff {
@@ -62,13 +38,8 @@ export interface IUpdateBlockParameters {
   data: IUpdateBlockInput;
 }
 
-export interface IUpdateBlockContext extends IBaseEndpointContext {
-  data: IUpdateBlockParameters;
-  transferBlock: (
-    block: IBlock,
-    sourceBlockID: string,
-    destinationBlockID: string
-  ) => Promise<void>;
+export interface IUpdateBlockContext extends IBaseContext {
+  transferBlock: TransferBlockEndpoint;
   sendAssignedTaskEmailNotification: (
     org: IBlock,
     taskDescription: string,
@@ -76,3 +47,8 @@ export interface IUpdateBlockContext extends IBaseEndpointContext {
     assignee: IUser
   ) => Promise<any>;
 }
+
+export type UpdateBlockEndpoint = Endpoint<
+  IUpdateBlockContext,
+  IUpdateBlockParameters
+>;

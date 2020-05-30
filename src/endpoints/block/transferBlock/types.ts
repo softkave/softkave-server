@@ -1,14 +1,12 @@
-import { BlockGroupContext } from "../../../mongo/block";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface ITransferBlockParameters {
-  sourceBlock: string;
-  draggedBlock: string;
-  destinationBlock: string;
-  dropPosition?: number;
-  groupContext?: BlockGroupContext;
+  draggedBlockId: string;
+  destinationBlockId: string;
 }
 
-export interface ITransferBlockContext extends IBaseEndpointContext {
-  data: ITransferBlockParameters;
-}
+export type TransferBlockEndpoint = Endpoint<
+  IBaseContext,
+  ITransferBlockParameters
+>;

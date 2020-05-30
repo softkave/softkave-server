@@ -1,6 +1,6 @@
 import { BlockType } from "../../mongo/block";
 import OperationError, {
-  IOperationErrorParameters
+  IOperationErrorParameters,
 } from "../../utilities/OperationError";
 
 export interface IBlockExistsErrorParameters extends IOperationErrorParameters {
@@ -18,17 +18,14 @@ export class BlockExistsError extends OperationError {
 
   private getTypeName(blockType?: BlockType) {
     switch (blockType) {
-      case "group":
-        return "Group";
-
       case "org":
         return "Organization";
 
       case "task":
         return "Task";
 
-      case "project":
-        return "Project";
+      case "board":
+        return "Board";
 
       case "root":
       default:
@@ -49,24 +46,6 @@ export class CollaborationRequestSentBeforeError extends OperationError {
   public name = "CollaborationRequestSentBeforeError";
   public message =
     "A collaboration request has been sent before to this email address";
-}
-
-// tslint:disable-next-line: max-classes-per-file
-export class CollaborationRequestAcceptedAlreadyError extends OperationError {
-  public name = "CollaborationRequestAcceptedAlreadyError";
-  public message = "This collaboration request has been accepted already";
-}
-
-// tslint:disable-next-line: max-classes-per-file
-export class CollaborationRequestDeclinedAlreadyError extends OperationError {
-  public name = "CollaborationRequestDeclinedAlreadyError";
-  public message = "This collaboration request has been declined already";
-}
-
-// tslint:disable-next-line: max-classes-per-file
-export class DraggedBlockDoesNotExistInSourceBlockError extends OperationError {
-  public name = "DraggedBlockDoesNotExistInSourceBlockError";
-  public message = "The dragged block does not exist in the source block";
 }
 
 // tslint:disable-next-line: max-classes-per-file

@@ -9,7 +9,8 @@ const groupProjectContext = "groupProjectContext";
 
 const blockTypeGroup = "group";
 const blockTypeOrg = "org";
-const blockTypeProject = "project";
+// const blockTypeProject = "project";
+const blockTypeBoard = "board";
 const blockTypeRoot = "root";
 const blockTypeTask = "task";
 
@@ -27,7 +28,7 @@ const blockConstants = {
   blockTypesArray: [
     blockTypeGroup,
     blockTypeOrg,
-    blockTypeProject,
+    blockTypeBoard,
     blockTypeTask,
     blockTypeRoot,
   ] as BlockType[],
@@ -49,7 +50,7 @@ const blockConstants = {
   blockTypes: {
     [blockTypeGroup]: blockTypeGroup,
     [blockTypeOrg]: blockTypeOrg,
-    [blockTypeProject]: blockTypeProject,
+    [blockTypeBoard]: blockTypeBoard,
     [blockTypeRoot]: blockTypeRoot,
     [blockTypeTask]: blockTypeTask,
   },

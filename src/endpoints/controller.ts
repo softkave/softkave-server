@@ -1,29 +1,13 @@
-import BlockModel from "../mongo/block/BlockModel";
-import NotificationModel from "../mongo/notification/NotificationModel";
-import UserModel from "../mongo/user/UserModel";
-import BlockController from "./block/controller";
-import UserController from "./user/controller";
-
-export interface IEndpointControllerProps {
-  userModel: UserModel;
-  blockModel: BlockModel;
-  notificationModel: NotificationModel;
-}
+import BlockController, { getBlockController } from "./block/controller";
+import UserController, { getUserController } from "./user/controller";
 
 export default class EndpointController {
-  public block: BlockController;
-  public user: UserController;
+  public block: BlockController = getBlockController();
+  public user: UserController = getUserController();
+}
 
-  protected userModel: UserModel;
-  protected blockModel: BlockModel;
-  protected notificationModel: NotificationModel;
+const controller: EndpointController = new EndpointController();
 
-  constructor(props: IEndpointControllerProps) {
-    this.blockModel = props.blockModel;
-    this.notificationModel = props.notificationModel;
-    this.userModel = props.userModel;
-
-    this.block = new BlockController(props);
-    this.user = new UserController(props);
-  }
+export function getEndpointController() {
+  return controller;
 }

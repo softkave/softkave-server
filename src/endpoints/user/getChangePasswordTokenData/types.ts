@@ -1,11 +1,14 @@
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
-
-// tslint:disable-next-line: no-empty-interface
-export interface IGetChangePasswordTokenDataContext
-  extends IBaseEndpointContext {}
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IGetChangePasswordTokenDataResult {
   email: string;
   issuedAt: number;
   expires: number;
 }
+
+export type GetChangePasswordTokenDataEndpoint = Endpoint<
+  IBaseContext,
+  undefined,
+  IGetChangePasswordTokenDataResult
+>;

@@ -1,17 +1,25 @@
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
-import { INewBlockInput } from "../types";
+import { Endpoint } from "../../types";
+import {
+  IInternalAddBlockContext,
+  InternalAddBlockEndpoint,
+} from "../internalAddBlock/types";
 
 export interface ICreateRootBlockParameters {
   user: IUser;
 }
 
-export interface ICreateRootBlockContext extends IBaseEndpointContext {
-  data: ICreateRootBlockParameters;
-  addBlockToStorage: (newBlock: INewBlockInput) => Promise<IBlock>;
-}
-
 export interface ICreateRootBlockResult {
   block: IBlock;
 }
+
+export interface ICreateRootBlockContext extends IInternalAddBlockContext {
+  addBlock: InternalAddBlockEndpoint;
+}
+
+export type CreateRootBlockEndpoint = Endpoint<
+  ICreateRootBlockContext,
+  ICreateRootBlockParameters,
+  ICreateRootBlockResult
+>;

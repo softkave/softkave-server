@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 export enum ConnectionStatus {
-  READY = "READY",
-  ERROR = "ERROR",
-  CONNECTING = "CONNECTING"
+  Ready = "Ready",
+  Error = "Error",
+  Connecting = "Connecting",
 }
 
 class MongoConnection {
@@ -13,23 +13,23 @@ class MongoConnection {
 
   constructor(uri: string, options: mongoose.ConnectionOptions) {
     this.connection = mongoose.createConnection(uri, options);
-    this.status = ConnectionStatus.CONNECTING;
+    this.status = ConnectionStatus.Connecting;
     this.statusPromise = new Promise((resolve, reject) => {
       this.connection.once("open", () => {
         resolve(this);
       });
 
-      this.connection.on("error", error => {
+      this.connection.on("error", (error) => {
         reject(error);
       });
     });
 
     this.statusPromise
       .then(() => {
-        this.status = ConnectionStatus.READY;
+        this.status = ConnectionStatus.Ready;
       })
-      .catch(error => {
-        this.status = ConnectionStatus.ERROR;
+      .catch((error) => {
+        this.status = ConnectionStatus.Error;
         throw error;
       });
   }
@@ -43,7 +43,7 @@ class MongoConnection {
   }
 
   public isReady() {
-    return this.status === ConnectionStatus.READY;
+    return this.status === ConnectionStatus.Ready;
   }
 
   public wait() {

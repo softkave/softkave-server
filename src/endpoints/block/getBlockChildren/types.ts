@@ -1,5 +1,6 @@
 import { BlockType, IBlock } from "../../../mongo/block";
-import { IBaseEndpointContext } from "../../BaseEndpointContext";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IGetBlockChildrenParameters {
   customId: string;
@@ -7,15 +8,12 @@ export interface IGetBlockChildrenParameters {
   useBoardId?: boolean;
 }
 
-export interface IGetBlockChildrenContext extends IBaseEndpointContext {
-  data: IGetBlockChildrenParameters;
-  getBlockChildrenFromDatabase: (
-    customId: string,
-    typeList: BlockType[],
-    useBoardId?: boolean
-  ) => Promise<IBlock[]>;
-}
-
 export interface IGetBlockChildrenResult {
   blocks: IBlock[];
 }
+
+export type GetBlockChildrenEndpoint = Endpoint<
+  IBaseContext,
+  IGetBlockChildrenParameters,
+  IGetBlockChildrenResult
+>;

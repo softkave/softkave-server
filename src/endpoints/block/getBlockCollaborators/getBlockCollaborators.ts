@@ -1,25 +1,26 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
-import {
-  IGetBlockCollaboratorsContext,
-  IGetBlockCollaboratorsResult
-} from "./types";
+import { GetBlockCollaboratorsEndpoint } from "./types";
 import { getBlockCollaboratorsJoiSchema } from "./validation";
 
-async function getBlockCollaborators(
-  context: IGetBlockCollaboratorsContext
-): Promise<IGetBlockCollaboratorsResult> {
-  const data = validate(context.data, getBlockCollaboratorsJoiSchema);
-  const user = await context.getUser();
-  const block = await context.getBlockByID(data.customId);
+const getBlockCollaborators: GetBlockCollaboratorsEndpoint = async (
+  context,
+  instData
+) => {
+  const data = validate(instData.data, getBlockCollaboratorsJoiSchema);
+  const user = await context.session.getUser(context.models, instData);
+  const block = await context.block.getBlockById(context.models, data.customId);
 
   canReadBlock({ user, block });
 
-  const collaborators = await context.getBlockCollaborators(block.customId);
+  const collaborators = await context.user.getBlockCollaborators(
+    context.models,
+    block.customId
+  );
 
   return {
-    collaborators
+    collaborators,
   };
-}
+};
 
 export default getBlockCollaborators;

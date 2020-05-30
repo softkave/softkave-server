@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
 
-export interface IDerivedMongoModelInitializationProps {
-  connection: mongoose.Connection;
-}
-
 export interface IMongoModelParameters {
   rawSchema: mongoose.SchemaDefinition;
   modelName: string;
@@ -11,8 +7,6 @@ export interface IMongoModelParameters {
   connection: mongoose.Connection;
   schemaOptions?: mongoose.SchemaOptions;
 }
-
-type Waiter = () => void;
 
 class MongoModel<DocumentType extends mongoose.Document = any> {
   public connection: mongoose.Connection;
@@ -22,27 +16,11 @@ class MongoModel<DocumentType extends mongoose.Document = any> {
   public schema: mongoose.Schema;
   public model: mongoose.Model<DocumentType>;
 
+  private readyPromise: Promise<any>;
   private isIndexReady: boolean = false;
-  private waitingQueue: Waiter[] = [];
 
-  constructor({
-    connection,
-    rawSchema,
-    modelName,
-    collectionName,
-    schemaOptions,
-  }: IMongoModelParameters) {
-    this.connection = connection;
-    this.rawSchema = rawSchema;
-    this.schema = new mongoose.Schema(rawSchema, schemaOptions);
-    this.modelName = modelName;
-    this.collectionName = collectionName;
-    this.model = this.newModel();
-
-    this.model.ensureIndexes().then(() => {
-      this.isIndexReady = true;
-      this.callWaiters();
-    });
+  constructor(props: IMongoModelParameters) {
+    this.init(props);
   }
 
   public newModel() {
@@ -58,17 +36,26 @@ class MongoModel<DocumentType extends mongoose.Document = any> {
   }
 
   public waitTillReady() {
-    return new Promise((resolve) => {
-      this.queueWaiter(resolve);
+    return this.readyPromise;
+  }
+
+  private init({
+    connection,
+    rawSchema,
+    modelName,
+    collectionName,
+    schemaOptions,
+  }: IMongoModelParameters) {
+    this.connection = connection;
+    this.rawSchema = rawSchema;
+    this.schema = new mongoose.Schema(rawSchema, schemaOptions);
+    this.modelName = modelName;
+    this.collectionName = collectionName;
+    this.model = this.newModel();
+
+    this.readyPromise = this.model.ensureIndexes().then(() => {
+      this.isIndexReady = true;
     });
-  }
-
-  private queueWaiter(cb: Waiter) {
-    this.waitingQueue.push(cb);
-  }
-
-  private callWaiters() {
-    this.waitingQueue.forEach((cb) => cb());
   }
 }
 

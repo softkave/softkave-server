@@ -1,13 +1,11 @@
-import { IGetUserDataContext, IGetUserDataResult } from "./types";
+import { GetUserDataEndpoint } from "./types";
 
-async function getUserData(
-  context: IGetUserDataContext
-): Promise<IGetUserDataResult> {
-  const user = await context.getUser();
+const getUserData: GetUserDataEndpoint = async (context, instData) => {
+  const user = await context.session.getUser(context.models, instData);
 
   return {
-    user
+    user,
   };
-}
+};
 
 export default getUserData;

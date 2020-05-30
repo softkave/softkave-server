@@ -1,35 +1,3 @@
-const notificationTypeCollaborationRequest = "collab-req";
-const notificationTypeRemoveCollaborator = "remove-collaborator";
-
-const collaborationRequestAccepted = "accepted";
-const collaborationRequestDeclined = "declined";
-const collaborationRequestRevoked = "revoked";
-const collaborationRequestPending = "pending";
-const collaborationRequestExpired = "expired";
-
 export const notificationConstants = {
-  notificationTypes: {
-    collaborationRequest: notificationTypeCollaborationRequest,
-    removeCollaborator: notificationTypeRemoveCollaborator
-  },
-  notificationTypesArray: [
-    notificationTypeCollaborationRequest,
-    notificationTypeRemoveCollaborator
-  ],
-  collaborationRequestStatusTypesArray: [
-    collaborationRequestAccepted,
-    collaborationRequestDeclined,
-    collaborationRequestRevoked,
-    collaborationRequestPending,
-    collaborationRequestExpired
-  ],
-  collaborationRequestStatusTypes: {
-    accepted: collaborationRequestAccepted,
-    declined: collaborationRequestDeclined,
-    expired: collaborationRequestExpired,
-    pending: collaborationRequestPending,
-    revoked: collaborationRequestRevoked
-  },
-  minAddCollaboratorMessageLength: 0,
-  maxAddCollaboratorMessageLength: 500
+  maxAddCollaboratorMessageLength: 500,
 };
