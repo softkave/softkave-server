@@ -4,7 +4,7 @@ import { IUser } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
 import { BlockDoesNotExistError } from "../block/errors";
-import { IBulkUpdateByIDItem } from "./types";
+import { IBulkUpdateByIdItem } from "./types";
 
 export interface IBlockContextModels {
   blockModel: IBlockModel;
@@ -31,7 +31,7 @@ export interface IBlockContext {
   ) => Promise<boolean | undefined>;
   bulkUpdateBlocksById: (
     models: IBlockContextModels,
-    blocks: Array<IBulkUpdateByIDItem<IBlock>>
+    blocks: Array<IBulkUpdateByIdItem<IBlock>>
   ) => Promise<void>;
   saveBlock: (models: IBlockContextModels, block: IBlock) => Promise<IBlock>;
   markBlockDeleted: (
@@ -61,6 +61,7 @@ export default class BlockContext implements IBlockContext {
       return await models.blockModel.model
         .findOne({
           customId,
+          isDeleted: false,
         })
         .lean()
         .exec();
@@ -77,6 +78,7 @@ export default class BlockContext implements IBlockContext {
     try {
       const query = {
         customId: { $in: customIds },
+        isDeleted: false,
       };
 
       return await models.blockModel.model.find(query).exec();
@@ -114,7 +116,7 @@ export default class BlockContext implements IBlockContext {
 
   public async bulkUpdateBlocksById(
     models: IBlockContextModels,
-    blocks: Array<IBulkUpdateByIDItem<IBlock>>
+    blocks: Array<IBulkUpdateByIdItem<IBlock>>
   ) {
     try {
       const opts = blocks.map((b) => ({
@@ -133,6 +135,7 @@ export default class BlockContext implements IBlockContext {
       return await models.blockModel.model
         .findOne({
           lowerCasedName: name.toLowerCase(),
+          isDeleted: false,
         })
         .exec();
     } catch (error) {
@@ -185,7 +188,7 @@ export default class BlockContext implements IBlockContext {
     typeList?: BlockType[]
   ) {
     try {
-      const query: any = {};
+      const query: any = { isDeleted: false };
 
       if (typeList) {
         query.type = {
@@ -244,6 +247,7 @@ export default class BlockContext implements IBlockContext {
         customId: {
           $in: organizationIds,
         },
+        isDeleted: false,
       };
 
       return await models.blockModel.model.find(query).lean().exec();

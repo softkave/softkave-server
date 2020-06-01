@@ -1,3 +1,8 @@
+import {
+  AuditLogActionType,
+  AuditLogResourceType,
+} from "../../../mongo/audit-log";
+import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import blockValidationSchemas from "../validation";
@@ -24,6 +29,13 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     await context.session.updateUser(context.models, instData, {
       orgs: userOrgs,
     });
+
+    context.auditLog.insert(context.models, instData, {
+      action: AuditLogActionType.Create,
+      resourceId: org.customId,
+      resourceType: AuditLogResourceType.Org,
+    });
+
     return {
       block: org,
     };
@@ -43,6 +55,13 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
   const block = result.block;
 
   // TODO: analyze all the net calls you're making and look for ways to reduce them
+
+  context.auditLog.insert(context.models, instData, {
+    action: AuditLogActionType.Create,
+    resourceId: block.customId,
+    resourceType: getBlockAuditLogResourceType(block),
+    organizationId: block.rootBlockId,
+  });
 
   return {
     block,

@@ -4,6 +4,7 @@ import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
 import { UserDoesNotExistError } from "../user/errors";
 import { ICollaborator } from "../user/types";
+import { IBulkUpdateByIdItem } from "./types";
 
 export interface IUserContextModels {
   userModel: IUserModel;
@@ -38,6 +39,14 @@ export interface IUserContext {
     models: IUserContextModels,
     blockId: string
   ) => Promise<ICollaborator[]>;
+  getOrgUsers: (
+    models: IUserContextModels,
+    blockId: string
+  ) => Promise<IUser[]>;
+  bulkUpdateUsersById: (
+    models: IUserContextModels,
+    blocks: Array<IBulkUpdateByIdItem<IUser>>
+  ) => Promise<void>;
 }
 
 export default class UserContext implements IUserContext {
@@ -158,6 +167,36 @@ export default class UserContext implements IUserContext {
         )
         .lean()
         .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async getOrgUsers(models: IUserContextModels, blockId: string) {
+    try {
+      return await models.userModel.model
+        .find({
+          orgs: blockId,
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async bulkUpdateUsersById(
+    models: IUserContextModels,
+    blocks: Array<IBulkUpdateByIdItem<IUser>>
+  ) {
+    try {
+      const opts = blocks.map((item) => ({
+        updateOne: { filter: { customId: item.id }, update: item.data },
+      }));
+
+      await models.userModel.model.bulkWrite(opts);
     } catch (error) {
       logger.error(error);
       throw new ServerError();

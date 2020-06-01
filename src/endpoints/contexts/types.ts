@@ -4,7 +4,7 @@ import { INotificationModel } from "../../mongo/notification";
 import { IUserModel } from "../../mongo/user";
 import { IServerRequest } from "../../utilities/types";
 
-export interface IBulkUpdateByIDItem<T> {
+export interface IBulkUpdateByIdItem<T> {
   id: string;
   data: Partial<T>;
 }

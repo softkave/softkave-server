@@ -7,32 +7,31 @@ export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
   } catch (error) {
     const errors = Array.isArray(error) ? error : [error];
     return {
-      errors: errors.map(e => ({
-        name: e.name,
-        message: e.message,
-        type: e.type,
-        action: e.action,
-        field: e.field
-      }))
+      errors: errors.map((err) => ({
+        name: err.name,
+        message: err.message,
+        action: err.action,
+        field: err.field,
+      })),
     };
   }
 };
 
-export const wrapDBCall = async <T>(fn: any, ...args): Promise<T> => {
+export const fireAndForgetFn = async <Fn extends (...args: any) => any>(
+  fn: Fn,
+  ...args: Array<Parameters<Fn>>
+): Promise<ReturnType<Fn>> => {
   try {
     return await fn(...args);
   } catch (error) {
     logger.error(error);
-    throw new ServerError();
   }
 };
 
-// Used for fire and forget
-export const catchAndLogError = async (promise: Promise<any>) => {
+export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
   try {
-    await promise;
+    return await promise;
   } catch (error) {
     logger.error(error);
-    throw new ServerError();
   }
 };

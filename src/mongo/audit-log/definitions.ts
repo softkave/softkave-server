@@ -14,6 +14,7 @@ export interface IAuditLogChange {
 
 export enum AuditLogResourceType {
   User = "user",
+  RootBlock = "root",
   Org = "org",
   Group = "group",
   Board = "board",
@@ -31,6 +32,12 @@ export enum AuditLogActionType {
   Revoke = "revoke",
   Remove = "remove",
   Decline = "decline",
+  Signup = "signup",
+  Login = "login",
+  ForgotPassword = "forgot-password",
+  ChangePassword = "change-password",
+  ChangePasswordWithToken = "change-password-with-token",
+  Transfer = "transfer",
 }
 
 // export enum AuditLogSystemJustification {
@@ -44,15 +51,13 @@ export enum AuditLogActionType {
 
 export interface IAuditLog {
   customId: string;
-  action: string;
-  date: Date;
+  action: AuditLogActionType;
   resourceId: string;
   resourceType: AuditLogResourceType;
-  userId: string;
-  createdAt: Date;
-  ipAddress: string; // should we respect do not track?
-  requestedWithDoNotTrack: boolean;
+  createdAt: string;
+  ips: string[]; // should we respect do not track?
   userAgent: string;
+  userId?: string;
   organizationId?: string;
   change?: IAuditLogChange;
   resourceOwnerId?: string; // for status and labels, and other "inside" resources
@@ -106,14 +111,13 @@ export interface IAuditLogDocument extends IAuditLog, Document {}
 const auditLogSchema = {
   customId: { type: String, unique: true },
   action: { type: String },
-  date: { type: Date },
+  date: { type: String },
   resourceId: { type: String },
   resourceType: { type: String },
   userId: { type: String },
   organizationId: { type: String },
-  createdAt: { type: Date },
-  ipAddress: { type: String },
-  requestedWithDoNotTrack: { type: Boolean },
+  createdAt: { type: String },
+  ips: { type: [String] },
   userAgent: { type: Boolean },
   resourceOwnerId: { type: String },
 };

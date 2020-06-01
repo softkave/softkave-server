@@ -307,7 +307,7 @@ const blockSchema = {
   statusAssignedBy: { type: String },
   statusAssignedAt: Number,
   labels: { type: [blockAssignedLabelSchema] },
-  isDeleted: { type: Boolean },
+  isDeleted: { type: Boolean, default: false },
   deletedAt: { type: String },
   deletedBy: { type: String },
 };

@@ -2,6 +2,7 @@ import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
+import AuditLogContext, { IAuditLogContext } from "./AuditLogContext";
 import BlockContext, { IBlockContext } from "./BlockContext";
 import NotificationContext, {
   INotificationContext,
@@ -14,6 +15,7 @@ export interface IBaseContext {
   block: IBlockContext;
   user: IUserContext;
   notification: INotificationContext;
+  auditLog: IAuditLogContext;
   session: ISessionContext;
   models: IContextModels;
 }
@@ -22,6 +24,7 @@ export default class BaseContext implements IBaseContext {
   public block: IBlockContext = new BlockContext();
   public user: IUserContext = new UserContext();
   public notification: INotificationContext = new NotificationContext();
+  public auditLog: IAuditLogContext = new AuditLogContext();
   public session: ISessionContext = new SessionContext();
   public models: IContextModels = {
     userModel: getUserModel(),

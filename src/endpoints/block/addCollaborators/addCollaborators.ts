@@ -6,16 +6,16 @@ import {
 } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
-import { indexArray } from "../../../utilities/functionUtils";
+import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import logger from "../../../utilities/logger";
 import { userIsPartOfOrg } from "../../user/utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import {
   CollaborationRequestSentBeforeError,
   CollaboratorExistsInOrgError,
 } from "../errors";
-import { AddCollaboratorEndpoint, IAddCollaboratorsContext } from "./types";
+import { AddCollaboratorEndpoint } from "./types";
 import { addCollaboratorsJoiSchema } from "./validation";
 
 function isRequestAccepted(request: INotification) {
@@ -45,7 +45,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
   const indexedNewCollaborators = indexArray(collaborators, {
     path: "email",
-    reducer: (data: any, arr: any, index: number) => ({
+    reducer: (data, arr, index) => ({
       data,
       index,
     }),
@@ -151,13 +151,15 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
       date: new Date().toString(),
     });
 
-    context.notification
-      .updateNotificationById(context.models, request.customId, {
-        sentEmailHistory,
-      })
-      .catch((error) => {
-        logger.error(error);
-      });
+    fireAndForgetPromise(
+      context.notification.updateNotificationById(
+        context.models,
+        request.customId,
+        {
+          sentEmailHistory,
+        }
+      )
+    );
   }
 
   function sendEmails(collaborationRequestsParam: INotification[]) {
@@ -176,16 +178,10 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
     // TODO: Resend collaboration requests that have not been sent or that failed
     emailPromises.forEach(async (promise: Promise<void>, index: number) => {
-      promise
-        .then(() => {
-          const request: INotification = collaborationRequestsParam[index];
-          updateSentEmailHistory(request);
-        })
-        .catch((error) => {
-          // Fire and forget
-          // TODO: log the time endpoints and specific operations take, for improvements
-          logger.error(error);
-        });
+      fireAndForgetPromise(promise).then(() => {
+        const request: INotification = collaborationRequestsParam[index];
+        updateSentEmailHistory(request);
+      });
     });
   }
 };

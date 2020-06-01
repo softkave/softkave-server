@@ -1,5 +1,9 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
+import {
+  AuditLogActionType,
+  AuditLogResourceType,
+} from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
 import { validate } from "../../../utilities/joiUtils";
 import { userJWTEndpoints } from "../constants";
@@ -38,6 +42,12 @@ const signup: SignupEndpoint = async (context, instData) => {
   const user = await context.user.saveUser(context.models, value);
   context.session.addUserToSession(context.models, instData, user);
   await context.createUserRootBlock(context, { ...instData, data: { user } });
+
+  context.auditLog.insert(context.models, instData, {
+    action: AuditLogActionType.Signup,
+    resourceId: user.customId,
+    resourceType: AuditLogResourceType.User,
+  });
 
   return {
     user,

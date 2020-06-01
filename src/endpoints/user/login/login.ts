@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
 import { validate } from "../../../utilities/joiUtils";
+import logger from "../../../utilities/logger";
 import { userJWTEndpoints } from "../constants";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
@@ -32,8 +33,8 @@ const login: LoginEndpoint = async (context, instData) => {
         };
       }
     } catch (error) {
-      // logger.error(error);
-      console.error(error);
+      logger.error(error);
+      // console.error(error);
 
       // TODO: find a better error type for this error
       throw new ServerError();

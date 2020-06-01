@@ -9,6 +9,8 @@ import canReadBlock from "../canReadBlock";
 import { RevokeCollaborationRequestsEndpoint } from "./types";
 import { revokeRequestJoiSchema } from "./validation";
 
+// TODO: should we send notification or email ( if user is not registered yet ) to the recipient?
+
 const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
   context,
   instData

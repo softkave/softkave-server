@@ -1,4 +1,7 @@
+import { AuditLogActionType } from "../../../mongo/audit-log";
+import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { IBlock } from "../../../mongo/block";
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
 import { TransferBlockEndpoint } from "./types";
@@ -44,6 +47,18 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
     draggedBlock.customId,
     draggedBlockUpdates
   );
+
+  context.auditLog.insert(context.models, instData, {
+    action: AuditLogActionType.Transfer,
+    resourceId: draggedBlock.customId,
+    resourceType: getBlockAuditLogResourceType(draggedBlock),
+    change: {
+      customId: getId(),
+      oldValue: { parent: draggedBlock.parent },
+      newValue: { parent: destinationBlock.customId },
+    },
+    organizationId: draggedBlock.rootBlockId,
+  });
 };
 
 export default transferBlock;
