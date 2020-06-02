@@ -3,7 +3,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetCollaborationRequestsResult {
-  requests: INotification[];
+  notifications: INotification[];
 }
 
 export type GetCollaborationRequestsEndpoint = Endpoint<

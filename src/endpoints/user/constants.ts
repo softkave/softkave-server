@@ -5,12 +5,3 @@ export const userConstants = {
   maxPasswordLength: 20,
   currentTokenVersion: 3,
 };
-
-export const userJWTEndpoints = {
-  changePassword: "change-password",
-  login: "login",
-};
-
-export const userErrorActions = {
-  loginAgain: "login-again",
-};

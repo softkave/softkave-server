@@ -10,7 +10,7 @@ const getCollaborationRequests: GetCollaborationRequestsEndpoint = async (
     user.email
   );
 
-  return { requests };
+  return { notifications: requests };
 };
 
 export default getCollaborationRequests;

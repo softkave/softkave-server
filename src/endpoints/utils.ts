@@ -1,4 +1,3 @@
-import { ServerError } from "../utilities/errors";
 import logger from "../utilities/logger";
 
 export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
@@ -35,3 +34,12 @@ export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
     logger.error(error);
   }
 };
+
+export enum JWTEndpoints {
+  ChangePassword = "change-password",
+  Login = "login",
+}
+
+export enum ServerRecommendedActions {
+  LoginAgain = "login-again",
+}

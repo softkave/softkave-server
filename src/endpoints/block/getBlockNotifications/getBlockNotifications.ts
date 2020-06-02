@@ -19,7 +19,7 @@ const getBlockNotifications: GetBlockNotificationsEndpoint = async (
   );
 
   return {
-    requests,
+    notifications: requests,
   };
 };
 

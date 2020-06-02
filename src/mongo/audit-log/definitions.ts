@@ -62,6 +62,9 @@ export interface IAuditLog {
   change?: IAuditLogChange;
   resourceOwnerId?: string; // for status and labels, and other "inside" resources
 
+  // TODO: add to context
+  date: string;
+
   // isSystemActioned?: boolean;
   // systemJustification?: AuditLogSystemJustification;
 

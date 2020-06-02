@@ -7,7 +7,7 @@ export interface IGetBlockNotificationsParameters {
 }
 
 export interface IGetBlockNotificationsResult {
-  requests: INotification[];
+  notifications: INotification[];
 }
 
 export type GetBlockNotificationsEndpoint = Endpoint<

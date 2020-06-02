@@ -296,7 +296,6 @@ const blockSchema = {
   updatedBy: { type: String },
   type: { type: String },
   parent: { type: String },
-  level: { type: Number },
   rootBlockId: { type: String },
   assignees: { type: [blockAssigneeSchema] },
   priority: { type: String },
