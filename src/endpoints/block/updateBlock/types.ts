@@ -49,10 +49,12 @@ export interface IUpdateBlockContext extends IBaseContext {
   ) => Promise<any>;
   bulkUpdateDeletedStatusInTasks: (
     models: IBlockContextModels,
+    orgId: string,
     items: Array<{ oldId: string; newId: string }>
   ) => Promise<void>;
   bulkRemoveDeletedLabelsInTasks: (
     models: IBlockContextModels,
+    orgId: string,
     ids: string[]
   ) => Promise<void>;
 }

@@ -214,6 +214,7 @@ async function processBoardStatusChanges(
   fireAndForgetPromise(
     context.bulkUpdateDeletedStatusInTasks(
       context.models,
+      block.customId,
       deletedStatusIdsWithReplacement
     )
   );
@@ -303,7 +304,11 @@ async function processBoardLabelChanges(
   // if it fails, the task will contain labels that have been deleted, maybe change in client-side
   // TODO: maybe wite a cron job to clean things up
   fireAndForgetPromise(
-    context.bulkRemoveDeletedLabelsInTasks(context.models, deletedLabelIds)
+    context.bulkRemoveDeletedLabelsInTasks(
+      context.models,
+      block.rootBlockId,
+      deletedLabelIds
+    )
   );
 
   context.auditLog.insertMany(context.models, instData, logEntries);

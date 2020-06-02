@@ -16,6 +16,9 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
+import block_v3 from "./scripts/block_v3";
+import { oldNotificationToNewNotification } from "./scripts/notification_v2";
+import { oldUserToNewUser } from "./scripts/user_v2";
 // import aws from "./res/aws";
 
 console.log("server initialization");
@@ -121,6 +124,9 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
+  await block_v3();
+  await oldNotificationToNewNotification();
+  await oldUserToNewUser();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

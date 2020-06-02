@@ -90,7 +90,7 @@ export interface INotification {
   customId: string;
   to: INotificationTo;
   body: string;
-  collaborationRequestFrom?: ICollaborationRequestFrom;
+  from?: ICollaborationRequestFrom;
   createdAt: string;
   type: NotificationType;
   readAt?: string;

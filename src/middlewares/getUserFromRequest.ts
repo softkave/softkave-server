@@ -1,10 +1,10 @@
 import { PermissionDeniedError } from "../endpoints/errors";
-import { userJWTEndpoints } from "../endpoints/user/constants";
 import {
   InvalidCredentialsError,
   LoginAgainError,
 } from "../endpoints/user/errors";
 import UserToken from "../endpoints/user/UserToken";
+import { JWTEndpoints } from "../endpoints/utils";
 import { IUser, IUserModel } from "../mongo/user";
 import { IServerRequest } from "../utilities/types";
 
@@ -19,7 +19,7 @@ async function getUserFromRequest({
   req,
   userModel,
   required,
-  audience = userJWTEndpoints.login,
+  audience = JWTEndpoints.Login,
 }: IGetUserFromRequestParamters) {
   if (req.userData) {
     return req.userData;

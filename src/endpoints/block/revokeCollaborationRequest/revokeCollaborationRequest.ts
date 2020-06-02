@@ -28,7 +28,7 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
     data.requestId
   );
 
-  if (!request || request.collaborationRequestFrom.blockId !== block.customId) {
+  if (!request || request.from.blockId !== block.customId) {
     throw new CollaborationRequestDoesNotExistError();
   }
 

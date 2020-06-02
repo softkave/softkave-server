@@ -1,46 +1,44 @@
 // color in status
 // remove groups, and put it's tasks or projects to the nearest parent - c
-// level
 // all tasks in orgs to system created board
 // new format
 // project to board
 // close the cursor when done
 
-import { Document, QueryCursor } from "mongoose";
+import { Connection, Document } from "mongoose";
 import uuid from "uuid/v4";
 import { System } from "../mongo/audit-log";
-import BlockModel from "../mongo/block/BlockModel";
+import { getBlockModel } from "../mongo/block/BlockModel";
 import blockSchema0, {
+  BlockType,
   IBlock,
   IBlock0,
-  IBlockDocument,
 } from "../mongo/block/definitions";
-import connection from "../mongo/defaultConnection";
-import MongoModel, {
-  IDerivedMongoModelInitializationProps,
-} from "../mongo/MongoModel";
+import { getDefaultConnection } from "../mongo/defaultConnection";
+import MongoModel from "../mongo/MongoModel";
 
-const modelName = "block-v2";
-const collectionName = "blocks-v2";
+let blk0Model: MongoModel = null;
 
-class BlockModel0 extends MongoModel<IBlock0 & Document> {
-  constructor({ connection: conn }: IDerivedMongoModelInitializationProps) {
-    super({
-      connection: conn,
-      modelName,
-      collectionName,
-      rawSchema: blockSchema0,
-    });
+export function getBlock0Model(conn: Connection) {
+  if (blk0Model) {
+    return blk0Model;
   }
+
+  blk0Model = new MongoModel({
+    modelName: "block-v2",
+    collectionName: "blocks-v2",
+    rawSchema: blockSchema0,
+    connection: conn,
+  });
+
+  return blk0Model;
 }
 
 async function removeGroups() {
   console.log(`script - removeGroups - started`);
 
   let docsCount = 0;
-  const blockModel = new BlockModel0({
-    connection: connection.getConnection(),
-  });
+  const blockModel = getBlock0Model(getDefaultConnection().getConnection());
   await blockModel.model.ensureIndexes();
   const cursor = blockModel.model
     .find({
@@ -93,9 +91,7 @@ async function removeTasksFromOrgsToNewProject() {
   const description =
     "Please change the name of this board." +
     "This name was system generated during an update that required a move and reclassification of data.";
-  const blockModel = new BlockModel0({
-    connection: connection.getConnection(),
-  });
+  const blockModel = getBlock0Model(getDefaultConnection().getConnection());
   await blockModel.model.ensureIndexes();
   const cursor = blockModel.model
     .find({
@@ -161,12 +157,10 @@ async function oldBlockToNewBlock() {
   let docsCount = 0;
   const now = new Date();
   const nowStr = now.toString();
-  const blockModel0 = new BlockModel0({
-    connection: connection.getConnection(),
-  });
+  const blockModel0 = getBlock0Model(getDefaultConnection().getConnection());
   await blockModel0.model.ensureIndexes();
   const cursor = blockModel0.model.find({}).cursor();
-  const blockModel = new BlockModel({ connection: connection.getConnection() });
+  const blockModel = getBlockModel(getDefaultConnection().getConnection());
   await blockModel.model.ensureIndexes();
 
   try {
@@ -183,8 +177,7 @@ async function oldBlockToNewBlock() {
         customId: doc.customId,
         createdBy: doc.createdBy,
         createdAt: new Date(doc.createdAt).toString(),
-        type: doc.type === "project" ? "board" : doc.type,
-        level: 0,
+        type: doc.type === "project" ? BlockType.Board : (doc.type as any),
         name: doc.name,
         lowerCasedName: doc.lowerCasedName,
         description: doc.description,
@@ -232,47 +225,6 @@ async function oldBlockToNewBlock() {
   }
 }
 
-async function insertBlockLevel(block?: IBlockDocument) {
-  console.log(`script - insertBlockLevel - started`);
-
-  let docsCount = 0;
-  const blockModel = new BlockModel({ connection: connection.getConnection() });
-  await blockModel.model.ensureIndexes();
-  let cursor: QueryCursor<IBlockDocument> = null;
-  const level = block ? block.level + 1 : 0;
-
-  if (block) {
-    cursor = blockModel.model.find({ parent: block.customId }).cursor();
-  } else {
-    cursor = blockModel.model.find({ type: "org" }).cursor();
-  }
-
-  try {
-    for (
-      let doc: IBlockDocument = await cursor.next();
-      doc !== null;
-      doc = await cursor.next()
-    ) {
-      doc.level = level;
-
-      if (doc.type !== "task") {
-        await insertBlockLevel(doc);
-      }
-
-      docsCount++;
-    }
-
-    cursor.close();
-    console.log(`block(s) count = ${docsCount}`);
-    console.log(`script - insertBlockLevel - completed`);
-  } catch (error) {
-    console.log(`script - insertBlockLevel - error`);
-    console.log("- - - - -");
-    console.error(error);
-    console.log("- - - - -");
-  }
-}
-
 export default async function block_v3() {
   console.log(`script - block_v3 - started`);
 
@@ -280,7 +232,6 @@ export default async function block_v3() {
     await removeGroups();
     await removeTasksFromOrgsToNewProject();
     await oldBlockToNewBlock();
-    await insertBlockLevel();
     console.log(`script - block_v3 - completed`);
   } catch (error) {
     console.log(`script - block_v3 - error`);

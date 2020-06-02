@@ -67,7 +67,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
 
   const ownerBlock = await context.block.getBlockById(
     context.models,
-    req.collaborationRequestFrom.blockId
+    req.from.blockId
   );
 
   if (!ownerBlock) {

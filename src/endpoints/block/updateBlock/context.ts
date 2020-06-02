@@ -1,7 +1,10 @@
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
+import { ServerError } from "../../../utilities/errors";
+import logger from "../../../utilities/logger";
 import BaseContext from "../../contexts/BaseContext";
+import { IBlockContextModels } from "../../contexts/BlockContext";
 import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext } from "./types";
@@ -27,5 +30,43 @@ export default class UpdateBlockContext extends BaseContext
       assigner: assigner.name,
       loginLink: appInfo.loginLink,
     }) as unknown) as any;
+  }
+
+  public async bulkUpdateDeletedStatusInTasks(
+    models: IBlockContextModels,
+    orgId: string,
+    items: Array<{ oldId: string; newId: string }>
+  ) {
+    try {
+      await models.blockModel.model.bulkWrite(
+        items.map((item) => ({
+          updateMany: {
+            filter: { rootBlockId: orgId, type: "task", status: item.oldId },
+            update: { status: item.newId },
+          },
+        }))
+      );
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
+  }
+
+  public async bulkRemoveDeletedLabelsInTasks(
+    models: IBlockContextModels,
+    orgId: string,
+    ids: string[]
+  ) {
+    try {
+      await models.blockModel.model
+        .updateMany(
+          { rootBlockId: orgId },
+          { $pull: { labels: { $elemMatch: { customId: { $in: ids } } } } }
+        )
+        .exec();
+    } catch (error) {
+      logger.error(error);
+      throw new ServerError();
+    }
   }
 }
