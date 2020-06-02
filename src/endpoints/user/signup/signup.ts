@@ -6,7 +6,7 @@ import {
 } from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
 import { validate } from "../../../utilities/joiUtils";
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";
 import UserToken from "../UserToken";
 import { SignupEndpoint } from "./types";
@@ -51,7 +51,7 @@ const signup: SignupEndpoint = async (context, instData) => {
 
   return {
     user,
-    token: UserToken.newToken({ user, audience: [userJWTEndpoints.login] }),
+    token: UserToken.newToken({ user, audience: [JWTEndpoints.Login] }),
   };
 };
 

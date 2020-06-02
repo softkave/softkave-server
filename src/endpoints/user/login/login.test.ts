@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { IEndpointInstanceData } from "../../contexts/types";
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
@@ -72,7 +72,7 @@ test("allow login if password is correct", async () => {
     user: publicUserData,
     token: UserToken.newToken({
       user,
-      audience: [userJWTEndpoints.login],
+      audience: [JWTEndpoints.Login],
     }),
   });
 });

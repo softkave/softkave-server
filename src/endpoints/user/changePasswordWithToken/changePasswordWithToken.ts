@@ -1,4 +1,4 @@
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import {
   CredentialsExpiredError,
   InvalidCredentialsError,
@@ -13,7 +13,7 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
 ) => {
   const tokenData = context.session.getRequestToken(context.models, instData);
 
-  if (!UserToken.containsAudience(tokenData, userJWTEndpoints.changePassword)) {
+  if (!UserToken.containsAudience(tokenData, JWTEndpoints.ChangePassword)) {
     throw new InvalidCredentialsError();
   }
 

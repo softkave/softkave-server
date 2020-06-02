@@ -1,14 +1,8 @@
 import BaseContext from "../../contexts/BaseContext";
-import { IBaseEndpointContextParameters } from "../../contexts/BaseEndpointContext";
 import sendChangePasswordEmail, {
   ISendChangePasswordEmailParameters,
 } from "../sendChangePasswordEmail";
-import { IForgotPasswordContext, IForgotPasswordParameters } from "./types";
-
-export interface IForgotPasswordContextParameters
-  extends IBaseEndpointContextParameters {
-  data: IForgotPasswordParameters;
-}
+import { IForgotPasswordContext } from "./types";
 
 export default class ForgotPasswordContext extends BaseContext
   implements IForgotPasswordContext {

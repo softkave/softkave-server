@@ -1,4 +1,4 @@
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import { InvalidCredentialsError } from "../errors";
 import UserToken from "../UserToken";
 import { GetChangePasswordTokenDataEndpoint } from "./types";
@@ -9,7 +9,7 @@ const getChangePasswordTokenData: GetChangePasswordTokenDataEndpoint = async (
 ) => {
   const tokenData = context.session.getRequestToken(context.models, instData);
 
-  if (!UserToken.containsAudience(tokenData, userJWTEndpoints.changePassword)) {
+  if (!UserToken.containsAudience(tokenData, JWTEndpoints.ChangePassword)) {
     throw new InvalidCredentialsError();
   }
 

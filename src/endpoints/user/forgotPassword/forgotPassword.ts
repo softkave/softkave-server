@@ -1,6 +1,6 @@
 import moment = require("moment");
 import { validate } from "../../../utilities/joiUtils";
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import { UserDoesNotExistError } from "../errors";
 import UserToken from "../UserToken";
 import { addEntryToPasswordDateLog } from "../utils";
@@ -27,7 +27,7 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
   const expiration = moment(initTime).add(2, "days");
   const token = UserToken.newToken({
     user,
-    audience: [userJWTEndpoints.changePassword],
+    audience: [JWTEndpoints.ChangePassword],
     expires: expiration.valueOf(),
   });
 

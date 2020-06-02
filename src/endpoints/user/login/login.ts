@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
-import { userJWTEndpoints } from "../constants";
+import { JWTEndpoints } from "../../utils";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
@@ -28,7 +28,7 @@ const login: LoginEndpoint = async (context, instData) => {
           user: getPublicUserData(userData),
           token: UserToken.newToken({
             user: userData,
-            audience: [userJWTEndpoints.login],
+            audience: [JWTEndpoints.Login],
           }),
         };
       }
