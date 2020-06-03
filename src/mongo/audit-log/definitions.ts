@@ -127,7 +127,7 @@ const auditLogSchema = {
   organizationId: { type: String },
   createdAt: { type: Date },
   ips: { type: [String] },
-  userAgent: { type: Boolean },
+  userAgent: { type: String },
   resourceOwnerId: { type: String },
   change: { type: auditLogChangeSchema },
 };

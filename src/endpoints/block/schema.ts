@@ -12,25 +12,25 @@ const blockSchema = `
   }
 
   type SubTask {
-    customId: string;
-    description: string;
-    createdAt: Date;
-    createdBy: string;
-    updatedAt?: Date;
-    updatedBy?: string;
-    completedBy?: string;
-    completedAt?: Date;
+    customId: String
+    description: String
+    createdAt: String
+    createdBy: String
+    updatedAt: String
+    updatedBy: String
+    completedBy: String
+    completedAt: String
   }
 
   input SubTaskInput {
-    customId: string!
-    description: string!
-    createdAt: Date!
-    createdBy: string!
-    updatedAt?: Date;
-    updatedBy?: string;
-    completedBy?: string;
-    completedAt?: Date;
+    customId: String!
+    description: String!
+    createdAt: String!
+    createdBy: String!
+    updatedAt: String
+    updatedBy: String
+    completedBy: String
+    completedAt: String
   }
 
   type Status {
@@ -78,39 +78,39 @@ const blockSchema = `
   }
 
   type BlockAssignedLabel {
-    customId: string;
-    assignedBy: string;
-    assignedAt: Date;
+    customId: String
+    assignedBy: String
+    assignedAt: String
   }
 
   input BlockAssignedLabelInput {
-    customId: string;
-    assignedBy: string;
-    assignedAt: Date;
+    customId: String
+    assignedBy: String
+    assignedAt: String
   }
 
   type Block {
-    customId: string;
-    createdBy: string;
-    createdAt: Date;
-    type: BlockType;
-    name?: string;
-    description?: string;
-    dueAt?: Date;
-    color?: string;
-    updatedAt?: Date;
-    updatedBy?: string;
-    parent?: string;
-    rootBlockId?: string;
-    assignees?: [Assignee]
-    priority?: string;
-    subTasks?: [SubTask]
-    boardStatuses?: [Status];
-    boardLabels?: [Label];
-    status?: string;
-    statusAssignedBy?: string;
-    statusAssignedAt?: Date;
-    labels?: [BlockAssignedLabel]
+    customId: String
+    createdBy: String
+    createdAt: String
+    type: String
+    name: String
+    description: String
+    dueAt: String
+    color: String
+    updatedAt: String
+    updatedBy: String
+    parent: String
+    rootBlockId: String
+    assignees: [Assignee]
+    priority: String
+    subTasks: [SubTask]
+    boardStatuses: [Status]
+    boardLabels: [Label]
+    status: String
+    statusAssignedBy: String
+    statusAssignedAt: String
+    labels: [BlockAssignedLabel]
   }
 
   type SingleBlockOpResponse {
@@ -124,40 +124,40 @@ const blockSchema = `
   }
 
   input AddBlockInput {
-    customId: string;
-    type: BlockType;
-    name?: string;
-    description?: string;
-    dueAt?: string;
-    color?: string;
-    parent?: string;
-    rootBlockId?: string;
-    assignees?: [AssigneeInput]
-    priority?: string;
-    subTasks?: [SubTaskInput]
-    boardStatuses?: [StatusInput]
-    boardLabels?: [LabelInput]
-    status?: string;
-    statusAssignedBy?: string;
-    statusAssignedAt?: string;
-    labels?: [BlockAssignedLabelInput]
+    customId: String
+    type: String
+    name: String
+    description: String
+    dueAt: String
+    color: String
+    parent: String
+    rootBlockId: String
+    assignees: [AssigneeInput]
+    priority: String
+    subTasks: [SubTaskInput]
+    boardStatuses: [StatusInput]
+    boardLabels: [LabelInput]
+    status: String
+    statusAssignedBy: String
+    statusAssignedAt: String
+    labels: [BlockAssignedLabelInput]
   }
 
   input UpdateBlockInput {
-    name?: string;
-    description?: string;
-    color?: string;
-    priority?: string;
-    parent?: string;
-    subTasks?: [SubTaskInput]
-    boardStatuses?: [StatusInput]
-    boardLabels?: [LabelInput]
-    dueAt?: Date;
-    assignees?: [AssigneeInput]
-    status?: string;
-    statusAssignedBy?: string;
-    statusAssignedAt?: Date;
-    labels?: [BlockAssignedLabelInput]
+    name: String
+    description: String
+    color: String
+    priority: String
+    parent: String
+    subTasks: [SubTaskInput]
+    boardStatuses: [StatusInput]
+    boardLabels: [LabelInput]
+    dueAt: String
+    assignees: [AssigneeInput]
+    status: String
+    statusAssignedBy: String
+    statusAssignedAt: String
+    labels: [BlockAssignedLabelInput]
   }
 
   type CollaborationRequestFrom {
@@ -188,6 +188,7 @@ const blockSchema = `
     body: String
     readAt: Float
     to: NotificationTo
+    expiresAt: String
     statusHistory: [NotificationStatusHistory]
     sentEmailHistory: [NotificationSentEmailHistory]
     type: String

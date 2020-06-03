@@ -10,7 +10,8 @@ import randomColor from "randomcolor";
 import uuid from "uuid/v4";
 import { System } from "../mongo/audit-log";
 import { getBlockModel } from "../mongo/block/BlockModel";
-import blockSchema0, {
+import {
+  blockSchema0,
   BlockType,
   IBlock,
   IBlock0,
@@ -91,7 +92,7 @@ async function removeTasksFromOrgsToNewProject() {
   let docsCount = 0;
   const name = "new-board";
   const description =
-    "Please change the name of this board." +
+    "Please change the name of this board. " +
     "This name was system generated during an update that required a move and reclassification of data.";
   const blockModel = getBlock0Model(getDefaultConnection().getConnection());
   await blockModel.model.ensureIndexes();
@@ -134,6 +135,7 @@ async function removeTasksFromOrgsToNewProject() {
         .updateMany(
           {
             parent: doc.customId,
+            type: "task",
           },
           { parent: project.customId }
         )
@@ -171,6 +173,10 @@ async function oldBlockToNewBlock() {
     ) {
       if (doc.type === "group") {
         continue;
+      }
+
+      if (doc.type === "org") {
+        console.warn("hello world");
       }
 
       const block: IBlock = {

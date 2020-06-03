@@ -81,7 +81,10 @@ export default class AuditLogContext implements IAuditLogContext {
       date: entry.date || getDate(),
       customId: uuid(),
       createdAt: new Date(),
-      ips: instData.req.ips,
+      ips:
+        Array.isArray(instData.req.ips) && instData.req.ips.length > 0
+          ? instData.req.ips
+          : [instData.req.ip],
       userAgent: instData.req.headers["user-agent"],
     };
 

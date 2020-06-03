@@ -22,6 +22,7 @@ async function getUserFromRequest({
   required,
   audience = JWTEndpoints.Login,
 }: IGetUserFromRequestParamters) {
+  // TODO: not using cached data on multiple requests
   if (req.userData) {
     return req.userData;
   }
