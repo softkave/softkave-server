@@ -4,11 +4,11 @@ export interface IPublicUserData {
   customId: string;
   name: string;
   email: string;
-  createdAt: string;
+  createdAt: Date;
   rootBlockId: string;
   orgs: IUserOrg[];
   color: string;
-  notificationsLastCheckedAt?: string;
+  notificationsLastCheckedAt?: Date;
 }
 
 export interface ICollaborator {

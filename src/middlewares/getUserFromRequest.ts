@@ -1,3 +1,4 @@
+import moment from "moment";
 import { PermissionDeniedError } from "../endpoints/errors";
 import {
   InvalidCredentialsError,
@@ -45,7 +46,11 @@ async function getUserFromRequest({
 
   req.userData = user;
 
-  if (user.passwordLastChangedAt !== userTokenData.sub.passwordLastChangedAt) {
+  if (
+    moment(user.passwordLastChangedAt).isAfter(
+      moment(userTokenData.sub.passwordLastChangedAt)
+    )
+  ) {
     throw new LoginAgainError();
   }
 

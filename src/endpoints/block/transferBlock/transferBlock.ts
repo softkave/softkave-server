@@ -1,6 +1,7 @@
 import { AuditLogActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { IBlock } from "../../../mongo/block";
+import { getDate } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
@@ -38,7 +39,7 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
   }
 
   const draggedBlockUpdates: Partial<IBlock> = {
-    updatedAt: new Date().toString(),
+    updatedAt: getDate(),
     parent: destinationBlock.customId,
   };
 

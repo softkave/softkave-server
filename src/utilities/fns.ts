@@ -57,6 +57,17 @@ export function indexArray<T, R = T>(
   return result;
 }
 
-export function getDateString() {
-  return new Date().toString();
+export function getDate(initial?: any) {
+  if (initial) {
+    const date = new Date(initial);
+
+    // @ts-ignore
+    if (date === "Invalid Date") {
+      console.log({ initial });
+    }
+
+    return date;
+  }
+
+  return new Date();
 }

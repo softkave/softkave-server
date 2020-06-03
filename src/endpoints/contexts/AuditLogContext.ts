@@ -6,7 +6,7 @@ import {
   IAuditLogChange,
   IAuditLogModel,
 } from "../../mongo/audit-log";
-import { getDateString } from "../../utilities/fns";
+import { getDate } from "../../utilities/fns";
 import logger from "../../utilities/logger";
 import { IServerRequest } from "../../utilities/types";
 
@@ -26,7 +26,7 @@ export interface IAuditLogInsertInput {
   organizationId?: string;
   change?: IAuditLogChange;
   resourceOwnerId?: string; // for status and labels, and other "inside" resources
-  date?: string;
+  date?: Date;
 }
 
 export interface IAuditLogContext {
@@ -78,9 +78,9 @@ export default class AuditLogContext implements IAuditLogContext {
   ): IAuditLog {
     const log: IAuditLog = {
       ...entry,
-      date: entry.date || getDateString(),
+      date: entry.date || getDate(),
       customId: uuid(),
-      createdAt: new Date().toString(),
+      createdAt: new Date(),
       ips: instData.req.ips,
       userAgent: instData.req.headers["user-agent"],
     };

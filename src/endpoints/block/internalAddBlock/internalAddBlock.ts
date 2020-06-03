@@ -1,4 +1,5 @@
 import { IBlock } from "../../../mongo/block";
+import { getDate } from "../../../utilities/fns";
 import { BlockExistsError } from "../errors";
 import { InternalAddBlockEndpoint } from "./types";
 
@@ -29,16 +30,15 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
     }
   }
 
-  const now = Date.now();
-  const nowStr = now.toString();
+  const now = getDate();
 
   const block: IBlock = {
     customId: inputBlock.customId,
     name: inputBlock.name,
     lowerCasedName: inputBlock.name ? inputBlock.name.toLowerCase() : undefined,
     description: inputBlock.description,
-    dueAt: inputBlock.dueAt,
-    createdAt: nowStr,
+    dueAt: inputBlock.dueAt as any,
+    createdAt: now,
     color: inputBlock.color,
     updatedAt: undefined,
     type: inputBlock.type,
@@ -53,7 +53,7 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
     labels: inputBlock.labels,
     status: inputBlock.status,
     statusAssignedBy: inputBlock.statusAssignedBy,
-    statusAssignedAt: inputBlock.statusAssignedAt,
+    statusAssignedAt: inputBlock.statusAssignedAt as any,
   };
 
   const savedBlock = await context.block.saveBlock(context.models, block);

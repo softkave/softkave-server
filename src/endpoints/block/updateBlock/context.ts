@@ -21,15 +21,14 @@ export default class UpdateBlockContext extends BaseContext
     assigner: IUser,
     assignee: IUser
   ) {
-    // console.log({ org, task, assigner, assignee });
-    return (sendAssignedTaskEmailNotification({
+    return sendAssignedTaskEmailNotification({
       taskDescription,
       email: assignee.email,
       senderOrg: org.name,
       assignee: assignee.name,
       assigner: assigner.name,
       loginLink: appInfo.loginLink,
-    }) as unknown) as any;
+    });
   }
 
   public async bulkUpdateDeletedStatusInTasks(
@@ -61,7 +60,7 @@ export default class UpdateBlockContext extends BaseContext
       await models.blockModel.model
         .updateMany(
           { rootBlockId: orgId },
-          { $pull: { labels: { $elemMatch: { customId: { $in: ids } } } } }
+          { $pull: { labels: { customId: { $in: ids } } } }
         )
         .exec();
     } catch (error) {

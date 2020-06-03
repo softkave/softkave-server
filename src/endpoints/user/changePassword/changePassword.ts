@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import UserToken from "../UserToken";
@@ -13,7 +14,7 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
 
   await context.session.updateUser(context.models, instData, {
     hash,
-    passwordLastChangedAt: new Date().toString(),
+    passwordLastChangedAt: getDate(),
   });
 
   return {

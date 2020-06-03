@@ -2,6 +2,7 @@ import { Connection, Document } from "mongoose";
 import { getDefaultConnection } from "../mongo/defaultConnection";
 import MongoModel from "../mongo/MongoModel";
 import { getUserModel, IUser, IUser0, userSchema0 } from "../mongo/user";
+import { getDate } from "../utilities/fns";
 
 let usr0Model: MongoModel = null;
 
@@ -41,21 +42,21 @@ export async function oldUserToNewUser() {
         name: doc.name,
         email: doc.email,
         hash: doc.hash,
-        createdAt: new Date(doc.createdAt).toString(),
+        createdAt: getDate(doc.createdAt),
         forgotPasswordHistory: doc.forgotPasswordHistory.map((item) =>
-          new Date(item).toString()
+          getDate(item)
         ),
         passwordLastChangedAt:
           doc.changePasswordHistory.length > 0
-            ? new Date(
+            ? getDate(
                 doc.changePasswordHistory[doc.changePasswordHistory.length - 1]
-              ).toString()
+              )
             : undefined,
         rootBlockId: doc.rootBlockId,
         orgs: doc.orgs.map((orgId) => ({ customId: orgId })),
         color: doc.color,
         notificationsLastCheckedAt: doc.lastNotificationCheckTime
-          ? new Date(doc.lastNotificationCheckTime).toString()
+          ? getDate(doc.lastNotificationCheckTime)
           : undefined,
       };
 

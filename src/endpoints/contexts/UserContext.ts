@@ -161,7 +161,7 @@ export default class UserContext implements IUserContext {
       return await models.userModel.model
         .find(
           {
-            orgs: blockId,
+            orgs: { $elemMatch: { customId: blockId } },
           },
           "name email createdAt customId"
         )
@@ -177,7 +177,7 @@ export default class UserContext implements IUserContext {
     try {
       return await models.userModel.model
         .find({
-          orgs: blockId,
+          orgs: { $elemMatch: { customId: blockId } },
         })
         .lean()
         .exec();

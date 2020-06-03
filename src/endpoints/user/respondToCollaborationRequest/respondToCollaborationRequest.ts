@@ -1,4 +1,5 @@
 import { CollaborationRequestStatusType } from "../../../mongo/notification";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import {
@@ -56,7 +57,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
       data.response === "accepted"
         ? CollaborationRequestStatusType.Accepted
         : CollaborationRequestStatusType.Declined,
-    date: new Date().toString(),
+    date: getDate(),
   });
 
   await context.notification.updateNotificationById(

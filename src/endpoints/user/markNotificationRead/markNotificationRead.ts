@@ -26,7 +26,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
   await context.notification.updateNotificationById(
     context.models,
     data.customId,
-    { readAt: data.readAt }
+    { readAt: data.readAt as any }
   );
 };
 

@@ -1,8 +1,9 @@
 import { IUser } from "../../mongo/user";
+import { getDate } from "../../utilities/fns";
 import { IPublicUserData } from "./types";
 
-export function addEntryToPasswordDateLog(arr: string[]) {
-  arr.push(new Date().toString());
+export function addEntryToPasswordDateLog(arr: Date[]) {
+  arr.push(getDate());
 
   if (arr.length > 5) {
     arr.shift();

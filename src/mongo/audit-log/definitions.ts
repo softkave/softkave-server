@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Schema } from "mongoose";
 
 export const auditLogSchemaVersion = 1; // increment when you make changes that are not backward compatible
 
@@ -11,6 +11,12 @@ export interface IAuditLogChange {
   newValue: any;
   oldValue: any;
 }
+
+const auditLogChangeSchema = {
+  customId: { type: String },
+  newValue: { type: Schema.Types.Mixed },
+  oldValue: { type: Schema.Types.Mixed },
+};
 
 export enum AuditLogResourceType {
   User = "user",
@@ -54,7 +60,7 @@ export interface IAuditLog {
   action: AuditLogActionType;
   resourceId: string;
   resourceType: AuditLogResourceType;
-  createdAt: string;
+  createdAt: Date;
   ips: string[]; // should we respect do not track?
   userAgent: string;
   userId?: string;
@@ -63,7 +69,7 @@ export interface IAuditLog {
   resourceOwnerId?: string; // for status and labels, and other "inside" resources
 
   // TODO: add to context
-  date: string;
+  date: Date;
 
   // isSystemActioned?: boolean;
   // systemJustification?: AuditLogSystemJustification;
@@ -112,17 +118,18 @@ export interface IAuditLogDocument extends IAuditLog, Document {}
 // 2020-05-16T07:14:05.000208+00:00 app[web.1]: [winston] Attempt to write logs with no transports {"isJoi":true,"name":"ValidationError","details":[{"message":"\"password\" length must be at least 7 characters long","path":["password"],"type":"string.min","context":{"limit":7,"value":"qwerty","key":"password","label":"password"}}],"_object":{"email":"temmyjay001@gmail.com","password":"qwerty"},"level":"info"}
 
 const auditLogSchema = {
-  customId: { type: String, unique: true },
+  customId: { type: String, unique: true, index: true },
   action: { type: String },
-  date: { type: String },
+  date: { type: Date },
   resourceId: { type: String },
   resourceType: { type: String },
   userId: { type: String },
   organizationId: { type: String },
-  createdAt: { type: String },
+  createdAt: { type: Date },
   ips: { type: [String] },
   userAgent: { type: Boolean },
   resourceOwnerId: { type: String },
+  change: { type: auditLogChangeSchema },
 };
 
 export default auditLogSchema;

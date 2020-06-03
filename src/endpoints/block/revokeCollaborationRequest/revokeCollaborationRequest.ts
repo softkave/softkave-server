@@ -44,7 +44,7 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
 
   statusHistory.push({
     status: CollaborationRequestStatusType.Revoked,
-    date: new Date().toString(),
+    date: new Date(),
   });
   await context.notification.updateNotificationById(
     context.models,

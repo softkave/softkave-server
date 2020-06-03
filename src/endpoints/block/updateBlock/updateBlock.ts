@@ -324,6 +324,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
   const parent = updateData.parent;
   delete updateData.parent;
+
   await context.block.updateBlockById(
     context.models,
     data.customId,

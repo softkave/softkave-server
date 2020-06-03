@@ -1,4 +1,5 @@
 import { Document, SchemaTypeOpts } from "mongoose";
+import { getDate } from "../../utilities/fns";
 
 export const blockSchemaVersion = 3; // increment when you make changes that are not backward compatible
 
@@ -11,7 +12,7 @@ export interface ITaskCollaborator0 {
 
 export interface ITaskCollaborator {
   userId: string;
-  assignedAt: string;
+  assignedAt: Date;
   assignedBy: string;
 }
 
@@ -24,26 +25,30 @@ export const blockTaskCollaboratorDataSchema0 = {
 
 export const blockAssigneeSchema = {
   userId: String,
-  assignedAt: String,
+  assignedAt: Date,
   assignedBy: String,
 };
 
 export interface ISubTask {
   customId: string;
   description: string;
-  createdAt: string;
+  createdAt: Date;
   createdBy: string;
+  updatedAt?: Date;
+  updatedBy?: string;
   completedBy?: string;
-  completedAt?: string;
+  completedAt?: Date;
 }
 
 export const subTaskSchema = {
   customId: String,
   description: String,
-  createdAt: String,
+  createdAt: Date,
   createdBy: String,
+  updatedAt: Date,
+  updatedBy: String,
   completedBy: String,
-  completedAt: String,
+  completedAt: Date,
 };
 
 export interface ITaskCollaborationType {
@@ -63,10 +68,10 @@ export interface IBlockLabel {
   name: string;
   color: string;
   createdBy: string;
-  createdAt: string;
+  createdAt: Date;
   description?: string;
   updatedBy?: string;
-  updatedAt?: string;
+  updatedAt?: Date;
 }
 
 export const blockLabelSchema = {
@@ -75,9 +80,9 @@ export const blockLabelSchema = {
   color: { type: String },
   description: { type: String },
   createdBy: { type: String },
-  createdAt: { type: String },
+  createdAt: { type: Date },
   updatedBy: { type: String },
-  updatedAt: { type: String },
+  updatedAt: { type: Date },
 };
 
 export interface IBlockStatus {
@@ -86,9 +91,9 @@ export interface IBlockStatus {
   color: string;
   description?: string;
   createdBy?: string;
-  createdAt?: string;
+  createdAt?: Date;
   updatedBy?: string;
-  updatedAt?: string;
+  updatedAt?: Date;
 }
 
 export const blockStatusSchema = {
@@ -97,9 +102,9 @@ export const blockStatusSchema = {
   description: { type: String },
   color: { type: String },
   createdBy: { type: String },
-  createdAt: { type: String },
+  createdAt: { type: Date },
   updatedBy: { type: String },
-  updatedAt: { type: String },
+  updatedAt: { type: Date },
 };
 
 export type BlockType0 = "root" | "org" | "project" | "group" | "task";
@@ -186,26 +191,26 @@ export interface IBlock0 {
 export interface IBlockAssignedLabel {
   customId: string;
   assignedBy: string;
-  assignedAt: string;
+  assignedAt: Date;
 }
 
 export const blockAssignedLabelSchema = {
   customId: { type: String },
   assignedBy: { type: String },
-  assignedAt: { type: String },
+  assignedAt: { type: Date },
 };
 
 export interface IBlock {
   customId: string;
   createdBy: string;
-  createdAt: string;
+  createdAt: Date;
   type: BlockType;
   name?: string;
   lowerCasedName?: string;
   description?: string;
-  dueAt?: string;
+  dueAt?: Date;
   color?: string;
-  updatedAt?: string;
+  updatedAt?: Date;
   updatedBy?: string;
   parent?: string;
   rootBlockId?: string;
@@ -216,10 +221,10 @@ export interface IBlock {
   boardLabels?: IBlockLabel[];
   status?: string;
   statusAssignedBy?: string;
-  statusAssignedAt?: string;
+  statusAssignedAt?: Date;
   labels?: IBlockAssignedLabel[];
   isDeleted?: boolean;
-  deletedAt?: string;
+  deletedAt?: Date;
   deletedBy?: string;
 }
 
@@ -284,18 +289,18 @@ export const blockSchema0 = {
 };
 
 const blockSchema = {
-  customId: { type: String, unique: true },
+  customId: { type: String, unique: true, index: true },
   name: { type: String },
-  lowerCasedName: { type: String },
+  lowerCasedName: { type: String, index: true },
   description: { type: String },
-  dueAt: { type: String },
-  createdAt: { type: String },
+  dueAt: { type: Date },
+  createdAt: { type: Date, default: () => getDate() },
   createdBy: { type: String },
   color: { type: String },
-  updatedAt: { type: String },
+  updatedAt: { type: Date },
   updatedBy: { type: String },
-  type: { type: String },
-  parent: { type: String },
+  type: { type: String, index: true },
+  parent: { type: String, index: true },
   rootBlockId: { type: String },
   assignees: { type: [blockAssigneeSchema] },
   priority: { type: String },
@@ -304,10 +309,10 @@ const blockSchema = {
   boardLabels: { type: [blockLabelSchema] },
   status: { type: String },
   statusAssignedBy: { type: String },
-  statusAssignedAt: Number,
+  statusAssignedAt: { type: Date },
   labels: { type: [blockAssignedLabelSchema] },
-  isDeleted: { type: Boolean, default: false },
-  deletedAt: { type: String },
+  isDeleted: { type: Boolean, default: false, index: true },
+  deletedAt: { type: Date },
   deletedBy: { type: String },
 };
 

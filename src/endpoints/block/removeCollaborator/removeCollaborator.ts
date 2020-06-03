@@ -1,5 +1,6 @@
 import uuid = require("uuid");
 import { INotification, NotificationType } from "../../../mongo/notification";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { UserDoesNotExistError } from "../../user/errors";
@@ -53,7 +54,7 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
 
     // TODO: should we have a from field here?
 
-    createdAt: new Date().toString(),
+    createdAt: getDate(),
     body: message,
     to: {
       email: fetchedCollaborator.email,

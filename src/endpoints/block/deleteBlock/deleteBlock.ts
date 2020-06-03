@@ -3,7 +3,7 @@ import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { IBlock } from "../../../mongo/block";
 import { INotification, NotificationType } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
-import { getDateString } from "../../../utilities/fns";
+import { getDate } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
@@ -62,7 +62,7 @@ async function deleteOrgCleanup(
 
       // TODO: should we have a from field here?
 
-      createdAt: getDateString(),
+      createdAt: getDate(),
       body: message,
       to: {
         email: orgUser.email,

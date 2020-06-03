@@ -124,8 +124,8 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
-  await block_v3();
-  await oldNotificationToNewNotification();
+  // await block_v3();
+  // await oldNotificationToNewNotification();
   await oldUserToNewUser();
 
   app.listen(port, () => {

@@ -6,6 +6,7 @@
 // close the cursor when done
 
 import { Connection, Document } from "mongoose";
+import randomColor from "randomcolor";
 import uuid from "uuid/v4";
 import { System } from "../mongo/audit-log";
 import { getBlockModel } from "../mongo/block/BlockModel";
@@ -16,6 +17,7 @@ import blockSchema0, {
 } from "../mongo/block/definitions";
 import { getDefaultConnection } from "../mongo/defaultConnection";
 import MongoModel from "../mongo/MongoModel";
+import { getDate } from "../utilities/fns";
 
 let blk0Model: MongoModel = null;
 
@@ -87,7 +89,7 @@ async function removeTasksFromOrgsToNewProject() {
   console.log(`script - removeTasksFromOrgsToNewProject - started`);
 
   let docsCount = 0;
-  const name = "new-board-1";
+  const name = "new-board";
   const description =
     "Please change the name of this board." +
     "This name was system generated during an update that required a move and reclassification of data.";
@@ -155,8 +157,6 @@ async function oldBlockToNewBlock() {
   console.log(`script - oldBlockToNewBlock - started`);
 
   let docsCount = 0;
-  const now = new Date();
-  const nowStr = now.toString();
   const blockModel0 = getBlock0Model(getDefaultConnection().getConnection());
   await blockModel0.model.ensureIndexes();
   const cursor = blockModel0.model.find({}).cursor();
@@ -176,31 +176,67 @@ async function oldBlockToNewBlock() {
       const block: IBlock = {
         customId: doc.customId,
         createdBy: doc.createdBy,
-        createdAt: new Date(doc.createdAt).toString(),
+        createdAt: getDate(doc.createdAt),
         type: doc.type === "project" ? BlockType.Board : (doc.type as any),
         name: doc.name,
         lowerCasedName: doc.lowerCasedName,
         description: doc.description,
-        dueAt: new Date(doc.expectedEndAt).toString(),
+        dueAt: doc.expectedEndAt ? getDate(doc.expectedEndAt) : undefined,
         color: doc.color,
-        updatedAt: nowStr,
+        updatedAt: doc.updatedAt ? getDate(doc.updatedAt) : undefined,
         updatedBy: System.System,
         parent: doc.parent, // or boardId
         rootBlockId: doc.rootBlockID,
-        assignees: doc.taskCollaborators,
+        assignees: doc.taskCollaborators
+          ? doc.taskCollaborators.map((assignee) => ({
+              assignedBy: assignee.assignedBy,
+              userId: assignee.userId,
+              assignedAt: getDate(assignee.assignedAt),
+            }))
+          : undefined,
         priority: doc.priority,
-        subTasks: doc.subTasks,
-        boardStatuses: doc.availableStatus.map((status) => ({
-          ...status,
-          color: randomColor(),
-        })),
-        boardLabels: doc.availableLabels,
+        subTasks: doc.subTasks
+          ? doc.subTasks.map((subtask) => ({
+              createdBy: subtask.createdBy,
+              customId: subtask.customId,
+              description: subtask.description,
+              completedBy: subtask.completedBy,
+              updatedBy: subtask.updatedBy,
+              completedAt: getDate(subtask.completedAt),
+              createdAt: getDate(subtask.createdAt),
+              updatedAt: getDate(subtask.updatedAt),
+            }))
+          : undefined,
+        boardStatuses: doc.availableStatus
+          ? doc.availableStatus.map((status) => ({
+              customId: status.customId,
+              name: status.name,
+              createdBy: status.createdBy,
+              description: status.description,
+              updatedBy: status.updatedBy,
+              color: randomColor(),
+              createdAt: getDate(status.createdAt),
+              updatedAt: getDate(status.updatedAt),
+            }))
+          : undefined,
+        boardLabels: doc.availableLabels
+          ? doc.availableLabels.map((label) => ({
+              customId: label.customId,
+              name: label.name,
+              createdBy: label.createdBy,
+              description: label.description,
+              updatedBy: label.updatedBy,
+              color: label.color,
+              createdAt: getDate(label.createdAt),
+              updatedAt: getDate(label.updatedAt),
+            }))
+          : undefined,
         status: doc.status,
         statusAssignedBy: System.System,
-        statusAssignedAt: nowStr,
+        statusAssignedAt: undefined,
         labels: (doc.labels || []).map((labelId) => ({
           customId: labelId,
-          assignedAt: nowStr,
+          assignedAt: undefined,
           assignedBy: System.System,
         })),
         isDeleted: false,

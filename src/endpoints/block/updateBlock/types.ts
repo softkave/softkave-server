@@ -19,13 +19,13 @@ export interface IUpdateBlockInput {
   priority?: string;
   parent?: string;
   subTasks?: ISubTask[];
-  dueAt?: string;
+  dueAt?: Date; // not really a date, it's a string
   assignees?: ITaskCollaborator[];
   boardStatuses?: IBlockStatus[];
   boardLabels?: IBlockLabel[];
   status?: string;
   statusAssignedBy?: string;
-  statusAssignedAt?: string;
+  statusAssignedAt?: Date; // not really a date, it's a string
   labels?: IBlockAssignedLabel[];
 }
 

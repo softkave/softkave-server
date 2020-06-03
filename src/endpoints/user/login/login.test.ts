@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
+import { getDate } from "../../../utilities/fns";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { IEndpointInstanceData } from "../../contexts/types";
 import { JWTEndpoints } from "../../utils";
@@ -34,10 +35,10 @@ const getContext = () => {
           hash: await argon2.hash(correctPassword),
           customId: "",
           name: "Abayomi Akintomide",
-          createdAt: new Date().toString(),
+          createdAt: getDate(),
           forgotPasswordHistory: [],
-          passwordLastChangedAt: new Date().toString(),
-          notificationsLastCheckedAt: new Date().toString(),
+          passwordLastChangedAt: getDate(),
+          notificationsLastCheckedAt: getDate(),
           rootBlockId: "",
           orgs: [{ customId: "" }],
           color: "",

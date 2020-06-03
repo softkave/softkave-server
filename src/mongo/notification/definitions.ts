@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { getDate } from "../../utilities/fns";
 import { BlockType } from "../block";
 
 export const notificationSchemaVersion = 1; // increment when you make changes that are not backward compatible
@@ -28,9 +29,9 @@ const notificationFromSchema = {
 };
 
 const collaborationRequestFromSchema = {
-  userId: String,
+  userId: { type: String, index: true },
   name: String,
-  blockId: String,
+  blockId: { type: String, index: true },
   blockName: String,
 };
 
@@ -39,7 +40,7 @@ export interface INotificationTo {
 }
 
 const notificationToSchema = {
-  email: String,
+  email: { type: String, index: true },
 };
 
 export enum CollaborationRequestStatusType {
@@ -51,20 +52,20 @@ export enum CollaborationRequestStatusType {
 
 export interface ICollaborationRequestStatus {
   status: CollaborationRequestStatusType;
-  date: string;
+  date: Date;
 }
 
 const collaborationRequestStatusHistorySchema = {
   status: String,
-  date: String,
+  date: Date,
 };
 
 export interface INotificationSentEmailHistoryItem {
-  date: string;
+  date: Date;
 }
 
 const notificationSentEmailHistorySchema = {
-  date: String,
+  date: Date,
 };
 
 export enum NotificationType {
@@ -91,10 +92,10 @@ export interface INotification {
   to: INotificationTo;
   body: string;
   from?: ICollaborationRequestFrom;
-  createdAt: string;
+  createdAt: Date;
   type: NotificationType;
-  readAt?: string;
-  expiresAt?: string;
+  readAt?: Date;
+  expiresAt?: Date;
   statusHistory?: ICollaborationRequestStatus[];
   sentEmailHistory?: INotificationSentEmailHistoryItem[];
 }
@@ -122,16 +123,16 @@ export const notificationSchema0 = {
 };
 
 const notificationSchema = {
-  customId: { type: String },
+  customId: { type: String, unique: true, index: true },
   to: { type: notificationToSchema },
   body: { type: String },
-  collaborationRequestFrom: { type: collaborationRequestFromSchema },
-  createdAt: { type: String },
+  from: { type: collaborationRequestFromSchema },
+  createdAt: { type: Date, default: () => getDate() },
   type: { type: String },
-  readAt: { type: String },
-  expiresAt: { type: String },
-  statusHistory: { type: collaborationRequestStatusHistorySchema },
-  sentEmailHistory: { type: notificationSentEmailHistorySchema },
+  readAt: { type: Date },
+  expiresAt: { type: Date },
+  statusHistory: { type: [collaborationRequestStatusHistorySchema] },
+  sentEmailHistory: { type: [notificationSentEmailHistorySchema] },
 };
 
 export default notificationSchema;

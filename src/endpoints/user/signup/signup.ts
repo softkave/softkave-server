@@ -5,6 +5,7 @@ import {
   AuditLogResourceType,
 } from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";
@@ -24,17 +25,16 @@ const signup: SignupEndpoint = async (context, instData) => {
   }
 
   const hash = await argon2.hash(data.password);
-  const now = new Date();
-  const nowStr = now.toString();
+  const now = getDate();
   const value: IUser = {
     hash,
     customId: uuid(),
     email: data.email.toLowerCase(),
     name: data.name,
     color: data.color,
-    createdAt: nowStr,
+    createdAt: now,
     forgotPasswordHistory: [],
-    passwordLastChangedAt: nowStr,
+    passwordLastChangedAt: now,
     rootBlockId: "",
     orgs: [],
   };

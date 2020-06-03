@@ -6,7 +6,7 @@ import {
 } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
-import { indexArray } from "../../../utilities/fns";
+import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { userIsPartOfOrg } from "../../user/utils";
 import { fireAndForgetPromise } from "../../utils";
@@ -102,8 +102,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     throw errors;
   }
 
-  const now = new Date();
-  const nowStr = now.toString();
+  const now = getDate();
 
   const collaborationRequests = collaborators.map((request) => {
     const notificationBody =
@@ -121,17 +120,17 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         blockName: block.name,
         blockType: block.type,
       },
-      createdAt: nowStr,
+      createdAt: now,
       body: notificationBody,
       to: {
         email: request.email,
       },
       type: NotificationType.CollaborationRequest,
-      expiresAt: request.expiresAt,
+      expiresAt: request.expiresAt as any,
       statusHistory: [
         {
           status: CollaborationRequestStatusType.Pending,
-          date: nowStr,
+          date: now,
         },
       ],
       sentEmailHistory: [],
@@ -148,7 +147,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
   function updateSentEmailHistory(request: INotification) {
     const sentEmailHistory = request.sentEmailHistory.concat({
-      date: new Date().toString(),
+      date: getDate(),
     });
 
     fireAndForgetPromise(

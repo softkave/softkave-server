@@ -2,6 +2,7 @@ import { BlockType, IBlock, IBlockModel } from "../../mongo/block";
 import mongoConstants from "../../mongo/constants";
 import { IUser } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
+import { getDate } from "../../utilities/fns";
 import logger from "../../utilities/logger";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IBulkUpdateByIdItem } from "./types";
@@ -171,7 +172,7 @@ export default class BlockContext implements IBlockContext {
       const update: Partial<IBlock> = {
         isDeleted: true,
         deletedBy: user.customId,
-        deletedAt: new Date().toString(),
+        deletedAt: getDate(),
       };
 
       await models.blockModel.model.updateOne({ customId }, update).exec();
@@ -215,7 +216,7 @@ export default class BlockContext implements IBlockContext {
       const update: Partial<IBlock> = {
         isDeleted: true,
         deletedBy: user.customId,
-        deletedAt: new Date().toString(),
+        deletedAt: getDate(),
       };
       await models.blockModel.model
         .updateMany({ parent: customId }, update)

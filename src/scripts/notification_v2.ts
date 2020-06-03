@@ -1,4 +1,5 @@
 import { Connection, Document } from "mongoose";
+import util from "util";
 import { getDefaultConnection } from "../mongo/defaultConnection";
 import MongoModel from "../mongo/MongoModel";
 import {
@@ -7,6 +8,7 @@ import {
   INotification0,
   notificationSchema0,
 } from "../mongo/notification";
+import { getDate } from "../utilities/fns";
 
 let not0Model: MongoModel = null;
 
@@ -47,23 +49,31 @@ export async function oldNotificationToNewNotification() {
     ) {
       const notification: INotification = {
         customId: doc.customId,
-        to: doc.to,
+        to: {
+          email: doc.to.email,
+        },
         body: doc.body,
-        from: doc.from,
-        createdAt: new Date(doc.createdAt).toString(),
+        from: {
+          blockId: doc.from.blockId,
+          userId: doc.from.userId,
+          blockName: doc.from.blockName,
+          blockType: doc.from.blockType,
+          name: doc.from.name,
+        },
+        createdAt: getDate(doc.createdAt),
         type: doc.type,
-        readAt: doc.readAt ? new Date(doc.readAt).toString() : undefined,
-        expiresAt: doc.expiresAt
-          ? new Date(doc.expiresAt).toString()
-          : undefined,
+        readAt: doc.readAt ? getDate(doc.readAt) : undefined,
+        expiresAt: doc.expiresAt ? getDate(doc.expiresAt) : undefined,
         statusHistory: doc.statusHistory.map((status) => ({
           status: status.status,
-          date: new Date(status.date).toString(),
+          date: getDate(status.date),
         })),
         sentEmailHistory: doc.sentEmailHistory.map((item) => ({
-          date: new Date(item.date).toString(),
+          date: getDate(item.date),
         })),
       };
+
+      // console.log(util.format("%o", notification));
 
       const newDoc = new notificationModel.model(notification);
       await newDoc.save();
