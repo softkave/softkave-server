@@ -6,11 +6,7 @@ import { blockConstants } from "./constants";
 const taskCollaboratorSchema = Joi.object().keys({
   userId: validationSchemas.uuid,
   assignedBy: validationSchemas.uuid,
-  assignedAt: Joi.number(),
-
-  // Allow null because sometimes, the value from the API or in DB is null,
-  // and it leads to a false validation error
-  completedAt: Joi.number().allow(null),
+  assignedAt: Joi.date(),
 });
 
 const taskCollaboratorsListSchema = Joi.array()
@@ -19,13 +15,18 @@ const taskCollaboratorsListSchema = Joi.array()
   .unique("userId")
   .items(taskCollaboratorSchema);
 
-const userUpdateableTypes = ["org", "board", "task"] as BlockType[];
+const userUpdateableTypes = [
+  BlockType.Org,
+  BlockType.Board,
+  BlockType.Task,
+] as BlockType[];
 const userUpdateableblockTypeSchema = Joi.string()
   .lowercase()
   .valid(userUpdateableTypes);
 
-const fullBlockTypes = [...userUpdateableTypes, "root"] as BlockType[];
+const fullBlockTypes = [...userUpdateableTypes, BlockType.Root] as BlockType[];
 const fullBlockTypeSchema = Joi.string().lowercase().valid(fullBlockTypes);
+const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
 
 const subTasksSchema = Joi.object().keys({
   customId: Joi.string().uuid().required(),
@@ -34,12 +35,17 @@ const subTasksSchema = Joi.object().keys({
     .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
     .required(),
-  completedBy: Joi.string().uuid().allow(null),
-  completedAt: Joi.number().allow(null),
+  completedBy: Joi.string().uuid(),
+  completedAt: Joi.date(),
+  createdAt: Joi.date(),
+  createdBy: Joi.string().uuid(),
+  updatedAt: Joi.date(),
+  updatedBy: Joi.string().uuid(),
 });
 
 // TODO: run trim on all string inputs
 const labelSchema = Joi.object().keys({
+  color,
   customId: Joi.string().uuid().required(),
   name: Joi.string()
     .lowercase()
@@ -48,18 +54,17 @@ const labelSchema = Joi.object().keys({
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
-    .allow("", null)
     .trim()
     .min(blockConstants.minLabelDescriptionLength)
     .max(blockConstants.maxLabelDescriptionLength),
-  color: Joi.string().trim().lowercase().regex(regEx.hexColorPattern),
-  createdAt: Joi.number().allow(null),
-  createdBy: Joi.string().uuid().allow("system", null),
-  updatedAt: Joi.number().allow(null),
-  updatedBy: Joi.string().uuid().allow("system", null),
+  createdAt: Joi.date(),
+  createdBy: Joi.string().uuid(),
+  updatedAt: Joi.date(),
+  updatedBy: Joi.string().uuid(),
 });
 
 const statusSchema = Joi.object().keys({
+  color,
   customId: Joi.string().uuid().required(),
   name: Joi.string()
     .trim()
@@ -68,16 +73,13 @@ const statusSchema = Joi.object().keys({
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
-    .allow("", null)
     .trim()
     .min(blockConstants.minLabelDescriptionLength)
     .max(blockConstants.maxLabelDescriptionLength),
-  createdAt: Joi.number().allow(null),
-  createdBy: Joi.string().uuid().allow("system", null),
-  updatedAt: Joi.number().allow(null),
-
-  // TODO: allowing "system" allows boycotting the real data which can be exploited
-  updatedBy: Joi.string().uuid().allow("system", null),
+  createdAt: Joi.date(),
+  createdBy: Joi.string().uuid(),
+  updatedAt: Joi.date(),
+  updatedBy: Joi.string().uuid(),
 });
 
 const statusListSchema = Joi.array()
@@ -88,7 +90,7 @@ const statusListSchema = Joi.array()
 //   return a.customId === b.customId || a.name === b.name;
 // });
 
-const labelListSchema = Joi.array()
+const boardLabelList = Joi.array()
   .max(blockConstants.maxAvailableLabels)
   .items(labelSchema);
 // .unique((a: IBlockLabel, b: IBlockLabel) => {
@@ -96,7 +98,7 @@ const labelListSchema = Joi.array()
 // });
 
 const blockTypesSchema = Joi.array()
-  .max(blockConstants.blockTypesArray.length)
+  .max(blockConstants.blockTypesCount)
   .unique()
   .items(userUpdateableblockTypeSchema);
 
@@ -122,13 +124,12 @@ const updateDescription = Joi.string()
   .max(blockConstants.maxDescriptionLength)
   .trim();
 
-const expectedEndAt = Joi.number();
-const createdAt = Joi.number();
-const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
+const dueAt = Joi.date();
+const createdAt = Joi.date();
 
-const updatedAt = Joi.number();
+const updatedAt = Joi.date();
 const parent = validationSchemas.uuid.when("type", {
-  is: Joi.string().valid(["group", "board", "task"] as BlockType[]),
+  is: Joi.string().valid([BlockType.Board, BlockType.Task] as BlockType[]),
   then: Joi.required(),
 });
 
@@ -144,31 +145,41 @@ const subTasks = Joi.array()
   .min(blockConstants.minSubTasksLength)
   .max(blockConstants.maxSubTasksLength);
 
+const blockAssignedLabels = Joi.object().keys({
+  customId: validationSchemas.uuid,
+  assignedBy: validationSchemas.uuid,
+  assignedAt: Joi.date(),
+});
+
+const blockAssignedLabelsList = Joi.array()
+  .items(blockAssignedLabels)
+  .max(blockConstants.maxAvailableLabels);
+
 const newBlock = Joi.object().keys({
   name,
   description,
-  expectedEndAt,
+  dueAt,
   color,
   parent,
-  rootBlockID: rootBlockId,
+  rootBlockId,
   priority,
   assignees: taskAssignees,
   subTasks,
   customId: blockId,
   type: userUpdateableblockTypeSchema,
   boardStatuses: statusListSchema,
-  boardLabels: labelListSchema,
+  boardLabels: boardLabelList,
   status: validationSchemas.uuid,
-  labels: Joi.array()
-    .items(validationSchemas.uuid)
-    .max(blockConstants.maxAvailableLabels),
+  statusAssignedBy: validationSchemas.uuid,
+  statusAssignedAt: Joi.date(),
+  labels: blockAssignedLabelsList,
 });
 
 const blockValidationSchemas = {
   name,
   lowerCasedName,
   blockId,
-  expectedEndAt,
+  dueAt,
   description,
   createdAt,
   color,
@@ -186,8 +197,10 @@ const blockValidationSchemas = {
   statusSchema,
   labelSchema,
   statusListSchema,
-  labelListSchema,
+  boardLabelList,
   updateDescription,
+  blockAssignedLabels,
+  blockAssignedLabelsList,
 };
 
 export default blockValidationSchemas;

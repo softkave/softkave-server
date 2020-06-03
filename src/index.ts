@@ -126,7 +126,7 @@ connection.wait().then(async () => {
   // scripts
   // await block_v3();
   // await oldNotificationToNewNotification();
-  await oldUserToNewUser();
+  // await oldUserToNewUser();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

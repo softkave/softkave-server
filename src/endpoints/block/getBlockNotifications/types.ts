@@ -3,7 +3,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockNotificationsParameters {
-  customId: string;
+  blockId: string;
 }
 
 export interface IGetBlockNotificationsResult {

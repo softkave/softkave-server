@@ -25,13 +25,7 @@ const blockConstants = {
   minAddCollaboratorValuesLength: 0,
   maxAddCollaboratorValuesLength: 10,
   maxChildrenCount: 500,
-  blockTypesArray: [
-    blockTypeGroup,
-    blockTypeOrg,
-    blockTypeBoard,
-    blockTypeTask,
-    blockTypeRoot,
-  ] as BlockType[],
+  blockTypesCount: 4,
   priorityValuesArray: [
     priorityNotImportant,
     priorityImportant,

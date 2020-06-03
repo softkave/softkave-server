@@ -9,13 +9,13 @@ const getBlockChildren: GetBlockChildrenEndpoint = async (
 ) => {
   const data = validate(instData.data, getBlockChildrenJoiSchema);
   const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.customId);
+  const block = await context.block.getBlockById(context.models, data.blockId);
 
   canReadBlock({ user, block });
 
   const blocks = await context.block.getBlockChildren(
     context.models,
-    data.customId,
+    data.blockId,
     data.typeList
   );
 

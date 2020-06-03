@@ -1,5 +1,5 @@
-import { Endpoint } from "../../types";
 import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IRevokeCollaborationRequestParameters {
   requestId: string;

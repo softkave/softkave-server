@@ -21,7 +21,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   const user = await context.session.getUser(context.models, instData);
   const req = await context.notification.getNotificationById(
     context.models,
-    data.customId
+    data.requestId
   );
 
   if (!!!req) {
@@ -62,7 +62,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
 
   await context.notification.updateNotificationById(
     context.models,
-    data.customId,
+    data.requestId,
     { statusHistory }
   );
 
@@ -75,7 +75,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     // if the org does not exist or has been deleted
     // TODO: should we log something here?
     // TODO: figure our log points, i.e, what are the things we should be logging?
-    context.notification.deleteNotificationById(context.models, data.customId);
+    context.notification.deleteNotificationById(context.models, data.requestId);
   } else if (data.response === CollaborationRequestStatusType.Accepted) {
     if (!userIsPartOfOrg(user, ownerBlock.customId)) {
       const userOrgs = user.orgs.concat({ customId: ownerBlock.customId });

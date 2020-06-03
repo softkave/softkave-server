@@ -3,7 +3,7 @@ import { Endpoint } from "../../types";
 import { ICollaborator } from "../../user/types";
 
 export interface IGetBlockCollaboratorsParameters {
-  customId: string;
+  blockId: string;
 }
 
 export interface IGetBlockCollaboratorsResult {

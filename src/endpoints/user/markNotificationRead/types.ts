@@ -2,7 +2,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IMarkNotificationReadParameters {
-  customId: string;
+  notificationId: string;
   readAt: string;
 }
 

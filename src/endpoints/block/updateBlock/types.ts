@@ -1,10 +1,10 @@
 import {
+  IAssignee,
   IBlock,
   IBlockAssignedLabel,
   IBlockLabel,
   IBlockStatus,
   ISubTask,
-  ITaskCollaborator,
 } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
@@ -20,7 +20,7 @@ export interface IUpdateBlockInput {
   parent?: string;
   subTasks?: ISubTask[];
   dueAt?: Date; // not really a date, it's a string
-  assignees?: ITaskCollaborator[];
+  assignees?: IAssignee[];
   boardStatuses?: IBlockStatus[];
   boardLabels?: IBlockLabel[];
   status?: string;
@@ -30,12 +30,12 @@ export interface IUpdateBlockInput {
 }
 
 export interface ITaskAssigneesDiff {
-  newAssignees: ITaskCollaborator[];
-  removedAssignees: ITaskCollaborator[];
+  newAssignees: IAssignee[];
+  removedAssignees: IAssignee[];
 }
 
 export interface IUpdateBlockParameters {
-  customId: string;
+  blockId: string;
   data: IUpdateBlockInput;
 }
 

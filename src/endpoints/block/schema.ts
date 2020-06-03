@@ -1,48 +1,43 @@
 const blockSchema = `
-  type BlockTaskCollaboratorData {
+  type Assignee {
     userId: String
-    completedAt: Float
     assignedBy: String
     assignedAt: Float
   }
 
-  input BlockTaskCollaboratorDataInput {
+  input AssigneeInput {
     userId: String!
-    completedAt: Float
     assignedBy: String
     assignedAt: Float
   }
 
-  type SubTask{
-    customId: String
-    description: String
-    completedBy: String
-    completedAt: Float
+  type SubTask {
+    customId: string;
+    description: string;
+    createdAt: Date;
+    createdBy: string;
+    updatedAt?: Date;
+    updatedBy?: string;
+    completedBy?: string;
+    completedAt?: Date;
   }
 
-  input SubTaskInput{
-    customId: String!
-    description: String!
-    completedBy: String
-    completedAt: Float
+  input SubTaskInput {
+    customId: string!
+    description: string!
+    createdAt: Date!
+    createdBy: string!
+    updatedAt?: Date;
+    updatedBy?: string;
+    completedBy?: string;
+    completedAt?: Date;
   }
 
-  type TaskCollaborationData {
-    collaborationType: String
-    completedAt: Float
-    completedBy: String
-  }
-
-  input TaskCollaborationDataInput {
-    collaborationType: String
-    completedAt: Float
-    completedBy: String
-  }
-
-  type StatusData {
+  type Status {
     customId: String
     name: String
     description: String
+    color: String
     createdBy: String
     createdAt: Float
     updatedBy: String
@@ -52,14 +47,15 @@ const blockSchema = `
   input StatusInput {
     customId: String!
     name: String!
+    color: String!
+    createdBy: String!
+    createdAt: Float!
     description: String
-    createdBy: String
-    createdAt: Float
     updatedBy: String
     updatedAt: Float
   }
 
-  type LabelData {
+  type Label {
     customId: String
     name: String
     color: String
@@ -74,45 +70,47 @@ const blockSchema = `
     customId: String!
     name: String!
     color: String!
+    createdBy: String!
+    createdAt: Float!
     description: String
-    createdBy: String
-    createdAt: Float
     updatedBy: String
     updatedAt: Float
   }
 
-
-  type Block {
-    customId: String
-    name: String
-    description: String
-    expectedEndAt: Float
-    createdAt: Float
-    color: String
-    updatedAt: Float
-    type: String
-    parent: String
-    rootBlockID: String
-    boardId: String
-    createdBy: String
-    taskCollaborationData: TaskCollaborationData
-    taskCollaborators: [BlockTaskCollaboratorData]
-    priority: String
-    groups: [String]
-    projects: [String]
-    tasks: [String]
-    groupTaskContext: [String]
-    groupProjectContext: [String]
-    subTasks: [SubTask]
-    landingPage: String
-    availableStatus: [StatusData]
-    availableLabels: [LabelData]
-    status: String
-    labels: [String]
+  type BlockAssignedLabel {
+    customId: string;
+    assignedBy: string;
+    assignedAt: Date;
   }
 
-  type BlockResponse {
-    block: Block
+  input BlockAssignedLabelInput {
+    customId: string;
+    assignedBy: string;
+    assignedAt: Date;
+  }
+
+  type Block {
+    customId: string;
+    createdBy: string;
+    createdAt: Date;
+    type: BlockType;
+    name?: string;
+    description?: string;
+    dueAt?: Date;
+    color?: string;
+    updatedAt?: Date;
+    updatedBy?: string;
+    parent?: string;
+    rootBlockId?: string;
+    assignees?: [Assignee]
+    priority?: string;
+    subTasks?: [SubTask]
+    boardStatuses?: [Status];
+    boardLabels?: [Label];
+    status?: string;
+    statusAssignedBy?: string;
+    statusAssignedAt?: Date;
+    labels?: [BlockAssignedLabel]
   }
 
   type SingleBlockOpResponse {
@@ -126,53 +124,43 @@ const blockSchema = `
   }
 
   input AddBlockInput {
-    name: String
-    customId: String!
-    description: String
-    expectedEndAt: Float
-    color: String
-    type: String!
-    parent: String
-    rootBlockID: String
-    boardId: String
-    priority: String
-    taskCollaborationData: TaskCollaborationDataInput
-    taskCollaborators: [BlockTaskCollaboratorDataInput]
-    subTasks: [SubTaskInput]
-    groups: [String]
-    projects: [String]
-    tasks: [String]
-    groupTaskContext: [String]
-    groupProjectContext: [String]
-    availableStatus: [StatusInput]
-    availableLabels: [LabelInput]
-    status: String
-    labels: [String]
+    customId: string;
+    type: BlockType;
+    name?: string;
+    description?: string;
+    dueAt?: string;
+    color?: string;
+    parent?: string;
+    rootBlockId?: string;
+    assignees?: [AssigneeInput]
+    priority?: string;
+    subTasks?: [SubTaskInput]
+    boardStatuses?: [StatusInput]
+    boardLabels?: [LabelInput]
+    status?: string;
+    statusAssignedBy?: string;
+    statusAssignedAt?: string;
+    labels?: [BlockAssignedLabelInput]
   }
 
   input UpdateBlockInput {
-    name: String
-    description: String
-    expectedEndAt: Float
-    color: String
-    priority: String
-    taskCollaborationData: TaskCollaborationDataInput
-    taskCollaborators: [BlockTaskCollaboratorDataInput]
-    type: String!
-    parent: String
-    groups: [String]
-    projects: [String]
-    tasks: [String]
-    groupTaskContext: [String]
-    groupProjectContext: [String]
-    subTasks: [SubTaskInput]
-    availableStatus: [StatusInput]
-    availableLabels: [LabelInput]
-    status: String
-    labels: [String]
+    name?: string;
+    description?: string;
+    color?: string;
+    priority?: string;
+    parent?: string;
+    subTasks?: [SubTaskInput]
+    boardStatuses?: [StatusInput]
+    boardLabels?: [LabelInput]
+    dueAt?: Date;
+    assignees?: [AssigneeInput]
+    status?: string;
+    statusAssignedBy?: string;
+    statusAssignedAt?: Date;
+    labels?: [BlockAssignedLabelInput]
   }
 
-  type CollabRequestFrom {
+  type CollaborationRequestFrom {
     userId: String
     name: String
     blockId: String
@@ -180,107 +168,83 @@ const blockSchema = `
     blockType: String
   }
 
-  type CollabRequestTo {
+  type NotificationTo {
     email: String
-    userId: String
   }
 
-  type CollabRequestStatusHistory {
+  type NotificationStatusHistory {
     status: String
     date: Float
   }
 
-  type CollabRequestEmailHistory {
+  type NotificationSentEmailHistory {
     date: Float
   }
 
-  type CollabRequest {
+  type Notification {
     customId: String
-    from: CollabRequestFrom
+    from: CollaborationRequestFrom
     createdAt: Float
     body: String
     readAt: Float
-    to: CollabRequestTo
-    statusHistory: [CollabRequestStatusHistory]
-    sentEmailHistory: [CollabRequestEmailHistory]
+    to: NotificationTo
+    statusHistory: [NotificationStatusHistory]
+    sentEmailHistory: [NotificationSentEmailHistory]
     type: String
     root: String
   }
 
-  type GetCollaborationRequestsResponse {
+  type GetNotificationsResponse {
     errors: [Error]
-    requests: [CollabRequest]
+    notifications: [Notification]
   }
 
   type Collaborator {
     customId: String
     name: String
     email: String
+    color: String
   }
 
-  type GetCollaboratorsResponse {
+  type GetBlockCollaboratorsResponse {
     errors: [Error]
     collaborators: [Collaborator]
   }
 
-  type GetBlockLandingPageResponse {
-    errors: [Error]
-    page: String
-  }
-
   input AddCollaboratorInput {
     email: String!
+    customId: String!
     body: String
     expiresAt: Float
-    customId: String!
-  }
-
-  input BlockParamInput {
-    customId: String!
   }
 
   type BlockQuery {
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
     updateBlock (
-      customId: String!,
+      blockId: String!,
       data: UpdateBlockInput!
     ) : ErrorOnlyResponse
-
-    deleteBlock (customId: String!) : ErrorOnlyResponse
-    getRootBlocks: MultipleBlocksOpResponse
+    deleteBlock (blockId: String!) : ErrorOnlyResponse
+    getUserRootBlocks: MultipleBlocksOpResponse
     getBlockChildren (
-      customId: String!,
+      blockId: String!,
       typeList: [String!],
-      useBoardId: Boolean
     ) : MultipleBlocksOpResponse
-
     addCollaborators (
-      customId: String!,
+      blockId: String!,
       collaborators: [AddCollaboratorInput!]!,
     ) : ErrorOnlyResponse
-
     removeCollaborator (
-      customId: String!,
-      collaborator: String!
+      blockId: String!,
+      collaboratorId: String!
     ) : ErrorOnlyResponse
-
-    getBlockCollaborators (customId: String!) : GetCollaboratorsResponse
-    getBlockCollaborationRequests (customId: String!) : GetCollaborationRequestsResponse
-
-    # toggleTask (customId: String!, data: Boolean!) : ErrorOnlyResponse
-
-    revokeCollaborationRequest (customId: String!, request: String!) : ErrorOnlyResponse
+    getBlockCollaborators (blockId: String!) : GetBlockCollaboratorsResponse
+    getBlockNotifications(blockId: String!) : GetNotificationsResponse
+    revokeCollaborationRequest (blockId: String!, requestId: String!) : ErrorOnlyResponse
     transferBlock (
-      sourceBlock: String!,
-      draggedBlock: String!,
-      destinationBlock: String!,
-      dropPosition: Float,
-      groupContext: String
+      draggedBlockId: String!,
+      destinationBlockId: String!,
     ): ErrorOnlyResponse
-
-    getAssignedTasks: MultipleBlocksOpResponse
-    getBlocksWithCustomIds (customIds: [String!]!): MultipleBlocksOpResponse
-    getBlockLandingPage (customId: String!): GetBlockLandingPageResponse
   }
 `;
 

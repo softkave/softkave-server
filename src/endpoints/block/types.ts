@@ -1,10 +1,10 @@
 import {
   BlockType,
+  IAssignee,
   IBlockAssignedLabel,
   IBlockLabel,
   IBlockStatus,
   ISubTask,
-  ITaskCollaborator,
 } from "../../mongo/block";
 
 export interface INewBlockInput {
@@ -18,7 +18,7 @@ export interface INewBlockInput {
   color?: string;
   parent?: string;
   rootBlockId?: string;
-  assignees?: ITaskCollaborator[];
+  assignees?: IAssignee[];
   priority?: string;
   subTasks?: ISubTask[];
   boardStatuses?: IBlockStatus[];
@@ -26,5 +26,29 @@ export interface INewBlockInput {
   status?: string;
   statusAssignedBy?: string;
   statusAssignedAt?: string;
+  labels?: IBlockAssignedLabel[];
+}
+
+export interface IPublicBlock {
+  customId: string;
+  createdBy: string;
+  createdAt: Date;
+  type: BlockType;
+  name?: string;
+  description?: string;
+  dueAt?: Date;
+  color?: string;
+  updatedAt?: Date;
+  updatedBy?: string;
+  parent?: string;
+  rootBlockId?: string;
+  assignees?: IAssignee[];
+  priority?: string;
+  subTasks?: ISubTask[]; // should sub-tasks be their own blocks?
+  boardStatuses?: IBlockStatus[];
+  boardLabels?: IBlockLabel[];
+  status?: string;
+  statusAssignedBy?: string;
+  statusAssignedAt?: Date;
   labels?: IBlockAssignedLabel[];
 }

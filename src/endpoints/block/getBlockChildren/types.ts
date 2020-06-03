@@ -3,9 +3,8 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockChildrenParameters {
-  customId: string;
+  blockId: string;
   typeList?: BlockType[];
-  useBoardId?: boolean;
 }
 
 export interface IGetBlockChildrenResult {

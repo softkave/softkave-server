@@ -12,7 +12,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
   const user = await context.session.getUser(context.models, instData);
   const notification = await context.notification.getNotificationById(
     context.models,
-    data.customId
+    data.notificationId
   );
 
   if (!notification) {
@@ -25,7 +25,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
 
   await context.notification.updateNotificationById(
     context.models,
-    data.customId,
+    data.notificationId,
     { readAt: data.readAt as any }
   );
 };

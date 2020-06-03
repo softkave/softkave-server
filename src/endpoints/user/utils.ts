@@ -1,5 +1,5 @@
 import { IUser } from "../../mongo/user";
-import { getDate } from "../../utilities/fns";
+import { getDate, getDateString } from "../../utilities/fns";
 import { IPublicUserData } from "./types";
 
 export function addEntryToPasswordDateLog(arr: Date[]) {
@@ -15,10 +15,12 @@ export function addEntryToPasswordDateLog(arr: Date[]) {
 export const getPublicUserData = (user: IUser): IPublicUserData => {
   return {
     color: user.color,
-    createdAt: user.createdAt,
+    createdAt: getDateString(user.createdAt),
     customId: user.customId,
     email: user.email,
-    notificationsLastCheckedAt: user.notificationsLastCheckedAt,
+    notificationsLastCheckedAt: user.notificationsLastCheckedAt
+      ? getDateString(user.notificationsLastCheckedAt)
+      : undefined,
     name: user.name,
     orgs: user.orgs,
     rootBlockId: user.rootBlockId,

@@ -1,27 +1,20 @@
-// TODO: Look at this types and ensure they are correct
 const userSchema = `
-  type UserRole {
-    orgId: String
-    assignedBy: String
-    assignedAt: String
-    roleName: String
-  }
-
-  input UserRoleInput {
-    orgId: String
-    assignedBy: String
-    assignedAt: String
-    roleName: String
+  type UserOrg {
+    customId: String
   }
 
   type User {
     customId: String
     name: String
     email: String
-    createdAt: Float
-    lastNotificationCheckTime: Float
+    hash: String
+    createdAt: String
+    forgotPasswordHistory: [String]
+    passwordLastChangedAt: String
+    rootBlockId: String
+    orgs: [UserOrg]
     color: String
-    orgs: [String]
+    notificationsLastCheckedAt: String
   }
 
   input UserSignupInput {
@@ -33,17 +26,14 @@ const userSchema = `
 
   input UserUpdateInput {
     name: String
-    lastNotificationCheckTime: Float
+    notificationsLastCheckedAt: String
+    color: String
   }
 
   type UserQueryResult {
     user: User
     token: String
     errors: [Error]
-  }
-
-  input UpdateCollaborationRequestInput {
-    readAt: Float
   }
 
   type UserExistsResult {
@@ -63,13 +53,6 @@ const userSchema = `
     expires: Float
   }
 
-  type SessionDetails {
-    errors: [Error]
-    organizationsCount: Float
-    notificationsCount: Float
-    assignedTasksCount: Float
-  }
-
   type UserQuery {
     userExists (email: String!) : UserExistsResult
     signup (user: UserSignupInput!) : UserQueryResult
@@ -78,18 +61,15 @@ const userSchema = `
     changePassword (password: String!) : UserQueryResult
     updateUser (data: UserUpdateInput!): ErrorOnlyResponse
     changePasswordWithToken (password: String!) : UserQueryResult
-    getCollaborationRequests: GetCollaborationRequestsResponse
+    getUserNotifications: GetNotificationsResponse
     respondToCollaborationRequest (
-      customId: String!, response: String!): RespondToCollaborationRequestResponse
-
-    updateCollaborationRequest (
-      customId: String!,
-      data: UpdateCollaborationRequestInput!
+      requestId: String!, response: String!): RespondToCollaborationRequestResponse
+    markNotificationRead (
+      notificationId: String!,
+      readAt: Float!
     ): ErrorOnlyResponse
-
     getUserData: UserQueryResult
     getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult
-    getSessionDetails: SessionDetails
   }
 `;
 

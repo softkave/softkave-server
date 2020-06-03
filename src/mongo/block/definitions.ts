@@ -10,7 +10,7 @@ export interface ITaskCollaborator0 {
   completedAt?: number; // remove
 }
 
-export interface ITaskCollaborator {
+export interface IAssignee {
   userId: string;
   assignedAt: Date;
   assignedBy: string;
@@ -145,7 +145,7 @@ export interface IBlock0 {
   // taskCollaborationType: ITaskCollaborationData; // - deprecated
 
   taskCollaborationData: ITaskCollaborationType; // remove
-  taskCollaborators: ITaskCollaborator[];
+  taskCollaborators: IAssignee[];
 
   // collaborationType: ITaskCollaborationType;
   // assignees: ITaskCollaborator[];
@@ -214,7 +214,7 @@ export interface IBlock {
   updatedBy?: string;
   parent?: string;
   rootBlockId?: string;
-  assignees?: ITaskCollaborator[];
+  assignees?: IAssignee[];
   priority?: string;
   subTasks?: ISubTask[]; // should sub-tasks be their own blocks?
   boardStatuses?: IBlockStatus[];

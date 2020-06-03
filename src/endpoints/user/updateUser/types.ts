@@ -1,10 +1,10 @@
-import { Endpoint } from "../../types";
 import { IBaseContext } from "../../contexts/BaseContext";
+import { Endpoint } from "../../types";
 
 export interface IUpdateUserParameters {
   name?: string;
-  email?: string;
-  lastNotificationCheckTime?: number;
+  // email?: string; // TODO: handle when the email already exists
+  notificationsLastCheckedAt?: Date;
   color?: string;
 }
 

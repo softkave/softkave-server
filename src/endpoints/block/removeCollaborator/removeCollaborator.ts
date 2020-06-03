@@ -14,13 +14,13 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
 ) => {
   const data = validate(instData.data, removeCollaboratorJoiSchema);
   const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.customId);
+  const block = await context.block.getBlockById(context.models, data.blockId);
 
   canReadBlock({ user, block });
 
   const fetchedCollaborator = await context.user.getUserById(
     context.models,
-    data.collaborator
+    data.collaboratorId
   );
 
   if (!fetchedCollaborator) {

@@ -5,7 +5,7 @@ import { Endpoint } from "../../types";
 export type CollaborationRequestResponse = "accepted" | "declined";
 
 export interface IRespondToCollaborationRequestParameters {
-  customId: string;
+  requestId: string;
   response: CollaborationRequestResponse;
 }
 export interface IRespondToCollaborationRequestResult {

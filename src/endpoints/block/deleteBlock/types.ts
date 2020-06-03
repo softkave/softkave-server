@@ -2,7 +2,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IDeleteBlockParameters {
-  customId: string;
+  blockId: string;
 }
 
 export type DeleteBlockEndpoint = Endpoint<

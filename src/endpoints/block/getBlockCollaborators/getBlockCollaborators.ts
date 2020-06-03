@@ -9,7 +9,7 @@ const getBlockCollaborators: GetBlockCollaboratorsEndpoint = async (
 ) => {
   const data = validate(instData.data, getBlockCollaboratorsJoiSchema);
   const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.customId);
+  const block = await context.block.getBlockById(context.models, data.blockId);
 
   canReadBlock({ user, block });
 

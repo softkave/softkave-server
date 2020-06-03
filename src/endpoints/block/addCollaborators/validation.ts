@@ -7,7 +7,7 @@ const newCollaboratorSchema = Joi.object().keys({
   customId: validationSchemas.uuid,
   email: Joi.string().required().trim().email().lowercase(),
   body: Joi.string().max(notificationConstants.maxAddCollaboratorMessageLength),
-  expiresAt: Joi.number(),
+  expiresAt: Joi.date(),
 });
 
 const newCollaboratorsListSchema = Joi.array()
@@ -17,6 +17,6 @@ const newCollaboratorsListSchema = Joi.array()
   .unique("email");
 
 export const addCollaboratorsJoiSchema = Joi.object().keys({
-  customId: validationSchemas.uuid,
+  blockId: validationSchemas.uuid,
   collaborators: newCollaboratorsListSchema,
 });

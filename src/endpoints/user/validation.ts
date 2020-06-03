@@ -1,12 +1,9 @@
 import Joi from "joi";
+import { CollaborationRequestStatusType } from "../../mongo/notification";
 import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { userConstants } from "./constants";
 
-const email = Joi.string()
-  .required()
-  .trim()
-  .lowercase()
-  .email();
+const email = Joi.string().required().trim().lowercase().email();
 
 const password = Joi.string()
   .required()
@@ -24,14 +21,17 @@ const name = Joi.string()
 const collaborationRequestResponse = Joi.string()
   .trim()
   .lowercase()
-  .valid(["accepted", "declined"]);
+  .valid([
+    CollaborationRequestStatusType.Accepted,
+    CollaborationRequestStatusType.Declined,
+  ]);
 
 const userValidationSchema = {
   name,
   email,
   password,
   collaborationRequestResponse,
-  color: validationSchemas.color
+  color: validationSchemas.color,
 };
 
 export default userValidationSchema;

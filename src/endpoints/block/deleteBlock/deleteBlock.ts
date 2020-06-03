@@ -82,7 +82,7 @@ async function deleteOrgCleanup(
 const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data, deleteBlockJoiSchema);
   const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.customId);
+  const block = await context.block.getBlockById(context.models, data.blockId);
 
   await canReadBlock({ user, block });
   await context.block.markBlockDeleted(context.models, block.customId, user);

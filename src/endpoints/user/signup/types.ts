@@ -3,7 +3,6 @@ import {
   CreateRootBlockEndpoint,
   ICreateRootBlockContext,
 } from "../../block/createRootBlock/types";
-import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { UserExistsEndpoint } from "../userExists/types";
 

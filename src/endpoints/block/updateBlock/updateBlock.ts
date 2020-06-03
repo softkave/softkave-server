@@ -318,18 +318,14 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data, updateBlockJoiSchema);
   const updateData = data.data;
   const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.customId);
+  const block = await context.block.getBlockById(context.models, data.blockId);
 
   canReadBlock({ user, block });
 
   const parent = updateData.parent;
   delete updateData.parent;
 
-  await context.block.updateBlockById(
-    context.models,
-    data.customId,
-    updateData
-  );
+  await context.block.updateBlockById(context.models, data.blockId, updateData);
 
   fireAndForgetPromise(processBoardStatusChanges(context, instData, block));
   fireAndForgetPromise(processBoardLabelChanges(context, instData, block));
