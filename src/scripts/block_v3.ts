@@ -175,10 +175,6 @@ async function oldBlockToNewBlock() {
         continue;
       }
 
-      if (doc.type === "org") {
-        console.warn("hello world");
-      }
-
       const block: IBlock = {
         customId: doc.customId,
         createdBy: doc.createdBy,
