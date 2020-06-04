@@ -2,6 +2,7 @@ import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { ServerError } from "../../../utilities/errors";
+import { getDate } from "../../../utilities/fns";
 import logger from "../../../utilities/logger";
 import BaseContext from "../../contexts/BaseContext";
 import { IBlockContextModels } from "../../contexts/BlockContext";
@@ -34,14 +35,21 @@ export default class UpdateBlockContext extends BaseContext
   public async bulkUpdateDeletedStatusInTasks(
     models: IBlockContextModels,
     orgId: string,
-    items: Array<{ oldId: string; newId: string }>
+    items: Array<{ oldId: string; newId: string }>,
+    user: IUser
   ) {
     try {
       await models.blockModel.model.bulkWrite(
         items.map((item) => ({
           updateMany: {
             filter: { rootBlockId: orgId, type: "task", status: item.oldId },
-            update: { status: item.newId },
+
+            // TODO: how can we add the context of the status change, and how can we add it to audit log?
+            update: {
+              status: item.newId,
+              statusAssignedAt: getDate(),
+              statusAssignedBy: user.customId,
+            },
           },
         }))
       );
@@ -57,14 +65,29 @@ export default class UpdateBlockContext extends BaseContext
     ids: string[]
   ) {
     try {
-      await models.blockModel.model
-        .updateMany(
-          { rootBlockId: orgId },
-          { $pull: { labels: { customId: { $in: ids } } } }
-        )
-        .exec();
+      await models.blockModel.model.bulkWrite(
+        ids.map((id) => ({
+          updateMany: {
+            filter: { rootBlockId: orgId },
+            update: { $pull: { labels: { customId: id } } },
+          },
+        }))
+      );
+
+      // await models.blockModel.model
+      //   .updateMany(
+      //     { rootBlockId: orgId },
+
+      //     // @ts-ignore
+      //     { $pullAll: { labels: ids.map((id) => ({ customId: id })) } },
+      //     { multi: true }
+      //   )
+      //   .exec();
     } catch (error) {
       logger.error(error);
+
+      // TODO: how can we return the right error here, like "error updating affected tasks"
+      // instead of just server error?
       throw new ServerError();
     }
   }

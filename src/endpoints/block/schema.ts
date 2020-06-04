@@ -2,13 +2,13 @@ const blockSchema = `
   type Assignee {
     userId: String
     assignedBy: String
-    assignedAt: Float
+    assignedAt: String
   }
 
   input AssigneeInput {
     userId: String!
     assignedBy: String
-    assignedAt: Float
+    assignedAt: String
   }
 
   type SubTask {
@@ -39,9 +39,9 @@ const blockSchema = `
     description: String
     color: String
     createdBy: String
-    createdAt: Float
+    createdAt: String
     updatedBy: String
-    updatedAt: Float
+    updatedAt: String
   }
 
   input StatusInput {
@@ -49,10 +49,10 @@ const blockSchema = `
     name: String!
     color: String!
     createdBy: String!
-    createdAt: Float!
+    createdAt: String!
     description: String
     updatedBy: String
-    updatedAt: Float
+    updatedAt: String
   }
 
   type Label {
@@ -61,9 +61,9 @@ const blockSchema = `
     color: String
     description: String
     createdBy: String
-    createdAt: Float
+    createdAt: String
     updatedBy: String
-    updatedAt: Float
+    updatedAt: String
   }
 
   input LabelInput {
@@ -71,10 +71,10 @@ const blockSchema = `
     name: String!
     color: String!
     createdBy: String!
-    createdAt: Float!
+    createdAt: String!
     description: String
     updatedBy: String
-    updatedAt: Float
+    updatedAt: String
   }
 
   type BlockAssignedLabel {
@@ -174,19 +174,19 @@ const blockSchema = `
 
   type NotificationStatusHistory {
     status: String
-    date: Float
+    date: String
   }
 
   type NotificationSentEmailHistory {
-    date: Float
+    date: String
   }
 
   type Notification {
     customId: String
     from: CollaborationRequestFrom
-    createdAt: Float
+    createdAt: String
     body: String
-    readAt: Float
+    readAt: String
     to: NotificationTo
     expiresAt: String
     statusHistory: [NotificationStatusHistory]
@@ -216,7 +216,7 @@ const blockSchema = `
     email: String!
     customId: String!
     body: String
-    expiresAt: Float
+    expiresAt: String
   }
 
   type BlockQuery {

@@ -49,8 +49,8 @@ const userSchema = `
   type GetChangePasswordTokenDataResult {
     errors: [Error]
     email: String
-    issuedAt: Float
-    expires: Float
+    issuedAt: String
+    expires: String
   }
 
   type UserQuery {
@@ -66,7 +66,7 @@ const userSchema = `
       requestId: String!, response: String!): RespondToCollaborationRequestResponse
     markNotificationRead (
       notificationId: String!,
-      readAt: Float!
+      readAt: String!
     ): ErrorOnlyResponse
     getUserData: UserQueryResult
     getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult

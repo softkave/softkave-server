@@ -3,8 +3,8 @@ import { Endpoint } from "../../types";
 
 export interface IGetChangePasswordTokenDataResult {
   email: string;
-  issuedAt: number;
-  expires: number;
+  issuedAt: string;
+  expires: string;
 }
 
 export type GetChangePasswordTokenDataEndpoint = Endpoint<

@@ -10,7 +10,6 @@ const taskCollaboratorSchema = Joi.object().keys({
 });
 
 const taskCollaboratorsListSchema = Joi.array()
-  .min(blockConstants.minTaskCollaboratorsLength)
   .max(blockConstants.maxTaskCollaboratorsLength)
   .unique("userId")
   .items(taskCollaboratorSchema);
@@ -32,7 +31,6 @@ const subTasksSchema = Joi.object().keys({
   customId: Joi.string().uuid().required(),
   description: Joi.string()
     .trim()
-    .min(blockConstants.minDescriptionLength)
     .max(blockConstants.maxDescriptionLength)
     .required(),
   completedBy: Joi.string().uuid(),
@@ -54,9 +52,10 @@ const labelSchema = Joi.object().keys({
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
+    .allow("")
     .trim()
-    .min(blockConstants.minLabelDescriptionLength)
-    .max(blockConstants.maxLabelDescriptionLength),
+    .max(blockConstants.maxLabelDescriptionLength)
+    .optional(),
   createdAt: Joi.date(),
   createdBy: Joi.string().uuid(),
   updatedAt: Joi.date(),
@@ -73,11 +72,12 @@ const statusSchema = Joi.object().keys({
     .max(blockConstants.maxLabelNameLength)
     .required(),
   description: Joi.string()
+    .allow("")
     .trim()
-    .min(blockConstants.minLabelDescriptionLength)
-    .max(blockConstants.maxLabelDescriptionLength),
+    .max(blockConstants.maxLabelDescriptionLength)
+    .optional(),
   createdAt: Joi.date(),
-  createdBy: Joi.string().uuid(),
+  createdBy: Joi.string().uuid().allow("system"), // TODO: find a fix. allowing system can be exploited
   updatedAt: Joi.date(),
   updatedBy: Joi.string().uuid(),
 });
@@ -103,15 +103,11 @@ const blockTypesSchema = Joi.array()
   .items(userUpdateableblockTypeSchema);
 
 const blockId = validationSchemas.uuid;
-const name = Joi.string()
-  .trim()
-  .min(blockConstants.minNameLength)
-  .max(blockConstants.maxNameLength);
+const name = Joi.string().trim().max(blockConstants.maxNameLength);
 
 const lowerCasedName = name.lowercase();
 
 const description = Joi.string()
-  .min(blockConstants.minDescriptionLength)
   .max(blockConstants.maxDescriptionLength)
   .trim()
   .when("type", {
@@ -120,7 +116,6 @@ const description = Joi.string()
   });
 
 const updateDescription = Joi.string()
-  .min(blockConstants.minDescriptionLength)
   .max(blockConstants.maxDescriptionLength)
   .trim();
 
@@ -142,7 +137,6 @@ const priority = Joi.string()
 
 const subTasks = Joi.array()
   .items(subTasksSchema)
-  .min(blockConstants.minSubTasksLength)
   .max(blockConstants.maxSubTasksLength);
 
 const blockAssignedLabels = Joi.object().keys({

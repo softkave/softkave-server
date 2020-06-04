@@ -1,3 +1,4 @@
+import { getDateString } from "../../../utilities/fns";
 import { JWTEndpoints } from "../../utils";
 import { InvalidCredentialsError } from "../errors";
 import UserToken from "../UserToken";
@@ -17,8 +18,8 @@ const getChangePasswordTokenData: GetChangePasswordTokenDataEndpoint = async (
 
   return {
     email: tokenData.sub.email,
-    issuedAt: tokenData.iat,
-    expires: tokenData.exp,
+    issuedAt: getDateString(tokenData.iat),
+    expires: getDateString(tokenData.exp),
   };
 };
 

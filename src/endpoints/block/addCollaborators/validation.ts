@@ -12,7 +12,6 @@ const newCollaboratorSchema = Joi.object().keys({
 
 const newCollaboratorsListSchema = Joi.array()
   .items(newCollaboratorSchema)
-  .min(blockConstants.minAddCollaboratorValuesLength)
   .max(blockConstants.maxAddCollaboratorValuesLength)
   .unique("email");
 

@@ -116,7 +116,7 @@ function getStatusChangedFields(
   old: IBlockStatus,
   nw: IBlockStatus
 ): Array<keyof IBlockStatus> {
-  return Object.keys(old).reduce((accumulator, field) => {
+  return ["color", "description", "name"].reduce((accumulator, field) => {
     if (old[field] !== nw[field]) {
       accumulator.push(field);
     }
@@ -128,12 +128,13 @@ function getStatusChangedFields(
 async function processBoardStatusChanges(
   context: IUpdateBlockContext,
   instData: IEndpointInstanceData<IUpdateBlockParameters>,
-  block: IBlock
+  block: IBlock,
+  user: IUser
 ) {
   const data = instData.data;
   const boardStatuses = data.data.boardStatuses;
 
-  if (!boardStatuses || boardStatuses.length === 0) {
+  if (!boardStatuses) {
     return;
   }
 
@@ -162,7 +163,7 @@ async function processBoardStatusChanges(
         resourceOwnerId: block.customId,
       });
 
-      const newIdIndex = index === 0 ? index + 1 : index - 1;
+      const newIdIndex = index >= boardStatuses.length ? index - 1 : index;
       const newId = boardStatuses[newIdIndex]?.customId;
       deletedStatusIdsWithReplacement.push({ newId, oldId: status.customId });
     }
@@ -184,13 +185,17 @@ async function processBoardStatusChanges(
     }
 
     if (existingStatus.updatedAt !== status.updatedAt) {
-      const diffResult = diff.diffJson(existingStatus, status);
+      const changedFields = getStatusChangedFields(existingStatus, status);
       const newValue: any = {};
       const oldValue: any = {};
 
-      diffResult.forEach((change) => {
-        oldValue[change.value] = existingStatus[change.value];
-        newValue[change.value] = status[change.value];
+      if (changedFields.length === 0) {
+        return;
+      }
+
+      changedFields.forEach((field) => {
+        oldValue[field] = existingStatus[field];
+        newValue[field] = status[field];
       });
 
       logEntries.push({
@@ -215,7 +220,8 @@ async function processBoardStatusChanges(
     context.bulkUpdateDeletedStatusInTasks(
       context.models,
       block.customId,
-      deletedStatusIdsWithReplacement
+      deletedStatusIdsWithReplacement,
+      user
     )
   );
 
@@ -230,7 +236,7 @@ async function processBoardLabelChanges(
   const data = instData.data;
   const boardLabels = data.data.boardLabels;
 
-  if (!boardLabels || boardLabels.length === 0) {
+  if (!boardLabels) {
     return;
   }
 
@@ -276,13 +282,17 @@ async function processBoardLabelChanges(
     }
 
     if (existingLabel.updatedAt !== label.updatedAt) {
-      const diffResult = diff.diffJson(existingLabel, label);
+      const changedFields = getStatusChangedFields(existingLabel, label);
       const newValue: any = {};
       const oldValue: any = {};
 
-      diffResult.forEach((change) => {
-        oldValue[change.value] = existingLabel[change.value];
-        newValue[change.value] = label[change.value];
+      if (changedFields.length === 0) {
+        return;
+      }
+
+      changedFields.forEach((field) => {
+        oldValue[field] = existingLabel[field];
+        newValue[field] = label[field];
       });
 
       logEntries.push({
@@ -306,7 +316,7 @@ async function processBoardLabelChanges(
   fireAndForgetPromise(
     context.bulkRemoveDeletedLabelsInTasks(
       context.models,
-      block.rootBlockId,
+      block.customId,
       deletedLabelIds
     )
   );
@@ -327,7 +337,11 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
   await context.block.updateBlockById(context.models, data.blockId, updateData);
 
-  fireAndForgetPromise(processBoardStatusChanges(context, instData, block));
+  // TODO: should we wait for thses to complete, cause a user can reload while they're pending
+  // amd get incomplete/incorrect data
+  fireAndForgetPromise(
+    processBoardStatusChanges(context, instData, block, user)
+  );
   fireAndForgetPromise(processBoardLabelChanges(context, instData, block));
   fireAndForgetPromise(sendNewlyAssignedTaskEmail(context, instData, block));
 
