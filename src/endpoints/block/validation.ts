@@ -117,6 +117,7 @@ const description = Joi.string()
   });
 
 const updateDescription = Joi.string()
+  .allow("")
   .max(blockConstants.maxDescriptionLength)
   .trim();
 
