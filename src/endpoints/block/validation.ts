@@ -150,6 +150,8 @@ const blockAssignedLabelsList = Joi.array()
   .items(blockAssignedLabels)
   .max(blockConstants.maxAvailableLabels);
 
+const statusAssignedBy = validationSchemas.uuid.allow("system"); // TODO: exploitable
+
 const newBlock = Joi.object().keys({
   name,
   description,
@@ -165,7 +167,7 @@ const newBlock = Joi.object().keys({
   boardStatuses: statusListSchema,
   boardLabels: boardLabelList,
   status: validationSchemas.uuid,
-  statusAssignedBy: validationSchemas.uuid,
+  statusAssignedBy,
   statusAssignedAt: Joi.date(),
   labels: blockAssignedLabelsList,
 });
@@ -196,6 +198,7 @@ const blockValidationSchemas = {
   updateDescription,
   blockAssignedLabels,
   blockAssignedLabelsList,
+  statusAssignedBy,
 };
 
 export default blockValidationSchemas;

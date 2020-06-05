@@ -15,7 +15,7 @@ const blockData = Joi.object().keys({
   boardLabels: blockValidationSchemas.boardLabelList,
   status: validationSchemas.uuid,
   dueAt: blockValidationSchemas.dueAt,
-  statusAssignedBy: validationSchemas.uuid,
+  statusAssignedBy: blockValidationSchemas.statusAssignedBy,
   statusAssignedAt: Joi.date(),
   labels: blockValidationSchemas.blockAssignedLabelsList,
 });
