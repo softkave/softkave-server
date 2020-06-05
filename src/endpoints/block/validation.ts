@@ -108,6 +108,7 @@ const name = Joi.string().trim().max(blockConstants.maxNameLength);
 const lowerCasedName = name.lowercase();
 
 const description = Joi.string()
+  .allow("")
   .max(blockConstants.maxDescriptionLength)
   .trim()
   .when("type", {
