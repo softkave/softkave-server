@@ -16,9 +16,7 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
-import block_v3 from "./scripts/block_v3";
-import { oldNotificationToNewNotification } from "./scripts/notification_v2";
-import { oldUserToNewUser } from "./scripts/user_v2";
+// import http from "http"
 // import aws from "./res/aws";
 
 console.log("server initialization");
@@ -36,6 +34,7 @@ if (!JWT_SECRET) {
 }
 
 const app = express();
+// const httpServer = http.createServer(app);
 const port = process.env.PORT || 5000;
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
@@ -117,16 +116,12 @@ app.use(handleErrors);
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
-
   await userModel.waitTillReady();
   await blockModel.waitTillReady();
   await notificationModel.waitTillReady();
   await auditLogModel.waitTillReady();
 
   // scripts
-  // await block_v3();
-  // await oldNotificationToNewNotification();
-  // await oldUserToNewUser();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
