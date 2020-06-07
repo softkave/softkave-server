@@ -16,6 +16,7 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
+import { copyStatusToBoard } from "./scripts/statusTemplate";
 // import http from "http"
 // import aws from "./res/aws";
 
@@ -122,6 +123,7 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
+  await copyStatusToBoard();
 
   app.listen(port, () => {
     console.log(appInfo.appName);

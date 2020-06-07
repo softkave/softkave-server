@@ -5,6 +5,7 @@ import {
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
+import { getBlockRootBlockId } from "../utils";
 import blockValidationSchemas from "../validation";
 import { AddBlockEndpoint } from "./types";
 
@@ -60,7 +61,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     action: AuditLogActionType.Create,
     resourceId: block.customId,
     resourceType: getBlockAuditLogResourceType(block),
-    organizationId: block.rootBlockId,
+    organizationId: getBlockRootBlockId(block),
   });
 
   return {

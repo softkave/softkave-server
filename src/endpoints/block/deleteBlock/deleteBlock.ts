@@ -13,6 +13,7 @@ import {
   IEndpointInstanceData,
 } from "../../contexts/types";
 import canReadBlock from "../canReadBlock";
+import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
 import { deleteBlockJoiSchema } from "./validation";
 
@@ -91,7 +92,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     action: AuditLogActionType.Delete,
     resourceId: block.customId,
     resourceType: getBlockAuditLogResourceType(block),
-    organizationId: block.rootBlockId,
+    organizationId: getBlockRootBlockId(block),
   });
 
   if (block.type === "org") {

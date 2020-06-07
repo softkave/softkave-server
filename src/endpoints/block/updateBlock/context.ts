@@ -1,4 +1,4 @@
-import { IBlock } from "../../../mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { ServerError } from "../../../utilities/errors";
@@ -34,7 +34,7 @@ export default class UpdateBlockContext extends BaseContext
 
   public async bulkUpdateDeletedStatusInTasks(
     models: IBlockContextModels,
-    orgId: string,
+    parentId: string,
     items: Array<{ oldId: string; newId: string }>,
     user: IUser
   ) {
@@ -42,7 +42,11 @@ export default class UpdateBlockContext extends BaseContext
       await models.blockModel.model.bulkWrite(
         items.map((item) => ({
           updateMany: {
-            filter: { rootBlockId: orgId, type: "task", status: item.oldId },
+            filter: {
+              parent: parentId,
+              type: BlockType.Task,
+              status: item.oldId,
+            },
 
             // TODO: how can we add the context of the status change, and how can we add it to audit log?
             update: {
@@ -73,16 +77,6 @@ export default class UpdateBlockContext extends BaseContext
           },
         }))
       );
-
-      // await models.blockModel.model
-      //   .updateMany(
-      //     { rootBlockId: orgId },
-
-      //     // @ts-ignore
-      //     { $pullAll: { labels: ids.map((id) => ({ customId: id })) } },
-      //     { multi: true }
-      //   )
-      //   .exec();
     } catch (error) {
       logger.error(error);
 

@@ -1,4 +1,3 @@
-import diff from "diff";
 import pick from "lodash/pick";
 import {
   AuditLogActionType,
@@ -14,6 +13,7 @@ import { IAuditLogInsertInput } from "../../contexts/AuditLogContext";
 import { IEndpointInstanceData } from "../../contexts/types";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
+import { getBlockRootBlockId } from "../utils";
 import {
   ITaskAssigneesDiff,
   IUpdateBlockContext,
@@ -159,7 +159,7 @@ async function processBoardStatusChanges(
         action: AuditLogActionType.Delete,
         resourceId: status.customId,
         resourceType: AuditLogResourceType.Status,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
       });
 
@@ -177,7 +177,7 @@ async function processBoardStatusChanges(
         action: AuditLogActionType.Create,
         resourceId: status.customId,
         resourceType: AuditLogResourceType.Status,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
       });
 
@@ -202,7 +202,7 @@ async function processBoardStatusChanges(
         action: AuditLogActionType.Update,
         resourceId: status.customId,
         resourceType: AuditLogResourceType.Status,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
         change: {
           oldValue,
@@ -258,7 +258,7 @@ async function processBoardLabelChanges(
         action: AuditLogActionType.Delete,
         resourceId: label.customId,
         resourceType: AuditLogResourceType.Label,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
       });
 
@@ -274,7 +274,7 @@ async function processBoardLabelChanges(
         action: AuditLogActionType.Create,
         resourceId: label.customId,
         resourceType: AuditLogResourceType.Label,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
       });
 
@@ -299,7 +299,7 @@ async function processBoardLabelChanges(
         action: AuditLogActionType.Update,
         resourceId: label.customId,
         resourceType: AuditLogResourceType.Label,
-        organizationId: block.rootBlockId,
+        organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
         change: {
           oldValue,
