@@ -4,14 +4,6 @@ import { BlockType } from "../block";
 
 export const notificationSchemaVersion = 1; // increment when you make changes that are not backward compatible
 
-export interface INotificationFrom0 {
-  userId: string;
-  name: string;
-  blockId: string;
-  blockName: string;
-  blockType: string;
-}
-
 export interface ICollaborationRequestFrom {
   userId: string;
   name: string;
@@ -20,19 +12,12 @@ export interface ICollaborationRequestFrom {
   blockType: BlockType;
 }
 
-const notificationFromSchema = {
-  userId: String,
-  name: String,
-  blockId: String,
-  blockName: String,
-  blockType: String,
-};
-
 const collaborationRequestFromSchema = {
   userId: { type: String, index: true },
   name: String,
   blockId: { type: String, index: true },
   blockName: String,
+  blockType: String,
 };
 
 export interface INotificationTo {
@@ -74,19 +59,6 @@ export enum NotificationType {
   OrgDeleted = "org-deleted",
 }
 
-export interface INotification0 {
-  customId: string;
-  from: ICollaborationRequestFrom;
-  createdAt: number;
-  body: string;
-  to: INotificationTo;
-  type: NotificationType;
-  readAt?: number;
-  expiresAt?: number;
-  statusHistory?: ICollaborationRequestStatus[];
-  sentEmailHistory?: INotificationSentEmailHistoryItem[];
-}
-
 export interface INotification {
   customId: string;
   to: INotificationTo;
@@ -99,28 +71,6 @@ export interface INotification {
   statusHistory?: ICollaborationRequestStatus[];
   sentEmailHistory?: INotificationSentEmailHistoryItem[];
 }
-
-export const notificationSchema0 = {
-  customId: { type: String, unique: true },
-  from: {
-    type: notificationFromSchema,
-    index: true,
-  },
-  createdAt: {
-    type: Number,
-    default: Date.now,
-  },
-  body: String,
-  readAt: Number,
-  to: {
-    type: notificationToSchema,
-    index: true,
-  },
-  expiresAt: Number,
-  type: String,
-  statusHistory: [collaborationRequestStatusHistorySchema],
-  sentEmailHistory: [notificationSentEmailHistorySchema],
-};
 
 const notificationSchema = {
   customId: { type: String, unique: true, index: true },

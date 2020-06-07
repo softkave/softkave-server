@@ -5,6 +5,7 @@ import { getDate } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../canReadBlock";
+import { getBlockRootBlockId } from "../utils";
 import { TransferBlockEndpoint } from "./types";
 import { transferBlockJoiSchema } from "./validation";
 
@@ -58,7 +59,7 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
       oldValue: { parent: draggedBlock.parent },
       newValue: { parent: destinationBlock.customId },
     },
-    organizationId: draggedBlock.rootBlockId,
+    organizationId: getBlockRootBlockId(draggedBlock),
   });
 };
 
