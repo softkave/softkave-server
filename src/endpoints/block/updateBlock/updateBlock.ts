@@ -358,6 +358,10 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
       newValue: data.data,
       customId: getId(),
     },
+
+    // TODO: write a script to add orgId to existing update block audit logs without one
+    // it was omitted prior
+    organizationId: getBlockRootBlockId(block),
   });
 
   if (parent && block.parent !== parent) {

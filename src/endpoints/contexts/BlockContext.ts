@@ -98,7 +98,9 @@ export default class BlockContext implements IBlockContext {
     try {
       if (ensureBlockExists) {
         const block = await models.blockModel.model
-          .findOneAndUpdate({ customId }, data, { fields: "customId" })
+          .findOneAndUpdate({ customId, isDeleted: false }, data, {
+            fields: "customId",
+          })
           .exec();
 
         if (block && block.customId) {
@@ -107,7 +109,9 @@ export default class BlockContext implements IBlockContext {
           throw new BlockDoesNotExistError(); // should we include id
         }
       } else {
-        await models.blockModel.model.updateOne({ customId }, data).exec();
+        await models.blockModel.model
+          .updateOne({ customId, isDeleted: false }, data)
+          .exec();
       }
     } catch (error) {
       logger.error(error);
@@ -121,7 +125,10 @@ export default class BlockContext implements IBlockContext {
   ) {
     try {
       const opts = blocks.map((b) => ({
-        updateOne: { filter: { customId: b.id }, update: b.data },
+        updateOne: {
+          filter: { customId: b.id, isDeleted: false },
+          update: b.data,
+        },
       }));
 
       await models.blockModel.model.bulkWrite(opts);

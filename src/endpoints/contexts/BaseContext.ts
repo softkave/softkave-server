@@ -1,9 +1,11 @@
 import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
+import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
 import AuditLogContext, { IAuditLogContext } from "./AuditLogContext";
 import BlockContext, { IBlockContext } from "./BlockContext";
+import NoteContext, { INoteContext } from "./NoteContext";
 import NotificationContext, {
   INotificationContext,
 } from "./NotificationContext";
@@ -17,6 +19,7 @@ export interface IBaseContext {
   notification: INotificationContext;
   auditLog: IAuditLogContext;
   session: ISessionContext;
+  note: INoteContext;
   models: IContextModels;
 }
 
@@ -26,11 +29,13 @@ export default class BaseContext implements IBaseContext {
   public notification: INotificationContext = new NotificationContext();
   public auditLog: IAuditLogContext = new AuditLogContext();
   public session: ISessionContext = new SessionContext();
+  public note: INoteContext = new NoteContext();
   public models: IContextModels = {
     userModel: getUserModel(),
     blockModel: getBlockModel(),
     notificationModel: getNotificationModel(),
     auditLogModel: getAuditLogModel(),
+    noteModel: getNoteModel(),
   };
 }
 

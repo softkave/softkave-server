@@ -2,6 +2,7 @@ import { BlockType } from "../../mongo/block";
 import OperationError, {
   IOperationErrorParameters,
 } from "../../utilities/OperationError";
+import { getBlockTypeName } from "./utils";
 
 export interface IBlockExistsErrorParameters extends IOperationErrorParameters {
   blockType?: BlockType;
@@ -13,24 +14,7 @@ export class BlockExistsError extends OperationError {
 
   constructor(p: IBlockExistsErrorParameters) {
     super(p);
-    this.message = `${this.getTypeName(p.blockType)} exists`;
-  }
-
-  private getTypeName(blockType?: BlockType) {
-    switch (blockType) {
-      case "org":
-        return "Organization";
-
-      case "task":
-        return "Task";
-
-      case "board":
-        return "Board";
-
-      case "root":
-      default:
-        return "Block";
-    }
+    this.message = `${getBlockTypeName(p.blockType)} exists`;
   }
 }
 
