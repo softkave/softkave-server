@@ -16,8 +16,10 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
-// import http from "http"
+import http from "http";
 // import aws from "./res/aws";
+import socketio from "socket.io";
+import  socket  from "./sockets/socket";
 
 console.log("server initialization");
 
@@ -34,7 +36,9 @@ if (!JWT_SECRET) {
 }
 
 const app = express();
-// const httpServer = http.createServer(app);
+const httpServer = http.createServer(app);
+const io = socketio(httpServer);
+
 const port = process.env.PORT || 5000;
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
@@ -113,6 +117,8 @@ app.use(
 );
 
 app.use(handleErrors);
+
+new socket(io).socketEvent();
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
