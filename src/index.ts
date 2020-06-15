@@ -3,6 +3,9 @@ import cors from "cors";
 import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
+import http from "http";
+// import aws from "./res/aws";
+import socketio from "socket.io";
 // import multer from "multer";
 // import multerS3 from "multer-s3";
 // import { nanoid } from "nanoid";
@@ -16,10 +19,8 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
-import http from "http";
-// import aws from "./res/aws";
-import socketio from "socket.io";
-import  socket  from "./sockets/socket";
+import socket from "./sockets/socket";
+import SocketServer from "./sockets/socket";
 
 console.log("server initialization");
 
@@ -40,9 +41,9 @@ const httpServer = http.createServer(app);
 const io = socketio(httpServer);
 
 const port = process.env.PORT || 5000;
+
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
-// const whiteListedCorsOrigins = [];
 let graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
@@ -118,7 +119,7 @@ app.use(
 
 app.use(handleErrors);
 
-new socket(io).socketEvent();
+const socketContext = new SocketServer(io, userModel);
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
