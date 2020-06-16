@@ -33,8 +33,8 @@ const subTasksSchema = Joi.object().keys({
     .trim()
     .max(blockConstants.maxDescriptionLength)
     .required(),
-  completedBy: Joi.string().uuid(),
-  completedAt: Joi.date(),
+  completedBy: Joi.string().uuid().allow(null),
+  completedAt: Joi.date().allow(null),
   createdAt: Joi.date(),
   createdBy: Joi.string().uuid(),
   updatedAt: Joi.date(),
