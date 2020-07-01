@@ -33,12 +33,12 @@ const subTasksSchema = Joi.object().keys({
     .trim()
     .max(blockConstants.maxDescriptionLength)
     .required(),
-  completedBy: Joi.string().uuid(),
-  completedAt: Joi.date(),
+  completedBy: Joi.string().uuid().allow(null),
+  completedAt: Joi.date().allow(null),
   createdAt: Joi.date(),
   createdBy: Joi.string().uuid(),
-  updatedAt: Joi.date(),
-  updatedBy: Joi.string().uuid(),
+  updatedAt: Joi.date().allow(null),
+  updatedBy: Joi.string().uuid().allow(null),
 });
 
 // TODO: run trim on all string inputs
@@ -58,8 +58,8 @@ const labelSchema = Joi.object().keys({
     .optional(),
   createdAt: Joi.date(),
   createdBy: Joi.string().uuid(),
-  updatedAt: Joi.date(),
-  updatedBy: Joi.string().uuid(),
+  updatedAt: Joi.date().allow(null),
+  updatedBy: Joi.string().uuid().allow(null),
 });
 
 const statusSchema = Joi.object().keys({
@@ -78,8 +78,8 @@ const statusSchema = Joi.object().keys({
     .optional(),
   createdAt: Joi.date(),
   createdBy: Joi.string().uuid().allow("system"), // TODO: find a fix. allowing system can be exploited
-  updatedAt: Joi.date(),
-  updatedBy: Joi.string().uuid(),
+  updatedAt: Joi.date().allow(null),
+  updatedBy: Joi.string().uuid().allow(null),
 });
 
 const statusListSchema = Joi.array()

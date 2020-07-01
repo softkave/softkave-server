@@ -1,3 +1,4 @@
+import { Socket } from "socket.io";
 import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
 import { INoteModel } from "../../mongo/note";
@@ -21,4 +22,5 @@ export interface IContextModels {
 export interface IEndpointInstanceData<T = any> {
   req: IServerRequest;
   data: T;
+  socket?: Socket;
 }
