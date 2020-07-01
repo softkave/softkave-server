@@ -163,7 +163,7 @@ export default class UserContext implements IUserContext {
           {
             orgs: { $elemMatch: { customId: blockId } },
           },
-          "name email createdAt customId"
+          "name email createdAt customId color"
         )
         .lean()
         .exec();
