@@ -11,6 +11,7 @@ import socketio from "socket.io";
 // import { nanoid } from "nanoid";
 import { indexSchema } from "./endpoints";
 import { getEndpointController } from "./endpoints/controller";
+import { setupSocketServer } from "./endpoints/socket/server";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import { getAuditLogModel } from "./mongo/audit-log";
@@ -39,6 +40,7 @@ if (!JWT_SECRET) {
 const app = express();
 const httpServer = http.createServer(app);
 const io = socketio(httpServer);
+setupSocketServer(io);
 
 const port = process.env.PORT || 5000;
 
@@ -118,8 +120,6 @@ app.use(
 );
 
 app.use(handleErrors);
-
-const socketContext = new SocketServer(io, userModel);
 
 connection.wait().then(async () => {
   // TODO: move index creation to DB pipeline
