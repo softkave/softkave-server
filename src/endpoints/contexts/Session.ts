@@ -1,4 +1,5 @@
 import merge from "lodash/merge";
+import { Socket } from "socket.io";
 import getUserFromRequest from "../../middlewares/getUserFromRequest";
 import { IUser, IUserModel } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
@@ -13,6 +14,7 @@ export interface ISessionModels {
 
 export interface ISessionFnsData {
   req: IServerRequest;
+  socket?: Socket;
 }
 
 // TODO: add validateUserSignin or something like it, to check if the user is signed in
@@ -40,6 +42,10 @@ export interface ISessionContext {
     instData: ISessionFnsData,
     data: Partial<IUser>
   ) => Promise<void>;
+  assertUser: (
+    models: ISessionModels,
+    instData: ISessionFnsData
+  ) => Promise<boolean>;
 }
 
 export default class SessionContext implements ISessionContext {
@@ -53,6 +59,14 @@ export default class SessionContext implements ISessionContext {
 
   public async getUser(models: ISessionModels, instData: ISessionFnsData) {
     return getUserFromRequest({
+      req: instData.req,
+      userModel: models.userModel,
+      required: true,
+    });
+  }
+
+  public async assertUser(models: ISessionModels, instData: ISessionFnsData) {
+    return !!getUserFromRequest({
       req: instData.req,
       userModel: models.userModel,
       required: true,

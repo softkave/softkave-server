@@ -74,3 +74,7 @@ export function getDateString(initial?: any) {
 
   return new Date().toISOString();
 }
+
+export function ternaryOp(a: any, b: any, c: any) {
+  return a ? b : c;
+}

@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
+import { INoteModel } from "../../mongo/note";
 import { INotificationModel } from "../../mongo/notification";
 import { IUserModel } from "../../mongo/user";
 import { IServerRequest } from "../../utilities/types";
@@ -15,6 +16,7 @@ export interface IContextModels {
   blockModel: IBlockModel;
   notificationModel: INotificationModel;
   auditLogModel: IAuditLogModel;
+  noteModel: INoteModel;
 }
 
 export interface IEndpointInstanceData<T = any> {

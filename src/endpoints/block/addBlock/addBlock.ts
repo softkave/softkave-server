@@ -35,6 +35,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
       action: AuditLogActionType.Create,
       resourceId: org.customId,
       resourceType: AuditLogResourceType.Org,
+      organizationId: org.customId,
     });
 
     return {
