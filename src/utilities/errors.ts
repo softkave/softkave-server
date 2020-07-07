@@ -7,6 +7,12 @@ export class ServerError extends OperationError {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+export class InvalidRequest extends OperationError {
+  public name = "InvalidRequest";
+  public message = "Invalid request";
+}
+
+// tslint:disable-next-line: max-classes-per-file
 export class InvalidValueError extends OperationError {
   public name = "InvalidValueError";
   public message = "Value is invalid";

@@ -1,7 +1,14 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
 
-export const noteSchemaVersion = 1; // increment when you make changes that are not backward compatible
+// increment when you make changes that are not backward compatible
+export const noteSchemaVersion = 1;
+
+export interface INoteOperation {
+  action: string;
+  timestamp: number;
+  data: any;
+}
 
 export interface INote {
   customId: string;
