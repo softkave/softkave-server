@@ -110,11 +110,11 @@ const lowerCasedName = name.lowercase();
 const description = Joi.string()
   .allow("")
   .max(blockConstants.maxDescriptionLength)
-  .trim()
-  .when("type", {
-    is: "task",
-    then: Joi.required(),
-  });
+  .trim();
+// .when("type", {
+//   is: BlockType.Task,
+//   then: Joi.required(),
+// });
 
 const updateDescription = Joi.string()
   .allow("")
@@ -154,7 +154,7 @@ const blockAssignedLabelsList = Joi.array()
 const statusAssignedBy = validationSchemas.uuid.allow("system"); // TODO: exploitable
 
 const newBlock = Joi.object().keys({
-  name,
+  name: name.required(),
   description,
   dueAt,
   color,

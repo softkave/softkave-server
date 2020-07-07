@@ -4,7 +4,7 @@ import { getBlockModel } from "../../mongo/block";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
-import { getSocketServer } from "../socket/SocketServer";
+import { getSocketServer } from "../socket/server";
 import AuditLogContext, { IAuditLogContext } from "./AuditLogContext";
 import BlockContext, { IBlockContext } from "./BlockContext";
 import NoteContext, { INoteContext } from "./NoteContext";
