@@ -20,8 +20,7 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
-import socket from "./sockets/socket";
-import SocketServer from "./sockets/socket";
+import { copyLabelsToBoard } from "./scripts/copyLabelsToBoard";
 
 console.log("server initialization");
 
@@ -129,6 +128,7 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
+  await copyLabelsToBoard();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
