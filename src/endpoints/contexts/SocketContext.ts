@@ -1,11 +1,10 @@
-import { Socket } from "socket.io";
-import SocketServer from "../../sockets/socket";
+import { Server, Socket } from "socket.io";
 import { InvalidRequestError } from "../errors";
 
 const userIdToSocketIdsMap: { [key: string]: string[] } = {};
 
 export interface ISocketContextStaticData {
-  socketServer: SocketServer;
+  socketServer: Server;
 }
 
 export interface ISocketContextInstanceData {
