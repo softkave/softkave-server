@@ -128,7 +128,7 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
-  await copyLabelsToBoard();
+  // await copyLabelsToBoard();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
