@@ -20,7 +20,6 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
-import { blockLowerCasedNameSync } from "./scripts/blockLowerCasedNameSync";
 
 console.log("server initialization");
 
@@ -128,7 +127,6 @@ connection.wait().then(async () => {
   await auditLogModel.waitTillReady();
 
   // scripts
-  await blockLowerCasedNameSync();
 
   app.listen(port, () => {
     console.log(appInfo.appName);
