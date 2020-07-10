@@ -4,7 +4,7 @@ import {
   AuditLogResourceType,
 } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
-import { IBlock, IBlockStatus } from "../../../mongo/block";
+import { BlockType, IBlock, IBlockStatus } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate, indexArray } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
@@ -335,11 +335,21 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
   const parent = updateData.parent;
   delete updateData.parent;
 
-  await context.block.updateBlockById(context.models, data.blockId, {
+  const updatesToSave: Partial<IBlock> = {
     ...updateData,
     updatedAt: getDate(),
     updatedBy: user.customId,
-  });
+  };
+
+  if (updateData.name && block.type !== BlockType.Task) {
+    updatesToSave.lowerCasedName = updateData.name.toLowerCase();
+  }
+
+  await context.block.updateBlockById(
+    context.models,
+    data.blockId,
+    updatesToSave
+  );
 
   // TODO: should we wait for thses to complete, cause a user can reload while they're pending
   // amd get incomplete/incorrect data

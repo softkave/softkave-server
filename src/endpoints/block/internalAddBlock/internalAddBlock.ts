@@ -1,4 +1,4 @@
-import { IBlock } from "../../../mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { BlockExistsError } from "../errors";
 import { InternalAddBlockEndpoint } from "./types";
@@ -35,7 +35,10 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
   const block: IBlock = {
     customId: inputBlock.customId,
     name: inputBlock.name,
-    lowerCasedName: inputBlock.name ? inputBlock.name.toLowerCase() : undefined,
+    lowerCasedName:
+      inputBlock.name && inputBlock.type !== BlockType.Task
+        ? inputBlock.name.toLowerCase()
+        : undefined,
     description: inputBlock.description,
     dueAt: inputBlock.dueAt as any,
     createdAt: now,
