@@ -1,3 +1,4 @@
+import { IBlock } from "../mongo/block";
 import {
   getFooterHTML,
   getHeaderHTML,
@@ -12,7 +13,7 @@ export interface IAssignedTaskEmailNotificationProps {
   assigner: string;
   senderOrg: string;
   loginLink: string;
-  taskDescription: string;
+  task: IBlock;
 }
 
 export function assignedTaskEmailNotificationHTML(
@@ -40,8 +41,13 @@ export function assignedTaskEmailNotificationHTML(
             }</b> by <b>${props.assigner}</b>.
           </p>
           <p>
-            <b>Task Description</b><br />
-            ${props.taskDescription}
+            <b>Task</b><br />
+            ${props.task.name || props.task.description}
+            ${
+              props.task.description && props.task.name
+                ? `<br /><br /> ${props.task.description}`
+                : ""
+            }
           </p>
           <p>
             To view the assigned task,
