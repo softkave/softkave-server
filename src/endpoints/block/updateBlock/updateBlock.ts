@@ -104,6 +104,7 @@ async function sendNewlyAssignedTaskEmail(
     fireAndForgetPromise(
       context.sendAssignedTaskEmailNotification(
         org,
+        data.data.name || block.name,
         data.data.description || block.description,
         user,
         assignee

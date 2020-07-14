@@ -18,11 +18,13 @@ export default class UpdateBlockContext extends BaseContext
 
   public async sendAssignedTaskEmailNotification(
     org: IBlock,
+    taskName: string,
     taskDescription: string,
     assigner: IUser,
     assignee: IUser
   ) {
     return sendAssignedTaskEmailNotification({
+      taskName,
       taskDescription,
       email: assignee.email,
       senderOrg: org.name,

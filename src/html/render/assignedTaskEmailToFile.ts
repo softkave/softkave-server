@@ -17,7 +17,7 @@ export default function renderAssignedTaskEmailToFile() {
     assigner: "Ajayi Solomon",
     senderOrg: "Softkave",
     loginLink: `${appInfo.clientDomain}/login`,
-    taskDescription: "did you know the earth is flat? prove it's not!",
+    taskName: "did you know the earth is flat? prove it's not!",
   };
 
   const existingUserHTML = assignedTaskEmailNotificationHTML(props);

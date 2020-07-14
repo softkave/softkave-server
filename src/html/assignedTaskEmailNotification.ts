@@ -13,7 +13,8 @@ export interface IAssignedTaskEmailNotificationProps {
   assigner: string;
   senderOrg: string;
   loginLink: string;
-  task: IBlock;
+  taskName: string;
+  taskDescription?: string;
 }
 
 export function assignedTaskEmailNotificationHTML(
@@ -42,10 +43,10 @@ export function assignedTaskEmailNotificationHTML(
           </p>
           <p>
             <b>Task</b><br />
-            ${props.task.name || props.task.description}
+            ${props.taskName || props.taskDescription}
             ${
-              props.task.description && props.task.name
-                ? `<br /><br /> ${props.task.description}`
+              props.taskDescription && props.taskName
+                ? `<br /><br /> ${props.taskDescription}`
                 : ""
             }
           </p>
