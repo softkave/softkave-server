@@ -1,12 +1,30 @@
 import { Server, Socket } from "socket.io";
 import getUserFromRequest from "../../middlewares/getUserFromRequest";
-import { IUserModel } from "../../mongo/user";
+import { getUserModel, IUserModel } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-import { ISocketContext } from "../contexts/SocketContext";
+import { getBaseContext } from "../contexts/BaseContext";
+import RoomContext, { IRoomContext } from "../contexts/RoomContext";
+import subscribe from "./subscribe/subscribe";
+import unsubscribe from "./unsubscribe/unsubscribe";
+
+enum IncomingSocketEvents {
+  Subscribe = "subscribe",
+  Unsubscribe = "unsubscribe",
+}
+
+export enum OutgoingSocketEvents {
+  BlockUpdate = "blockUpdate",
+  NewNotifications = "newNotifications",
+  UserUpdate = "userUpdate",
+  UpdateNotification = "updateNotification",
+  UserCollaborationRequestResponse = "userCollabReqResponse",
+  OrgCollaborationRequestResponse = "orgCollabReqResponse",
+  BoardUpdate = "boardUpdate",
+}
 
 async function onConnection(
-  SocketContext: ISocketContext,
+  roomContext: IRoomContext,
   socket: Socket,
   userModel: IUserModel
 ) {
@@ -16,8 +34,18 @@ async function onConnection(
       userModel,
     });
 
-    SocketContext.saveUserSocketId(socket.id, user.customId);
-    socket.on("disconnect", onDisconnect);
+    roomContext.saveUserSocketId(socket, user.customId);
+    socket.on("disconnect", () => {
+      onDisconnect(roomContext, socket, userModel);
+    });
+
+    socket.on(IncomingSocketEvents.Subscribe, (data) => {
+      subscribe(getBaseContext(), data);
+    });
+
+    socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
+      unsubscribe(getBaseContext(), data);
+    });
   } catch (error) {
     logger.error(error);
     socket.disconnect(true);
@@ -25,7 +53,7 @@ async function onConnection(
 }
 
 async function onDisconnect(
-  SocketContext: ISocketContext,
+  roomContext: IRoomContext,
   socket: Socket,
   userModel: IUserModel
 ) {
@@ -35,7 +63,7 @@ async function onDisconnect(
       userModel,
     });
 
-    SocketContext.removeUserSocketId(socket.id, user.customId);
+    roomContext.removeUserSocketId(socket, user.customId);
   } catch (error) {
     logger.error(error);
   }
@@ -45,7 +73,9 @@ let socketServer: Server = null;
 
 export function setupSocketServer(io: Server) {
   socketServer = io;
-  io.on("connection", onConnection);
+  io.on("connection", (socket) => {
+    onConnection(new RoomContext(), socket, getUserModel());
+  });
 }
 
 export function getSocketServer() {

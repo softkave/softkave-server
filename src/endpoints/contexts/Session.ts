@@ -17,9 +17,6 @@ export interface ISessionFnsData {
   socket?: Socket;
 }
 
-// TODO: add validateUserSignin or something like it, to check if the user is signed in
-// but the endpoint doesn't need the data
-
 // TODO: how can we validate user signin before getting to the endpoints that require user signin
 // for security purposes, in case someone forgets to check
 

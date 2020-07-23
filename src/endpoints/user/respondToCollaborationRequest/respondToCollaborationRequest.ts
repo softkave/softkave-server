@@ -1,7 +1,11 @@
-import { CollaborationRequestStatusType } from "../../../mongo/notification";
+import {
+  CollaborationRequestStatusType,
+  INotification,
+} from "../../../mongo/notification";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
+import { OutgoingSocketEvents } from "../../socket/server";
 import {
   CollaborationRequestAcceptedError,
   CollaborationRequestDeclinedError,
@@ -75,7 +79,8 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     // if the org does not exist or has been deleted
     // TODO: should we log something here?
     // TODO: figure our log points, i.e, what are the things we should be logging?
-    context.notification.deleteNotificationById(context.models, data.requestId);
+    // TODO: what should we do if the org does not exist?
+    // context.notification.deleteNotificationById(context.models, data.requestId);
   } else if (data.response === CollaborationRequestStatusType.Accepted) {
     if (!userIsPartOfOrg(user, ownerBlock.customId)) {
       const userOrgs = user.orgs.concat({ customId: ownerBlock.customId });
@@ -87,6 +92,28 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
       // TODO: should we log an error because it means the user already has the org
     }
   }
+
+  context.room.broadcastInBlock(
+    context.socketServer,
+    ownerBlock,
+    OutgoingSocketEvents.OrgCollaborationRequestResponse,
+    {
+      customId: req.customId,
+      response: data.response,
+    }
+  );
+
+  context.room.broadcastToUserClients(
+    context.socketServer,
+    user.customId,
+    OutgoingSocketEvents.UserCollaborationRequestResponse,
+    {
+      customId: req.customId,
+      response: data.response,
+      org: ownerBlock,
+    },
+    instData.socket
+  );
 };
 
 export default respondToCollaborationRequest;

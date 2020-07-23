@@ -46,11 +46,15 @@ async function getUserFromRequest({
   }
 
   req.userData = user;
+  const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
+  const tokenDataPasswordLastChangedAt = moment(
+    userTokenData.sub.passwordLastChangedAt
+  );
 
   if (
-    moment(user.passwordLastChangedAt).isAfter(
-      moment(userTokenData.sub.passwordLastChangedAt)
-    )
+    !userTokenData.sub.passwordLastChangedAt ||
+    !user.passwordLastChangedAt ||
+    userPasswordLastChangedAt > tokenDataPasswordLastChangedAt
   ) {
     throw new LoginAgainError();
   }

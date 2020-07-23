@@ -4,6 +4,8 @@ import {
 } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { validate } from "../../../utilities/joiUtils";
+import { fireAndForgetPromise } from "../../utils";
+import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import blockValidationSchemas from "../validation";
@@ -54,9 +56,8 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     ...instData,
     data: { block: data },
   });
-  const block = result.block;
 
-  // TODO: analyze all the net calls you're making and look for ways to reduce them
+  const block = result.block;
 
   context.auditLog.insert(context.models, instData, {
     action: AuditLogActionType.Create,
@@ -64,6 +65,18 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     resourceType: getBlockAuditLogResourceType(block),
     organizationId: getBlockRootBlockId(block),
   });
+
+  fireAndForgetPromise(
+    broadcastBlockUpdate(
+      context,
+      block.customId,
+      { isNew: true },
+      rootParent,
+      block
+    )
+  );
+
+  // TODO: analyze all the net calls you're making and look for ways to reduce them
 
   return {
     block,

@@ -12,6 +12,8 @@ import {
   IBulkUpdateByIdItem,
   IEndpointInstanceData,
 } from "../../contexts/types";
+import { fireAndForgetPromise } from "../../utils";
+import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
@@ -87,6 +89,16 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
 
   await canReadBlock({ user, block });
   await context.block.markBlockDeleted(context.models, block.customId, user);
+
+  fireAndForgetPromise(
+    broadcastBlockUpdate(
+      context,
+      block.customId,
+      { isDelete: true },
+      undefined,
+      block
+    )
+  );
 
   context.auditLog.insert(context.models, instData, {
     action: AuditLogActionType.Delete,

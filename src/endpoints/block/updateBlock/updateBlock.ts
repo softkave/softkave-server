@@ -12,6 +12,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { IAuditLogInsertInput } from "../../contexts/AuditLogContext";
 import { IEndpointInstanceData } from "../../contexts/types";
 import { fireAndForgetPromise } from "../../utils";
+import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import {
@@ -352,7 +353,11 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     updatesToSave
   );
 
-  // TODO: should we wait for thses to complete, cause a user can reload while they're pending
+  fireAndForgetPromise(
+    broadcastBlockUpdate(context, data.blockId, { isUpdate: true })
+  );
+
+  // TODO: should we wait for these to complete, cause a user can reload while they're pending
   // amd get incomplete/incorrect data
   fireAndForgetPromise(
     processBoardStatusChanges(context, instData, block, user)
