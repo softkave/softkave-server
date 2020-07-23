@@ -4,9 +4,11 @@ import { getBlockModel } from "../../mongo/block";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
+import { IAddCommentContext } from "../comment/addComment/types";
 import { getSocketServer } from "../socket/server";
 import AuditLogContext, { IAuditLogContext } from "./AuditLogContext";
 import BlockContext, { IBlockContext } from "./BlockContext";
+import CommentContext, { ICommentContext } from "./CommentContext";
 import NoteContext, { INoteContext } from "./NoteContext";
 import NotificationContext, {
   INotificationContext,
@@ -28,6 +30,7 @@ export interface IBaseContext {
   room: IRoomContext;
   models: IContextModels;
   socketServer: Server;
+  comment: ICommentContext;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -47,6 +50,7 @@ export default class BaseContext implements IBaseContext {
     noteModel: getNoteModel(),
   };
   public socketServer: Server = getSocketServer();
+  public comment = new CommentContext();
 }
 
 let baseContext: BaseContext = null;

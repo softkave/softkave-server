@@ -1,5 +1,7 @@
 export interface INewCommentInput {
-  //TODO
+  customId: string;
+  taskId: string;
+  comment: string;
 }
 
 export interface IUpdateComment {
