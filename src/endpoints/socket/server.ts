@@ -1,27 +1,15 @@
 import { Server, Socket } from "socket.io";
 import getUserFromRequest from "../../middlewares/getUserFromRequest";
+import { IBlock } from "../../mongo/block";
+import { INotification } from "../../mongo/notification";
 import { getUserModel, IUserModel } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
 import { getBaseContext } from "../contexts/BaseContext";
 import RoomContext, { IRoomContext } from "../contexts/RoomContext";
+import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
-
-enum IncomingSocketEvents {
-  Subscribe = "subscribe",
-  Unsubscribe = "unsubscribe",
-}
-
-export enum OutgoingSocketEvents {
-  BlockUpdate = "blockUpdate",
-  NewNotifications = "newNotifications",
-  UserUpdate = "userUpdate",
-  UpdateNotification = "updateNotification",
-  UserCollaborationRequestResponse = "userCollabReqResponse",
-  OrgCollaborationRequestResponse = "orgCollabReqResponse",
-  BoardUpdate = "boardUpdate",
-}
 
 async function onConnection(
   roomContext: IRoomContext,
@@ -85,3 +73,53 @@ export function getSocketServer() {
 
   return socketServer;
 }
+
+enum IncomingSocketEvents {
+  Subscribe = "subscribe",
+  Unsubscribe = "unsubscribe",
+}
+
+export enum OutgoingSocketEvents {
+  BlockUpdate = "blockUpdate",
+  NewNotifications = "newNotifications",
+  UserUpdate = "userUpdate",
+  UpdateNotification = "updateNotification",
+  UserCollaborationRequestResponse = "userCollabReqResponse",
+  OrgCollaborationRequestResponse = "orgCollabReqResponse",
+  BoardUpdate = "boardUpdate",
+}
+
+export interface IBlockUpdatePacket {
+  customId: string;
+  isNew?: boolean;
+  isUpdate?: boolean;
+  isDelete?: boolean;
+  block?: Partial<IBlock>;
+}
+
+export interface INewNotificationsPacket {
+  notifications: INotification[];
+}
+
+export interface IUserUpdatePacket {
+  notificationsLastCheckedAt: string;
+}
+
+export interface IUpdateNotificationPacket {
+  customId: string;
+  data: { readAt: string };
+}
+
+export interface IUserCollaborationRequestResponsePacket {
+  customId: string;
+  response: CollaborationRequestResponse;
+  org?: IBlock;
+}
+
+export interface IOrgCollaborationRequestResponsePacket {
+  customId: string;
+  response: CollaborationRequestResponse;
+}
+
+// tslint:disable-next-line: no-empty-interface
+export interface IBoardUpdatePacket {}

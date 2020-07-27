@@ -8,7 +8,10 @@ import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { OutgoingSocketEvents } from "../../socket/server";
+import {
+  INewNotificationsPacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
 import { userIsPartOfOrg } from "../../user/utils";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
@@ -143,11 +146,15 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     collaborationRequests
   );
 
+  const broadcastData: INewNotificationsPacket = {
+    notifications: collaborationRequests,
+  };
+
   context.room.broadcastInBlock(
     context.socketServer,
     block,
     OutgoingSocketEvents.NewNotifications,
-    { collaborationRequests },
+    broadcastData,
     instData.socket
   );
 

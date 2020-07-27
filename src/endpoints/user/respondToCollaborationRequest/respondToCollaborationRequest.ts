@@ -5,7 +5,11 @@ import {
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
-import { OutgoingSocketEvents } from "../../socket/server";
+import {
+  IOrgCollaborationRequestResponsePacket,
+  IUserCollaborationRequestResponsePacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
 import {
   CollaborationRequestAcceptedError,
   CollaborationRequestDeclinedError,
@@ -56,11 +60,12 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   }
 
   const statusHistory = req.statusHistory || [];
+  const userAccepted =
+    data.response === CollaborationRequestStatusType.Accepted;
   statusHistory.push({
-    status:
-      data.response === "accepted"
-        ? CollaborationRequestStatusType.Accepted
-        : CollaborationRequestStatusType.Declined,
+    status: userAccepted
+      ? CollaborationRequestStatusType.Accepted
+      : CollaborationRequestStatusType.Declined,
     date: getDate(),
   });
 
@@ -81,7 +86,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     // TODO: figure our log points, i.e, what are the things we should be logging?
     // TODO: what should we do if the org does not exist?
     // context.notification.deleteNotificationById(context.models, data.requestId);
-  } else if (data.response === CollaborationRequestStatusType.Accepted) {
+  } else if (userAccepted) {
     if (!userIsPartOfOrg(user, ownerBlock.customId)) {
       const userOrgs = user.orgs.concat({ customId: ownerBlock.customId });
       await context.session.updateUser(context.models, instData, {
@@ -93,25 +98,29 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     }
   }
 
+  const orgsBroadcastData: IOrgCollaborationRequestResponsePacket = {
+    customId: req.customId,
+    response: data.response,
+  };
+
   context.room.broadcastInBlock(
     context.socketServer,
     ownerBlock,
     OutgoingSocketEvents.OrgCollaborationRequestResponse,
-    {
-      customId: req.customId,
-      response: data.response,
-    }
+    orgsBroadcastData
   );
+
+  const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
+    customId: req.customId,
+    response: data.response,
+    org: userAccepted ? ownerBlock : undefined,
+  };
 
   context.room.broadcastToUserClients(
     context.socketServer,
     user.customId,
     OutgoingSocketEvents.UserCollaborationRequestResponse,
-    {
-      customId: req.customId,
-      response: data.response,
-      org: ownerBlock,
-    },
+    userClientsBroadcastData,
     instData.socket
   );
 };

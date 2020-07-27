@@ -1,7 +1,10 @@
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import { NotificationDoesNotExistError } from "../../notification/errors";
-import { OutgoingSocketEvents } from "../../socket/server";
+import {
+  IUpdateNotificationPacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
 import { MarkNotificationReadEndpoint } from "./types";
 import { updateCollaborationRequestSchema } from "./validation";
 
@@ -24,9 +27,9 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
     throw new PermissionDeniedError();
   }
 
-  const update = {
+  const update: IUpdateNotificationPacket = {
     customId: notification.customId,
-    data: { readAt: data.readAt as any },
+    data: { readAt: data.readAt },
   };
 
   await context.notification.updateNotificationById(

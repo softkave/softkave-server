@@ -1,5 +1,6 @@
+import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { OutgoingSocketEvents } from "../../socket/server";
+import { IUserUpdatePacket, OutgoingSocketEvents } from "../../socket/server";
 import { UpdateUserEndpoint } from "./types";
 import { updateUserJoiSchema } from "./validation";
 
@@ -8,11 +9,17 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
   const user = await context.session.getUser(context.models, instData);
 
   if (data.notificationsLastCheckedAt) {
+    const broadcastData: IUserUpdatePacket = {
+      notificationsLastCheckedAt: getDateString(
+        data.notificationsLastCheckedAt
+      ),
+    };
+
     context.room.broadcastToUserClients(
       context.socketServer,
       user.customId,
       OutgoingSocketEvents.UserUpdate,
-      { notificationsLastCheckedAt: data.notificationsLastCheckedAt },
+      broadcastData,
       instData.socket
     );
   }

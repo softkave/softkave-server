@@ -1,6 +1,10 @@
 import { BlockType, IBlock } from "../../mongo/block";
 import { IBaseContext } from "../contexts/BaseContext";
-import { OutgoingSocketEvents } from "../socket/server";
+import {
+  IBlockUpdatePacket,
+  IBoardUpdatePacket,
+  OutgoingSocketEvents,
+} from "../socket/server";
 
 const broadcastBlockUpdate = async (
   context: IBaseContext,
@@ -10,10 +14,10 @@ const broadcastBlockUpdate = async (
   block?: IBlock
 ) => {
   let event: string = "";
-  let data: any = {};
   let room: IBlock;
 
   if (block.type === BlockType.Task) {
+    const data: IBoardUpdatePacket = {};
     event = OutgoingSocketEvents.BoardUpdate;
 
     const board = await context.block.getBlockById(
@@ -22,8 +26,10 @@ const broadcastBlockUpdate = async (
     );
 
     room = board;
-    data = { block: { customId: block.customId } };
+    context.room.broadcastInBlock(context.socketServer, room, event, data);
   } else {
+    const data: IBlockUpdatePacket = { customId: block.customId };
+
     // TODO: should we do this here, for performance reasons?
     // or should we pass it in from the caller
     block =
@@ -36,15 +42,17 @@ const broadcastBlockUpdate = async (
     room = org;
 
     if (updateType.isNew) {
-      data = { isNew: true, block };
+      data.isNew = true;
+      data.block = block;
     } else if (updateType.isUpdate) {
-      data = { isUpdate: true, block };
+      data.isUpdate = true;
+      data.block = block;
     } else if (updateType.isDelete) {
-      data = { isDelete: true, block: { customId: block.customId } };
+      data.isDelete = true;
     }
-  }
 
-  context.room.broadcastInBlock(context.socketServer, room, event, data);
+    context.room.broadcastInBlock(context.socketServer, room, event, data);
+  }
 };
 
 export default broadcastBlockUpdate;
