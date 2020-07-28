@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
+import { getCommentModel } from "../../mongo/comment";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
@@ -48,6 +49,7 @@ export default class BaseContext implements IBaseContext {
     notificationModel: getNotificationModel(),
     auditLogModel: getAuditLogModel(),
     noteModel: getNoteModel(),
+    commentModel: getCommentModel(),
   };
   public socketServer: Server = getSocketServer();
   public comment = new CommentContext();

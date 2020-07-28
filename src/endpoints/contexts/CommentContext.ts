@@ -14,10 +14,10 @@ export interface ICommentContext {
 }
 
 export default class CommentContext implements ICommentContext {
-  public async createComment(models, comment: IComment) {
+  public async createComment(models: ICommentContextModel, comment: IComment) {
     try {
       const c = new models.commentModel.model(comment);
-      c.save();
+      await c.save();
       return comment;
     } catch (error) {
       logger.error(error);

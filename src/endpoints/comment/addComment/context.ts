@@ -7,5 +7,8 @@ export default class AddCommentContext extends BaseContext
   public async addComment(
     context: IBaseContext,
     instData: IEndpointInstanceData<IAddCommentParameters>
-  ) {}
+  ) {
+    const user = await context.session.getUser(context.models, instData);
+    
+  }
 }

@@ -9,14 +9,14 @@ const commentSchema = `
     updatedBy: String
   }
 
-  input AddComment {
+  input AddCommentInput {
     customId: String
     taskId: String
     comment: String
   }
 
   type CommentQuery {
-    addComment(comment: AddComment!) : ErrorOnlyResponse
+    addComment(comment: AddCommentInput!) : ErrorOnlyResponse
   }
 `;
 
