@@ -354,7 +354,9 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
   );
 
   fireAndForgetPromise(
-    broadcastBlockUpdate(context, data.blockId, { isUpdate: true })
+    broadcastBlockUpdate(context, data.blockId, user.customId, {
+      isUpdate: true,
+    })
   );
 
   // TODO: should we wait for these to complete, cause a user can reload while they're pending

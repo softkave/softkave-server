@@ -9,16 +9,20 @@ import {
 import { ServerError } from "../utilities/errors";
 import logger from "../utilities/logger";
 
-function handleErrors(err: Error | any, req: Request, res: Response, next) {
+export function resolveJWTError(err: Error) {
   if (err.name === JsonWebTokenError.name || err.name === "UnauthorizedError") {
-    res.status(401).send({
-      errors: [new InvalidCredentialsError()],
-    });
+    return new InvalidCredentialsError();
   } else if (err.name === TokenExpiredError.name) {
+    return new CredentialsExpiredError();
+  }
+}
+
+function handleErrors(err: Error | any, req: Request, res: Response, next) {
+  const JWTError = resolveJWTError(err);
+
+  if (JWTError) {
     res.status(401).send({
-      // TODO: look into, passing an error like this works just fine, but under graphql
-      // we have tp spread it
-      errors: [new CredentialsExpiredError()],
+      errors: [JWTError],
     });
   } else if (err instanceof multer.MulterError) {
     // TODO: how can we handle this better?

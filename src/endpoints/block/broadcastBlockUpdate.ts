@@ -9,6 +9,7 @@ import {
 const broadcastBlockUpdate = async (
   context: IBaseContext,
   blockId: string,
+  userId: string,
   updateType: { isNew?: boolean; isUpdate?: boolean; isDelete?: boolean },
   org?: IBlock,
   block?: IBlock
@@ -49,6 +50,17 @@ const broadcastBlockUpdate = async (
       data.block = block;
     } else if (updateType.isDelete) {
       data.isDelete = true;
+    }
+
+    if (updateType.isNew && block.type === BlockType.Org) {
+      context.room.broadcastToUserClients(
+        context.socketServer,
+        userId,
+        event,
+        data
+      );
+
+      return;
     }
 
     context.room.broadcastInBlock(context.socketServer, room, event, data);

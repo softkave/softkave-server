@@ -94,6 +94,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     broadcastBlockUpdate(
       context,
       block.customId,
+      user.customId,
       { isDelete: true },
       undefined,
       block

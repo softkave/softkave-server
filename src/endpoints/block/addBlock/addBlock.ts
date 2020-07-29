@@ -40,6 +40,17 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
       organizationId: org.customId,
     });
 
+    fireAndForgetPromise(
+      broadcastBlockUpdate(
+        context,
+        org.customId,
+        user.customId,
+        { isNew: true },
+        org,
+        org
+      )
+    );
+
     return {
       block: org,
     };
@@ -70,6 +81,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     broadcastBlockUpdate(
       context,
       block.customId,
+      user.customId,
       { isNew: true },
       rootParent,
       block

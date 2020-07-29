@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
-import getUserFromRequest from "../../middlewares/getUserFromRequest";
+import getUserFromRequest, {
+  validateUserToken,
+} from "../../middlewares/getUserFromRequest";
 import { IBlock } from "../../mongo/block";
 import { INotification } from "../../mongo/notification";
 import { getUserModel, IUserModel } from "../../mongo/user";
@@ -16,28 +18,35 @@ async function onConnection(
   socket: Socket,
   userModel: IUserModel
 ) {
-  try {
-    const user = await getUserFromRequest({
-      req: socket.request,
-      userModel,
-    });
+  socket.on(
+    IncomingSocketEvents.Auth,
+    async (data: IIncomingAuthPacket, fn) => {
+      try {
+        const user = await validateUserToken(data.token, userModel, true);
+        roomContext.saveUserSocketId(socket, user.customId);
 
-    roomContext.saveUserSocketId(socket, user.customId);
-    socket.on("disconnect", () => {
-      onDisconnect(roomContext, socket, userModel);
-    });
+        const result: IOutgoingAuthPacket = { valid: true };
+        fn(result);
+      } catch (error) {
+        const result: IOutgoingAuthPacket = { valid: false };
+        logger.error(error);
+        fn(result);
+        socket.disconnect();
+      }
+    }
+  );
 
-    socket.on(IncomingSocketEvents.Subscribe, (data) => {
-      subscribe(getBaseContext(), data);
-    });
+  socket.on("disconnect", () => {
+    onDisconnect(roomContext, socket, userModel);
+  });
 
-    socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
-      unsubscribe(getBaseContext(), data);
-    });
-  } catch (error) {
-    logger.error(error);
-    socket.disconnect(true);
-  }
+  socket.on(IncomingSocketEvents.Subscribe, (data) => {
+    subscribe(getBaseContext(), data);
+  });
+
+  socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
+    unsubscribe(getBaseContext(), data);
+  });
 }
 
 async function onDisconnect(
@@ -77,6 +86,7 @@ export function getSocketServer() {
 enum IncomingSocketEvents {
   Subscribe = "subscribe",
   Unsubscribe = "unsubscribe",
+  Auth = "auth",
 }
 
 export enum OutgoingSocketEvents {
@@ -87,6 +97,14 @@ export enum OutgoingSocketEvents {
   UserCollaborationRequestResponse = "userCollabReqResponse",
   OrgCollaborationRequestResponse = "orgCollabReqResponse",
   BoardUpdate = "boardUpdate",
+}
+
+export interface IIncomingAuthPacket {
+  token: string;
+}
+
+export interface IOutgoingAuthPacket {
+  valid: boolean;
 }
 
 export interface IBlockUpdatePacket {
