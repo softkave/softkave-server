@@ -1,7 +1,4 @@
-import {
-  CollaborationRequestStatusType,
-  INotification,
-} from "../../../mongo/notification";
+import { CollaborationRequestStatusType } from "../../../mongo/notification";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
@@ -26,9 +23,9 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   instData
 ) => {
   const data = validate(instData.data, respondToCollaborationRequestJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const req = await context.notification.getNotificationById(
-    context.models,
+    context,
     data.requestId
   );
 
@@ -69,14 +66,12 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     date: getDate(),
   });
 
-  await context.notification.updateNotificationById(
-    context.models,
-    data.requestId,
-    { statusHistory }
-  );
+  await context.notification.updateNotificationById(context, data.requestId, {
+    statusHistory,
+  });
 
   const ownerBlock = await context.block.getBlockById(
-    context.models,
+    context,
     req.from.blockId
   );
 
@@ -85,11 +80,11 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     // TODO: should we log something here?
     // TODO: figure our log points, i.e, what are the things we should be logging?
     // TODO: what should we do if the org does not exist?
-    // context.notification.deleteNotificationById(context.models, data.requestId);
+    // context.notification.deleteNotificationById(context, data.requestId);
   } else if (userAccepted) {
     if (!userIsPartOfOrg(user, ownerBlock.customId)) {
       const userOrgs = user.orgs.concat({ customId: ownerBlock.customId });
-      await context.session.updateUser(context.models, instData, {
+      await context.session.updateUser(context, instData, {
         orgs: userOrgs,
       });
       return { block: ownerBlock };
@@ -103,11 +98,13 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     response: data.response,
   };
 
-  context.room.broadcastInBlock(
-    context.socketServer,
-    ownerBlock,
+  const blockRoomName = context.room.getBlockRoomName(ownerBlock);
+  context.room.broadcast(
+    context,
+    blockRoomName,
     OutgoingSocketEvents.OrgCollaborationRequestResponse,
-    orgsBroadcastData
+    orgsBroadcastData,
+    instData
   );
 
   const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
@@ -116,12 +113,13 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     org: userAccepted ? ownerBlock : undefined,
   };
 
-  context.room.broadcastToUserClients(
-    context.socketServer,
-    user.customId,
+  const userRoomName = context.room.getUserPersonalRoomName(user);
+  context.room.broadcast(
+    context,
+    userRoomName,
     OutgoingSocketEvents.UserCollaborationRequestResponse,
     userClientsBroadcastData,
-    instData.socket
+    instData
   );
 };
 

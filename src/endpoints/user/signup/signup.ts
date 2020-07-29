@@ -39,11 +39,11 @@ const signup: SignupEndpoint = async (context, instData) => {
     orgs: [],
   };
 
-  const user = await context.user.saveUser(context.models, value);
-  context.session.addUserToSession(context.models, instData, user);
+  const user = await context.user.saveUser(context, value);
+  context.session.addUserToSession(context, instData, user);
   await context.createUserRootBlock(context, { ...instData, data: { user } });
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Signup,
     resourceId: user.customId,
     resourceType: AuditLogResourceType.User,

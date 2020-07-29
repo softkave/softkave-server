@@ -1,3 +1,4 @@
+import { bool } from "aws-sdk/clients/signer";
 import { Server, Socket } from "socket.io";
 import getUserFromRequest, {
   validateUserToken,
@@ -103,7 +104,8 @@ enum IncomingSocketEvents {
 
 export enum OutgoingSocketEvents {
   BlockUpdate = "blockUpdate",
-  NewNotifications = "newNotifications",
+  OrgNewNotifications = "orgNewNotifications",
+  UserNewNotifications = "userNewNotifications",
   UserUpdate = "userUpdate",
   UpdateNotification = "updateNotification",
   UserCollaborationRequestResponse = "userCollabReqResponse",

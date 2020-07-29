@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import { IBaseContext } from "../../contexts/BaseContext";
-import { IEndpointInstanceData } from "../../contexts/types";
+import RequestData from "../../contexts/RequestData";
 import { JWTEndpoints } from "../../utils";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
@@ -15,12 +15,13 @@ const correctPassword = "01234567";
 const incorrectPassword = "abcdefgh";
 
 const getInstanceData = ({ useIncorrectPassword = false } = {}) => {
-  const instData: IEndpointInstanceData<ILoginParameters> = {
+  const instData: RequestData<ILoginParameters> = {
     data: {
       email: userEmail,
       password: useIncorrectPassword ? incorrectPassword : correctPassword,
     },
     req: {} as any,
+    ips: [],
   };
 
   return instData;
@@ -67,7 +68,7 @@ test("prevents login if password is incorrect", async () => {
 test("allow login if password is correct", async () => {
   const context = getContext();
   const instData = getInstanceData();
-  const user = await context.user.getUserByEmail(context.models, userEmail);
+  const user = await context.user.getUserByEmail(context, userEmail);
   const publicUserData = getPublicUserData(user);
   await expect(login(context, instData)).resolves.toMatchObject({
     user: publicUserData,

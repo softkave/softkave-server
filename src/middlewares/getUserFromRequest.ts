@@ -1,4 +1,5 @@
 import moment from "moment";
+import { IServerRequest } from "../endpoints/contexts/types";
 import { PermissionDeniedError } from "../endpoints/errors";
 import {
   InvalidCredentialsError,
@@ -8,7 +9,6 @@ import UserToken, { IBaseUserTokenData } from "../endpoints/user/UserToken";
 import { JWTEndpoints } from "../endpoints/utils";
 import { IUser, IUserModel } from "../mongo/user";
 import logger from "../utilities/logger";
-import { IServerRequest } from "../utilities/types";
 import { resolveJWTError } from "./handleErrors";
 
 export interface IGetUserFromRequestParamters {

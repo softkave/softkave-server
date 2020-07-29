@@ -12,11 +12,8 @@ import { transferBlockJoiSchema } from "./validation";
 const transferBlock: TransferBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data, transferBlockJoiSchema);
   const blockIds = [data.draggedBlockId, data.destinationBlockId];
-  const user = await context.session.getUser(context.models, instData);
-  const blocks = await context.block.bulkGetBlocksByIds(
-    context.models,
-    blockIds
-  );
+  const user = await context.session.getUser(context, instData);
+  const blocks = await context.block.bulkGetBlocksByIds(context, blockIds);
 
   let draggedBlock: IBlock;
   let destinationBlock: IBlock;
@@ -45,12 +42,12 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
   };
 
   await context.block.updateBlockById(
-    context.models,
+    context,
     draggedBlock.customId,
     draggedBlockUpdates
   );
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Transfer,
     resourceId: draggedBlock.customId,
     resourceType: getBlockAuditLogResourceType(draggedBlock),

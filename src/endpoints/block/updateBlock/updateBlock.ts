@@ -10,7 +10,7 @@ import { getDate, indexArray } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
-import { IEndpointInstanceData } from "../../contexts/types";
+import RequestData from "../../contexts/RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
@@ -63,11 +63,11 @@ const diffAssignedUsers = (
 
 async function sendNewlyAssignedTaskEmail(
   context: IUpdateBlockContext,
-  instData: IEndpointInstanceData<IUpdateBlockParameters>,
+  instData: RequestData<IUpdateBlockParameters>,
   block: IBlock
 ) {
   const data = instData.data;
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
 
   // TODO: should we send an email if you're the one who assigned it to yourself?
   // TODO: how should we respect the user and not spam them? -- user settings
@@ -80,14 +80,11 @@ async function sendNewlyAssignedTaskEmail(
   }
 
   const newAssignees = await context.user.bulkGetUsersById(
-    context.models,
+    context,
     newlyAssignedUsers.map((assignedUser) => assignedUser.userId)
   );
 
-  const org = await context.block.getBlockById(
-    context.models,
-    block.rootBlockId
-  );
+  const org = await context.block.getBlockById(context, block.rootBlockId);
 
   const assigneesMap = indexArray(newAssignees, { path: "customId" });
 
@@ -129,7 +126,7 @@ function getStatusChangedFields(
 
 async function processBoardStatusChanges(
   context: IUpdateBlockContext,
-  instData: IEndpointInstanceData<IUpdateBlockParameters>,
+  instData: RequestData<IUpdateBlockParameters>,
   block: IBlock,
   user: IUser
 ) {
@@ -220,19 +217,19 @@ async function processBoardStatusChanges(
   // TODO: maybe wite a cron job to clean things up
   fireAndForgetPromise(
     context.bulkUpdateDeletedStatusInTasks(
-      context.models,
+      context,
       block.customId,
       deletedStatusIdsWithReplacement,
       user
     )
   );
 
-  context.auditLog.insertMany(context.models, instData, logEntries);
+  context.auditLog.insertMany(context, instData, logEntries);
 }
 
 async function processBoardLabelChanges(
   context: IUpdateBlockContext,
-  instData: IEndpointInstanceData<IUpdateBlockParameters>,
+  instData: RequestData<IUpdateBlockParameters>,
   block: IBlock
 ) {
   const data = instData.data;
@@ -317,20 +314,20 @@ async function processBoardLabelChanges(
   // TODO: maybe wite a cron job to clean things up
   fireAndForgetPromise(
     context.bulkRemoveDeletedLabelsInTasks(
-      context.models,
+      context,
       block.customId,
       deletedLabelIds
     )
   );
 
-  context.auditLog.insertMany(context.models, instData, logEntries);
+  context.auditLog.insertMany(context, instData, logEntries);
 }
 
 const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data, updateBlockJoiSchema);
   const updateData = data.data;
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.blockId);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
 
   canReadBlock({ user, block });
 
@@ -347,11 +344,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     updatesToSave.lowerCasedName = updateData.name.toLowerCase();
   }
 
-  await context.block.updateBlockById(
-    context.models,
-    data.blockId,
-    updatesToSave
-  );
+  await context.block.updateBlockById(context, data.blockId, updatesToSave);
 
   fireAndForgetPromise(
     broadcastBlockUpdate(context, data.blockId, user.customId, {
@@ -367,7 +360,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
   fireAndForgetPromise(processBoardLabelChanges(context, instData, block));
   fireAndForgetPromise(sendNewlyAssignedTaskEmail(context, instData, block));
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Update,
     resourceId: block.customId,
     resourceType: getBlockAuditLogResourceType(block),

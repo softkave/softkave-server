@@ -14,7 +14,7 @@ import { AddBlockEndpoint } from "./types";
 const addBlock: AddBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data.block, blockValidationSchemas.newBlock);
   const newBlock = data;
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
 
   if (newBlock.type === "org") {
     const orgSaveResult = await context.addBlock(context, {
@@ -29,11 +29,11 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     // TODO: scrub all data that failed it's pipeline
 
     const userOrgs = user.orgs.concat({ customId: org.customId });
-    await context.session.updateUser(context.models, instData, {
+    await context.session.updateUser(context, instData, {
       orgs: userOrgs,
     });
 
-    context.auditLog.insert(context.models, instData, {
+    context.auditLog.insert(context, instData, {
       action: AuditLogActionType.Create,
       resourceId: org.customId,
       resourceType: AuditLogResourceType.Org,
@@ -57,7 +57,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
   }
 
   const rootParent = await context.block.getBlockById(
-    context.models,
+    context,
     newBlock.rootBlockId
   );
 
@@ -70,7 +70,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
 
   const block = result.block;
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Create,
     resourceId: block.customId,
     resourceType: getBlockAuditLogResourceType(block),

@@ -6,7 +6,7 @@ import { updateUserJoiSchema } from "./validation";
 
 const updateUser: UpdateUserEndpoint = async (context, instData) => {
   const data = validate(instData.data, updateUserJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
 
   if (data.notificationsLastCheckedAt) {
     const broadcastData: IUserUpdatePacket = {
@@ -15,16 +15,17 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
       ),
     };
 
-    context.room.broadcastToUserClients(
-      context.socketServer,
-      user.customId,
+    const userRoomName = context.room.getUserPersonalRoomName(user);
+    context.room.broadcast(
+      context,
+      userRoomName,
       OutgoingSocketEvents.UserUpdate,
       broadcastData,
-      instData.socket
+      instData
     );
   }
 
-  await context.session.updateUser(context.models, instData, data);
+  await context.session.updateUser(context, instData, data);
 };
 
 export default updateUser;
