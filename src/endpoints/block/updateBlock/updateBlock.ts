@@ -9,7 +9,7 @@ import { IUser } from "../../../mongo/user";
 import { getDate, indexArray } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
-import { IAuditLogInsertInput } from "../../contexts/AuditLogContext";
+import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import { IEndpointInstanceData } from "../../contexts/types";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
@@ -149,7 +149,7 @@ async function processBoardStatusChanges(
     path: "customId",
   });
 
-  const logEntries: IAuditLogInsertInput[] = [];
+  const logEntries: IAuditLogInsertEntry[] = [];
   const deletedStatusIdsWithReplacement: Array<{
     oldId: string;
     newId: string;
@@ -251,7 +251,7 @@ async function processBoardLabelChanges(
     path: "customId",
   });
 
-  const logEntries: IAuditLogInsertInput[] = [];
+  const logEntries: IAuditLogInsertEntry[] = [];
   const deletedLabelIds: string[] = [];
 
   oldBoardLabels.forEach((label) => {

@@ -1,20 +1,19 @@
-import { Server, Socket } from "socket.io";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
-
-export interface ISocketContextInstanceData {
-  socket?: Socket;
-}
+import RequestData from "./RequestData";
 
 export interface ISocketContext {
-  assertSocket: (instData: ISocketContextInstanceData) => boolean;
+  assertSocket: (data: RequestData) => boolean;
 }
 
 export default class SocketContext implements ISocketContext {
-  public assertSocket(instData: ISocketContextInstanceData) {
-    if (!instData.socket) {
+  public assertSocket(data: RequestData) {
+    if (!data.socket) {
       throw new InvalidRequestError();
     }
 
     return true;
   }
 }
+
+export const getSocketContext = createSingletonFunc(() => new SocketContext());

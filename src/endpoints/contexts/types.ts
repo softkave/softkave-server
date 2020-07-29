@@ -1,15 +1,10 @@
-import { Socket } from "socket.io";
+import { Request } from "express";
 import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
 import { INoteModel } from "../../mongo/note";
 import { INotificationModel } from "../../mongo/notification";
-import { IUserModel } from "../../mongo/user";
-import { IServerRequest } from "../../utilities/types";
-
-export interface IBulkUpdateByIdItem<T> {
-  id: string;
-  data: Partial<T>;
-}
+import { IUser, IUserModel } from "../../mongo/user";
+import { IBaseUserTokenData } from "../user/UserToken";
 
 export interface IContextModels {
   userModel: IUserModel;
@@ -19,8 +14,7 @@ export interface IContextModels {
   noteModel: INoteModel;
 }
 
-export interface IEndpointInstanceData<T = any> {
-  req: IServerRequest;
-  data: T;
-  socket?: Socket;
+export interface IServerRequest extends Request {
+  user?: IBaseUserTokenData;
+  userData?: IUser;
 }

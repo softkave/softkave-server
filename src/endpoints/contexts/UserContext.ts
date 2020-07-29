@@ -1,58 +1,47 @@
 import mongoConstants from "../../mongo/constants";
-import { IUser, IUserModel } from "../../mongo/user";
+import { IUser } from "../../mongo/user";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
+import { IBulkUpdateById } from "../../utilities/types";
 import { UserDoesNotExistError } from "../user/errors";
 import { ICollaborator } from "../user/types";
-import { IBulkUpdateByIdItem } from "./types";
-
-export interface IUserContextModels {
-  userModel: IUserModel;
-}
+import { IBaseContext } from "./BaseContext";
 
 export interface IUserContext {
   getUserByEmail: (
-    models: IUserContextModels,
+    ctx: IBaseContext,
     email: string
   ) => Promise<IUser | undefined>;
-  bulkGetUsersByEmail: (
-    models: IUserContextModels,
-    email: string[]
-  ) => Promise<IUser[]>;
+  bulkGetUsersByEmail: (ctx: IBaseContext, email: string[]) => Promise<IUser[]>;
   getUserById: (
-    models: IUserContextModels,
+    ctx: IBaseContext,
     customId: string
   ) => Promise<IUser | undefined>;
   updateUserById: (
-    models: IUserContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<IUser>,
     ensureUserExists?: boolean
   ) => Promise<boolean | undefined>;
-  bulkGetUsersById: (
-    models: IUserContextModels,
-    ids: string[]
-  ) => Promise<IUser[]>;
-  saveUser: (models: IUserContextModels, user: IUser) => Promise<IUser>;
-  userExists: (models: IUserContextModels, email: string) => Promise<boolean>;
+  bulkGetUsersById: (ctx: IBaseContext, ids: string[]) => Promise<IUser[]>;
+  saveUser: (ctx: IBaseContext, user: IUser) => Promise<IUser>;
+  userExists: (ctx: IBaseContext, email: string) => Promise<boolean>;
   getBlockCollaborators: (
-    models: IUserContextModels,
+    ctx: IBaseContext,
     blockId: string
   ) => Promise<ICollaborator[]>;
-  getOrgUsers: (
-    models: IUserContextModels,
-    blockId: string
-  ) => Promise<IUser[]>;
+  getOrgUsers: (ctx: IBaseContext, blockId: string) => Promise<IUser[]>;
   bulkUpdateUsersById: (
-    models: IUserContextModels,
-    blocks: Array<IBulkUpdateByIdItem<IUser>>
+    ctx: IBaseContext,
+    blocks: Array<IBulkUpdateById<IUser>>
   ) => Promise<void>;
 }
 
 export default class UserContext implements IUserContext {
-  public async getUserByEmail(models: IUserContextModels, email: string) {
+  public async getUserByEmail(ctx: IBaseContext, email: string) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .findOne({
           email,
         })
@@ -64,9 +53,9 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async getUserById(models: IUserContextModels, customId: string) {
+  public async getUserById(ctx: IBaseContext, customId: string) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .findOne({
           customId,
         })
@@ -79,14 +68,14 @@ export default class UserContext implements IUserContext {
   }
 
   public async updateUserById(
-    models: IUserContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<IUser>,
     ensureUserExists?: boolean
   ) {
     try {
       if (ensureUserExists) {
-        const user = await models.userModel.model
+        const user = await ctx.models.userModel.model
           .findOneAndUpdate({ customId }, data, { fields: "customId" })
           .exec();
 
@@ -96,7 +85,7 @@ export default class UserContext implements IUserContext {
           throw new UserDoesNotExistError(); // should we include id
         }
       } else {
-        await models.userModel.model.updateOne({ customId }, data).exec();
+        await ctx.models.userModel.model.updateOne({ customId }, data).exec();
       }
     } catch (error) {
       logger.error(error);
@@ -104,9 +93,9 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async bulkGetUsersById(models: IUserContextModels, ids: string[]) {
+  public async bulkGetUsersById(ctx: IBaseContext, ids: string[]) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .find({ customId: { $in: ids } })
         .exec();
     } catch (error) {
@@ -115,9 +104,9 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async saveUser(models: IUserContextModels, user: IUser) {
+  public async saveUser(ctx: IBaseContext, user: IUser) {
     try {
-      const userDoc = new models.userModel.model(user);
+      const userDoc = new ctx.models.userModel.model(user);
       await userDoc.save();
       return userDoc;
     } catch (error) {
@@ -132,18 +121,18 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async userExists(models: IUserContextModels, email: string) {
+  public async userExists(ctx: IBaseContext, email: string) {
     try {
-      return await models.userModel.model.exists({ email });
+      return await ctx.models.userModel.model.exists({ email });
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 
-  public async bulkGetUsersByEmail(models, emails) {
+  public async bulkGetUsersByEmail(ctx: IBaseContext, emails: string[]) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .find({ email: { $in: emails } }, "email orgs")
         .lean()
         .exec();
@@ -153,12 +142,9 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async getBlockCollaborators(
-    models: IUserContextModels,
-    blockId: string
-  ) {
+  public async getBlockCollaborators(ctx: IBaseContext, blockId: string) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .find(
           {
             orgs: { $elemMatch: { customId: blockId } },
@@ -173,9 +159,9 @@ export default class UserContext implements IUserContext {
     }
   }
 
-  public async getOrgUsers(models: IUserContextModels, blockId: string) {
+  public async getOrgUsers(ctx: IBaseContext, blockId: string) {
     try {
-      return await models.userModel.model
+      return await ctx.models.userModel.model
         .find({
           orgs: { $elemMatch: { customId: blockId } },
         })
@@ -188,18 +174,20 @@ export default class UserContext implements IUserContext {
   }
 
   public async bulkUpdateUsersById(
-    models: IUserContextModels,
-    blocks: Array<IBulkUpdateByIdItem<IUser>>
+    ctx: IBaseContext,
+    blocks: Array<IBulkUpdateById<IUser>>
   ) {
     try {
       const opts = blocks.map((item) => ({
         updateOne: { filter: { customId: item.id }, update: item.data },
       }));
 
-      await models.userModel.model.bulkWrite(opts);
+      await ctx.models.userModel.model.bulkWrite(opts);
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 }
+
+export const getUserContext = createSingletonFunc(() => new UserContext());

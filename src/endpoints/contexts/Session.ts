@@ -1,94 +1,71 @@
 import merge from "lodash/merge";
-import { Socket } from "socket.io";
 import getUserFromRequest from "../../middlewares/getUserFromRequest";
-import { IUser, IUserModel } from "../../mongo/user";
+import { IUser } from "../../mongo/user";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-import { IServerRequest } from "../../utilities/types";
 import { InvalidCredentialsError } from "../user/errors";
 import { IBaseUserTokenData } from "../user/UserToken";
-
-export interface ISessionModels {
-  userModel: IUserModel;
-}
-
-export interface ISessionFnsData {
-  req: IServerRequest;
-  socket?: Socket;
-}
+import { IBaseContext } from "./BaseContext";
+import RequestData from "./RequestData";
 
 // TODO: how can we validate user signin before getting to the endpoints that require user signin
 // for security purposes, in case someone forgets to check
 
 export interface ISessionContext {
-  addUserToSession: (
-    models: ISessionModels,
-    instData: ISessionFnsData,
-    user: IUser
-  ) => void;
-  getUser: (
-    models: ISessionModels,
-    instData: ISessionFnsData
-  ) => Promise<IUser>;
-  getRequestToken: (
-    models: ISessionModels,
-    instData: ISessionFnsData
-  ) => IBaseUserTokenData;
+  addUserToSession: (ctx: IBaseContext, data: RequestData, user: IUser) => void;
+  getUser: (ctx: IBaseContext, data: RequestData) => Promise<IUser>;
+  getRequestToken: (ctx: IBaseContext, data: RequestData) => IBaseUserTokenData;
   updateUser: (
-    models: ISessionModels,
-    instData: ISessionFnsData,
-    data: Partial<IUser>
+    ctx: IBaseContext,
+    data: RequestData,
+    partialUserData: Partial<IUser>
   ) => Promise<void>;
-  assertUser: (
-    models: ISessionModels,
-    instData: ISessionFnsData
-  ) => Promise<boolean>;
+  assertUser: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
 }
 
 export default class SessionContext implements ISessionContext {
-  public addUserToSession(
-    models: ISessionModels,
-    instData: ISessionFnsData,
-    user: IUser
-  ) {
-    instData.req.userData = user;
+  public addUserToSession(ctx: IBaseContext, data: RequestData, user: IUser) {
+    if (data.req) {
+      data.req.userData = user;
+    }
   }
 
-  public async getUser(models: ISessionModels, instData: ISessionFnsData) {
+  public async getUser(ctx: IBaseContext, data: RequestData) {
     return getUserFromRequest({
-      req: instData.req,
-      userModel: models.userModel,
+      req: data.req,
+      userModel: ctx.models.userModel,
       required: true,
     });
   }
 
-  public async assertUser(models: ISessionModels, instData: ISessionFnsData) {
+  public async assertUser(ctx: IBaseContext, data: RequestData) {
     return !!getUserFromRequest({
-      req: instData.req,
-      userModel: models.userModel,
+      req: data.req,
+      userModel: ctx.models.userModel,
       required: true,
     });
   }
 
-  public getRequestToken(models: ISessionModels, instData: ISessionFnsData) {
-    if (instData.req.user) {
-      return instData.req.user;
+  public getRequestToken(ctx: IBaseContext, data: RequestData) {
+    if (data.req.user) {
+      return data.req.user;
     } else {
       throw new InvalidCredentialsError();
     }
   }
 
   public async updateUser(
-    models: ISessionModels,
-    instData: ISessionFnsData,
-    data: Partial<IUser>
+    ctx: IBaseContext,
+    data: RequestData,
+    partialUserData: Partial<IUser>
   ) {
-    const user = await this.getUser(models, instData);
-    merge(user, data);
+    const user = await this.getUser(ctx, data);
+    merge(user, partialUserData);
 
     try {
-      await models.userModel.model
-        .updateOne({ customId: user.customId }, data)
+      await ctx.models.userModel.model
+        .updateOne({ customId: user.customId }, partialUserData)
         .exec();
     } catch (error) {
       logger.error(error);
@@ -96,3 +73,7 @@ export default class SessionContext implements ISessionContext {
     }
   }
 }
+
+export const getSessionContext = createSingletonFunc(
+  () => new SessionContext()
+);

@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { AuditLogResourceType } from "../../mongo/audit-log";
 import { IBlock } from "../../mongo/block";
 import { INote } from "../../mongo/note";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 
 export interface IRoomContext {
   saveUserSocketId: (socket: Socket, userId: string) => void;
@@ -136,3 +137,5 @@ export default class RoomContext implements IRoomContext {
     broadcast(roomName, event, data, server, fromSocket);
   }
 }
+
+export const getRoomContext = createSingletonFunc(() => new RoomContext());

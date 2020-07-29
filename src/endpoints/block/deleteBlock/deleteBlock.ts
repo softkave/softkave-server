@@ -8,10 +8,7 @@ import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { IBaseContext } from "../../contexts/BaseContext";
-import {
-  IBulkUpdateByIdItem,
-  IEndpointInstanceData,
-} from "../../contexts/types";
+import { IBulkUpdateById, IEndpointInstanceData } from "../../contexts/types";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
@@ -48,7 +45,7 @@ async function deleteOrgCleanup(
     block.customId
   );
   const notifications: INotification[] = [];
-  const updates: Array<IBulkUpdateByIdItem<IUser>> = [];
+  const updates: Array<IBulkUpdateById<IUser>> = [];
 
   orgUsers.forEach((orgUser) => {
     if (orgUser.customId !== user.customId) {
