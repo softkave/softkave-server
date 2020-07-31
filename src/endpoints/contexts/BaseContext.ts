@@ -51,4 +51,4 @@ export default class BaseContext implements IBaseContext {
   public socketServer: Server = getSocketServer();
 }
 
-export const createBaseContext = createSingletonFunc(() => new BaseContext());
+export const getBaseContext = createSingletonFunc(() => new BaseContext());

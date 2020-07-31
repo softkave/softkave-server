@@ -1,5 +1,5 @@
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
-import { IEndpointInstanceData } from "../../contexts/types";
+import RequestData from "../../contexts/RequestData";
 import { Endpoint } from "../../types";
 import {
   IChangePasswordParameters,
@@ -10,7 +10,7 @@ import ChangePasswordWithTokenContext from "./context";
 export interface IChangePasswordWithTokenContext extends IBaseContext {
   changePassword: (
     context: BaseContext,
-    instData: IEndpointInstanceData<IChangePasswordParameters>
+    instData: RequestData<IChangePasswordParameters>
   ) => Promise<IChangePasswordResult>;
 }
 

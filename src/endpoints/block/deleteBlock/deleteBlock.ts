@@ -88,8 +88,8 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
   fireAndForgetPromise(
     broadcastBlockUpdate(
       context,
+      instData,
       block.customId,
-      user.customId,
       { isDelete: true },
       undefined,
       block

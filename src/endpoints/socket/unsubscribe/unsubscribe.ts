@@ -5,19 +5,21 @@ import { subscribeJoiSchema } from "../subscribe/validation";
 
 const unsubscribe: SubscribeEndpoint = async (context, instData) => {
   const data = validate(instData.data, subscribeJoiSchema);
-  await context.session.assertUser(context.models, instData);
+  await context.session.assertUser(context, instData);
   context.socket.assertSocket(instData);
 
   switch (data.type) {
     case AuditLogResourceType.Board: {
-      const block = await context.block.getBlockById(context.models, data.id);
-      context.room.leaveBlock(instData.socket, block);
+      const block = await context.block.getBlockById(context, data.id);
+      const roomName = context.room.getBlockRoomName(block);
+      context.room.leave(instData, roomName);
       return;
     }
 
     case AuditLogResourceType.Note: {
-      const note = await context.note.getNoteById(context.models, data.id);
-      context.room.leaveNote(instData.socket, note);
+      const note = await context.note.getNoteById(context, data.id);
+      const roomName = context.room.getNoteRoomName(note);
+      context.room.leave(instData, roomName);
       return;
     }
   }

@@ -1,15 +1,13 @@
-import { bool } from "aws-sdk/clients/signer";
 import { Server, Socket } from "socket.io";
 import getUserFromRequest, {
   validateUserToken,
 } from "../../middlewares/getUserFromRequest";
 import { IBlock } from "../../mongo/block";
 import { INotification } from "../../mongo/notification";
-import { getUserModel, IUserModel } from "../../mongo/user";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-import { getBaseContext } from "../contexts/BaseContext";
-import RoomContext, { IRoomContext } from "../contexts/RoomContext";
+import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
+import RequestData from "../contexts/RequestData";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
@@ -26,18 +24,22 @@ import unsubscribe from "./unsubscribe/unsubscribe";
 // Also, what happens when the user changes their password?
 // Maybe if the user changes password or auth token is changed, the socket will only auth again
 
-async function onConnection(
-  roomContext: IRoomContext,
-  socket: Socket,
-  userModel: IUserModel
-) {
+// TODO: disconnect sockets that don't auth in 5 minutes
+
+async function onConnection(ctx: IBaseContext, socket: Socket) {
   socket.on(
     IncomingSocketEvents.Auth,
     async (data: IIncomingAuthPacket, fn) => {
       try {
-        const user = await validateUserToken(data.token, userModel, true);
-        roomContext.saveUserSocketId(socket, user.customId);
-
+        const user = await validateUserToken(
+          data.token,
+          ctx.models.userModel,
+          true
+        );
+        ctx.socket.mapUserToSocketId(
+          RequestData.fromSocketRequest(socket),
+          user
+        );
         const result: IOutgoingAuthPacket = { valid: true };
         fn(result);
       } catch (error) {
@@ -50,7 +52,7 @@ async function onConnection(
   );
 
   socket.on("disconnect", () => {
-    onDisconnect(roomContext, socket, userModel);
+    onDisconnect(ctx, socket);
   });
 
   socket.on(IncomingSocketEvents.Subscribe, (data) => {
@@ -62,18 +64,14 @@ async function onConnection(
   });
 }
 
-async function onDisconnect(
-  roomContext: IRoomContext,
-  socket: Socket,
-  userModel: IUserModel
-) {
+async function onDisconnect(ctx: IBaseContext, socket: Socket) {
   try {
     const user = await getUserFromRequest({
       req: socket.request,
-      userModel,
+      userModel: ctx.models.userModel,
     });
 
-    roomContext.removeUserSocketId(socket, user.customId);
+    ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
   } catch (error) {
     logger.error(error);
   }
@@ -84,7 +82,7 @@ let socketServer: Server = null;
 export function setupSocketServer(io: Server) {
   socketServer = io;
   io.on("connection", (socket) => {
-    onConnection(new RoomContext(), socket, getUserModel());
+    onConnection(getBaseContext(), socket);
   });
 }
 

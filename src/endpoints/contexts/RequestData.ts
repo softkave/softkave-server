@@ -2,6 +2,15 @@ import { Socket } from "socket.io";
 import { IBaseUserTokenData } from "../user/UserToken";
 import { IServerRequest } from "./types";
 
+interface IRequestContructorParams<T, TokenData> {
+  req?: IServerRequest;
+  socket?: Socket;
+  data?: T;
+  tokenData?: TokenData;
+  userAgent?: string;
+  ips?: string[];
+}
+
 export default class RequestData<
   T = any,
   TokenData extends IBaseUserTokenData = IBaseUserTokenData
@@ -45,4 +54,15 @@ export default class RequestData<
   public tokenData?: TokenData | null;
   public userAgent?: string;
   public ips: string[];
+
+  public constructor(arg?: IRequestContructorParams<T, TokenData>) {
+    if (arg) {
+      this.req = arg.req;
+      this.socket = arg.socket;
+      this.data = arg.data;
+      this.tokenData = arg.tokenData;
+      this.userAgent = arg.userAgent;
+      this.ips = arg.ips;
+    }
+  }
 }
