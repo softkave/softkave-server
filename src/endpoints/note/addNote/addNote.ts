@@ -13,8 +13,8 @@ import { AddNoteEndpoint } from "./types";
 
 const addNote: AddNoteEndpoint = async (context, instData) => {
   const data = validate(instData.data.note, noteValidationSchemas.newNote);
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.blockId);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
 
   await canReadBlock({ user, block });
 
@@ -39,9 +39,9 @@ const addNote: AddNoteEndpoint = async (context, instData) => {
     isDeleted: false,
   };
 
-  const savedNote = await context.note.saveNote(context.models, note);
+  const savedNote = await context.note.saveNote(context, note);
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Create,
     resourceId: note.customId,
     resourceType: AuditLogResourceType.Note,

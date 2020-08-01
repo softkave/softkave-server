@@ -1,65 +1,60 @@
-import { BlockType, IBlock, IBlockModel } from "../../mongo/block";
+import { BlockType, IBlock } from "../../mongo/block";
 import mongoConstants from "../../mongo/constants";
 import { IUser } from "../../mongo/user";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
 import logger from "../../utilities/logger";
+import { IBulkUpdateById } from "../../utilities/types";
 import { BlockDoesNotExistError } from "../block/errors";
-import { IBulkUpdateByIdItem } from "./types";
-
-export interface IBlockContextModels {
-  blockModel: IBlockModel;
-}
+import { IBaseContext } from "./BaseContext";
 
 export interface IBlockContext {
   getBlockById: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string
   ) => Promise<IBlock | undefined>;
   getBlockByName: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     name: string
   ) => Promise<IBlock | undefined>;
   bulkGetBlocksByIds: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customIds: string[]
   ) => Promise<IBlock[]>;
   updateBlockById: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<IBlock>,
     ensureBlockExists?: boolean
   ) => Promise<boolean | undefined>;
   bulkUpdateBlocksById: (
-    models: IBlockContextModels,
-    blocks: Array<IBulkUpdateByIdItem<IBlock>>
+    ctx: IBaseContext,
+    blocks: Array<IBulkUpdateById<IBlock>>
   ) => Promise<void>;
-  saveBlock: (models: IBlockContextModels, block: IBlock) => Promise<IBlock>;
+  saveBlock: (ctx: IBaseContext, block: IBlock) => Promise<IBlock>;
   markBlockDeleted: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     user: IUser
   ) => Promise<void>;
   markBlockChildrenDeleted: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     user: IUser
   ) => Promise<void>;
   getBlockChildren: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
-    typeList: BlockType[]
+    typeList?: BlockType[]
   ) => Promise<IBlock[]>;
-  getUserRootBlocks: (
-    models: IBlockContextModels,
-    user: IUser
-  ) => Promise<IBlock[]>;
+  getUserRootBlocks: (ctx: IBaseContext, user: IUser) => Promise<IBlock[]>;
 }
 
 export default class BlockContext implements IBlockContext {
-  public async getBlockById(models: IBlockContextModels, customId: string) {
+  public async getBlockById(ctx: IBaseContext, customId: string) {
     try {
-      return await models.blockModel.model
+      return await ctx.models.blockModel.model
         .findOne({
           customId,
           isDeleted: false,
@@ -72,17 +67,14 @@ export default class BlockContext implements IBlockContext {
     }
   }
 
-  public async bulkGetBlocksByIds(
-    models: IBlockContextModels,
-    customIds: string[]
-  ) {
+  public async bulkGetBlocksByIds(ctx: IBaseContext, customIds: string[]) {
     try {
       const query = {
         customId: { $in: customIds },
         isDeleted: false,
       };
 
-      return await models.blockModel.model.find(query).exec();
+      return await ctx.models.blockModel.model.find(query).exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
@@ -90,14 +82,14 @@ export default class BlockContext implements IBlockContext {
   }
 
   public async updateBlockById(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<IBlock>,
     ensureBlockExists?: boolean
   ) {
     try {
       if (ensureBlockExists) {
-        const block = await models.blockModel.model
+        const block = await ctx.models.blockModel.model
           .findOneAndUpdate({ customId, isDeleted: false }, data, {
             fields: "customId",
           })
@@ -109,7 +101,7 @@ export default class BlockContext implements IBlockContext {
           throw new BlockDoesNotExistError(); // should we include id
         }
       } else {
-        await models.blockModel.model
+        await ctx.models.blockModel.model
           .updateOne({ customId, isDeleted: false }, data)
           .exec();
       }
@@ -120,8 +112,8 @@ export default class BlockContext implements IBlockContext {
   }
 
   public async bulkUpdateBlocksById(
-    models: IBlockContextModels,
-    blocks: Array<IBulkUpdateByIdItem<IBlock>>
+    ctx: IBaseContext,
+    blocks: Array<IBulkUpdateById<IBlock>>
   ) {
     try {
       const opts = blocks.map((b) => ({
@@ -131,16 +123,16 @@ export default class BlockContext implements IBlockContext {
         },
       }));
 
-      await models.blockModel.model.bulkWrite(opts);
+      await ctx.models.blockModel.model.bulkWrite(opts);
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 
-  public async getBlockByName(models: IBlockContextModels, name: string) {
+  public async getBlockByName(ctx: IBaseContext, name: string) {
     try {
-      return await models.blockModel.model
+      return await ctx.models.blockModel.model
         .findOne({
           lowerCasedName: name.toLowerCase(),
           isDeleted: false,
@@ -152,9 +144,9 @@ export default class BlockContext implements IBlockContext {
     }
   }
 
-  public async saveBlock(models: IBlockContextModels, block: IBlock) {
+  public async saveBlock(ctx: IBaseContext, block: IBlock) {
     try {
-      const newBlock = new models.blockModel.model(block);
+      const newBlock = new ctx.models.blockModel.model(block);
       await newBlock.save();
 
       return newBlock;
@@ -171,7 +163,7 @@ export default class BlockContext implements IBlockContext {
   }
 
   public async markBlockDeleted(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     user: IUser
   ) {
@@ -182,8 +174,8 @@ export default class BlockContext implements IBlockContext {
         deletedAt: getDate(),
       };
 
-      await models.blockModel.model.updateOne({ customId }, update).exec();
-      await this.markBlockChildrenDeleted(models, customId, user);
+      await ctx.models.blockModel.model.updateOne({ customId }, update).exec();
+      await ctx.block.markBlockChildrenDeleted(ctx, customId, user);
     } catch (error) {
       logger.error(error);
       throw new ServerError();
@@ -191,7 +183,7 @@ export default class BlockContext implements IBlockContext {
   }
 
   public async getBlockChildren(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     blockId: string,
     typeList?: BlockType[]
   ) {
@@ -205,7 +197,7 @@ export default class BlockContext implements IBlockContext {
       }
 
       query.parent = blockId;
-      const blocks = await models.blockModel.model.find(query).exec();
+      const blocks = await ctx.models.blockModel.model.find(query).exec();
 
       return blocks;
     } catch (error) {
@@ -215,7 +207,7 @@ export default class BlockContext implements IBlockContext {
   }
 
   public async markBlockChildrenDeleted(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     customId: string,
     user: IUser
   ) {
@@ -225,22 +217,22 @@ export default class BlockContext implements IBlockContext {
         deletedBy: user.customId,
         deletedAt: getDate(),
       };
-      await models.blockModel.model
+      await ctx.models.blockModel.model
         .updateMany({ parent: customId }, update)
         .exec();
 
-      const blockChildren = await this.getBlockChildren(models, customId);
+      const blockChildren = await ctx.block.getBlockChildren(ctx, customId);
 
       // TODO: how can we find out if all the children are marked deleted?
       // TODO: what happens when one of them fails?
       // TODO: should we wait for all the children to be deleted?
       blockChildren.map((block) =>
-        this.markBlockChildrenDeleted(models, block.customId, user).catch(
-          (error) => {
+        ctx.block
+          .markBlockChildrenDeleted(ctx, block.customId, user)
+          .catch((error) => {
             // fire and forget
             // TODO: log error
-          }
-        )
+          })
       );
     } catch (error) {
       logger.error(error);
@@ -248,7 +240,7 @@ export default class BlockContext implements IBlockContext {
     }
   }
 
-  public async getUserRootBlocks(models, user: IUser) {
+  public async getUserRootBlocks(ctx: IBaseContext, user: IUser) {
     try {
       const organizationIds = user.orgs.map((org) => org.customId);
       const query = {
@@ -258,10 +250,12 @@ export default class BlockContext implements IBlockContext {
         isDeleted: false,
       };
 
-      return await models.blockModel.model.find(query).lean().exec();
+      return await ctx.models.blockModel.model.find(query).lean().exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 }
+
+export const getBlockContext = createSingletonFunc(() => new BlockContext());

@@ -10,7 +10,7 @@ import { forgotPasswordJoiSchema } from "./validation";
 const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
   const result = validate(instData.data, forgotPasswordJoiSchema);
   const emailValue = result.email;
-  const user = await context.user.getUserByEmail(context.models, emailValue);
+  const user = await context.user.getUserByEmail(context, emailValue);
 
   if (!user) {
     throw new UserDoesNotExistError({ field: "email" });
@@ -42,7 +42,7 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
   );
 
   context.session
-    .updateUser(context.models, instData, { forgotPasswordHistory })
+    .updateUser(context, instData, { forgotPasswordHistory })
     .catch(() => {
       // TODO: should we log something here?
       // Fire and forget

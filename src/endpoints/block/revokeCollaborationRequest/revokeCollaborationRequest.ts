@@ -18,13 +18,13 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
   const data = validate(instData.data, revokeRequestJoiSchema);
 
   // TODO: what if block does not exist?
-  const block = await context.block.getBlockById(context.models, data.blockId);
-  const user = await context.session.getUser(context.models, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
+  const user = await context.session.getUser(context, instData);
 
   canReadBlock({ block, user });
 
   const request = await context.notification.getNotificationById(
-    context.models,
+    context,
     data.requestId
   );
 
@@ -46,11 +46,9 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
     status: CollaborationRequestStatusType.Revoked,
     date: new Date(),
   });
-  await context.notification.updateNotificationById(
-    context.models,
-    request.customId,
-    { statusHistory }
-  );
+  await context.notification.updateNotificationById(context, request.customId, {
+    statusHistory,
+  });
 };
 
 export default revokeCollaborationRequest;

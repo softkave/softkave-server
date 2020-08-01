@@ -1,57 +1,52 @@
-import { INotification, INotificationModel } from "../../mongo/notification";
+import { INotification } from "../../mongo/notification";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
 import { NotificationDoesNotExistError } from "../notification/errors";
-
-export interface INotificationContextModels {
-  notificationModel: INotificationModel;
-}
+import { IBaseContext } from "./BaseContext";
 
 export interface INotificationContext {
   getNotificationById: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     id: string
   ) => Promise<INotification | undefined>;
   getUserNotifications: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     email: string
   ) => Promise<INotification[] | undefined>;
   updateNotificationById: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<INotification>,
     ensureNotificationExists?: boolean
   ) => Promise<boolean | undefined>;
   deleteNotificationById: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     customId: string
   ) => Promise<void>;
   getCollaborationRequestsByRecipientEmail: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     emails: string[],
     blockId: string
   ) => Promise<INotification[]>;
   bulkSaveNotifications: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     notifications: INotification[]
   ) => Promise<void>;
   getNotificationsByBlockId: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     blockId: string
   ) => Promise<INotification[]>;
   saveNotification: (
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     notification: INotification
   ) => Promise<void>;
 }
 
 export default class NotificationContext implements INotificationContext {
-  public async getNotificationById(
-    models: INotificationContextModels,
-    id: string
-  ) {
+  public async getNotificationById(ctx: IBaseContext, id: string) {
     try {
-      return await models.notificationModel.model
+      return await ctx.models.notificationModel.model
         .findOne({ customId: id })
         .lean()
         .exec();
@@ -62,14 +57,14 @@ export default class NotificationContext implements INotificationContext {
   }
 
   public async updateNotificationById(
-    models: INotificationContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<INotification>,
     ensureNotificationExists?: boolean
   ) {
     try {
       if (ensureNotificationExists) {
-        const notification = await models.notificationModel.model
+        const notification = await ctx.models.notificationModel.model
           .findOneAndUpdate({ customId }, data, { fields: "customId" })
           .exec();
 
@@ -79,7 +74,7 @@ export default class NotificationContext implements INotificationContext {
           throw new NotificationDoesNotExistError(); // should we include id
         }
       } else {
-        await models.notificationModel.model
+        await ctx.models.notificationModel.model
           .updateOne({ customId }, data)
           .exec();
       }
@@ -89,12 +84,9 @@ export default class NotificationContext implements INotificationContext {
     }
   }
 
-  public async getUserNotifications(
-    models: INotificationContextModels,
-    email: string
-  ) {
+  public async getUserNotifications(ctx: IBaseContext, email: string) {
     try {
-      const requests = await models.notificationModel.model
+      const requests = await ctx.models.notificationModel.model
         .find({
           "to.email": email,
         })
@@ -108,12 +100,11 @@ export default class NotificationContext implements INotificationContext {
     }
   }
 
-  public async deleteNotificationById(
-    models: INotificationContextModels,
-    id: string
-  ) {
+  public async deleteNotificationById(ctx: IBaseContext, id: string) {
     try {
-      await models.notificationModel.model.deleteOne({ customId: id }).exec();
+      await ctx.models.notificationModel.model
+        .deleteOne({ customId: id })
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
@@ -121,17 +112,17 @@ export default class NotificationContext implements INotificationContext {
   }
 
   public async getCollaborationRequestsByRecipientEmail(
-    models,
-    emails,
-    blockID
+    ctx: IBaseContext,
+    emails: string[],
+    blockId: string
   ) {
     try {
-      return await models.notificationModel.model
+      return await ctx.models.notificationModel.model
         .find({
           "to.email": {
             $in: emails,
           },
-          "from.blockId": blockID,
+          "from.blockId": blockId,
         })
         .lean()
         .exec();
@@ -141,18 +132,21 @@ export default class NotificationContext implements INotificationContext {
     }
   }
 
-  public async bulkSaveNotifications(models, notifications) {
+  public async bulkSaveNotifications(
+    ctx: IBaseContext,
+    notifications: INotification[]
+  ) {
     try {
-      await models.notificationModel.model.insertMany(notifications);
+      await ctx.models.notificationModel.model.insertMany(notifications);
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 
-  public async getNotificationsByBlockId(models, blockId: string) {
+  public async getNotificationsByBlockId(ctx: IBaseContext, blockId: string) {
     try {
-      return await models.notificationModel.model
+      return await ctx.models.notificationModel.model
         .find({
           "from.blockId": blockId,
         })
@@ -164,9 +158,12 @@ export default class NotificationContext implements INotificationContext {
     }
   }
 
-  public async saveNotification(models, notification: INotification) {
+  public async saveNotification(
+    ctx: IBaseContext,
+    notification: INotification
+  ) {
     try {
-      const n = new models.notificationModel.model(notification);
+      const n = new ctx.models.notificationModel.model(notification);
       n.save();
     } catch (error) {
       logger.error(error);
@@ -174,3 +171,7 @@ export default class NotificationContext implements INotificationContext {
     }
   }
 }
+
+export const getNotificationContext = createSingletonFunc(
+  () => new NotificationContext()
+);

@@ -8,7 +8,7 @@ const getChangePasswordTokenData: GetChangePasswordTokenDataEndpoint = async (
   context,
   instData
 ) => {
-  const tokenData = context.session.getRequestToken(context.models, instData);
+  const tokenData = context.session.getRequestToken(context, instData);
 
   if (!UserToken.containsAudience(tokenData, JWTEndpoints.ChangePassword)) {
     throw new InvalidCredentialsError();

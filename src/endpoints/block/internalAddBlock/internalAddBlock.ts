@@ -7,7 +7,7 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
   context,
   instData
 ) => {
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const inputBlock = instData.data.block;
 
   if (inputBlock.type !== "task") {
@@ -59,7 +59,7 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
     statusAssignedAt: inputBlock.statusAssignedAt as any,
   };
 
-  const savedBlock = await context.block.saveBlock(context.models, block);
+  const savedBlock = await context.block.saveBlock(context, block);
 
   return {
     block: savedBlock,

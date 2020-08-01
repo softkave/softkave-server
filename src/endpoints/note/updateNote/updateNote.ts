@@ -15,20 +15,20 @@ import { updateNoteJoiSchema } from "./validation";
 const updateNote: UpdateNoteEndpoint = async (context, instData) => {
   const data = validate(instData.data, updateNoteJoiSchema);
   const updateData = data.data;
-  const user = await context.session.getUser(context.models, instData);
-  const note = await context.note.getNoteById(context.models, data.noteId);
-  const block = await context.block.getBlockById(context.models, note.blockId);
+  const user = await context.session.getUser(context, instData);
+  const note = await context.note.getNoteById(context, data.noteId);
+  const block = await context.block.getBlockById(context, note.blockId);
 
   canReadBlock({ user, block });
   canReadNote({ user, block, note });
 
-  await context.note.updateNoteById(context.models, data.noteId, {
+  await context.note.updateNoteById(context, data.noteId, {
     ...updateData,
     updatedAt: getDate(),
     updatedBy: user.customId,
   });
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Update,
     resourceId: note.customId,
     resourceType: AuditLogResourceType.Note,

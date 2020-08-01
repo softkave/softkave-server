@@ -21,7 +21,7 @@ const createRootBlock: CreateRootBlockEndpoint = async (context, instData) => {
   const rootBlock = result.block;
 
   // TODO: should we remove the user if the root block fails?
-  await context.session.updateUser(context.models, instData, {
+  await context.session.updateUser(context, instData, {
     rootBlockId: rootBlock.customId,
   });
 

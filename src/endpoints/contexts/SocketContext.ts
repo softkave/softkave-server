@@ -1,60 +1,37 @@
-import { Server, Socket } from "socket.io";
+import { IUser } from "../../mongo/user";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
+import RequestData from "./RequestData";
 
-const userIdToSocketIdsMap: { [key: string]: string[] } = {};
-
-export interface ISocketContextStaticData {
-  socketServer: Server;
-}
-
-export interface ISocketContextInstanceData {
-  socket?: Socket;
-}
+const socketIdToUserMap: { [key: string]: IUser } = {};
 
 export interface ISocketContext {
-  saveUserSocketId: (socketId: string, userId: string) => void;
-  getUserSocketIds: (userId: string) => string[];
-  removeUserSocketId: (socketId: string, userId: string) => void;
-  assertSocket: (instData: ISocketContextInstanceData) => boolean;
+  assertSocket: (data: RequestData) => boolean;
+  mapUserToSocketId: (data: RequestData, user: IUser) => void;
+  removeSocketIdAndUser: (data: RequestData) => void;
+  getUserBySocketId: (data: RequestData) => IUser | undefined;
 }
 
 export default class SocketContext implements ISocketContext {
-  public saveUserSocketId(socketId: string, userId: string) {
-    const socketIds = userIdToSocketIdsMap[userId] || [];
-
-    if (!socketIds.includes(socketId)) {
-      socketIds.push(socketId);
-    }
-
-    userIdToSocketIdsMap[userId] = socketIds;
-  }
-
-  public getUserSocketIds(userId: string) {
-    return userIdToSocketIdsMap[userId] || [];
-  }
-
-  public removeUserSocketId(socketId: string, userId: string) {
-    const socketIds = userIdToSocketIdsMap[userId] || [];
-    const i = socketIds.indexOf(socketId);
-
-    if (i === -1) {
-      return;
-    }
-
-    socketIds.splice(i, 1);
-
-    if (socketIds.length <= 0) {
-      delete userIdToSocketIdsMap[userId];
-    } else {
-      userIdToSocketIdsMap[userId] = socketIds;
-    }
-  }
-
-  public assertSocket(instData: ISocketContextInstanceData) {
-    if (!instData.socket) {
+  public assertSocket(data: RequestData) {
+    if (!data.socket) {
       throw new InvalidRequestError();
     }
 
     return true;
   }
+
+  public mapUserToSocketId(data: RequestData, user: IUser) {
+    socketIdToUserMap[data.socket.id] = user;
+  }
+
+  public removeSocketIdAndUser(data: RequestData) {
+    delete socketIdToUserMap[data.socket.id];
+  }
+
+  public getUserBySocketId(data: RequestData) {
+    return socketIdToUserMap[data.socket.id];
+  }
 }
+
+export const getSocketContext = createSingletonFunc(() => new SocketContext());

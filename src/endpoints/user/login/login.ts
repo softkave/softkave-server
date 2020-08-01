@@ -12,7 +12,7 @@ import { loginJoiSchema } from "./validation";
 const login: LoginEndpoint = async (context, instData) => {
   const loginDetails = validate(instData.data, loginJoiSchema);
   const userData = await context.user.getUserByEmail(
-    context.models,
+    context,
     loginDetails.email
   );
 

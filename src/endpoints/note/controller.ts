@@ -1,4 +1,5 @@
 import { getBaseContext } from "../contexts/BaseContext";
+import RequestData from "../contexts/RequestData";
 import { wrapEndpoint } from "../utils";
 import addNote from "./addNote/addNote";
 import AddNoteContext from "./addNote/context";
@@ -10,31 +11,31 @@ import updateNote from "./updateNote/updateNote";
 export default class NoteController {
   public addNote(data, req) {
     return wrapEndpoint(data, req, () =>
-      addNote(new AddNoteContext(), { req, data })
+      addNote(new AddNoteContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public noteExists(data, req) {
     return wrapEndpoint(data, req, () =>
-      noteExists(getBaseContext(), { req, data })
+      noteExists(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public deleteNote(data, req) {
     return wrapEndpoint(data, req, () =>
-      deleteNote(getBaseContext(), { req, data })
+      deleteNote(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public updateNote(data, req) {
     return wrapEndpoint(data, req, () =>
-      updateNote(getBaseContext(), { req, data })
+      updateNote(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public getNotes(data, req) {
     return wrapEndpoint(data, req, () =>
-      getNotes(getBaseContext(), { req, data })
+      getNotes(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 }

@@ -1,4 +1,5 @@
 import { getBaseContext } from "../contexts/BaseContext";
+import RequestData from "../contexts/RequestData";
 import { wrapEndpoint } from "../utils";
 import addBlock from "./addBlock/addBlock";
 import AddBlockContext from "./addBlock/context";
@@ -19,73 +20,97 @@ import updateBlock from "./updateBlock/updateBlock";
 export default class BlockController {
   public addBlock(data, req) {
     return wrapEndpoint(data, req, () =>
-      addBlock(new AddBlockContext(), { req, data })
+      addBlock(new AddBlockContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public addCollaborators(data, req) {
     return wrapEndpoint(data, req, () =>
-      addCollaborators(new AddCollaboratorsContext(), { req, data })
+      addCollaborators(
+        new AddCollaboratorsContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public blockExists(data, req) {
     return wrapEndpoint(data, req, () =>
-      blockExists(getBaseContext(), { req, data })
+      blockExists(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public deleteBlock(data, req) {
     return wrapEndpoint(data, req, () =>
-      deleteBlock(getBaseContext(), { req, data })
+      deleteBlock(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public getUserRootBlocks(data, req) {
     return wrapEndpoint(data, req, () =>
-      getUserRootBlocks(getBaseContext(), { req, data })
+      getUserRootBlocks(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getBlockChildren(data, req) {
     return wrapEndpoint(data, req, () =>
-      getBlockChildren(getBaseContext(), { data, req })
+      getBlockChildren(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getBlockNotifications(data, req) {
     return wrapEndpoint(data, req, () =>
-      getBlockNotifications(getBaseContext(), { req, data })
+      getBlockNotifications(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getBlockCollaborators(data, req) {
     return wrapEndpoint(data, req, () =>
-      getBlockCollaborators(getBaseContext(), { req, data })
+      getBlockCollaborators(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public removeCollaborator(data, req) {
     return wrapEndpoint(data, req, () =>
-      removeCollaborator(getBaseContext(), { req, data })
+      removeCollaborator(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public revokeCollaborationRequest(data, req) {
     return wrapEndpoint(data, req, () =>
-      revokeCollaborationRequest(getBaseContext(), { req, data })
+      revokeCollaborationRequest(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public transferBlock(data, req) {
     return wrapEndpoint(data, req, () =>
-      transferBlock(getBaseContext(), { req, data })
+      transferBlock(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public updateBlock(data, req) {
     return wrapEndpoint(data, req, () =>
-      updateBlock(new UpdateBlockContext(), { req, data })
+      updateBlock(
+        new UpdateBlockContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 }

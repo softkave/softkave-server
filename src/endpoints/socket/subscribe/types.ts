@@ -7,9 +7,4 @@ export interface ISubscribeParameters {
   id: string;
 }
 
-export interface ISubscribeContext extends IBaseContext {}
-
-export type SubscribeEndpoint = Endpoint<
-  ISubscribeContext,
-  ISubscribeParameters
->;
+export type SubscribeEndpoint = Endpoint<IBaseContext, ISubscribeParameters>;

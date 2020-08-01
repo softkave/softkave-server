@@ -242,10 +242,10 @@ const blockSchema = `
     getBlockCollaborators (blockId: String!) : GetBlockCollaboratorsResponse
     getBlockNotifications(blockId: String!) : GetNotificationsResponse
     revokeCollaborationRequest (blockId: String!, requestId: String!) : ErrorOnlyResponse
-    transferBlock (
-      draggedBlockId: String!,
-      destinationBlockId: String!,
-    ): ErrorOnlyResponse
+    # transferBlock (
+    #  draggedBlockId: String!,
+    #  destinationBlockId: String!,
+    # ): ErrorOnlyResponse
   }
 `;
 

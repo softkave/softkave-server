@@ -8,13 +8,13 @@ const getBlockNotifications: GetBlockNotificationsEndpoint = async (
   instData
 ) => {
   const data = validate(instData.data, getBlockCollaborationRequestsJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.blockId);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
 
   await canReadBlock({ user, block });
 
   const requests = await context.notification.getNotificationsByBlockId(
-    context.models,
+    context,
     block.customId
   );
 
