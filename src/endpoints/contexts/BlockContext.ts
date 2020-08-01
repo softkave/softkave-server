@@ -151,13 +151,14 @@ export default class BlockContext implements IBlockContext {
 
       return newBlock;
     } catch (error) {
+      logger.error(error);
+
       // Adding a block fails with code 11000 if unique fields like customId
       if (error.code === mongoConstants.indexNotUniqueErrorCode) {
         // TODO: Implement a way to get a new customId and retry
         throw new ServerError();
       }
 
-      logger.error(error);
       throw new ServerError();
     }
   }

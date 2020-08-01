@@ -1,5 +1,4 @@
 import Joi from "joi";
-import commentsSchema from "../../mongo/comment/definitions";
 import { validationSchemas } from "../../utilities/validationUtils";
 
 const commentId = validationSchemas.uuid;
@@ -11,8 +10,8 @@ const newComment = Joi.object().keys({
   comment: comment.required(),
 });
 
-const blockValidationSchemas = {
+const commentValidationSchemas = {
   newComment,
 };
 
-export default blockValidationSchemas;
+export default commentValidationSchemas;

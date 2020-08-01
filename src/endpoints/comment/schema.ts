@@ -15,8 +15,13 @@ const commentSchema = `
     comment: String
   }
 
+  type AddCommentResult {
+    errors: [Error]
+    comment: Comment
+  }
+
   type CommentQuery {
-    addComment(comment: AddCommentInput!) : ErrorOnlyResponse
+    addComment(comment: AddCommentInput!) : AddCommentResult
   }
 `;
 

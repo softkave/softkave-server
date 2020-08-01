@@ -9,6 +9,7 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
+import { getCommentContext, ICommentContext } from "./CommentContext";
 import { getNoteContext, INoteContext } from "./NoteContext";
 import {
   getNotificationContext,
@@ -52,7 +53,7 @@ export default class BaseContext implements IBaseContext {
     commentModel: getCommentModel(),
   };
   public socketServer: Server = getSocketServer();
-  public comment = new CommentContext();
+  public comment = getCommentContext();
 }
 
 export const getBaseContext = createSingletonFunc(() => new BaseContext());

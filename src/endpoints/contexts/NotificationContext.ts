@@ -1,3 +1,4 @@
+import mongoConstants from "../../mongo/constants";
 import { INotification } from "../../mongo/notification";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
@@ -167,6 +168,12 @@ export default class NotificationContext implements INotificationContext {
       n.save();
     } catch (error) {
       logger.error(error);
+
+      if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+        // TODO: Implement a way to get a new customId and retry
+        throw new ServerError();
+      }
+
       throw new ServerError();
     }
   }

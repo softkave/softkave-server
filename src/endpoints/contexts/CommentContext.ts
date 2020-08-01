@@ -1,27 +1,48 @@
-import { IComment, ICommentModel } from "../../mongo/comment";
+import { IComment } from "../../mongo/comment";
+import mongoConstants from "../../mongo/constants";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-
-export interface ICommentContextModel {
-  commentModel: ICommentModel;
-}
+import { IBaseContext } from "./BaseContext";
 
 export interface ICommentContext {
-  createComment: (
-    models: ICommentContextModel,
-    comment: IComment
-  ) => Promise<IComment>;
+  createComment: (ctx: IBaseContext, comment: IComment) => Promise<IComment>;
+  getComments: (ctx: IBaseContext, taskId: string) => Promise<IComment[]>;
 }
 
 export default class CommentContext implements ICommentContext {
-  public async createComment(models: ICommentContextModel, comment: IComment) {
+  public async createComment(ctx: IBaseContext, comment: IComment) {
     try {
-      const c = new models.commentModel.model(comment);
+      const c = new ctx.models.commentModel.model(comment);
       await c.save();
-      return comment;
+      return c;
+    } catch (error) {
+      logger.error(error);
+
+      if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+        // TODO: Implement a way to get a new customId and retry
+        throw new ServerError();
+      }
+
+      throw new ServerError();
+    }
+  }
+
+  public async getComments(ctx: IBaseContext, taskId: string) {
+    try {
+      return await ctx.models.commentModel.model
+        .find({
+          taskId,
+          isDeleted: false,
+        })
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 }
+
+export const getCommentContext = createSingletonFunc(
+  () => new CommentContext()
+);
