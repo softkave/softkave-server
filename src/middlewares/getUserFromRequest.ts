@@ -1,18 +1,20 @@
 import moment from "moment";
+import { IServerRequest } from "../endpoints/contexts/types";
 import { PermissionDeniedError } from "../endpoints/errors";
 import {
   InvalidCredentialsError,
   LoginAgainError,
 } from "../endpoints/user/errors";
-import UserToken from "../endpoints/user/UserToken";
+import UserToken, { IBaseUserTokenData } from "../endpoints/user/UserToken";
 import { JWTEndpoints } from "../endpoints/utils";
 import { IUser, IUserModel } from "../mongo/user";
-import { IServerRequest } from "../utilities/types";
+import logger from "../utilities/logger";
+import { resolveJWTError } from "./handleErrors";
 
 export interface IGetUserFromRequestParamters {
   req: IServerRequest;
   userModel: IUserModel;
-  audience?: string;
+  audience?: JWTEndpoints;
   required?: boolean;
 }
 
@@ -27,16 +29,32 @@ async function getUserFromRequest({
     return req.userData;
   }
 
-  if (!req.user || !UserToken.containsAudience(req.user, audience)) {
+  const user = await validateUserTokenData(
+    req.user,
+    userModel,
+    required,
+    audience
+  );
+
+  req.userData = user;
+  return user;
+}
+
+export async function validateUserTokenData(
+  tokenData: IBaseUserTokenData,
+  userModel: IUserModel,
+  required: boolean = true,
+  audience = JWTEndpoints.Login
+) {
+  if (!tokenData || !UserToken.containsAudience(tokenData, audience)) {
     if (required) {
       throw new InvalidCredentialsError();
     }
   }
 
-  const userTokenData = req.user;
   let user: IUser = null;
   const query = {
-    customId: userTokenData.sub.id,
+    customId: tokenData.sub.id,
   };
 
   user = await userModel.model.findOne(query).exec();
@@ -45,17 +63,42 @@ async function getUserFromRequest({
     throw new PermissionDeniedError();
   }
 
-  req.userData = user;
+  const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
+  const tokenDataPasswordLastChangedAt = moment(
+    tokenData.sub.passwordLastChangedAt
+  );
 
   if (
-    moment(user.passwordLastChangedAt).isAfter(
-      moment(userTokenData.sub.passwordLastChangedAt)
-    )
+    !tokenData.sub.passwordLastChangedAt ||
+    !user.passwordLastChangedAt ||
+    userPasswordLastChangedAt > tokenDataPasswordLastChangedAt
   ) {
     throw new LoginAgainError();
   }
 
   return user;
+}
+
+export async function validateUserToken(
+  token: string,
+  userModel: IUserModel,
+  required: boolean = true,
+  audience = JWTEndpoints.Login
+) {
+  try {
+    const tokenData = UserToken.decodeToken(token);
+
+    return validateUserTokenData(tokenData, userModel, required, audience);
+  } catch (error) {
+    logger.error(error);
+    const JWTError = resolveJWTError(error);
+
+    if (JWTError) {
+      throw JWTError;
+    }
+
+    throw new PermissionDeniedError();
+  }
 }
 
 export default getUserFromRequest;

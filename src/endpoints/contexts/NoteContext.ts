@@ -1,46 +1,39 @@
-import { INote, INoteModel } from "../../mongo/note";
+import mongoConstants from "../../mongo/constants";
+import { INote } from "../../mongo/note";
 import { IUser } from "../../mongo/user";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
 import logger from "../../utilities/logger";
 import { NoteDoesNotExistError } from "../note/errors";
-
-export interface INoteContextModels {
-  noteModel: INoteModel;
-}
+import { IBaseContext } from "./BaseContext";
 
 export interface INoteContext {
-  getNoteById: (
-    models: INoteContextModels,
-    id: string
-  ) => Promise<INote | undefined>;
+  getNoteById: (ctx: IBaseContext, id: string) => Promise<INote | undefined>;
   updateNoteById: (
-    models: INoteContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<INote>,
     ensureNoteExists?: boolean
   ) => Promise<boolean | undefined>;
   markNoteDeleted: (
-    models: INoteContextModels,
+    ctx: IBaseContext,
     customId: string,
     user: IUser
   ) => Promise<void>;
-  getNotesByBlockId: (
-    models: INoteContextModels,
-    blockId: string
-  ) => Promise<INote[]>;
-  saveNote: (models: INoteContextModels, note: INote) => Promise<INote>;
+  getNotesByBlockId: (ctx: IBaseContext, blockId: string) => Promise<INote[]>;
+  saveNote: (ctx: IBaseContext, note: INote) => Promise<INote>;
   getNoteByName: (
-    models: INoteContextModels,
+    ctx: IBaseContext,
     name: string,
     blockId: string
   ) => Promise<INote | undefined>;
 }
 
 export default class NoteContext implements INoteContext {
-  public async getNoteById(models: INoteContextModels, id: string) {
+  public async getNoteById(ctx: IBaseContext, id: string) {
     try {
-      return await models.noteModel.model
+      return await ctx.models.noteModel.model
         .findOne({ customId: id, isDeleted: false })
         .lean()
         .exec();
@@ -51,14 +44,14 @@ export default class NoteContext implements INoteContext {
   }
 
   public async updateNoteById(
-    models: INoteContextModels,
+    ctx: IBaseContext,
     customId: string,
     data: Partial<INote>,
     ensureNoteExists?: boolean
   ) {
     try {
       if (ensureNoteExists) {
-        const note = await models.noteModel.model
+        const note = await ctx.models.noteModel.model
           .findOneAndUpdate({ customId, isDeleted: false }, data, {
             fields: "customId",
           })
@@ -70,7 +63,7 @@ export default class NoteContext implements INoteContext {
           throw new NoteDoesNotExistError(); // should we include id
         }
       } else {
-        await models.noteModel.model.updateOne({ customId }, data).exec();
+        await ctx.models.noteModel.model.updateOne({ customId }, data).exec();
       }
     } catch (error) {
       logger.error(error);
@@ -78,11 +71,7 @@ export default class NoteContext implements INoteContext {
     }
   }
 
-  public async markNoteDeleted(
-    models: INoteContextModels,
-    id: string,
-    user: IUser
-  ) {
+  public async markNoteDeleted(ctx: IBaseContext, id: string, user: IUser) {
     try {
       const update: Partial<INote> = {
         isDeleted: true,
@@ -90,16 +79,18 @@ export default class NoteContext implements INoteContext {
         deletedAt: getDate(),
       };
 
-      await models.noteModel.model.updateOne({ customId: id }, update).exec();
+      await ctx.models.noteModel.model
+        .updateOne({ customId: id }, update)
+        .exec();
     } catch (error) {
       logger.error(error);
       throw new ServerError();
     }
   }
 
-  public async getNotesByBlockId(models, blockId: string) {
+  public async getNotesByBlockId(ctx: IBaseContext, blockId: string) {
     try {
-      return await models.noteModel.model
+      return await ctx.models.noteModel.model
         .find({
           blockId,
           isDeleted: false,
@@ -112,24 +103,26 @@ export default class NoteContext implements INoteContext {
     }
   }
 
-  public async saveNote(models, note: INote) {
+  public async saveNote(ctx: IBaseContext, note: INote) {
     try {
-      const n = new models.noteModel.model(note);
+      const n = new ctx.models.noteModel.model(note);
       n.save();
       return n;
     } catch (error) {
       logger.error(error);
+
+      if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+        // TODO: Implement a way to get a new customId and retry
+        throw new ServerError();
+      }
+
       throw new ServerError();
     }
   }
 
-  public async getNoteByName(
-    models: INoteContextModels,
-    name: string,
-    blockId: string
-  ) {
+  public async getNoteByName(ctx: IBaseContext, name: string, blockId: string) {
     try {
-      return await models.noteModel.model
+      return await ctx.models.noteModel.model
         .findOne({
           blockId,
           name: name.toLowerCase(),
@@ -142,3 +135,5 @@ export default class NoteContext implements INoteContext {
     }
   }
 }
+
+export const getNoteContext = createSingletonFunc(() => new NoteContext());

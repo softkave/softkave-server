@@ -11,7 +11,7 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
   context,
   instData
 ) => {
-  const tokenData = context.session.getRequestToken(context.models, instData);
+  const tokenData = context.session.getRequestToken(context, instData);
 
   if (!UserToken.containsAudience(tokenData, JWTEndpoints.ChangePassword)) {
     throw new InvalidCredentialsError();
@@ -21,16 +21,13 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
     throw new CredentialsExpiredError();
   }
 
-  const user = await context.user.getUserByEmail(
-    context.models,
-    tokenData.sub.email
-  );
+  const user = await context.user.getUserByEmail(context, tokenData.sub.email);
 
   if (!user) {
     throw new UserDoesNotExistError();
   }
 
-  context.session.addUserToSession(context.models, instData, user);
+  context.session.addUserToSession(context, instData, user);
   return context.changePassword(context, instData);
 };
 

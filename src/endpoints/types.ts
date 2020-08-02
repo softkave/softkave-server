@@ -1,13 +1,16 @@
 import OperationError from "../utilities/OperationError";
-import BaseContext from "./contexts/BaseContext";
-import { IEndpointInstanceData } from "./contexts/types";
+import { IBaseContext } from "./contexts/BaseContext";
+import RequestData from "./contexts/RequestData";
 
 export interface IBaseEndpointResult {
   errors?: OperationError[];
 }
 
 export type Endpoint<
-  C extends BaseContext = BaseContext,
+  C extends IBaseContext = IBaseContext,
   T = any,
   R = any
-> = (context: C, instData: IEndpointInstanceData<T>) => Promise<(R & IBaseEndpointResult) | undefined>;
+> = (
+  context: C,
+  instData: RequestData<T>
+) => Promise<(R & IBaseEndpointResult) | undefined>;

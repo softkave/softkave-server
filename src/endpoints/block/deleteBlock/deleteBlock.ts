@@ -7,11 +7,11 @@ import { getDate } from "../../../utilities/fns";
 import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
+import { IBulkUpdateById } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
-import {
-  IBulkUpdateByIdItem,
-  IEndpointInstanceData,
-} from "../../contexts/types";
+import RequestData from "../../contexts/RequestData";
+import { fireAndForgetPromise } from "../../utils";
+import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
@@ -25,10 +25,10 @@ function removeOrgInUser(user: IUser, orgId: string) {
 
 async function deleteOrgCleanup(
   context: IBaseContext,
-  instData: IEndpointInstanceData<IDeleteBlockParameters>,
+  instData: RequestData<IDeleteBlockParameters>,
   block: IBlock
 ) {
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const userOrgIndex = user.orgs.findIndex(
     (org) => org.customId === block.customId
   );
@@ -37,16 +37,13 @@ async function deleteOrgCleanup(
   userOrgs.splice(userOrgIndex, 1);
 
   // TODO: scrub user collection for unreferenced orgIds
-  await context.session.updateUser(context.models, instData, {
+  await context.session.updateUser(context, instData, {
     orgs: userOrgs,
   });
 
-  const orgUsers = await context.user.getOrgUsers(
-    context.models,
-    block.customId
-  );
+  const orgUsers = await context.user.getOrgUsers(context, block.customId);
   const notifications: INotification[] = [];
-  const updates: Array<IBulkUpdateByIdItem<IUser>> = [];
+  const updates: Array<IBulkUpdateById<IUser>> = [];
 
   orgUsers.forEach((orgUser) => {
     if (orgUser.customId !== user.customId) {
@@ -73,22 +70,33 @@ async function deleteOrgCleanup(
   });
 
   context.user
-    .bulkUpdateUsersById(context.models, updates)
+    .bulkUpdateUsersById(context, updates)
     .catch((error) => logger.error(error));
   context.notification
-    .bulkSaveNotifications(context.models, notifications)
+    .bulkSaveNotifications(context, notifications)
     .catch((error) => logger.error(error));
 }
 
 const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
   const data = validate(instData.data, deleteBlockJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.blockId);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
 
   await canReadBlock({ user, block });
-  await context.block.markBlockDeleted(context.models, block.customId, user);
+  await context.block.markBlockDeleted(context, block.customId, user);
 
-  context.auditLog.insert(context.models, instData, {
+  fireAndForgetPromise(
+    broadcastBlockUpdate(
+      context,
+      instData,
+      block.customId,
+      { isDelete: true },
+      undefined,
+      block
+    )
+  );
+
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Delete,
     resourceId: block.customId,
     resourceType: getBlockAuditLogResourceType(block),

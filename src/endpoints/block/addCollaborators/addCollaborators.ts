@@ -8,6 +8,10 @@ import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import {
+  INewNotificationsPacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
 import { userIsPartOfOrg } from "../../user/utils";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
@@ -31,11 +35,8 @@ function isRequestAccepted(request: INotification) {
 const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
   const result = validate(instData.data, addCollaboratorsJoiSchema);
   const collaborators = result.collaborators;
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(
-    context.models,
-    result.blockId
-  );
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, result.blockId);
 
   await canReadBlock({ user, block });
 
@@ -52,7 +53,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
   });
 
   const existingUsers = await context.user.bulkGetUsersByEmail(
-    context.models,
+    context,
     newCollaboratorsEmails
   );
   const indexedExistingUsers = {};
@@ -80,7 +81,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
   }
 
   const existingCollaborationRequests = await context.notification.getCollaborationRequestsByRecipientEmail(
-    context.models,
+    context,
     newCollaboratorsEmails,
     block.customId
   );
@@ -138,9 +139,25 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
   });
 
   await context.notification.bulkSaveNotifications(
-    context.models,
+    context,
     collaborationRequests
   );
+
+  const orgBroadcastPacket: INewNotificationsPacket = {
+    notifications: collaborationRequests,
+  };
+
+  const blockRoomName = context.room.getBlockRoomName(block);
+  context.room.broadcast(
+    context,
+    blockRoomName,
+    OutgoingSocketEvents.OrgNewNotifications,
+    orgBroadcastPacket
+  );
+
+  existingUsers.forEach((existingUser) => {
+    // TODO: implement a way to know if the user is logged in, then send notification
+  });
 
   // TODO: maybe deffer sending email till end of day
   sendEmails(collaborationRequests);
@@ -151,13 +168,9 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     });
 
     fireAndForgetPromise(
-      context.notification.updateNotificationById(
-        context.models,
-        request.customId,
-        {
-          sentEmailHistory,
-        }
-      )
+      context.notification.updateNotificationById(context, request.customId, {
+        sentEmailHistory,
+      })
     );
   }
 

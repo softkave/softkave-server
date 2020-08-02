@@ -8,7 +8,6 @@ import {
 } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
-import { IBlockContextModels } from "../../contexts/BlockContext";
 import { Endpoint } from "../../types";
 import { TransferBlockEndpoint } from "../transferBlock/types";
 
@@ -49,13 +48,13 @@ export interface IUpdateBlockContext extends IBaseContext {
     assignee: IUser
   ) => Promise<any>;
   bulkUpdateDeletedStatusInTasks: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     parentId: string,
     items: Array<{ oldId: string; newId: string }>,
     user: IUser
   ) => Promise<void>;
   bulkRemoveDeletedLabelsInTasks: (
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     orgId: string,
     ids: string[]
   ) => Promise<void>;

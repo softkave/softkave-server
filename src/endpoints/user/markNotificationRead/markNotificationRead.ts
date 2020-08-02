@@ -1,6 +1,10 @@
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import { NotificationDoesNotExistError } from "../../notification/errors";
+import {
+  IUpdateNotificationPacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
 import { MarkNotificationReadEndpoint } from "./types";
 import { updateCollaborationRequestSchema } from "./validation";
 
@@ -9,9 +13,9 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
   instData
 ) => {
   const data = validate(instData.data, updateCollaborationRequestSchema);
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const notification = await context.notification.getNotificationById(
-    context.models,
+    context,
     data.notificationId
   );
 
@@ -23,10 +27,24 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
     throw new PermissionDeniedError();
   }
 
+  const update: IUpdateNotificationPacket = {
+    customId: notification.customId,
+    data: { readAt: data.readAt },
+  };
+
   await context.notification.updateNotificationById(
-    context.models,
+    context,
     data.notificationId,
-    { readAt: data.readAt as any }
+    update
+  );
+
+  const roomName = context.room.getUserPersonalRoomName(user);
+  context.room.broadcast(
+    context,
+    roomName,
+    OutgoingSocketEvents.UpdateNotification,
+    update,
+    instData
   );
 };
 

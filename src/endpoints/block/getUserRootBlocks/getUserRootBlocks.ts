@@ -4,8 +4,8 @@ const getUserRootBlocks: GetUserRootBlocksEndpoint = async (
   context,
   instData
 ) => {
-  const user = await context.session.getUser(context.models, instData);
-  const blocks = await context.block.getUserRootBlocks(context.models, user);
+  const user = await context.session.getUser(context, instData);
+  const blocks = await context.block.getUserRootBlocks(context, user);
 
   return {
     blocks,

@@ -1,4 +1,5 @@
 import { Connection } from "mongoose";
+import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import notificationSchema, { INotificationDocument } from "./definitions";
@@ -6,23 +7,15 @@ import notificationSchema, { INotificationDocument } from "./definitions";
 const modelName = "notification-v2";
 const collectionName = "notifications-v2";
 
-let notificationModel: INotificationModel = null;
-
-export function getNotificationModel(
-  conn: Connection = getDefaultConnection().getConnection()
-) {
-  if (notificationModel) {
-    return notificationModel;
+export const getNotificationModel = createSingletonFunc(
+  (conn: Connection = getDefaultConnection().getConnection()) => {
+    return new MongoModel<INotificationDocument>({
+      modelName,
+      collectionName,
+      rawSchema: notificationSchema,
+      connection: conn,
+    });
   }
-
-  notificationModel = new MongoModel<INotificationDocument>({
-    modelName,
-    collectionName,
-    rawSchema: notificationSchema,
-    connection: conn,
-  });
-
-  return notificationModel;
-}
+);
 
 export interface INotificationModel extends MongoModel<INotificationDocument> {}

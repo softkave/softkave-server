@@ -3,7 +3,3 @@ export interface INewCommentInput {
   taskId: string;
   comment: string;
 }
-
-export interface IUpdateComment {
-  //TODO
-}

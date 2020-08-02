@@ -3,6 +3,11 @@ import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import {
+  IOrgCollaborationRequestResponsePacket,
+  IUserCollaborationRequestResponsePacket,
+  OutgoingSocketEvents,
+} from "../../socket/server";
+import {
   CollaborationRequestAcceptedError,
   CollaborationRequestDeclinedError,
   CollaborationRequestDoesNotExistError,
@@ -18,9 +23,9 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   instData
 ) => {
   const data = validate(instData.data, respondToCollaborationRequestJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const req = await context.notification.getNotificationById(
-    context.models,
+    context,
     data.requestId
   );
 
@@ -52,22 +57,21 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   }
 
   const statusHistory = req.statusHistory || [];
+  const userAccepted =
+    data.response === CollaborationRequestStatusType.Accepted;
   statusHistory.push({
-    status:
-      data.response === "accepted"
-        ? CollaborationRequestStatusType.Accepted
-        : CollaborationRequestStatusType.Declined,
+    status: userAccepted
+      ? CollaborationRequestStatusType.Accepted
+      : CollaborationRequestStatusType.Declined,
     date: getDate(),
   });
 
-  await context.notification.updateNotificationById(
-    context.models,
-    data.requestId,
-    { statusHistory }
-  );
+  await context.notification.updateNotificationById(context, data.requestId, {
+    statusHistory,
+  });
 
   const ownerBlock = await context.block.getBlockById(
-    context.models,
+    context,
     req.from.blockId
   );
 
@@ -75,11 +79,12 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     // if the org does not exist or has been deleted
     // TODO: should we log something here?
     // TODO: figure our log points, i.e, what are the things we should be logging?
-    context.notification.deleteNotificationById(context.models, data.requestId);
-  } else if (data.response === CollaborationRequestStatusType.Accepted) {
+    // TODO: what should we do if the org does not exist?
+    // context.notification.deleteNotificationById(context, data.requestId);
+  } else if (userAccepted) {
     if (!userIsPartOfOrg(user, ownerBlock.customId)) {
       const userOrgs = user.orgs.concat({ customId: ownerBlock.customId });
-      await context.session.updateUser(context.models, instData, {
+      await context.session.updateUser(context, instData, {
         orgs: userOrgs,
       });
       return { block: ownerBlock };
@@ -87,6 +92,35 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
       // TODO: should we log an error because it means the user already has the org
     }
   }
+
+  const orgsBroadcastData: IOrgCollaborationRequestResponsePacket = {
+    customId: req.customId,
+    response: data.response,
+  };
+
+  const blockRoomName = context.room.getBlockRoomName(ownerBlock);
+  context.room.broadcast(
+    context,
+    blockRoomName,
+    OutgoingSocketEvents.OrgCollaborationRequestResponse,
+    orgsBroadcastData,
+    instData
+  );
+
+  const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
+    customId: req.customId,
+    response: data.response,
+    org: userAccepted ? ownerBlock : undefined,
+  };
+
+  const userRoomName = context.room.getUserPersonalRoomName(user);
+  context.room.broadcast(
+    context,
+    userRoomName,
+    OutgoingSocketEvents.UserCollaborationRequestResponse,
+    userClientsBroadcastData,
+    instData
+  );
 };
 
 export default respondToCollaborationRequest;

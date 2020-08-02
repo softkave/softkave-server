@@ -1,5 +1,4 @@
 import Joi from "joi";
-import commentsSchema from "../../mongo/comment/definitions";
 import { validationSchemas } from "../../utilities/validationUtils";
 
 const commentId = validationSchemas.uuid;

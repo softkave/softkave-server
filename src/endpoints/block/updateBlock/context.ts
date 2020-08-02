@@ -4,8 +4,7 @@ import appInfo from "../../../res/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
 import logger from "../../../utilities/logger";
-import BaseContext from "../../contexts/BaseContext";
-import { IBlockContextModels } from "../../contexts/BlockContext";
+import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext } from "./types";
@@ -35,13 +34,13 @@ export default class UpdateBlockContext extends BaseContext
   }
 
   public async bulkUpdateDeletedStatusInTasks(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     parentId: string,
     items: Array<{ oldId: string; newId: string }>,
     user: IUser
   ) {
     try {
-      await models.blockModel.model.bulkWrite(
+      await ctx.models.blockModel.model.bulkWrite(
         items.map((item) => ({
           updateMany: {
             filter: {
@@ -66,12 +65,12 @@ export default class UpdateBlockContext extends BaseContext
   }
 
   public async bulkRemoveDeletedLabelsInTasks(
-    models: IBlockContextModels,
+    ctx: IBaseContext,
     orgId: string,
     ids: string[]
   ) {
     try {
-      await models.blockModel.model.bulkWrite(
+      await ctx.models.blockModel.model.bulkWrite(
         ids.map((id) => ({
           updateMany: {
             filter: { rootBlockId: orgId },

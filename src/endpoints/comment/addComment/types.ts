@@ -8,14 +8,11 @@ export interface IAddCommentParameters {
 }
 
 export interface IAddCommentResult {
-  error: Error[];
   comment: IComment;
 }
 
-export interface IAddCommentContext extends IBaseContext {}
-
 export type AddCommentEndpoint = Endpoint<
-  IAddCommentContext,
+  IBaseContext,
   IAddCommentParameters,
   IAddCommentResult
 >;

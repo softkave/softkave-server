@@ -13,13 +13,13 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
   instData
 ) => {
   const data = validate(instData.data, removeCollaboratorJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockById(context.models, data.blockId);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockById(context, data.blockId);
 
   canReadBlock({ user, block });
 
   const fetchedCollaborator = await context.user.getUserById(
-    context.models,
+    context,
     data.collaboratorId
   );
 
@@ -37,13 +37,9 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
   }
 
   collaboratorOrgs.splice(blockIndexInCollaborator, 1);
-  await context.user.updateUserById(
-    context.models,
-    fetchedCollaborator.customId,
-    {
-      orgs: collaboratorOrgs,
-    }
-  );
+  await context.user.updateUserById(context, fetchedCollaborator.customId, {
+    orgs: collaboratorOrgs,
+  });
 
   const message =
     `Hi ${fetchedCollaborator.name}, ` +
@@ -63,7 +59,7 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
   };
 
   context.notification
-    .saveNotification(context.models, notification)
+    .saveNotification(context, notification)
     .catch((error) => {
       // TODO: should this be a fire and forget?
       logger.error(error);

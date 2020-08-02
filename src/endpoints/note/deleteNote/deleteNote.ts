@@ -11,15 +11,15 @@ import { deleteNoteJoiSchema } from "./validation";
 
 const deleteNote: DeleteNoteEndpoint = async (context, instData) => {
   const data = validate(instData.data, deleteNoteJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
-  const note = await context.note.getNoteById(context.models, data.noteId);
-  const block = await context.block.getBlockById(context.models, note.blockId);
+  const user = await context.session.getUser(context, instData);
+  const note = await context.note.getNoteById(context, data.noteId);
+  const block = await context.block.getBlockById(context, note.blockId);
 
   canReadBlock({ user, block });
   canReadNote({ user, block, note });
-  await context.note.markNoteDeleted(context.models, note.customId, user);
+  await context.note.markNoteDeleted(context, note.customId, user);
 
-  context.auditLog.insert(context.models, instData, {
+  context.auditLog.insert(context, instData, {
     action: AuditLogActionType.Delete,
     resourceId: note.customId,
     resourceType: AuditLogResourceType.Note,

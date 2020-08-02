@@ -1,4 +1,5 @@
 import { getBaseContext } from "../contexts/BaseContext";
+import RequestData from "../contexts/RequestData";
 import { wrapEndpoint } from "../utils";
 import changePassword from "./changePassword/changePassword";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";
@@ -19,76 +20,94 @@ import userExists from "./userExists/userExists";
 export default class UserController {
   public signup(data, req) {
     return wrapEndpoint(data, req, () =>
-      signup(getSignupContext(), { req, data })
+      signup(getSignupContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public changePassword(data, req) {
     return wrapEndpoint(data, req, () =>
-      changePassword(getBaseContext(), { req, data })
+      changePassword(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public changePasswordWithToken(data, req) {
     return wrapEndpoint(data, req, () =>
-      changePasswordWithToken(getChangePasswordWithTokenContext(), {
-        req,
-        data,
-      })
+      changePasswordWithToken(
+        getChangePasswordWithTokenContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public forgotPassword(data, req) {
     return wrapEndpoint(data, req, () =>
-      forgotPassword(new ForgotPasswordContext(), { req, data })
+      forgotPassword(
+        new ForgotPasswordContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getChangePasswordTokenData(data, req) {
     return wrapEndpoint(data, req, () =>
-      getChangePasswordTokenData(getBaseContext(), { req, data })
+      getChangePasswordTokenData(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getUserNotifications(data, req) {
     return wrapEndpoint(data, req, () =>
-      getUserNotifications(getBaseContext(), { req, data })
+      getUserNotifications(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public getUserData(data, req) {
     return wrapEndpoint(data, req, () =>
-      getUserData(getBaseContext(), { req, data })
+      getUserData(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public login(data, req) {
     return wrapEndpoint(data, req, () =>
-      login(getBaseContext(), { req, data })
+      login(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public respondToCollaborationRequest(data, req) {
     return wrapEndpoint(data, req, () =>
-      respondToCollaborationRequest(getBaseContext(), { req, data })
+      respondToCollaborationRequest(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public markNotificationRead(data, req) {
     return wrapEndpoint(data, req, () =>
-      markNotificationRead(getBaseContext(), { req, data })
+      markNotificationRead(
+        getBaseContext(),
+        RequestData.fromExpressRequest(req, data)
+      )
     );
   }
 
   public updateUser(data, req) {
     return wrapEndpoint(data, req, () =>
-      updateUser(getBaseContext(), { data, req })
+      updateUser(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 
   public userExists(data, req) {
     return wrapEndpoint(data, req, () =>
-      userExists(getBaseContext(), { req, data })
+      userExists(getBaseContext(), RequestData.fromExpressRequest(req, data))
     );
   }
 }

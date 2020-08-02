@@ -9,10 +9,10 @@ import { changePasswordJoiSchema } from "./validation";
 const changePassword: ChangePasswordEndpoint = async (context, instData) => {
   const result = validate(instData.data, changePasswordJoiSchema);
   const passwordValue = result.password;
-  const user = await context.session.getUser(context.models, instData);
+  const user = await context.session.getUser(context, instData);
   const hash = await argon2.hash(passwordValue);
 
-  await context.session.updateUser(context.models, instData, {
+  await context.session.updateUser(context, instData, {
     hash,
     passwordLastChangedAt: getDate(),
   });

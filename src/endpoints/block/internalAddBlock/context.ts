@@ -1,5 +1,5 @@
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
-import { IEndpointInstanceData } from "../../contexts/types";
+import RequestData from "../../contexts/RequestData";
 import blockExists from "../blockExists/blockExists";
 import { IBlockExistsParameters } from "../blockExists/types";
 import { IInternalAddBlockContext } from "./types";
@@ -8,7 +8,7 @@ export default class InternalAddBlockContext extends BaseContext
   implements IInternalAddBlockContext {
   public async blockExists(
     context: IBaseContext,
-    instData: IEndpointInstanceData<IBlockExistsParameters>
+    instData: RequestData<IBlockExistsParameters>
   ) {
     return blockExists(context, instData);
   }

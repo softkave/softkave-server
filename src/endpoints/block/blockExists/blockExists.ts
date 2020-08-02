@@ -7,8 +7,8 @@ import { blockExistsJoiSchema } from "./validation";
 // operations on them
 const blockExists: BlockExistsEndpoint = async (context, instData) => {
   const data = validate(instData.data, blockExistsJoiSchema);
-  const user = await context.session.getUser(context.models, instData);
-  const block = await context.block.getBlockByName(context.models, data.name);
+  const user = await context.session.getUser(context, instData);
+  const block = await context.block.getBlockByName(context, data.name);
 
   if (!block) {
     return false;

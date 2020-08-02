@@ -30,6 +30,7 @@ export enum AuditLogResourceType {
   CollaborationRequest = "collab-req",
   CollaboratorRemoved = "remove-collaborator",
   Note = "note",
+  Comment = "comment",
 }
 
 export enum AuditLogActionType {
