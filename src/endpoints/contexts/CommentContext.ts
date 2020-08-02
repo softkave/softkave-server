@@ -24,4 +24,8 @@ export default class CommentContext implements ICommentContext {
       throw new ServerError();
     }
   }
+
+  // public async getComment() {}
+
+  // public async deleteComment() {}
 }

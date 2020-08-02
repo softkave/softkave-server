@@ -14,7 +14,7 @@ export interface IAddCommentResult {
 
 export interface IAddCommentContext extends IBaseContext {}
 
-export type AddComentEndpoint = Endpoint<
+export type AddCommentEndpoint = Endpoint<
   IAddCommentContext,
   IAddCommentParameters,
   IAddCommentResult
