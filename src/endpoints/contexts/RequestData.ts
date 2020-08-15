@@ -23,7 +23,7 @@ export default class RequestData<
 
     requestData.req = req;
     requestData.data = data;
-    requestData.tokenData = requestData.tokenData;
+    requestData.tokenData = req.user;
     requestData.ips =
       Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
     requestData.userAgent = req.headers["user-agent"];
@@ -31,15 +31,15 @@ export default class RequestData<
     return requestData;
   }
 
-  public static fromSocketRequest<DataType>(
-    socket: Socket,
-    data?: DataType
-  ): RequestData {
+  public static fromSocketRequest<
+    DataType,
+    TokenData extends IBaseUserTokenData
+  >(socket: Socket, data?: DataType, tokenData?: TokenData): RequestData {
     const requestData = new RequestData();
 
     requestData.socket = socket;
     requestData.data = data;
-    requestData.tokenData = requestData.tokenData;
+    requestData.tokenData = tokenData;
     requestData.ips = [socket.handshake.address];
     requestData.userAgent = socket.handshake.headers
       ? socket.handshake.headers["user-agent"]

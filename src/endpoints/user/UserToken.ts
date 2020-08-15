@@ -7,6 +7,7 @@ export interface IUserTokenSubject {
   id: string;
   email: string;
   passwordLastChangedAt: string;
+  clientId: string;
 }
 
 export interface IBaseUserTokenData {
@@ -16,6 +17,8 @@ export interface IBaseUserTokenData {
   aud: string[];
   exp?: number;
 }
+
+const currentVersion = 2;
 
 export interface INewUserTokenParameters {
   user: IUser;
@@ -41,7 +44,7 @@ export default class UserToken {
 
     if (p.expires) {
       // @ts-ignore
-      payload.exp = p.expires / 1000;
+      payload.exp = p.expires / 1000; // exp is in seconds
     }
 
     return jwt.sign(payload, process.env.JWT_SECRET);
@@ -63,7 +66,7 @@ export default class UserToken {
   }
 
   public static checkVersion(tokenData: IBaseUserTokenData) {
-    if (!tokenData.version) {
+    if (!tokenData.version || tokenData.version !== currentVersion) {
       throw new LoginAgainError();
     }
   }

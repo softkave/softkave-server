@@ -1,7 +1,4 @@
 import { Server, Socket } from "socket.io";
-import getUserFromRequest, {
-  validateUserToken,
-} from "../../middlewares/getUserFromRequest";
 import { IBlock } from "../../mongo/block";
 import { INotification } from "../../mongo/notification";
 import { ServerError } from "../../utilities/errors";
@@ -9,6 +6,7 @@ import logger from "../../utilities/logger";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
+import { JWTEndpoints } from "../utils";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
 
@@ -31,15 +29,19 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
     IncomingSocketEvents.Auth,
     async (data: IIncomingAuthPacket, fn) => {
       try {
-        const user = await validateUserToken(
-          data.token,
-          ctx.models.userModel,
-          true
+        const tokenData = await ctx.session.validateUserToken(ctx, data.token);
+        const user = await ctx.session.validateUserTokenData(
+          ctx,
+          tokenData,
+          true,
+          JWTEndpoints.Login
         );
+
         ctx.socket.mapUserToSocketId(
-          RequestData.fromSocketRequest(socket),
+          RequestData.fromSocketRequest(socket, null, tokenData),
           user
         );
+
         const result: IOutgoingAuthPacket = { valid: true };
         fn(result);
       } catch (error) {
@@ -52,25 +54,36 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
   );
 
   socket.on("disconnect", () => {
-    onDisconnect(ctx, socket);
+    try {
+      onDisconnect(ctx, socket);
+    } catch (err) {
+      logger.error(err);
+    }
   });
 
   socket.on(IncomingSocketEvents.Subscribe, (data) => {
-    subscribe(getBaseContext(), data);
+    try {
+      subscribe(getBaseContext(), RequestData.fromSocketRequest(socket, data));
+    } catch (error) {
+      // TODO: improve error handling and send the error back to the clients
+      logger.error(error);
+    }
   });
 
   socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
-    unsubscribe(getBaseContext(), data);
+    try {
+      unsubscribe(
+        getBaseContext(),
+        RequestData.fromSocketRequest(socket, data)
+      );
+    } catch (error) {
+      logger.error(error);
+    }
   });
 }
 
 async function onDisconnect(ctx: IBaseContext, socket: Socket) {
   try {
-    const user = await getUserFromRequest({
-      req: socket.request,
-      userModel: ctx.models.userModel,
-    });
-
     ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
   } catch (error) {
     logger.error(error);
@@ -150,6 +163,3 @@ export interface IOrgCollaborationRequestResponsePacket {
   customId: string;
   response: CollaborationRequestResponse;
 }
-
-// tslint:disable-next-line: no-empty-interface
-export interface IBoardUpdatePacket {}

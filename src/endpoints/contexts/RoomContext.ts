@@ -42,7 +42,7 @@ export interface IRoomContext {
     eventName: string,
     eventData: any,
     data?: RequestData
-  ) => Promise<any>;
+  ) => void;
   getUserPersonalRoomName: (user: IUser) => string;
   getBlockRoomName: (block: IBlock) => string;
   getNoteRoomName: (note: INote) => string;
@@ -155,7 +155,10 @@ export default class RoomContext implements IRoomContext {
 
   public subscribe(data: RequestData, roomName: string) {
     if (data.socket) {
-      data.socket.join(roomName);
+      data.socket.join(roomName, (err) => {
+        const rooms = data.socket.rooms;
+        // what should we do?
+      });
     }
   }
 
@@ -172,17 +175,11 @@ export default class RoomContext implements IRoomContext {
     eventData: any,
     data: RequestData
   ) {
-    return new Promise((resolve, reject) => {
-      if (data.socket) {
-        data.socket.to(roomName).emit(eventName, eventData, (ack) => {
-          resolve(ack);
-        });
-      } else {
-        ctx.socketServer.to(roomName).emit(eventName, eventData, (ack) => {
-          resolve(ack);
-        });
-      }
-    });
+    if (data.socket) {
+      data.socket.to(roomName).emit(eventName, eventData);
+    } else {
+      ctx.socketServer.to(roomName).emit(eventName, eventData);
+    }
   }
 
   public getUserPersonalRoomName(user: IUser) {
