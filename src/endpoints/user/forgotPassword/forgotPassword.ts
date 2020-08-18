@@ -1,4 +1,5 @@
 import moment = require("moment");
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { UserDoesNotExistError } from "../errors";
@@ -29,6 +30,7 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
     user,
     audience: [JWTEndpoints.ChangePassword],
     expires: expiration.valueOf(),
+    clientId: getId(), // TODO: not used for changing password, how can we make it better?
   });
 
   await context.sendChangePasswordEmail({

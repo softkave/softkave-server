@@ -42,7 +42,10 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
           user
         );
 
-        const result: IOutgoingAuthPacket = { valid: true };
+        const result: IOutgoingAuthPacket = {
+          valid: true,
+          clientId: tokenData.sub.clientId,
+        };
         fn(result);
       } catch (error) {
         const result: IOutgoingAuthPacket = { valid: false };
@@ -130,6 +133,7 @@ export interface IIncomingAuthPacket {
 
 export interface IOutgoingAuthPacket {
   valid: boolean;
+  clientId?: string;
 }
 
 export interface IBlockUpdatePacket {

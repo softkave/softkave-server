@@ -3,5 +3,5 @@ export const userConstants = {
   maxNameLength: 300,
   minPasswordLength: 7,
   maxPasswordLength: 20,
-  currentTokenVersion: 3,
+  currentTokenVersion: 4,
 };

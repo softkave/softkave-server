@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
+import getId from "../../../utilities/getId";
 import { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../contexts/RequestData";
 import { JWTEndpoints } from "../../utils";
@@ -75,6 +76,7 @@ test("allow login if password is correct", async () => {
     token: UserToken.newToken({
       user,
       audience: [JWTEndpoints.Login],
+      clientId: getId(),
     }),
   });
 });

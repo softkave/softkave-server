@@ -18,11 +18,10 @@ export interface IBaseUserTokenData {
   exp?: number;
 }
 
-const currentVersion = 2;
-
 export interface INewUserTokenParameters {
   user: IUser;
   audience: string[];
+  clientId: string;
   additionalData?: any;
   expires?: number;
 }
@@ -32,6 +31,7 @@ export default class UserToken {
     const subject: IUserTokenSubject = {
       id: p.user.customId,
       email: p.user.email,
+      clientId: p.clientId,
       passwordLastChangedAt: p.user.passwordLastChangedAt,
       ...p.additionalData,
     };
@@ -66,7 +66,10 @@ export default class UserToken {
   }
 
   public static checkVersion(tokenData: IBaseUserTokenData) {
-    if (!tokenData.version || tokenData.version !== currentVersion) {
+    if (
+      !tokenData.version ||
+      tokenData.version !== userConstants.currentTokenVersion
+    ) {
       throw new LoginAgainError();
     }
   }

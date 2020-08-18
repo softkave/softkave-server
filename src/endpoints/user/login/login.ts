@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { JWTEndpoints } from "../../utils";
@@ -29,6 +30,7 @@ const login: LoginEndpoint = async (context, instData) => {
           token: UserToken.newToken({
             user: userData,
             audience: [JWTEndpoints.Login],
+            clientId: getId(),
           }),
         };
       }

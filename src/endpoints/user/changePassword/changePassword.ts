@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { getDate } from "../../../utilities/fns";
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import UserToken from "../UserToken";
@@ -19,7 +20,11 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
 
   return {
     user,
-    token: UserToken.newToken({ user, audience: [JWTEndpoints.Login] }),
+    token: UserToken.newToken({
+      user,
+      audience: [JWTEndpoints.Login],
+      clientId: getId(),
+    }),
   };
 };
 

@@ -159,6 +159,8 @@ export default class RoomContext implements IRoomContext {
         const rooms = data.socket.rooms;
         // what should we do?
       });
+
+      console.dir({ socket: data.socket, roomName });
     }
   }
 
@@ -175,6 +177,7 @@ export default class RoomContext implements IRoomContext {
     eventData: any,
     data: RequestData
   ) {
+    console.dir({ roomName, eventName, eventData, data });
     if (data.socket) {
       data.socket.to(roomName).emit(eventName, eventData);
     } else {

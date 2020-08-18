@@ -13,12 +13,12 @@ const broadcastBlockUpdate = async (
 ) => {
   const user = await context.session.getUser(context, instData);
   context.socket.attachSocketToRequestData(context, instData, user);
-  const data: IBlockUpdatePacket = { customId: block.customId, ...updateType };
 
   // TODO: should we do this here, for performance reasons?
   //   or should we pass it in from the caller
   block = block || (await context.block.getBlockById(context, blockId));
   org = org || (await context.block.getBlockById(context, block.rootBlockId));
+  const data: IBlockUpdatePacket = { customId: block.customId, ...updateType };
   const event = OutgoingSocketEvents.BlockUpdate;
 
   if (updateType.isNew || updateType.isUpdate) {
@@ -57,6 +57,7 @@ const broadcastBlockUpdate = async (
     const board = await context.block.getBlockById(context, block.parent);
     const roomName = context.room.getBlockRoomName(board);
     context.room.broadcast(context, roomName, event, data, instData);
+    console.dir({ block, board, roomName, data, event });
     return;
   }
 };
