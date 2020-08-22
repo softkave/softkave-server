@@ -94,34 +94,34 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     }
   }
 
-  const orgsBroadcastData: IOrgCollaborationRequestResponsePacket = {
-    customId: req.customId,
-    response: data.response,
-  };
+  // const orgsBroadcastData: IOrgCollaborationRequestResponsePacket = {
+  //   customId: req.customId,
+  //   response: data.response,
+  // };
 
-  const blockRoomName = context.room.getBlockRoomName(ownerBlock);
-  context.room.broadcast(
-    context,
-    blockRoomName,
-    OutgoingSocketEvents.OrgCollaborationRequestResponse,
-    orgsBroadcastData,
-    instData
-  );
+  // const blockRoomName = context.room.getBlockRoomName(ownerBlock);
+  // context.room.broadcast(
+  //   context,
+  //   blockRoomName,
+  //   OutgoingSocketEvents.OrgCollaborationRequestResponse,
+  //   orgsBroadcastData,
+  //   instData
+  // );
 
-  const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
-    customId: req.customId,
-    response: data.response,
-    org: userAccepted ? toPublicBlockData(ownerBlock) : undefined,
-  };
+  // const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
+  //   customId: req.customId,
+  //   response: data.response,
+  //   org: userAccepted ? toPublicBlockData(ownerBlock) : undefined,
+  // };
 
-  const userRoomName = context.room.getUserPersonalRoomName(user);
-  context.room.broadcast(
-    context,
-    userRoomName,
-    OutgoingSocketEvents.UserCollaborationRequestResponse,
-    userClientsBroadcastData,
-    instData
-  );
+  // const userRoomName = context.room.getUserPersonalRoomName(user);
+  // context.room.broadcast(
+  //   context,
+  //   userRoomName,
+  //   OutgoingSocketEvents.UserCollaborationRequestResponse,
+  //   userClientsBroadcastData,
+  //   instData
+  // );
 };
 
 export default respondToCollaborationRequest;

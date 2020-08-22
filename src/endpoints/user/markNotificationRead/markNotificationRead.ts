@@ -38,14 +38,14 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
     update
   );
 
-  const roomName = context.room.getUserPersonalRoomName(user);
-  context.room.broadcast(
-    context,
-    roomName,
-    OutgoingSocketEvents.UpdateNotification,
-    update,
-    instData
-  );
+  // const roomName = context.room.getUserPersonalRoomName(user);
+  // context.room.broadcast(
+  //   context,
+  //   roomName,
+  //   OutgoingSocketEvents.UpdateNotification,
+  //   update,
+  //   instData
+  // );
 };
 
 export default markNotificationRead;
