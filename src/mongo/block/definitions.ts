@@ -63,9 +63,9 @@ export interface IBlockStatus {
   customId: string;
   name: string;
   color: string;
+  createdBy: string;
+  createdAt: Date;
   description?: string;
-  createdBy?: string;
-  createdAt?: Date;
   updatedBy?: string;
   updatedAt?: Date;
 }

@@ -1,3 +1,4 @@
+import getId from "../../../utilities/getId";
 import { GetUserDataEndpoint } from "./types";
 
 const getUserData: GetUserDataEndpoint = async (context, instData) => {
@@ -5,6 +6,7 @@ const getUserData: GetUserDataEndpoint = async (context, instData) => {
 
   return {
     user,
+    clientId: getId(),
   };
 };
 

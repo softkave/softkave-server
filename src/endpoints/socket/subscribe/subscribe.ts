@@ -9,6 +9,7 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
   context.socket.assertSocket(instData);
 
   switch (data.type) {
+    case AuditLogResourceType.Org:
     case AuditLogResourceType.Board: {
       const block = await context.block.getBlockById(context, data.customId);
       const roomName = context.room.getBlockRoomName(block);

@@ -11,6 +11,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";
 import UserToken from "../UserToken";
+import { getPublicUserData } from "../utils";
 import { SignupEndpoint } from "./types";
 import { newUserInputSchema } from "./validation";
 
@@ -51,11 +52,11 @@ const signup: SignupEndpoint = async (context, instData) => {
   });
 
   return {
-    user,
+    user: getPublicUserData(user),
+    clientId: getId(),
     token: UserToken.newToken({
       user,
       audience: [JWTEndpoints.Login],
-      clientId: getId(),
     }),
   };
 };

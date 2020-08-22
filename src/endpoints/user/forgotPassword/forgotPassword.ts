@@ -30,7 +30,6 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
     user,
     audience: [JWTEndpoints.ChangePassword],
     expires: expiration.valueOf(),
-    clientId: getId(), // TODO: not used for changing password, how can we make it better?
   });
 
   await context.sendChangePasswordEmail({

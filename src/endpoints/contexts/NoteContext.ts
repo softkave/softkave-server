@@ -37,7 +37,7 @@ export default class NoteContext implements INoteContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -65,7 +65,7 @@ export default class NoteContext implements INoteContext {
         await ctx.models.noteModel.model.updateOne({ customId }, data).exec();
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -82,7 +82,7 @@ export default class NoteContext implements INoteContext {
         .updateOne({ customId: id }, update)
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -97,7 +97,7 @@ export default class NoteContext implements INoteContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -108,7 +108,7 @@ export default class NoteContext implements INoteContext {
       n.save();
       return n;
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -123,7 +123,7 @@ export default class NoteContext implements INoteContext {
         })
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }

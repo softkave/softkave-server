@@ -51,7 +51,7 @@ export default class NotificationContext implements INotificationContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -79,7 +79,7 @@ export default class NotificationContext implements INotificationContext {
           .exec();
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -95,7 +95,7 @@ export default class NotificationContext implements INotificationContext {
 
       return requests;
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -106,7 +106,7 @@ export default class NotificationContext implements INotificationContext {
         .deleteOne({ customId: id })
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -127,7 +127,7 @@ export default class NotificationContext implements INotificationContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -139,7 +139,7 @@ export default class NotificationContext implements INotificationContext {
     try {
       await ctx.models.notificationModel.model.insertMany(notifications);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -153,7 +153,7 @@ export default class NotificationContext implements INotificationContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -166,7 +166,7 @@ export default class NotificationContext implements INotificationContext {
       const n = new ctx.models.notificationModel.model(notification);
       n.save();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }

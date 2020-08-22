@@ -50,11 +50,10 @@ export default class SocketContext implements ISocketContext {
 
     const sockets = userIdToSocketsMap[user.customId] || [];
     sockets.push({
-      clientId: data.tokenData.sub.clientId,
+      clientId: data.clientId,
       socket: data.socket,
     });
     userIdToSocketsMap[user.customId] = sockets;
-    console.dir({ userIdToSocketsMap, socketIdToUserMap });
   }
 
   public removeSocketIdAndUser(data: RequestData) {
@@ -74,7 +73,6 @@ export default class SocketContext implements ISocketContext {
     const sockets = userIdToSocketsMap[user.customId];
     sockets.splice(socketIndex, 1);
     userIdToSocketsMap[user.customId] = sockets;
-    // console.dir({ userIdToSocketsMap, socketIdToUserMap });
   }
 
   public getUserBySocketId(data: RequestData) {
@@ -98,7 +96,7 @@ export default class SocketContext implements ISocketContext {
       return false;
     }
 
-    const requestClientId = data.tokenData.sub.clientId;
+    const requestClientId = data.clientId;
     const socketEntryIndex = sockets.findIndex(
       (entry) => entry.clientId === requestClientId
     );
@@ -117,7 +115,6 @@ export default class SocketContext implements ISocketContext {
     }
 
     data.socket = socketEntry.socket;
-    console.dir({ socket: socketEntry, sockets });
     return true;
   }
 

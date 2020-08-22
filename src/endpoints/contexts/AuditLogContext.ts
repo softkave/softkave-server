@@ -46,7 +46,7 @@ export default class AuditLogContext implements IAuditLogContext {
       const logDoc = new ctx.models.auditLogModel.model(log);
       await logDoc.save();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
     }
   }
 
@@ -59,7 +59,7 @@ export default class AuditLogContext implements IAuditLogContext {
       const logs = entries.map((entry) => this.getLogFromEntry(data, entry));
       await ctx.models.auditLogModel.model.insertMany(logs);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
     }
   }
 

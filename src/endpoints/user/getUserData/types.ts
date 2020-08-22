@@ -4,6 +4,7 @@ import { Endpoint } from "../../types";
 
 export interface IGetUserDataResult {
   user: IUser;
+  clientId: string;
 }
 
 export type GetUserDataEndpoint = Endpoint<

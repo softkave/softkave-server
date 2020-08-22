@@ -26,16 +26,16 @@ const login: LoginEndpoint = async (context, instData) => {
 
       if (passwordMatch) {
         return {
+          clientId: getId(),
           user: getPublicUserData(userData),
           token: UserToken.newToken({
             user: userData,
             audience: [JWTEndpoints.Login],
-            clientId: getId(),
           }),
         };
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       // console.error(error);
 
       // TODO: find a better error type for this error

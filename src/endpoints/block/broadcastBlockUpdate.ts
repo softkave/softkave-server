@@ -2,6 +2,7 @@ import { BlockType, IBlock } from "../../mongo/block";
 import { IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { IBlockUpdatePacket, OutgoingSocketEvents } from "../socket/server";
+import { toPublicBlockData } from "./utils";
 
 const broadcastBlockUpdate = async (
   context: IBaseContext,
@@ -22,7 +23,13 @@ const broadcastBlockUpdate = async (
   const event = OutgoingSocketEvents.BlockUpdate;
 
   if (updateType.isNew || updateType.isUpdate) {
-    data.block = block;
+    // TODO: should we convert the blocks returned from the endpoints to public blocks?
+    // PRO: when we eventually implement REST API for the endpoints, it'll prevent
+    // the client having access to internal data
+    // CON: it may be slower, considering that graphql already kind of does this
+    // IDEA: maybe convert the REST version, and others, but leave the endpoints themselves
+    // clean
+    data.block = toPublicBlockData(block);
   }
 
   if (block.type === BlockType.Org) {
@@ -57,7 +64,6 @@ const broadcastBlockUpdate = async (
     const board = await context.block.getBlockById(context, block.parent);
     const roomName = context.room.getBlockRoomName(board);
     context.room.broadcast(context, roomName, event, data, instData);
-    console.dir({ block, board, roomName, data, event });
     return;
   }
 };

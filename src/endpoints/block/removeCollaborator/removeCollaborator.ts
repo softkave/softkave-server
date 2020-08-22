@@ -62,7 +62,7 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
     .saveNotification(context, notification)
     .catch((error) => {
       // TODO: should this be a fire and forget?
-      logger.error(error);
+      console.error(error);
     });
 };
 

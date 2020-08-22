@@ -59,7 +59,7 @@ export default class UpdateBlockContext extends BaseContext
         }))
       );
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -79,7 +79,7 @@ export default class UpdateBlockContext extends BaseContext
         }))
       );
     } catch (error) {
-      logger.error(error);
+      console.error(error);
 
       // TODO: how can we return the right error here, like "error updating affected tasks"
       // instead of just server error?

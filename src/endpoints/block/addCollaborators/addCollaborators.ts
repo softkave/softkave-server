@@ -8,6 +8,7 @@ import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { toPublicNotificationData } from "../../notification/utils";
 import {
   INewNotificationsPacket,
   OutgoingSocketEvents,
@@ -144,7 +145,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
   );
 
   const orgBroadcastPacket: INewNotificationsPacket = {
-    notifications: collaborationRequests,
+    notifications: collaborationRequests.map(toPublicNotificationData),
   };
 
   const blockRoomName = context.room.getBlockRoomName(block);

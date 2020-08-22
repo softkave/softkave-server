@@ -71,12 +71,13 @@ test("allow login if password is correct", async () => {
   const instData = getInstanceData();
   const user = await context.user.getUserByEmail(context, userEmail);
   const publicUserData = getPublicUserData(user);
+
+  // TODO: this will fail cause, no client id
   await expect(login(context, instData)).resolves.toMatchObject({
     user: publicUserData,
     token: UserToken.newToken({
       user,
       audience: [JWTEndpoints.Login],
-      clientId: getId(),
     }),
   });
 });

@@ -7,7 +7,6 @@ export interface IUserTokenSubject {
   id: string;
   email: string;
   passwordLastChangedAt: string;
-  clientId: string;
 }
 
 export interface IBaseUserTokenData {
@@ -21,7 +20,6 @@ export interface IBaseUserTokenData {
 export interface INewUserTokenParameters {
   user: IUser;
   audience: string[];
-  clientId: string;
   additionalData?: any;
   expires?: number;
 }
@@ -31,7 +29,6 @@ export default class UserToken {
     const subject: IUserTokenSubject = {
       id: p.user.customId,
       email: p.user.email,
-      clientId: p.clientId,
       passwordLastChangedAt: p.user.passwordLastChangedAt,
       ...p.additionalData,
     };

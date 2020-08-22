@@ -20,8 +20,9 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
+import logger from "./utilities/logger";
 
-console.log("server initialization");
+logger.info("server initialization");
 
 const connection = getDefaultConnection();
 const userModel = getUserModel();
@@ -96,7 +97,6 @@ app.use(
 // app.post("/upload", upload.array("files", 5), (req, res, next) => {
 //   // req.files is array of `photos` files
 //   // req.body will contain the text fields, if there were any
-//   console.dir({ req });
 // });
 
 app.use(
@@ -143,8 +143,37 @@ connection.wait().then(async () => {
   // scripts
 
   httpServer.listen(port, () => {
-    console.log(appInfo.appName);
-    console.log("server started");
-    console.log("port: " + port);
+    logger.info(appInfo.appName);
+    logger.info("server started");
+    logger.info("port: " + port);
   });
+});
+
+// TODO: consider converting the codebase to use 4 spaces for tab
+// for better readability
+
+process.on("uncaughtException", (exp, origin) => {
+  // TODO: we changed all logger.error to console.error because
+  // we were missing a lot of data, particularly the stack trace with
+  // logger.error. Maybe implement a fix for this in winston
+
+  // TODO: the stack trace attached to the error references the compiled
+  // .js code. How can we transform it to the .ts code, maybe using
+  // the source map?
+
+  // TODO: maybe do the same for the other logger methods, and remember
+  // to remove the outputCapture option in vscode's debug config
+
+  // TODO: the problem with using console instead of winston is
+  // that we may not be able to persist the logs, like in a db
+
+  // TODO: maybe implement a way for capturing the errors as is,
+  // and comparing it with what is logged to see how much data we're missing
+  console.error(exp);
+  logger.info(origin);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.info(promise);
+  logger.info(reason);
 });

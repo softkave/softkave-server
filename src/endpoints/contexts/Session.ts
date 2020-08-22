@@ -67,7 +67,7 @@ export default class SessionContext implements ISessionContext {
       const tokenData = UserToken.decodeToken(token);
       return tokenData;
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       const JWTError = resolveJWTError(error);
 
       if (JWTError) {
@@ -159,7 +159,7 @@ export default class SessionContext implements ISessionContext {
         .updateOne({ customId: user.customId }, partialUserData)
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }

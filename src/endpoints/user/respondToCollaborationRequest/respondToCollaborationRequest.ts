@@ -1,6 +1,7 @@
 import { CollaborationRequestStatusType } from "../../../mongo/notification";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { toPublicBlockData } from "../../block/utils";
 import { PermissionDeniedError } from "../../errors";
 import {
   IOrgCollaborationRequestResponsePacket,
@@ -110,7 +111,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
   const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
     customId: req.customId,
     response: data.response,
-    org: userAccepted ? ownerBlock : undefined,
+    org: userAccepted ? toPublicBlockData(ownerBlock) : undefined,
   };
 
   const userRoomName = context.room.getUserPersonalRoomName(user);

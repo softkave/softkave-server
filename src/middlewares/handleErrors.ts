@@ -32,7 +32,7 @@ function handleErrors(err: Error | any, req: Request, res: Response, next) {
     });
   }
 
-  logger.error(err);
+  console.error(err);
 }
 
 export default handleErrors;

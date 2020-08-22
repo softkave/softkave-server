@@ -71,10 +71,10 @@ async function deleteOrgCleanup(
 
   context.user
     .bulkUpdateUsersById(context, updates)
-    .catch((error) => logger.error(error));
+    .catch((error) => console.error(error));
   context.notification
     .bulkSaveNotifications(context, notifications)
-    .catch((error) => logger.error(error));
+    .catch((error) => console.error(error));
 }
 
 const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
@@ -82,6 +82,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
   const user = await context.session.getUser(context, instData);
   const block = await context.block.getBlockById(context, data.blockId);
 
+  // TODO: it's possible that block is already deleted
   await canReadBlock({ user, block });
   await context.block.markBlockDeleted(context, block.customId, user);
 
@@ -105,7 +106,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
 
   if (block.type === "org") {
     deleteOrgCleanup(context, instData, block).catch((error) =>
-      logger.error(error)
+      console.error(error)
     );
   }
 };
