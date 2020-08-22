@@ -7,8 +7,8 @@ export interface IComment {
   comment: string;
   createdBy: string;
   createdAt: Date;
-  updatedAt: Date;
-  updatedBy: string;
+  updatedAt?: Date;
+  updatedBy?: string;
   isDeleted?: boolean;
   deletedAt?: Date;
   deletedBy?: string;

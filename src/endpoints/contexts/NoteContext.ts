@@ -1,3 +1,4 @@
+import mongoConstants from "../../mongo/constants";
 import { INote } from "../../mongo/note";
 import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
@@ -109,6 +110,12 @@ export default class NoteContext implements INoteContext {
       return n;
     } catch (error) {
       console.error(error);
+
+      if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+        // TODO: Implement a way to get a new customId and retry
+        // throw new ServerError();
+      }
+
       throw new ServerError();
     }
   }

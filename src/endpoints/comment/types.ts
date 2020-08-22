@@ -7,3 +7,9 @@ export interface IPublicCommentData {
   updatedAt: Date;
   updatedBy: string;
 }
+
+export interface INewCommentInput {
+  customId: string;
+  taskId: string;
+  comment: string;
+}

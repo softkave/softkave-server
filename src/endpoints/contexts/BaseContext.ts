@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
+import { getCommentModel } from "../../mongo/comment";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
@@ -12,6 +13,7 @@ import {
   getBroadcastHistoryContext,
   IBroadcastHistoryContext,
 } from "./BroadcastHistoryContext";
+import { getCommentContext, ICommentContext } from "./CommentContext";
 import { getNoteContext, INoteContext } from "./NoteContext";
 import {
   getNotificationContext,
@@ -35,6 +37,7 @@ export interface IBaseContext {
   broadcastHistory: IBroadcastHistoryContext;
   models: IContextModels;
   socketServer: Server;
+  comment: ICommentContext;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -53,8 +56,10 @@ export default class BaseContext implements IBaseContext {
     notificationModel: getNotificationModel(),
     auditLogModel: getAuditLogModel(),
     noteModel: getNoteModel(),
+    commentModel: getCommentModel(),
   };
   public socketServer: Server = getSocketServer();
+  public comment = getCommentContext();
 }
 
 export const getBaseContext = createSingletonFunc(() => new BaseContext());

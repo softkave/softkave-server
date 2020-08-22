@@ -110,6 +110,8 @@ export default class UserContext implements IUserContext {
       await userDoc.save();
       return userDoc;
     } catch (error) {
+      logger.error(error);
+
       // Adding a user fails with code 11000 if unique fields in this case email or customId exists
       if (error.code === mongoConstants.indexNotUniqueErrorCode) {
         // TODO: Implement a way to get a new customId and retry
