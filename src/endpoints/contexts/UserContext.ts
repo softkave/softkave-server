@@ -48,7 +48,7 @@ export default class UserContext implements IUserContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -62,7 +62,7 @@ export default class UserContext implements IUserContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -88,7 +88,7 @@ export default class UserContext implements IUserContext {
         await ctx.models.userModel.model.updateOne({ customId }, data).exec();
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -99,7 +99,7 @@ export default class UserContext implements IUserContext {
         .find({ customId: { $in: ids } })
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -118,6 +118,7 @@ export default class UserContext implements IUserContext {
         throw new ServerError();
       }
 
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -126,7 +127,7 @@ export default class UserContext implements IUserContext {
     try {
       return await ctx.models.userModel.model.exists({ email });
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -138,7 +139,7 @@ export default class UserContext implements IUserContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -155,7 +156,7 @@ export default class UserContext implements IUserContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -169,7 +170,7 @@ export default class UserContext implements IUserContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -185,7 +186,7 @@ export default class UserContext implements IUserContext {
 
       await ctx.models.userModel.model.bulkWrite(opts);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }

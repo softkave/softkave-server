@@ -1,5 +1,5 @@
 import bodyParser from "body-parser";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
@@ -20,8 +20,9 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./res/appInfo";
+import logger from "./utilities/logger";
 
-console.log("server initialization");
+logger.info("server initialization");
 
 const connection = getDefaultConnection();
 const userModel = getUserModel();
@@ -36,24 +37,20 @@ if (!JWT_SECRET) {
 }
 
 const app = express();
-const httpServer = http.createServer(app);
-const io = socketio(httpServer);
-setupSocketServer(io);
-
 const port = process.env.PORT || 5000;
 
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
-let graphiql = false;
+const graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
   whiteListedCorsOrigins.push(/localhost/);
-  graphiql = true;
 }
 
-const corsOption = {
+const corsOption: CorsOptions = {
   origin: whiteListedCorsOrigins,
   optionsSuccessStatus: 200,
+  credentials: true,
 };
 
 if (process.env.NODE_ENV === "production") {
@@ -61,6 +58,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use(cors(corsOption));
+
 app.use(
   expressJwt({
     secret: JWT_SECRET,
@@ -99,7 +97,6 @@ app.use(
 // app.post("/upload", upload.array("files", 5), (req, res, next) => {
 //   // req.files is array of `photos` files
 //   // req.body will contain the text fields, if there were any
-//   console.dir({ req });
 // });
 
 app.use(
@@ -117,6 +114,23 @@ app.use(
   })
 );
 
+const httpServer = http.createServer(app);
+const io = socketio(httpServer, {
+  path: "/socket",
+  serveClient: false,
+  handlePreflightRequest: (server, req, res) => {
+    const headers = {
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Origin": req.headers.origin, // or the specific origin you want to give access to,
+      "Access-Control-Allow-Credentials": "true",
+    };
+    res.writeHead(200, headers);
+    res.end();
+  },
+});
+
+setupSocketServer(io);
+
 app.use(handleErrors);
 
 connection.wait().then(async () => {
@@ -128,9 +142,38 @@ connection.wait().then(async () => {
 
   // scripts
 
-  app.listen(port, () => {
-    console.log(appInfo.appName);
-    console.log("server started");
-    console.log("port: " + port);
+  httpServer.listen(port, () => {
+    logger.info(appInfo.appName);
+    logger.info("server started");
+    logger.info("port: " + port);
   });
+});
+
+// TODO: consider converting the codebase to use 4 spaces for tab
+// for better readability
+
+process.on("uncaughtException", (exp, origin) => {
+  // TODO: we changed all logger.error to console.error because
+  // we were missing a lot of data, particularly the stack trace with
+  // logger.error. Maybe implement a fix for this in winston
+
+  // TODO: the stack trace attached to the error references the compiled
+  // .js code. How can we transform it to the .ts code, maybe using
+  // the source map?
+
+  // TODO: maybe do the same for the other logger methods, and remember
+  // to remove the outputCapture option in vscode's debug config
+
+  // TODO: the problem with using console instead of winston is
+  // that we may not be able to persist the logs, like in a db
+
+  // TODO: maybe implement a way for capturing the errors as is,
+  // and comparing it with what is logged to see how much data we're missing
+  console.error(exp);
+  logger.info(origin);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.info(promise);
+  logger.info(reason);
 });

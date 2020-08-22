@@ -7,10 +7,7 @@ const userSchema = `
     customId: String
     name: String
     email: String
-    hash: String
     createdAt: String
-    forgotPasswordHistory: [String]
-    passwordLastChangedAt: String
     rootBlockId: String
     orgs: [UserOrg]
     color: String
@@ -33,6 +30,7 @@ const userSchema = `
   type UserQueryResult {
     user: User
     token: String
+    clientId: String
     errors: [Error]
   }
 

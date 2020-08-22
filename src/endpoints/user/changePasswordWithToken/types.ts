@@ -1,21 +1,19 @@
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../contexts/RequestData";
 import { Endpoint } from "../../types";
-import {
-  IChangePasswordParameters,
-  IChangePasswordResult,
-} from "../changePassword/types";
+import { IChangePasswordParameters } from "../changePassword/types";
+import { ILoginResult } from "../login/types";
 import ChangePasswordWithTokenContext from "./context";
 
 export interface IChangePasswordWithTokenContext extends IBaseContext {
   changePassword: (
     context: BaseContext,
     instData: RequestData<IChangePasswordParameters>
-  ) => Promise<IChangePasswordResult>;
+  ) => Promise<ILoginResult>;
 }
 
 export type ChangePasswordWithTokenEndpoint = Endpoint<
   ChangePasswordWithTokenContext,
   IChangePasswordParameters,
-  IChangePasswordResult
+  ILoginResult
 >;

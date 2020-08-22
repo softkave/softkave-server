@@ -8,6 +8,7 @@ import { IUser } from "../../../mongo/user";
 import appInfo from "../../../res/appInfo";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { toPublicNotificationData } from "../../notification/utils";
 import {
   INewNotificationsPacket,
   OutgoingSocketEvents,
@@ -143,17 +144,17 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     collaborationRequests
   );
 
-  const orgBroadcastPacket: INewNotificationsPacket = {
-    notifications: collaborationRequests,
-  };
+  // const orgBroadcastPacket: INewNotificationsPacket = {
+  //   notifications: collaborationRequests.map(toPublicNotificationData),
+  // };
 
-  const blockRoomName = context.room.getBlockRoomName(block);
-  context.room.broadcast(
-    context,
-    blockRoomName,
-    OutgoingSocketEvents.OrgNewNotifications,
-    orgBroadcastPacket
-  );
+  // const blockRoomName = context.room.getBlockRoomName(block);
+  // context.room.broadcast(
+  //   context,
+  //   blockRoomName,
+  //   OutgoingSocketEvents.OrgNewNotifications,
+  //   orgBroadcastPacket
+  // );
 
   existingUsers.forEach((existingUser) => {
     // TODO: implement a way to know if the user is logged in, then send notification

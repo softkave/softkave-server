@@ -101,6 +101,12 @@ async function processBoardStatusChanges(
     }
   });
 
+  if (deletedStatusIdsWithReplacement.length === 0) {
+    // TODO: there will be empty status updates in the audit log table
+    // write a script to delete them
+    return;
+  }
+
   // TODO: how should we handle if this fails?
   // if it fails, the status will be incorrect, maybe change in client-side
   // TODO: maybe wite a cron job to clean things up

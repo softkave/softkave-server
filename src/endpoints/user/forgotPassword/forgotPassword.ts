@@ -1,4 +1,5 @@
 import moment = require("moment");
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { UserDoesNotExistError } from "../errors";

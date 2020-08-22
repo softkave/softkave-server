@@ -62,7 +62,7 @@ export default class BlockContext implements IBlockContext {
         .lean()
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -76,7 +76,7 @@ export default class BlockContext implements IBlockContext {
 
       return await ctx.models.blockModel.model.find(query).exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -106,7 +106,7 @@ export default class BlockContext implements IBlockContext {
           .exec();
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -125,7 +125,7 @@ export default class BlockContext implements IBlockContext {
 
       await ctx.models.blockModel.model.bulkWrite(opts);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -139,7 +139,7 @@ export default class BlockContext implements IBlockContext {
         })
         .exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -159,6 +159,7 @@ export default class BlockContext implements IBlockContext {
         throw new ServerError();
       }
 
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -178,7 +179,7 @@ export default class BlockContext implements IBlockContext {
       await ctx.models.blockModel.model.updateOne({ customId }, update).exec();
       await ctx.block.markBlockChildrenDeleted(ctx, customId, user);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -202,7 +203,7 @@ export default class BlockContext implements IBlockContext {
 
       return blocks;
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -236,7 +237,7 @@ export default class BlockContext implements IBlockContext {
           })
       );
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }
@@ -253,7 +254,7 @@ export default class BlockContext implements IBlockContext {
 
       return await ctx.models.blockModel.model.find(query).lean().exec();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new ServerError();
     }
   }

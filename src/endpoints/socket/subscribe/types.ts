@@ -4,7 +4,7 @@ import { Endpoint } from "../../types";
 
 export interface ISubscribeParameters {
   type: AuditLogResourceType;
-  id: string;
+  customId: string;
 }
 
 export type SubscribeEndpoint = Endpoint<IBaseContext, ISubscribeParameters>;

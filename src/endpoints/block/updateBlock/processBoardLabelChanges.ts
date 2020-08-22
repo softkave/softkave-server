@@ -94,6 +94,14 @@ async function processBoardLabelChanges(
     }
   });
 
+  if (deletedLabelIds.length === 0) {
+    // TODO: there will be empty label updates in the audit log table
+    // write a script to delete them
+
+    // TODO: do this for all bulk update items
+    return;
+  }
+
   // TODO: how should we handle if this fails?
   // if it fails, the task will contain labels that have been deleted, maybe change in client-side
   // TODO: maybe wite a cron job to clean things up

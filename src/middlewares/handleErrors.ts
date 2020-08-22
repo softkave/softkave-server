@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-
 import multer from "multer";
 import {
   CredentialsExpiredError,
@@ -33,7 +32,7 @@ function handleErrors(err: Error | any, req: Request, res: Response, next) {
     });
   }
 
-  logger.error(err);
+  console.error(err);
 }
 
 export default handleErrors;

@@ -4,6 +4,7 @@ import {
   ICreateRootBlockContext,
 } from "../../block/createRootBlock/types";
 import { Endpoint } from "../../types";
+import { ILoginResult } from "../login/types";
 import { UserExistsEndpoint } from "../userExists/types";
 
 export interface INewUserInput {
@@ -22,13 +23,8 @@ export interface ISignupContext extends ICreateRootBlockContext {
   createUserRootBlock: CreateRootBlockEndpoint;
 }
 
-export interface ISignupResult {
-  user: IUser;
-  token: string;
-}
-
 export type SignupEndpoint = Endpoint<
   ISignupContext,
   ISignupArgData,
-  ISignupResult
+  ILoginResult
 >;

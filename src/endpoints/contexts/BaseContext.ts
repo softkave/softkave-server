@@ -9,6 +9,10 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
+import {
+  getBroadcastHistoryContext,
+  IBroadcastHistoryContext,
+} from "./BroadcastHistoryContext";
 import { getCommentContext, ICommentContext } from "./CommentContext";
 import { getNoteContext, INoteContext } from "./NoteContext";
 import {
@@ -30,6 +34,7 @@ export interface IBaseContext {
   note: INoteContext;
   socket: ISocketContext;
   room: IRoomContext;
+  broadcastHistory: IBroadcastHistoryContext;
   models: IContextModels;
   socketServer: Server;
   comment: ICommentContext;
@@ -44,6 +49,7 @@ export default class BaseContext implements IBaseContext {
   public note: INoteContext = getNoteContext();
   public socket: ISocketContext = getSocketContext();
   public room: IRoomContext = getRoomContext();
+  public broadcastHistory = getBroadcastHistoryContext();
   public models: IContextModels = {
     userModel: getUserModel(),
     blockModel: getBlockModel(),

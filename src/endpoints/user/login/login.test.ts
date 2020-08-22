@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
+import getId from "../../../utilities/getId";
 import { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../contexts/RequestData";
 import { JWTEndpoints } from "../../utils";
@@ -70,6 +71,8 @@ test("allow login if password is correct", async () => {
   const instData = getInstanceData();
   const user = await context.user.getUserByEmail(context, userEmail);
   const publicUserData = getPublicUserData(user);
+
+  // TODO: this will fail cause, no client id
   await expect(login(context, instData)).resolves.toMatchObject({
     user: publicUserData,
     token: UserToken.newToken({

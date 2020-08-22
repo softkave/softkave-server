@@ -4,9 +4,9 @@ import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { blockConstants } from "./constants";
 
 const taskCollaboratorSchema = Joi.object().keys({
-  userId: validationSchemas.uuid,
-  assignedBy: validationSchemas.uuid,
-  assignedAt: Joi.date(),
+  userId: validationSchemas.uuid.required(),
+  assignedBy: validationSchemas.uuid.required(),
+  assignedAt: Joi.date().required(),
 });
 
 const taskCollaboratorsListSchema = Joi.array()
@@ -35,8 +35,8 @@ const subTasksSchema = Joi.object().keys({
     .required(),
   completedBy: Joi.string().uuid().allow(null),
   completedAt: Joi.date().allow(null),
-  createdAt: Joi.date(),
-  createdBy: Joi.string().uuid(),
+  createdAt: Joi.date().required(),
+  createdBy: Joi.string().uuid().required(),
   updatedAt: Joi.date().allow(null),
   updatedBy: Joi.string().uuid().allow(null),
 });
@@ -56,8 +56,8 @@ const labelSchema = Joi.object().keys({
     .trim()
     .max(blockConstants.maxLabelDescriptionLength)
     .optional(),
-  createdAt: Joi.date(),
-  createdBy: Joi.string().uuid(),
+  createdAt: Joi.date().required(),
+  createdBy: Joi.string().uuid().required(),
   updatedAt: Joi.date().allow(null),
   updatedBy: Joi.string().uuid().allow(null),
 });
@@ -76,8 +76,8 @@ const statusSchema = Joi.object().keys({
     .trim()
     .max(blockConstants.maxLabelDescriptionLength)
     .optional(),
-  createdAt: Joi.date(),
-  createdBy: Joi.string().uuid().allow("system"), // TODO: find a fix. allowing system can be exploited
+  createdAt: Joi.date().required(),
+  createdBy: Joi.string().uuid().allow("system").required(), // TODO: find a fix. allowing system can be exploited
   updatedAt: Joi.date().allow(null),
   updatedBy: Joi.string().uuid().allow(null),
 });

@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
+import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { JWTEndpoints } from "../../utils";
@@ -25,6 +26,7 @@ const login: LoginEndpoint = async (context, instData) => {
 
       if (passwordMatch) {
         return {
+          clientId: getId(),
           user: getPublicUserData(userData),
           token: UserToken.newToken({
             user: userData,
@@ -33,7 +35,7 @@ const login: LoginEndpoint = async (context, instData) => {
         };
       }
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       // console.error(error);
 
       // TODO: find a better error type for this error

@@ -41,7 +41,7 @@ export default class UserToken {
 
     if (p.expires) {
       // @ts-ignore
-      payload.exp = p.expires / 1000;
+      payload.exp = p.expires / 1000; // exp is in seconds
     }
 
     return jwt.sign(payload, process.env.JWT_SECRET);
@@ -63,7 +63,10 @@ export default class UserToken {
   }
 
   public static checkVersion(tokenData: IBaseUserTokenData) {
-    if (!tokenData.version) {
+    if (
+      !tokenData.version ||
+      tokenData.version !== userConstants.currentTokenVersion
+    ) {
       throw new LoginAgainError();
     }
   }

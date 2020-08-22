@@ -5,6 +5,7 @@ export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
     return await endpoint(data, req);
   } catch (error) {
     const errors = Array.isArray(error) ? error : [error];
+    console.error(error);
     return {
       errors: errors.map((err) => ({
         name: err.name,
@@ -23,7 +24,7 @@ export const fireAndForgetFn = async <Fn extends (...args: any) => any>(
   try {
     return await fn(...args);
   } catch (error) {
-    logger.error(error);
+    console.error(error);
   }
 };
 
@@ -31,7 +32,7 @@ export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
   try {
     return await promise;
   } catch (error) {
-    logger.error(error);
+    console.error(error);
   }
 };
 

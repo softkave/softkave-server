@@ -1,14 +1,15 @@
 import { Server, Socket } from "socket.io";
-import getUserFromRequest, {
-  validateUserToken,
-} from "../../middlewares/getUserFromRequest";
 import { IBlock } from "../../mongo/block";
 import { INotification } from "../../mongo/notification";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
+import { IPublicBlock } from "../block/types";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
+import { IPublicNotificationData } from "../notification/types";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
+import { JWTEndpoints } from "../utils";
+import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
 
@@ -31,20 +32,26 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
     IncomingSocketEvents.Auth,
     async (data: IIncomingAuthPacket, fn) => {
       try {
-        const user = await validateUserToken(
-          data.token,
-          ctx.models.userModel,
-          true
+        const tokenData = await ctx.session.validateUserToken(ctx, data.token);
+        const user = await ctx.session.validateUserTokenData(
+          ctx,
+          tokenData,
+          true,
+          JWTEndpoints.Login
         );
+
         ctx.socket.mapUserToSocketId(
-          RequestData.fromSocketRequest(socket),
+          RequestData.fromSocketRequest(socket, null, tokenData, data.clientId),
           user
         );
-        const result: IOutgoingAuthPacket = { valid: true };
+
+        const result: IOutgoingAuthPacket = {
+          valid: true,
+        };
         fn(result);
       } catch (error) {
         const result: IOutgoingAuthPacket = { valid: false };
-        logger.error(error);
+        console.error(error);
         fn(result);
         socket.disconnect();
       }
@@ -52,28 +59,51 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
   );
 
   socket.on("disconnect", () => {
-    onDisconnect(ctx, socket);
+    try {
+      onDisconnect(ctx, socket);
+    } catch (err) {
+      console.error(err);
+    }
   });
 
   socket.on(IncomingSocketEvents.Subscribe, (data) => {
-    subscribe(getBaseContext(), data);
+    try {
+      subscribe(getBaseContext(), RequestData.fromSocketRequest(socket, data));
+    } catch (error) {
+      // TODO: improve error handling and send the error back to the clients
+      console.error(error);
+    }
   });
 
   socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
-    unsubscribe(getBaseContext(), data);
+    try {
+      unsubscribe(
+        getBaseContext(),
+        RequestData.fromSocketRequest(socket, data)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  socket.on(IncomingSocketEvents.FetchMissingBroadcasts, (data) => {
+    try {
+      fetchBroadcasts(
+        getBaseContext(),
+        RequestData.fromSocketRequest(socket, data)
+      );
+    } catch (error) {
+      console.error(error);
+    }
   });
 }
 
 async function onDisconnect(ctx: IBaseContext, socket: Socket) {
+  // TODO: leave all the rooms the socket was a part of
   try {
-    const user = await getUserFromRequest({
-      req: socket.request,
-      userModel: ctx.models.userModel,
-    });
-
     ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
   } catch (error) {
-    logger.error(error);
+    console.error(error);
   }
 }
 
@@ -98,6 +128,7 @@ enum IncomingSocketEvents {
   Subscribe = "subscribe",
   Unsubscribe = "unsubscribe",
   Auth = "auth",
+  FetchMissingBroadcasts = "fetchMissingBroadcasts",
 }
 
 export enum OutgoingSocketEvents {
@@ -108,11 +139,11 @@ export enum OutgoingSocketEvents {
   UpdateNotification = "updateNotification",
   UserCollaborationRequestResponse = "userCollabReqResponse",
   OrgCollaborationRequestResponse = "orgCollabReqResponse",
-  BoardUpdate = "boardUpdate",
 }
 
 export interface IIncomingAuthPacket {
   token: string;
+  clientId: string;
 }
 
 export interface IOutgoingAuthPacket {
@@ -124,11 +155,11 @@ export interface IBlockUpdatePacket {
   isNew?: boolean;
   isUpdate?: boolean;
   isDelete?: boolean;
-  block?: Partial<IBlock>;
+  block?: Partial<IPublicBlock>;
 }
 
 export interface INewNotificationsPacket {
-  notifications: INotification[];
+  notifications: IPublicNotificationData[];
 }
 
 export interface IUserUpdatePacket {
@@ -143,13 +174,10 @@ export interface IUpdateNotificationPacket {
 export interface IUserCollaborationRequestResponsePacket {
   customId: string;
   response: CollaborationRequestResponse;
-  org?: IBlock;
+  org?: IPublicBlock;
 }
 
 export interface IOrgCollaborationRequestResponsePacket {
   customId: string;
   response: CollaborationRequestResponse;
 }
-
-// tslint:disable-next-line: no-empty-interface
-export interface IBoardUpdatePacket {}
