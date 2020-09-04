@@ -7,7 +7,7 @@ export interface IChat {
     message: string;
     sender: string;
     recipient: string;
-    createdAt: Date;
+    createdAt?: Date;
     updatedAt?: Date;
 }
 

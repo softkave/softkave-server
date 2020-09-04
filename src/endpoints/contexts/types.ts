@@ -6,6 +6,7 @@ import { INoteModel } from "../../mongo/note";
 import { INotificationModel } from "../../mongo/notification";
 import { IUser, IUserModel } from "../../mongo/user";
 import { IBaseUserTokenData } from "../user/UserToken";
+import {IChatModel} from "../../mongo/chat"
 
 export interface IContextModels {
   userModel: IUserModel;
@@ -14,6 +15,7 @@ export interface IContextModels {
   auditLogModel: IAuditLogModel;
   noteModel: INoteModel;
   commentModel: ICommentModel;
+  chatModel: IChatModel;
 }
 
 export interface IServerRequest extends Request {
