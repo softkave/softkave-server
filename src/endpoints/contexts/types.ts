@@ -7,6 +7,7 @@ import { INotificationModel } from "../../mongo/notification";
 import { IUser, IUserModel } from "../../mongo/user";
 import { IBaseUserTokenData } from "../user/UserToken";
 import {IChatModel} from "../../mongo/chat"
+import { IGroupModel } from "../../mongo/group";
 
 export interface IContextModels {
   userModel: IUserModel;
@@ -16,6 +17,7 @@ export interface IContextModels {
   noteModel: INoteModel;
   commentModel: ICommentModel;
   chatModel: IChatModel;
+  groupModel: IGroupModel;
 }
 
 export interface IServerRequest extends Request {

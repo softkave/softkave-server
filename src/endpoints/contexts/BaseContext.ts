@@ -3,6 +3,7 @@ import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCommentModel } from "../../mongo/comment";
+import { getGroupModel } from "../../mongo/group";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";
@@ -61,6 +62,7 @@ export default class BaseContext implements IBaseContext {
         noteModel: getNoteModel(),
         commentModel: getCommentModel(),
         chatModel: getChatModel(),
+        groupModel: getGroupModel()
     };
     public socketServer: Server = getSocketServer();
     public comment = getCommentContext();
