@@ -12,6 +12,8 @@ import { JWTEndpoints } from "../utils";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
+import getPrivateChatList from "../chat/getChatList/getChatList";
+import getGroupChatList from "../chat/getGroupList/getGroupList";
 
 // REMINDER
 // The current implementation authenticates once, then accepts all other requests
@@ -28,156 +30,195 @@ import unsubscribe from "./unsubscribe/unsubscribe";
 // TODO: disconnect sockets that don't auth in 5 minutes
 
 async function onConnection(ctx: IBaseContext, socket: Socket) {
-  socket.on(
-    IncomingSocketEvents.Auth,
-    async (data: IIncomingAuthPacket, fn) => {
-      try {
-        const tokenData = await ctx.session.validateUserToken(ctx, data.token);
-        const user = await ctx.session.validateUserTokenData(
-          ctx,
-          tokenData,
-          true,
-          JWTEndpoints.Login
-        );
+    socket.on(
+        IncomingSocketEvents.Auth,
+        async (data: IIncomingAuthPacket, fn) => {
+            try {
+                const tokenData = await ctx.session.validateUserToken(
+                    ctx,
+                    data.token
+                );
+                const user = await ctx.session.validateUserTokenData(
+                    ctx,
+                    tokenData,
+                    true,
+                    JWTEndpoints.Login
+                );
 
-        ctx.socket.mapUserToSocketId(
-          RequestData.fromSocketRequest(socket, null, tokenData, data.clientId),
-          user
-        );
+                ctx.socket.mapUserToSocketId(
+                    RequestData.fromSocketRequest(
+                        socket,
+                        null,
+                        tokenData,
+                        data.clientId
+                    ),
+                    user
+                );
 
-        const result: IOutgoingAuthPacket = {
-          valid: true,
-        };
-        fn(result);
-      } catch (error) {
-        const result: IOutgoingAuthPacket = { valid: false };
-        console.error(error);
-        fn(result);
-        socket.disconnect();
-      }
-    }
-  );
+                const result: IOutgoingAuthPacket = {
+                    valid: true,
+                };
+                fn(result);
+            } catch (error) {
+                const result: IOutgoingAuthPacket = { valid: false };
+                console.error(error);
+                fn(result);
+                socket.disconnect();
+            }
+        }
+    );
 
-  socket.on("disconnect", () => {
-    try {
-      onDisconnect(ctx, socket);
-    } catch (err) {
-      console.error(err);
-    }
-  });
+    socket.on("disconnect", () => {
+        try {
+            onDisconnect(ctx, socket);
+        } catch (err) {
+            console.error(err);
+        }
+    });
 
-  socket.on(IncomingSocketEvents.Subscribe, (data) => {
-    try {
-      subscribe(getBaseContext(), RequestData.fromSocketRequest(socket, data));
-    } catch (error) {
-      // TODO: improve error handling and send the error back to the clients
-      console.error(error);
-    }
-  });
+    socket.on(IncomingSocketEvents.Subscribe, (data) => {
+        try {
+            subscribe(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+        } catch (error) {
+            // TODO: improve error handling and send the error back to the clients
+            console.error(error);
+        }
+    });
 
-  socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
-    try {
-      unsubscribe(
-        getBaseContext(),
-        RequestData.fromSocketRequest(socket, data)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  });
+    socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
+        try {
+            unsubscribe(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
-  socket.on(IncomingSocketEvents.FetchMissingBroadcasts, (data) => {
-    try {
-      fetchBroadcasts(
-        getBaseContext(),
-        RequestData.fromSocketRequest(socket, data)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  });
+    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, (data) => {
+        try {
+            fetchBroadcasts(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    socket.on("private-chat-list", (data) => {
+        try {
+            getPrivateChatList(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+            /**
+             * How do i emit the response back to the client
+             */
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    socket.on("group-chat-list", (data) => {
+        try {
+            getGroupChatList(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+            /**
+             * How do i emit the response back to the client
+             */
+        } catch (error) {
+            console.error(error);
+        }
+    });
 }
 
 async function onDisconnect(ctx: IBaseContext, socket: Socket) {
-  // TODO: leave all the rooms the socket was a part of
-  try {
-    ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
-  } catch (error) {
-    console.error(error);
-  }
+    // TODO: leave all the rooms the socket was a part of
+    try {
+        ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 let socketServer: Server = null;
 
 export function setupSocketServer(io: Server) {
-  socketServer = io;
-  io.on("connection", (socket) => {
-    onConnection(getBaseContext(), socket);
-  });
+    socketServer = io;
+    io.on("connection", (socket) => {
+        onConnection(getBaseContext(), socket);
+    });
 }
 
 export function getSocketServer() {
-  if (!socketServer) {
-    throw new ServerError();
-  }
+    if (!socketServer) {
+        throw new ServerError();
+    }
 
-  return socketServer;
+    return socketServer;
 }
 
 enum IncomingSocketEvents {
-  Subscribe = "subscribe",
-  Unsubscribe = "unsubscribe",
-  Auth = "auth",
-  FetchMissingBroadcasts = "fetchMissingBroadcasts",
+    Subscribe = "subscribe",
+    Unsubscribe = "unsubscribe",
+    Auth = "auth",
+    FetchMissingBroadcasts = "fetchMissingBroadcasts",
 }
 
 export enum OutgoingSocketEvents {
-  BlockUpdate = "blockUpdate",
-  OrgNewNotifications = "orgNewNotifications",
-  UserNewNotifications = "userNewNotifications",
-  UserUpdate = "userUpdate",
-  UpdateNotification = "updateNotification",
-  UserCollaborationRequestResponse = "userCollabReqResponse",
-  OrgCollaborationRequestResponse = "orgCollabReqResponse",
+    BlockUpdate = "blockUpdate",
+    OrgNewNotifications = "orgNewNotifications",
+    UserNewNotifications = "userNewNotifications",
+    UserUpdate = "userUpdate",
+    UpdateNotification = "updateNotification",
+    UserCollaborationRequestResponse = "userCollabReqResponse",
+    OrgCollaborationRequestResponse = "orgCollabReqResponse",
 }
 
 export interface IIncomingAuthPacket {
-  token: string;
-  clientId: string;
+    token: string;
+    clientId: string;
 }
 
 export interface IOutgoingAuthPacket {
-  valid: boolean;
+    valid: boolean;
 }
 
 export interface IBlockUpdatePacket {
-  customId: string;
-  isNew?: boolean;
-  isUpdate?: boolean;
-  isDelete?: boolean;
-  block?: Partial<IPublicBlock>;
+    customId: string;
+    isNew?: boolean;
+    isUpdate?: boolean;
+    isDelete?: boolean;
+    block?: Partial<IPublicBlock>;
 }
 
 export interface INewNotificationsPacket {
-  notifications: IPublicNotificationData[];
+    notifications: IPublicNotificationData[];
 }
 
 export interface IUserUpdatePacket {
-  notificationsLastCheckedAt: string;
+    notificationsLastCheckedAt: string;
 }
 
 export interface IUpdateNotificationPacket {
-  customId: string;
-  data: { readAt: string };
+    customId: string;
+    data: { readAt: string };
 }
 
 export interface IUserCollaborationRequestResponsePacket {
-  customId: string;
-  response: CollaborationRequestResponse;
-  org?: IPublicBlock;
+    customId: string;
+    response: CollaborationRequestResponse;
+    org?: IPublicBlock;
 }
 
 export interface IOrgCollaborationRequestResponsePacket {
-  customId: string;
-  response: CollaborationRequestResponse;
+    customId: string;
+    response: CollaborationRequestResponse;
 }

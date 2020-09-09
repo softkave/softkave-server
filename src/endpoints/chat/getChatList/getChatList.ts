@@ -2,7 +2,7 @@ import { validate } from "../../../utilities/joiUtils";
 import chatValidationSchemas from "../validations";
 import { PrivateChatListEndpoint } from "./types";
 
-const getChatList: PrivateChatListEndpoint = async (context, instData) => {
+const getPrivateChatList: PrivateChatListEndpoint = async (context, instData) => {
     const data = validate(instData.data, chatValidationSchemas.privateChatList);
     // await context.session.assertUser(context, instData);
     context.socket.assertSocket(instData);
@@ -10,4 +10,4 @@ const getChatList: PrivateChatListEndpoint = async (context, instData) => {
     return await context.chat.getPrivateChatList(context, data);
 };
 
-export default getChatList;
+export default getPrivateChatList;
