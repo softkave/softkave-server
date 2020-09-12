@@ -128,6 +128,7 @@ const resolutionListSchema = Joi.array()
     .when("type", {
         is: BlockType.Board,
         then: Joi.required(),
+        otherwise: Joi.allow(null),
     });
 
 const blockTypesSchema = Joi.array()
@@ -136,7 +137,16 @@ const blockTypesSchema = Joi.array()
     .items(userUpdateableblockTypeSchema);
 
 const blockId = validationSchemas.uuid;
+
 const name = Joi.string().trim().max(blockConstants.maxNameLength);
+
+const updateBlockName = name.when("type", {
+    is: Joi.string().valid([BlockType.Task] as BlockType[]),
+    then: Joi.allow(null),
+    otherwise: Joi.required(),
+});
+
+const newBlockOriginalName = name.required();
 
 const lowerCasedName = name.lowercase();
 
@@ -144,10 +154,6 @@ const description = Joi.string()
     .allow("")
     .max(blockConstants.maxDescriptionLength)
     .trim();
-// .when("type", {
-//   is: BlockType.Task,
-//   then: Joi.required(),
-// });
 
 const updateDescription = Joi.string()
     .allow("")
@@ -196,10 +202,11 @@ const statusAssignedBy = validationSchemas.uuid.allow("system").when("type", {
 const taskStatusSchema = validationSchemas.uuid.when("type", {
     is: BlockType.Task,
     then: Joi.required(),
+    otherwise: Joi.allow(null),
 });
 
 const newBlock = Joi.object().keys({
-    name: name.required(),
+    name: newBlockOriginalName,
     description,
     dueAt,
     color,
@@ -224,11 +231,10 @@ const newBlock = Joi.object().keys({
 });
 
 const blockValidationSchemas = {
-    name,
+    updateBlockName,
     lowerCasedName,
     blockId,
     dueAt,
-    description,
     createdAt,
     color,
     createdBy,
@@ -252,6 +258,8 @@ const blockValidationSchemas = {
     statusAssignedBy,
     resolutionSchema,
     resolutionListSchema,
+    boardResolutions: resolutionListSchema,
+    taskResolution: taskStatusSchema,
 };
 
 export default blockValidationSchemas;
