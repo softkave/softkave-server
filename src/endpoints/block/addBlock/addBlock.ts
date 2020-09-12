@@ -1,8 +1,9 @@
 import {
-  AuditLogActionType,
-  AuditLogResourceType,
+    AuditLogActionType,
+    AuditLogResourceType,
 } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
+import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
@@ -12,87 +13,87 @@ import blockValidationSchemas from "../validation";
 import { AddBlockEndpoint } from "./types";
 
 const addBlock: AddBlockEndpoint = async (context, instData) => {
-  const data = validate(instData.data.block, blockValidationSchemas.newBlock);
-  const newBlock = data;
-  const user = await context.session.getUser(context, instData);
+    const data = validate(instData.data.block, blockValidationSchemas.newBlock);
+    const newBlock = data;
+    const user = await context.session.getUser(context, instData);
 
-  if (newBlock.type === "org") {
-    const orgSaveResult = await context.addBlock(context, {
-      ...instData,
-      data: { block: data },
+    if (newBlock.type === BlockType.Org) {
+        const orgSaveResult = await context.addBlock(context, {
+            ...instData,
+            data: { block: data },
+        });
+
+        const org = orgSaveResult.block;
+
+        // TODO: scrub for orgs that are not added to user and add or clean them
+        //    you can do this when user tries to read them, or add them again
+        // TODO: scrub all data that failed it's pipeline
+
+        const userOrgs = user.orgs.concat({ customId: org.customId });
+        await context.session.updateUser(context, instData, {
+            orgs: userOrgs,
+        });
+
+        context.auditLog.insert(context, instData, {
+            action: AuditLogActionType.Create,
+            resourceId: org.customId,
+            resourceType: AuditLogResourceType.Org,
+            organizationId: org.customId,
+        });
+
+        fireAndForgetPromise(
+            broadcastBlockUpdate(
+                context,
+                instData,
+                org.customId,
+                { isNew: true },
+                org,
+                org
+            )
+        );
+
+        return {
+            block: org,
+        };
+    }
+
+    const rootParent = await context.block.getBlockById(
+        context,
+        newBlock.rootBlockId
+    );
+
+    await canReadBlock({ user, block: rootParent });
+
+    const result = await context.addBlock(context, {
+        ...instData,
+        data: { block: data },
     });
 
-    const org = orgSaveResult.block;
-
-    // TODO: scrub for orgs that are not added to user and add or clean them
-    //    you can do this when user tries to read them, or add them again
-    // TODO: scrub all data that failed it's pipeline
-
-    const userOrgs = user.orgs.concat({ customId: org.customId });
-    await context.session.updateUser(context, instData, {
-      orgs: userOrgs,
-    });
+    const block = result.block;
 
     context.auditLog.insert(context, instData, {
-      action: AuditLogActionType.Create,
-      resourceId: org.customId,
-      resourceType: AuditLogResourceType.Org,
-      organizationId: org.customId,
+        action: AuditLogActionType.Create,
+        resourceId: block.customId,
+        resourceType: getBlockAuditLogResourceType(block),
+        organizationId: getBlockRootBlockId(block),
     });
 
     fireAndForgetPromise(
-      broadcastBlockUpdate(
-        context,
-        instData,
-        org.customId,
-        { isNew: true },
-        org,
-        org
-      )
+        broadcastBlockUpdate(
+            context,
+            instData,
+            block.customId,
+            { isNew: true },
+            rootParent,
+            block
+        )
     );
 
+    // TODO: analyze all the net calls you're making and look for ways to reduce them
+
     return {
-      block: org,
+        block,
     };
-  }
-
-  const rootParent = await context.block.getBlockById(
-    context,
-    newBlock.rootBlockId
-  );
-
-  await canReadBlock({ user, block: rootParent });
-
-  const result = await context.addBlock(context, {
-    ...instData,
-    data: { block: data },
-  });
-
-  const block = result.block;
-
-  context.auditLog.insert(context, instData, {
-    action: AuditLogActionType.Create,
-    resourceId: block.customId,
-    resourceType: getBlockAuditLogResourceType(block),
-    organizationId: getBlockRootBlockId(block),
-  });
-
-  fireAndForgetPromise(
-    broadcastBlockUpdate(
-      context,
-      instData,
-      block.customId,
-      { isNew: true },
-      rootParent,
-      block
-    )
-  );
-
-  // TODO: analyze all the net calls you're making and look for ways to reduce them
-
-  return {
-    block,
-  };
 };
 
 export default addBlock;

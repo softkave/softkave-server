@@ -89,6 +89,26 @@ const blockSchema = `
     assignedAt: String
   }
 
+  type BoardStatusResolution {
+    customId: String
+    name: String
+    createdBy: String
+    createdAt: String
+    description: String
+    updatedBy: String
+    updatedAt: String
+  }
+
+  input BoardStatusResolutionInput {
+    customId: String!
+    name: String!
+    createdBy: String!
+    createdAt: String!
+    description: String
+    updatedBy: String
+    updatedAt: String
+  }
+
   type Block {
     customId: String
     createdBy: String
@@ -107,9 +127,11 @@ const blockSchema = `
     subTasks: [SubTask]
     boardStatuses: [Status]
     boardLabels: [Label]
+    boardResolutions: [BoardStatusResolution]
     status: String
     statusAssignedBy: String
     statusAssignedAt: String
+    taskResolution: String
     labels: [BlockAssignedLabel]
   }
 
@@ -137,9 +159,11 @@ const blockSchema = `
     subTasks: [SubTaskInput]
     boardStatuses: [StatusInput]
     boardLabels: [LabelInput]
+    boardResolutions: [BoardStatusResolutionInput]
     status: String
     statusAssignedBy: String
     statusAssignedAt: String
+    taskResolution: String
     labels: [BlockAssignedLabelInput]
   }
 
@@ -152,11 +176,13 @@ const blockSchema = `
     subTasks: [SubTaskInput]
     boardStatuses: [StatusInput]
     boardLabels: [LabelInput]
+    boardResolutions: [BoardStatusResolutionInput]
     dueAt: String
     assignees: [AssigneeInput]
     status: String
     statusAssignedBy: String
     statusAssignedAt: String
+    taskResolution: String
     labels: [BlockAssignedLabelInput]
   }
 
