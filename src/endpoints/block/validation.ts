@@ -226,7 +226,7 @@ const newBlock = Joi.object().keys({
         is: BlockType.Task,
         then: Joi.required(),
     }),
-    taskResolution: taskStatusSchema,
+    taskResolution: validationSchemas.uuid,
     labels: blockAssignedLabelsList,
 });
 
@@ -259,7 +259,7 @@ const blockValidationSchemas = {
     resolutionSchema,
     resolutionListSchema,
     boardResolutions: resolutionListSchema,
-    taskResolution: taskStatusSchema,
+    taskResolution: validationSchemas.uuid,
 };
 
 export default blockValidationSchemas;
