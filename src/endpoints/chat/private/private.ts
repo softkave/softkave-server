@@ -2,7 +2,7 @@ import { validate } from "../../../utilities/joiUtils";
 import chatValidationSchemas from "../validations";
 import { getPrivateMessageEndpoint } from "./type";
 
-const getGroupMessage: getPrivateMessageEndpoint = async (context, instaData) => {
+const getPrivateMessage: getPrivateMessageEndpoint = async (context, instaData) => {
     const data = validate(instaData.data, chatValidationSchemas.privateMessages);
 
     const messages = await context.chat.getPrivateMessage(context, data);
@@ -10,4 +10,4 @@ const getGroupMessage: getPrivateMessageEndpoint = async (context, instaData) =>
     return messages;
 };
 
-export default getGroupMessage;
+export default getPrivateMessage;

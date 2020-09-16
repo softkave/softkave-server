@@ -110,7 +110,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on("private-chat-list", (data) => {
+    socket.on(IncomingSocketEvents.PrivateChatList, (data) => {
         try {
             getPrivateChatList(
                 getBaseContext(),
@@ -124,7 +124,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on("group-chat-list", (data) => {
+    socket.on(IncomingSocketEvents.GroupChatList, (data) => {
         try {
             getGroupChatList(
                 getBaseContext(),
@@ -170,6 +170,8 @@ enum IncomingSocketEvents {
     Unsubscribe = "unsubscribe",
     Auth = "auth",
     FetchMissingBroadcasts = "fetchMissingBroadcasts",
+    PrivateChatList = "private-chat-list",
+    GroupChatList = "group-chat-list",
 }
 
 export enum OutgoingSocketEvents {
