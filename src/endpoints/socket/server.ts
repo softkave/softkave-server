@@ -12,7 +12,7 @@ import { JWTEndpoints } from "../utils";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
-import getPrivateChatList from "../chat/getChatList/getChatList";
+import { insertPrivateMessage } from "../chat/private/private";
 import getGroupChatList from "../chat/getGroupList/getGroupList";
 
 // REMINDER
@@ -110,29 +110,25 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.PrivateChatList, (data) => {
+    socket.on(IncomingSocketEvents.AddPrivateMessage, (data, fn) => {
         try {
-            getPrivateChatList(
+            const result = insertPrivateMessage(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            /**
-             * How do i emit the response back to the client
-             */
+            fn(result);
         } catch (error) {
             console.error(error);
         }
     });
 
-    socket.on(IncomingSocketEvents.GroupChatList, (data) => {
+    socket.on(IncomingSocketEvents.GroupChatList, (data, fn) => {
         try {
-            getGroupChatList(
+            const result = getGroupChatList(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            /**
-             * How do i emit the response back to the client
-             */
+            fn(result);
         } catch (error) {
             console.error(error);
         }
@@ -170,8 +166,8 @@ enum IncomingSocketEvents {
     Unsubscribe = "unsubscribe",
     Auth = "auth",
     FetchMissingBroadcasts = "fetchMissingBroadcasts",
-    PrivateChatList = "private-chat-list",
     GroupChatList = "group-chat-list",
+    AddPrivateMessage = "add-private-message",
 }
 
 export enum OutgoingSocketEvents {

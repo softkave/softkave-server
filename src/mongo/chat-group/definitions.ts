@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
 
-export interface IGroup {
+export interface IGroupChat {
     customId: string;
     orgId: string;
     members: string[];
@@ -10,7 +10,7 @@ export interface IGroup {
     updatedAt?: Date;
 }
 
-const groupsSchema = {
+const groupChatsSchema = {
     customId: {
         type: String,
         unique: true,
@@ -23,8 +23,8 @@ const groupsSchema = {
     isPrivate: Boolean,
     orgId: { type: String },
     createdAt: { type: Date, default: getDate },
-    updatedAt: { type: Date, default: getDate },
+    updatedAt: { type: Date },
 };
 
-export default groupsSchema;
-export interface IGroupDocument extends IGroup, Document {}
+export default groupChatsSchema;
+export interface IGroupChatDocument extends IGroupChat, Document {}

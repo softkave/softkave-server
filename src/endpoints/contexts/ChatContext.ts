@@ -1,3 +1,4 @@
+import { IChat } from "../../mongo/chat";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
@@ -12,6 +13,7 @@ export interface IChatContext {
     getGroupList(ctx: IBaseContext, data: IGetGroupListParameters);
     getPrivateMessage(ctx: IBaseContext, data: IGetPrivateMessageParameters);
     getGroupMessage(ctx: IBaseContext, data: IGetGroupMessageParameters);
+    insertPrivateMessage(ctx: IBaseContext, data: IChat);
 }
 
 export default class ChatContext implements IChatContext {
@@ -77,6 +79,17 @@ export default class ChatContext implements IChatContext {
                     customId: data.customId,
                 })
                 .exec();
+        } catch (error) {
+            logger.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async insertPrivateMessage(ctx: IBaseContext, data: IChat) {
+        try {
+            const c = new ctx.models.chatModel.model(data);
+            await c.save();
+            return c;
         } catch (error) {
             logger.error(error);
             throw new ServerError();

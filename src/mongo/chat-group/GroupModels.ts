@@ -2,19 +2,19 @@ import { Connection } from "mongoose";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
-import groupsSchema, { IGroupDocument } from "./definitions";
+import groupChatsSchema, { IGroupChatDocument } from "./definitions";
 
-export interface IGroupModel extends MongoModel<IGroupDocument> {}
+export interface IGroupModel extends MongoModel<IGroupChatDocument> {}
 
-const modelName = "group";
-const collectionName = "groups";
+const modelName = "chat-groups";
+const collectionName = "chat-groups";
 
 export const getGroupModel = createSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
-        return new MongoModel<IGroupDocument>({
+        return new MongoModel<IGroupChatDocument>({
             modelName,
             collectionName,
-            rawSchema: groupsSchema,
+            rawSchema: groupChatsSchema,
             connection: conn,
         });
     }

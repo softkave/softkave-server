@@ -3,7 +3,7 @@ import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCommentModel } from "../../mongo/comment";
-import { getGroupModel } from "../../mongo/group";
+import { getGroupModel } from "../../mongo/chat-group";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getUserModel } from "../../mongo/user";

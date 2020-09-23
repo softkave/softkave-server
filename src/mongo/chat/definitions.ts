@@ -18,7 +18,7 @@ const chatsSchema = {
     sender: { type: String },
     recipient: { type: String },
     createdAt: { type: Date, default: getDate },
-    updatedAt: { type: Date, default: getDate },
+    updatedAt: { type: Date },
 };
 
 export default chatsSchema;
