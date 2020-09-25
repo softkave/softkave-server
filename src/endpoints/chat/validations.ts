@@ -1,30 +1,10 @@
 import Joi from "joi";
-import { validationSchemas } from "../../utilities/validationUtils";
+import { chatConstants } from "./constants";
 
-const privateMessages = Joi.object().keys({
-    customId: validationSchemas.uuid.required(),
-    recipientId: validationSchemas.uuid.required(),
-    orgId: validationSchemas.uuid.required(),
-});
+const message = Joi.string().max(chatConstants.maxMessageLength).trim();
 
-const groupMessages = Joi.object().keys({
-    customId: validationSchemas.uuid.required(),
-    orgId: validationSchemas.uuid.required(),
-});
-
-const privateChatList = Joi.object().keys({
-    customId: validationSchemas.uuid.required(),
-    orgId: validationSchemas.uuid.required(),
-});
-
-const groupList = Joi.object().keys({
-    orgId: validationSchemas.uuid.required(),
-});
 const chatValidationSchemas = {
-    privateMessages,
-    groupMessages,
-    privateChatList,
-    groupList,
+    message,
 };
 
 export default chatValidationSchemas;

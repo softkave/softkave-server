@@ -6,8 +6,8 @@ export interface IChat {
     orgId: string;
     message: string;
     sender: string;
-    recipient: string;
-    createdAt?: Date;
+    roomId: string;
+    createdAt: Date;
     updatedAt?: Date;
 }
 
@@ -16,9 +16,9 @@ const chatsSchema = {
     orgId: { type: String },
     message: { type: String },
     sender: { type: String },
-    recipient: { type: String },
+    roomId: { type: String },
     createdAt: { type: Date, default: getDate },
-    updatedAt: { type: Date, default: getDate },
+    updatedAt: { type: Date },
 };
 
 export default chatsSchema;

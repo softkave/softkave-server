@@ -2,19 +2,19 @@ import { Connection } from "mongoose";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
-import groupsSchema, { IGroupDocument } from "./definitions";
+import roomSchema, { IRoomDocument } from "./definitions";
 
-export interface IGroupModel extends MongoModel<IGroupDocument> {}
+export interface IRoomModel extends MongoModel<IRoomDocument> {}
 
-const modelName = "group";
-const collectionName = "groups";
+const modelName = "room";
+const collectionName = "rooms";
 
-export const getGroupModel = createSingletonFunc(
+export const getRoomModel = createSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
-        return new MongoModel<IGroupDocument>({
+        return new MongoModel<IRoomDocument>({
             modelName,
             collectionName,
-            rawSchema: groupsSchema,
+            rawSchema: roomSchema,
             connection: conn,
         });
     }

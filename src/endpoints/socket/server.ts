@@ -1,9 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { IBlock } from "../../mongo/block";
-import { INotification } from "../../mongo/notification";
 import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
 import { IPublicBlock } from "../block/types";
+import getMessages from "../chat/getMessages/getMessages";
+import getRooms from "../chat/getRooms/getRooms";
+import sendMessage from "../chat/sendMessage/sendMessage";
+import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { IPublicNotificationData } from "../notification/types";
@@ -12,8 +13,6 @@ import { JWTEndpoints } from "../utils";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";
-import getPrivateChatList from "../chat/getChatList/getChatList";
-import getGroupChatList from "../chat/getGroupList/getGroupList";
 
 // REMINDER
 // The current implementation authenticates once, then accepts all other requests
@@ -44,16 +43,17 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                     true,
                     JWTEndpoints.Login
                 );
-
-                ctx.socket.mapUserToSocketId(
-                    RequestData.fromSocketRequest(
-                        socket,
-                        null,
-                        tokenData,
-                        data.clientId
-                    ),
-                    user
+                const requestData = RequestData.fromSocketRequest(
+                    socket,
+                    null,
+                    tokenData,
+                    data.clientId
                 );
+
+                ctx.socket.mapUserToSocketId(requestData, user);
+
+                const userRoomName = ctx.room.getUserRoomName(user);
+                ctx.room.subscribe(requestData, userRoomName);
 
                 const result: IOutgoingAuthPacket = {
                     valid: true,
@@ -76,9 +76,9 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.Subscribe, (data) => {
+    socket.on(IncomingSocketEvents.Subscribe, async (data) => {
         try {
-            subscribe(
+            await subscribe(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
@@ -88,9 +88,9 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.Unsubscribe, (data) => {
+    socket.on(IncomingSocketEvents.Unsubscribe, async (data) => {
         try {
-            unsubscribe(
+            await unsubscribe(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
@@ -99,40 +99,60 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, (data) => {
+    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, async (data, fn) => {
         try {
-            fetchBroadcasts(
+            const broadcasts = await fetchBroadcasts(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
+            // fn(broadcasts);
         } catch (error) {
             console.error(error);
         }
     });
 
-    socket.on(IncomingSocketEvents.PrivateChatList, (data) => {
+    socket.on(IncomingSocketEvents.GetMessages, async (data, fn) => {
         try {
-            getPrivateChatList(
+            const messages = await getMessages(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            /**
-             * How do i emit the response back to the client
-             */
+            fn(messages);
         } catch (error) {
             console.error(error);
         }
     });
 
-    socket.on(IncomingSocketEvents.GroupChatList, (data) => {
+    socket.on(IncomingSocketEvents.GetRooms, async (data, fn) => {
         try {
-            getGroupChatList(
+            const rooms = await getRooms(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            /**
-             * How do i emit the response back to the client
-             */
+            fn(rooms);
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    socket.on(IncomingSocketEvents.SendMessage, async (data, fn) => {
+        try {
+            const chat = await sendMessage(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
+            fn(chat);
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    socket.on(IncomingSocketEvents.UpdateRoomReadCounter, async (data) => {
+        try {
+            await updateRoomReadCounter(
+                getBaseContext(),
+                RequestData.fromSocketRequest(socket, data)
+            );
         } catch (error) {
             console.error(error);
         }
@@ -170,8 +190,10 @@ enum IncomingSocketEvents {
     Unsubscribe = "unsubscribe",
     Auth = "auth",
     FetchMissingBroadcasts = "fetchMissingBroadcasts",
-    PrivateChatList = "private-chat-list",
-    GroupChatList = "group-chat-list",
+    GetMessages = "getMessages",
+    SendMessage = "sendMessage",
+    GetRooms = "getRooms",
+    UpdateRoomReadCounter = "updateRoomReadCounter",
 }
 
 export enum OutgoingSocketEvents {
