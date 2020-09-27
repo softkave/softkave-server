@@ -1,29 +1,80 @@
 import { AuditLogResourceType } from "../../../mongo/audit-log";
 import { validate } from "../../../utilities/joiUtils";
+import canReadBlock from "../../block/canReadBlock";
+import { BlockDoesNotExistError } from "../../block/errors";
+import { RoomDoesNotExistError } from "../../chat/errors";
+import { NoteDoesNotExistError } from "../../note/errors";
 import { SubscribeEndpoint } from "./types";
 import { subscribeJoiSchema } from "./validation";
 
 const subscribe: SubscribeEndpoint = async (context, instData) => {
-  const data = validate(instData.data, subscribeJoiSchema);
-  await context.session.assertUser(context, instData);
-  context.socket.assertSocket(instData);
+    const data = validate(instData.data, subscribeJoiSchema);
+    const user = await context.session.getUser(context, instData);
+    context.socket.assertSocket(instData);
 
-  switch (data.type) {
-    case AuditLogResourceType.Org:
-    case AuditLogResourceType.Board: {
-      const block = await context.block.getBlockById(context, data.customId);
-      const roomName = context.room.getBlockRoomName(block);
-      context.room.subscribe(instData, roomName);
-      return;
-    }
+    switch (data.type) {
+        case AuditLogResourceType.Org:
+        case AuditLogResourceType.Board: {
+            const block = await context.block.getBlockById(
+                context,
+                data.customId
+            );
 
-    case AuditLogResourceType.Note: {
-      const note = await context.note.getNoteById(context, data.customId);
-      const roomName = context.room.getNoteRoomName(note);
-      context.room.subscribe(instData, roomName);
-      return;
+            if (!block) {
+                throw new BlockDoesNotExistError();
+            }
+
+            canReadBlock({ user, block });
+
+            const roomName = context.room.getBlockRoomName(block);
+            context.room.subscribe(instData, roomName);
+            break;
+        }
+
+        case AuditLogResourceType.Note: {
+            const note = await context.note.getNoteById(context, data.customId);
+
+            if (!note) {
+                throw new NoteDoesNotExistError();
+            }
+
+            const parentBlock = await context.block.getBlockById(
+                context,
+                note.blockId
+            );
+            canReadBlock({ user, block: parentBlock });
+
+            const roomName = context.room.getNoteRoomName(note);
+            context.room.subscribe(instData, roomName);
+            break;
+        }
+
+        case AuditLogResourceType.Room: {
+            const room = await context.chat.getRoomById(context, data.customId);
+
+            if (!room) {
+                throw new RoomDoesNotExistError();
+            }
+
+            const org = await context.block.getBlockById(context, room.orgId);
+            canReadBlock({ user, block: org });
+
+            const isUserInRoom = !!room.members.find(
+                (member) => member.userId === user.customId
+            );
+
+            if (!isUserInRoom) {
+                await context.chat.addMemberToRoom(
+                    context,
+                    room.customId,
+                    user.customId
+                );
+            }
+
+            context.room.subscribeUser(context, room.name, user.customId);
+            break;
+        }
     }
-  }
 };
 
 export default subscribe;

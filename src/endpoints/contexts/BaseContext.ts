@@ -3,9 +3,9 @@ import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCommentModel } from "../../mongo/comment";
-import { getGroupModel } from "../../mongo/chat-group";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
+import { getRoomModel } from "../../mongo/room";
 import { getUserModel } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
@@ -62,7 +62,7 @@ export default class BaseContext implements IBaseContext {
         noteModel: getNoteModel(),
         commentModel: getCommentModel(),
         chatModel: getChatModel(),
-        groupModel: getGroupModel()
+        roomModel: getRoomModel(),
     };
     public socketServer: Server = getSocketServer();
     public comment = getCommentContext();

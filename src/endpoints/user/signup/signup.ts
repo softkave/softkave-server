@@ -1,12 +1,12 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
 import {
-  AuditLogActionType,
-  AuditLogResourceType,
+    AuditLogActionType,
+    AuditLogResourceType,
 } from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";
@@ -16,49 +16,49 @@ import { SignupEndpoint } from "./types";
 import { newUserInputSchema } from "./validation";
 
 const signup: SignupEndpoint = async (context, instData) => {
-  const data = validate(instData.data.user, newUserInputSchema);
-  const userExists = await context.userExists(context, {
-    ...instData,
-    data: { email: data.email },
-  });
+    const data = validate(instData.data.user, newUserInputSchema);
+    const userExists = await context.userExists(context, {
+        ...instData,
+        data: { email: data.email },
+    });
 
-  if (userExists) {
-    throw new EmailAddressNotAvailableError({ field: "email" });
-  }
+    if (userExists) {
+        throw new EmailAddressNotAvailableError({ field: "email" });
+    }
 
-  const hash = await argon2.hash(data.password);
-  const now = getDate();
-  const value: IUser = {
-    hash,
-    customId: uuid(),
-    email: data.email.toLowerCase(),
-    name: data.name,
-    color: data.color,
-    createdAt: now,
-    forgotPasswordHistory: [],
-    passwordLastChangedAt: now,
-    rootBlockId: "",
-    orgs: [],
-  };
+    const hash = await argon2.hash(data.password);
+    const now = getDate();
+    const value: IUser = {
+        hash,
+        customId: uuid(),
+        email: data.email.toLowerCase(),
+        name: data.name,
+        color: data.color,
+        createdAt: now,
+        forgotPasswordHistory: [],
+        passwordLastChangedAt: now,
+        rootBlockId: "",
+        orgs: [],
+    };
 
-  const user = await context.user.saveUser(context, value);
-  context.session.addUserToSession(context, instData, user);
-  await context.createUserRootBlock(context, { ...instData, data: { user } });
+    const user = await context.user.saveUser(context, value);
+    context.session.addUserToSession(context, instData, user);
+    await context.createUserRootBlock(context, { ...instData, data: { user } });
 
-  context.auditLog.insert(context, instData, {
-    action: AuditLogActionType.Signup,
-    resourceId: user.customId,
-    resourceType: AuditLogResourceType.User,
-  });
+    context.auditLog.insert(context, instData, {
+        action: AuditLogActionType.Signup,
+        resourceId: user.customId,
+        resourceType: AuditLogResourceType.User,
+    });
 
-  return {
-    user: getPublicUserData(user),
-    clientId: getId(),
-    token: UserToken.newToken({
-      user,
-      audience: [JWTEndpoints.Login],
-    }),
-  };
+    return {
+        user: getPublicUserData(user),
+        clientId: getNewId(),
+        token: UserToken.newToken({
+            user,
+            audience: [JWTEndpoints.Login],
+        }),
+    };
 };
 
 export default signup;
