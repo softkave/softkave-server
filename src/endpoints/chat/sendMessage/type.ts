@@ -9,8 +9,12 @@ export interface ISendMessageParameters {
     recipientId?: string;
 }
 
+export interface ISendMessageEndpointResult {
+    chat: IChat;
+}
+
 export type SendMessageEndpoint = Endpoint<
     IBaseContext,
     ISendMessageParameters,
-    IChat
+    ISendMessageEndpointResult
 >;

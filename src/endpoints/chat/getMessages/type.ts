@@ -7,8 +7,12 @@ export interface IGetMessagesParameters {
     roomIds: string[];
 }
 
+export interface IGetMessagesEndpointResult {
+    chats: IChat[];
+}
+
 export type GetMessagesEndpoint = Endpoint<
     IBaseContext,
     IGetMessagesParameters,
-    IChat[]
+    IGetMessagesEndpointResult
 >;

@@ -3,7 +3,7 @@ import { AuditLogActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";

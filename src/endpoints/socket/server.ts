@@ -1,4 +1,6 @@
 import { Server, Socket } from "socket.io";
+import { IChat } from "../../mongo/chat";
+import { IRoom } from "../../mongo/room";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
 import getMessages from "../chat/getMessages/getMessages";
@@ -52,7 +54,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
                 ctx.socket.mapUserToSocketId(requestData, user);
 
-                const userRoomName = ctx.room.getUserRoomName(user);
+                const userRoomName = ctx.room.getUserRoomName(user.customId);
                 ctx.room.subscribe(requestData, userRoomName);
 
                 const result: IOutgoingAuthPacket = {
@@ -76,7 +78,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.Subscribe, async (data) => {
+    socket.on(IncomingSocketEvents.Subscribe, async (data, fn) => {
         try {
             await subscribe(
                 getBaseContext(),
@@ -85,10 +87,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         } catch (error) {
             // TODO: improve error handling and send the error back to the clients
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
-    socket.on(IncomingSocketEvents.Unsubscribe, async (data) => {
+    socket.on(IncomingSocketEvents.Unsubscribe, async (data, fn) => {
         try {
             await unsubscribe(
                 getBaseContext(),
@@ -96,6 +99,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             );
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
@@ -108,6 +112,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             // fn(broadcasts);
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
@@ -120,6 +125,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             fn(messages);
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
@@ -132,6 +138,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             fn(rooms);
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
@@ -144,10 +151,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             fn(chat);
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
 
-    socket.on(IncomingSocketEvents.UpdateRoomReadCounter, async (data) => {
+    socket.on(IncomingSocketEvents.UpdateRoomReadCounter, async (data, fn) => {
         try {
             await updateRoomReadCounter(
                 getBaseContext(),
@@ -155,8 +163,16 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
             );
         } catch (error) {
             console.error(error);
+            fn(toSocketReturnError(error));
         }
     });
+}
+
+function toSocketReturnError(err) {
+    const errors = Array.isArray(err) ? err : [err];
+    return {
+        errors,
+    };
 }
 
 async function onDisconnect(ctx: IBaseContext, socket: Socket) {
@@ -204,6 +220,8 @@ export enum OutgoingSocketEvents {
     UpdateNotification = "updateNotification",
     UserCollaborationRequestResponse = "userCollabReqResponse",
     OrgCollaborationRequestResponse = "orgCollabReqResponse",
+    NewRoom = "newRoom",
+    NewMessage = "newMessage",
 }
 
 export interface IIncomingAuthPacket {
@@ -245,4 +263,12 @@ export interface IUserCollaborationRequestResponsePacket {
 export interface IOrgCollaborationRequestResponsePacket {
     customId: string;
     response: CollaborationRequestResponse;
+}
+
+export interface IOutgoingNewRoomPacket {
+    room: IRoom;
+}
+
+export interface IOutgoingSendMessagePacket {
+    chat: IChat;
 }

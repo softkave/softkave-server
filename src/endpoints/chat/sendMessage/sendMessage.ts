@@ -2,6 +2,11 @@ import { IRoom } from "../../../mongo/room";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
+    IOutgoingNewRoomPacket,
+    IOutgoingSendMessagePacket,
+    OutgoingSocketEvents,
+} from "../../socket/server";
+import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
 } from "../errors";
@@ -16,8 +21,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     canReadBlock({ user, block: org });
 
-    // TODO: how can we eliminate OR make this part faster?
-    // We could generate a token after the first message to signify that the checks are passed
+    // TODO: how can we eliminate OR make the room fetching faster?
     let room: IRoom;
 
     if (data.roomId) {
@@ -38,19 +42,30 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         throw new RoomDoesNotExistError();
     }
 
-    // TODO: We could make the members a map, for optimization where there are many members
-    // in a room
-    const isUserInRoom =
-        context.room.isUserInRoom(context, room.name, user.customId) ||
-        !!room.members.find((member) => member.userId === user.customId);
-
-    if (!isUserInRoom) {
-        await context.chat.addMemberToRoom(
-            context,
-            room.customId,
-            user.customId
-        );
+    if (data.recipientId) {
+        // It's a new room/chat
         context.room.subscribeUser(context, room.name, user.customId);
+        context.room.subscribeUser(context, room.name, data.recipientId);
+
+        const newRoomPacket: IOutgoingNewRoomPacket = { room };
+
+        const userRoomName = context.room.getUserRoomName(user.customId);
+        await context.room.broadcast(
+            context,
+            userRoomName,
+            OutgoingSocketEvents.NewRoom,
+            newRoomPacket
+        );
+
+        const recipientUserRoomName = context.room.getUserRoomName(
+            data.recipientId
+        );
+        await context.room.broadcast(
+            context,
+            recipientUserRoomName,
+            OutgoingSocketEvents.NewRoom,
+            newRoomPacket
+        );
     }
 
     const chat = await context.chat.insertMessage(
@@ -61,7 +76,16 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.message
     );
 
-    return chat;
+    const outgoingNewMessagePacket: IOutgoingSendMessagePacket = { chat };
+    await context.room.broadcast(
+        context,
+        room.name,
+        OutgoingSocketEvents.NewMessage,
+        outgoingNewMessagePacket,
+        instaData
+    );
+
+    return { chat };
 };
 
 export default sendMessage;

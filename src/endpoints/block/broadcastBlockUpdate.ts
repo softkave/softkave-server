@@ -37,7 +37,7 @@ const broadcastBlockUpdate = async (
 
     if (block.type === BlockType.Org) {
         if (updateType.isNew) {
-            const userRoomName = context.room.getUserRoomName(user);
+            const userRoomName = context.room.getUserRoomName(user.customId);
             context.room.broadcast(
                 context,
                 userRoomName,
@@ -53,7 +53,9 @@ const broadcastBlockUpdate = async (
             org.customId
         );
         orgCollaborators.forEach((collaborator) => {
-            const roomName = context.room.getUserRoomName(collaborator);
+            const roomName = context.room.getUserRoomName(
+                collaborator.customId
+            );
             context.room.broadcast(context, roomName, event, data, instData);
         });
 

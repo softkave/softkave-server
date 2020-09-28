@@ -6,7 +6,7 @@ import {
 } from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";

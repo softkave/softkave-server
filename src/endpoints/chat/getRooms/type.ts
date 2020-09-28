@@ -6,8 +6,12 @@ export interface IGetRoomsParameters {
     orgId: string;
 }
 
+export interface IGetRoomsEndpointResult {
+    rooms: IRoom[];
+}
+
 export type GetRoomsEndpoint = Endpoint<
     IBaseContext,
     IGetRoomsParameters,
-    IRoom[]
+    IGetRoomsEndpointResult
 >;

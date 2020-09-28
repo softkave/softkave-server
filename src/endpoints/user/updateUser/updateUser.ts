@@ -15,7 +15,7 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
             ),
         };
 
-        const userRoomName = context.room.getUserRoomName(user);
+        const userRoomName = context.room.getUserRoomName(user.customId);
         context.room.broadcast(
             context,
             userRoomName,

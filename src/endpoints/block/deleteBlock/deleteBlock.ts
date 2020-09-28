@@ -4,7 +4,7 @@ import { IBlock } from "../../../mongo/block";
 import { INotification, NotificationType } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { IBulkUpdateById } from "../../../utilities/types";

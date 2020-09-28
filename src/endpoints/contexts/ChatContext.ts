@@ -4,7 +4,7 @@ import { IRoom, IRoomMemberWithReadCounter } from "../../mongo/room";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
-import getNewId from "../../utilities/getId";
+import getNewId from "../../utilities/getNewId";
 import logger from "../../utilities/logger";
 import { IBaseContext } from "./BaseContext";
 

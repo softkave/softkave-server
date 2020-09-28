@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
 import { JWTEndpoints } from "../../utils";

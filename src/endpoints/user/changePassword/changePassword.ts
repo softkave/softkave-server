@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../utils";
 import UserToken from "../UserToken";

@@ -4,7 +4,7 @@ import {
     AuditLogResourceType,
 } from "../../../mongo/audit-log";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { getBlockRootBlockId } from "../../block/utils";

@@ -1,4 +1,4 @@
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { GetUserDataEndpoint } from "./types";
 
 const getUserData: GetUserDataEndpoint = async (context, instData) => {

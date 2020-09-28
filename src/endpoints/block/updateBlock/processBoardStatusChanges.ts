@@ -5,7 +5,7 @@ import {
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { indexArray } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../contexts/RequestData";
 import { fireAndForgetPromise } from "../../utils";

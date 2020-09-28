@@ -1,4 +1,3 @@
-import { IRoom } from "../../../mongo/room";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
