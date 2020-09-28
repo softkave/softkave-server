@@ -216,6 +216,17 @@ export default class ChatContext implements IChatContext {
             throw new ServerError();
         }
     }
+
+    public async insertPrivateMessage(ctx: IBaseContext, data: IChat) {
+        try {
+            const c = new ctx.models.chatModel.model(data);
+            await c.save();
+            return c;
+        } catch (error) {
+            logger.error(error);
+            throw new ServerError();
+        }
+    }
 }
 
 export const getChatContext = createSingletonFunc(() => new ChatContext());
