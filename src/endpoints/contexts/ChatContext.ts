@@ -9,16 +9,8 @@ import logger from "../../utilities/logger";
 import { IBaseContext } from "./BaseContext";
 
 export interface IChatContext {
-    getMessages: (
-        ctx: IBaseContext,
-        orgId: string,
-        roomIds: string[]
-    ) => Promise<IChat[]>;
-    getRooms: (
-        ctx: IBaseContext,
-        orgId: string,
-        userId: string
-    ) => Promise<IRoom[]>;
+    getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;
+    getRooms: (ctx: IBaseContext, userId: string) => Promise<IRoom[]>;
     getRoomById: (
         ctx: IBaseContext,
         roomId: string
@@ -51,15 +43,10 @@ export interface IChatContext {
 }
 
 export default class ChatContext implements IChatContext {
-    public async getMessages(
-        ctx: IBaseContext,
-        orgId: string,
-        roomIds: string[]
-    ) {
+    public async getMessages(ctx: IBaseContext, roomIds: string[]) {
         try {
             return await ctx.models.chatModel.model
                 .find({
-                    orgId,
                     roomId: { $in: roomIds },
                 })
                 .exec();
@@ -69,11 +56,10 @@ export default class ChatContext implements IChatContext {
         }
     }
 
-    public async getRooms(ctx: IBaseContext, orgId: string, userId: string) {
+    public async getRooms(ctx: IBaseContext, userId: string) {
         try {
             return await ctx.models.roomModel.model
                 .find({
-                    orgId,
                     members: { $elemMatch: { userId } },
                 })
                 .exec();

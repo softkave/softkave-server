@@ -3,8 +3,7 @@ import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
-import getMessages from "../chat/getMessages/getMessages";
-import getRooms from "../chat/getRooms/getRooms";
+import getRooms from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
 import sendMessage from "../chat/sendMessage/sendMessage";
 import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
@@ -116,26 +115,13 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         }
     });
 
-    socket.on(IncomingSocketEvents.GetMessages, async (data, fn) => {
+    socket.on(IncomingSocketEvents.GetUserRoomsAndChats, async (data, fn) => {
         try {
-            const messages = await getMessages(
+            const result = await getRooms(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            fn(messages);
-        } catch (error) {
-            console.error(error);
-            fn(toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.GetRooms, async (data, fn) => {
-        try {
-            const rooms = await getRooms(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-            fn(rooms);
+            fn(result);
         } catch (error) {
             console.error(error);
             fn(toSocketReturnError(error));
@@ -206,9 +192,8 @@ enum IncomingSocketEvents {
     Unsubscribe = "unsubscribe",
     Auth = "auth",
     FetchMissingBroadcasts = "fetchMissingBroadcasts",
-    GetMessages = "getMessages",
     SendMessage = "sendMessage",
-    GetRooms = "getRooms",
+    GetUserRoomsAndChats = "getUserRoomsAndChats",
     UpdateRoomReadCounter = "updateRoomReadCounter",
 }
 
