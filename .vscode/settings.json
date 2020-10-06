@@ -1,6 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.detectIndentation": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.tslint": true
   },
@@ -21,5 +20,6 @@
   "javascript.preferences.quoteStyle": "double",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "typescript.preferences.quoteStyle": "double",
-  "liveServer.settings.port": 5501
+  "liveServer.settings.port": 5501,
+  "editor.detectIndentation": false
 }

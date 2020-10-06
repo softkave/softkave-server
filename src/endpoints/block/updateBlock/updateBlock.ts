@@ -10,6 +10,7 @@ import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import processBoardLabelChanges from "./processBoardLabelChanges";
+import processBoardResolutionsChanges from "./processBoardResolutionsChanges";
 import processBoardStatusChanges from "./processBoardStatusChanges";
 import sendNewlyAssignedTaskEmail from "./sendNewAssignedTaskEmail";
 import { UpdateBlockEndpoint } from "./types";
@@ -48,6 +49,9 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     //   and get incomplete/incorrect data
     fireAndForgetPromise(
         processBoardStatusChanges(context, instData, block, user)
+    );
+    fireAndForgetPromise(
+        processBoardResolutionsChanges(context, instData, block)
     );
     fireAndForgetPromise(processBoardLabelChanges(context, instData, block));
     fireAndForgetPromise(sendNewlyAssignedTaskEmail(context, instData, block));
