@@ -111,7 +111,7 @@ export default class ChatContext implements IChatContext {
         ctx: IBaseContext,
         roomId: string,
         userId: string,
-        readCounter?: Date | string
+        readCounter: Date | string
     ) {
         try {
             await ctx.models.roomModel.model
@@ -122,7 +122,7 @@ export default class ChatContext implements IChatContext {
                     },
                     {
                         $set: {
-                            "members.$.readCounter": readCounter || getDate(),
+                            "members.$.readCounter": getDate(readCounter),
                         },
                     }
                 )
@@ -170,7 +170,7 @@ export default class ChatContext implements IChatContext {
         ctx: IBaseContext,
         orgId: string,
         userId: string,
-        name: string,
+        name: string | null,
         initialMembers?: string[]
     ) {
         try {
@@ -178,11 +178,13 @@ export default class ChatContext implements IChatContext {
                 .concat(initialMembers)
                 .map((id) => ({ userId: id, readCounter: getDate() }));
 
+            const roomId = getNewId();
+            const roomName = name || ctx.room.getChatRoomName(roomId);
             const newRoom = new ctx.models.roomModel.model({
-                customId: getNewId(),
                 orgId,
                 members,
-                name,
+                customId: roomId,
+                name: roomName,
                 createdAt: getDate(),
                 createdBy: userId,
             });

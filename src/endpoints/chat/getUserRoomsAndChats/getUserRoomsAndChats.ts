@@ -1,6 +1,9 @@
 import { GetUserRoomsAndChatsEndpoint } from "./type";
 
-const getRooms: GetUserRoomsAndChatsEndpoint = async (context, instaData) => {
+const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
+    context,
+    instaData
+) => {
     const user = await context.session.getUser(context, instaData);
     context.socket.assertSocket(instaData);
 
@@ -13,4 +16,4 @@ const getRooms: GetUserRoomsAndChatsEndpoint = async (context, instaData) => {
     return { rooms, chats };
 };
 
-export default getRooms;
+export default getUserRoomsAndChats;

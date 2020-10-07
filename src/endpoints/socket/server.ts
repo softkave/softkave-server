@@ -1,9 +1,9 @@
 import { Server, Socket } from "socket.io";
 import { IChat } from "../../mongo/chat";
-import { IRoom } from "../../mongo/room";
+import { IRoom, IRoomMemberWithReadCounter } from "../../mongo/room";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
-import getRooms from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
+import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
 import sendMessage from "../chat/sendMessage/sendMessage";
 import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
@@ -104,6 +104,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
     socket.on(IncomingSocketEvents.FetchMissingBroadcasts, async (data, fn) => {
         try {
+            // TODO: complete implementation
             const broadcasts = await fetchBroadcasts(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
@@ -117,7 +118,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
     socket.on(IncomingSocketEvents.GetUserRoomsAndChats, async (data, fn) => {
         try {
-            const result = await getRooms(
+            const result = await getUserRoomsAndChats(
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
@@ -207,6 +208,7 @@ export enum OutgoingSocketEvents {
     OrgCollaborationRequestResponse = "orgCollabReqResponse",
     NewRoom = "newRoom",
     NewMessage = "newMessage",
+    UpdateRoomReadCounter = "updateRoomReadCounter",
 }
 
 export interface IIncomingAuthPacket {
@@ -256,4 +258,12 @@ export interface IOutgoingNewRoomPacket {
 
 export interface IOutgoingSendMessagePacket {
     chat: IChat;
+}
+
+export interface IOutgoingUpdateRoomReadCounterPacket {
+    roomId: string;
+    member: {
+        userId: string;
+        readCounter: string;
+    };
 }

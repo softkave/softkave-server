@@ -31,7 +31,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
             context,
             data.orgId,
             user.customId,
-            context.room.getNewRoomId(),
+            null,
             [data.recipientId]
         );
     } else {
@@ -49,20 +49,9 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
         const newRoomPacket: IOutgoingNewRoomPacket = { room };
 
-        const userRoomName = context.room.getUserRoomName(user.customId);
         await context.room.broadcast(
             context,
-            userRoomName,
-            OutgoingSocketEvents.NewRoom,
-            newRoomPacket
-        );
-
-        const recipientUserRoomName = context.room.getUserRoomName(
-            data.recipientId
-        );
-        await context.room.broadcast(
-            context,
-            recipientUserRoomName,
+            room.name,
             OutgoingSocketEvents.NewRoom,
             newRoomPacket
         );
@@ -77,6 +66,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     );
 
     const outgoingNewMessagePacket: IOutgoingSendMessagePacket = { chat };
+
     await context.room.broadcast(
         context,
         room.name,

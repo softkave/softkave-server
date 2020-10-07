@@ -49,7 +49,7 @@ export interface IRoomContext {
     getBlockRoomName: (block: IBlock) => string;
     getNoteRoomName: (note: INote) => string;
     getUserRoomName: (userId: string) => string;
-    getNewRoomId: () => string;
+    getChatRoomName: (roomId: string) => string;
 }
 
 // TODO: write a test to see if making the internal object an array and looping through it is faster
@@ -185,8 +185,8 @@ export default class RoomContext implements IRoomContext {
         return `${AuditLogResourceType.Note}-${note.customId}`;
     }
 
-    public getNewRoomId() {
-        return `room-${getNewId()}`;
+    public getChatRoomName(roomId: string) {
+        return `${AuditLogResourceType.Room}-${roomId}`;
     }
 }
 
