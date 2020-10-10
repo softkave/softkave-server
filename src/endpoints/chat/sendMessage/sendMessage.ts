@@ -1,9 +1,11 @@
 import { IRoom } from "../../../mongo/room";
+import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingNewRoomPacket,
     IOutgoingSendMessagePacket,
+    IOutgoingUpdateRoomReadCounterPacket,
     OutgoingSocketEvents,
 } from "../../socket/server";
 import {
@@ -42,7 +44,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         throw new RoomDoesNotExistError();
     }
 
-    if (data.recipientId) {
+    if (data.recipientId && !data.roomId) {
         // It's a new room/chat
         context.room.subscribeUser(context, room.name, user.customId);
         context.room.subscribeUser(context, room.name, data.recipientId);
@@ -74,6 +76,28 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         outgoingNewMessagePacket,
         instaData
     );
+
+    if (data.roomId) {
+        const readCounter = getDateString();
+        await context.chat.updateMemberReadCounter(
+            context,
+            data.roomId,
+            user.customId
+        );
+
+        const outgoingUpdateRoomCounterPacket: IOutgoingUpdateRoomReadCounterPacket = {
+            roomId: room.customId,
+            member: { readCounter, userId: user.customId },
+        };
+
+        await context.room.broadcast(
+            context,
+            room.name,
+            OutgoingSocketEvents.UpdateRoomReadCounter,
+            outgoingUpdateRoomCounterPacket,
+            instaData
+        );
+    }
 
     return { chat };
 };

@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { IChat } from "../../mongo/chat";
-import { IRoom, IRoomMemberWithReadCounter } from "../../mongo/room";
+import { IRoom } from "../../mongo/room";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
@@ -28,6 +28,19 @@ import unsubscribe from "./unsubscribe/unsubscribe";
 // Maybe if the user changes password or auth token is changed, the socket will only auth again
 
 // TODO: disconnect sockets that don't auth in 5 minutes
+
+function sendAck(fn, ack?: any) {
+    // sometimes, there isn't an ack return function on socket event
+    // I think it's because we currently have the socket.io using both http and socket
+    // so when it's using http, there isn't an ack fn
+    // possible fix is scticking only to socket, but will need to investigate
+    //
+    // I also think it's because some of the requests are being made before the socket
+    // connection completes authentication, so, maybe wait until auth is complete on the client
+    if (fn) {
+        fn(ack);
+    }
+}
 
 async function onConnection(ctx: IBaseContext, socket: Socket) {
     socket.on(
@@ -59,11 +72,12 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 const result: IOutgoingAuthPacket = {
                     valid: true,
                 };
-                fn(result);
+
+                sendAck(fn, result);
             } catch (error) {
                 const result: IOutgoingAuthPacket = { valid: false };
                 console.error(error);
-                fn(result);
+                sendAck(fn, result);
                 socket.disconnect();
             }
         }
@@ -71,6 +85,7 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
     socket.on("disconnect", () => {
         try {
+            // TODO: clear all socket data in the SocketContext
             onDisconnect(ctx, socket);
         } catch (err) {
             console.error(err);
@@ -83,10 +98,12 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
+
+            sendAck(fn);
         } catch (error) {
             // TODO: improve error handling and send the error back to the clients
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 
@@ -96,9 +113,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
+
+            sendAck(fn);
         } catch (error) {
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 
@@ -109,10 +128,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            // fn(broadcasts);
+
+            // sendAck(fn, broadcasts);
         } catch (error) {
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 
@@ -122,10 +142,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            fn(result);
+
+            sendAck(fn, result);
         } catch (error) {
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 
@@ -135,10 +156,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
-            fn(chat);
+
+            sendAck(fn, chat);
         } catch (error) {
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 
@@ -148,9 +170,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                 getBaseContext(),
                 RequestData.fromSocketRequest(socket, data)
             );
+
+            sendAck(fn);
         } catch (error) {
             console.error(error);
-            fn(toSocketReturnError(error));
+            sendAck(fn, toSocketReturnError(error));
         }
     });
 }

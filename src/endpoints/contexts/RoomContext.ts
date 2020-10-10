@@ -157,17 +157,17 @@ export default class RoomContext implements IRoomContext {
         roomName: string,
         eventName: OutgoingSocketEvents,
         eventData: any,
-        data: RequestData
+        data?: RequestData
     ) {
         broadcast(
             roomName,
             eventName,
             eventData,
             ctx.socketServer,
-            data.socket?.id
+            data?.socket?.id
         );
 
-        ctx.broadcastHistory.insert(ctx, data, roomName, {
+        ctx.broadcastHistory.insert(ctx, roomName, {
             data: eventData,
             event: eventName,
         });
