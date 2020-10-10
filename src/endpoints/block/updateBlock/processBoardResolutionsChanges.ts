@@ -4,7 +4,7 @@ import {
 } from "../../../mongo/audit-log";
 import { IBlock, IBoardStatusResolution } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
-import getId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../contexts/RequestData";
 import { fireAndForgetPromise } from "../../utils";
@@ -104,7 +104,7 @@ async function processBoardResolutionsChanges(
                 change: {
                     oldValue,
                     newValue,
-                    customId: getId(),
+                    customId: getNewId(),
                 },
             });
         }
