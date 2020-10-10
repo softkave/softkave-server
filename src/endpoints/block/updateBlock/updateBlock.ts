@@ -3,7 +3,7 @@ import { AuditLogActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
-import getId from "../../../utilities/getId";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
@@ -63,7 +63,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
         change: {
             oldValue: pick(block, Object.keys(data.data)),
             newValue: data.data,
-            customId: getId(),
+            customId: getNewId(),
         },
 
         // TODO: write a script to add orgId to existing update block audit logs without one

@@ -5,137 +5,151 @@ import { InvalidRequestError } from "../errors";
 import { IBaseContext } from "./BaseContext";
 import RequestData from "./RequestData";
 
-interface ISocketInfo {
-  clientId: string;
-  socket: Socket;
+export interface IUserClientSocketEntry {
+    clientId: string;
+    socket: Socket;
+    // TODO: should we keep a list of all the rooms a client is subscribed to?
+    // It'll make re-subscribing after socket reconnection and removing the socket from the room
+    // on disconnection easier. But we'll only keep the data for some minutes, because the client
+    // could have genuinely disconnected
 }
 
 const socketIdToUserMap: { [key: string]: IUser } = {};
 const userIdToSocketsMap: {
-  [key: string]: ISocketInfo[];
+    [key: string]: IUserClientSocketEntry[];
 } = {};
 
 export interface ISocketContext {
-  assertSocket: (data: RequestData) => boolean;
-  mapUserToSocketId: (data: RequestData, user: IUser) => void;
-  removeSocketIdAndUser: (data: RequestData) => void;
-  getUserBySocketId: (data: RequestData) => IUser | undefined;
-  attachSocketToRequestData: (
-    ctx: IBaseContext,
-    data: RequestData,
-    user: IUser
-  ) => boolean;
+    assertSocket: (data: RequestData) => boolean;
+    mapUserToSocketId: (data: RequestData, user: IUser) => void;
+    removeSocketIdAndUser: (data: RequestData) => void;
+    getUserBySocketId: (data: RequestData) => IUser | undefined;
+    attachSocketToRequestData: (
+        ctx: IBaseContext,
+        data: RequestData,
+        user: IUser
+    ) => boolean;
+    getUserSocketEntries: (
+        ctx: IBaseContext,
+        userId
+    ) => IUserClientSocketEntry[];
 }
 
 export default class SocketContext implements ISocketContext {
-  public assertSocket(data: RequestData) {
-    if (!data.socket) {
-      throw new InvalidRequestError();
+    public assertSocket(data: RequestData) {
+        if (!data.socket) {
+            throw new InvalidRequestError();
+        }
+
+        return true;
     }
 
-    return true;
-  }
+    public mapUserToSocketId(data: RequestData, user: IUser) {
+        socketIdToUserMap[data.socket.id] = user;
 
-  public mapUserToSocketId(data: RequestData, user: IUser) {
-    socketIdToUserMap[data.socket.id] = user;
+        const existingSocketIndex = this.getSocketIndex(
+            user.customId,
+            data.socket.id
+        );
 
-    const existingSocketIndex = this.getSocketIndex(
-      user.customId,
-      data.socket.id
-    );
+        if (existingSocketIndex !== -1) {
+            return;
+        }
 
-    if (existingSocketIndex !== -1) {
-      return;
+        const sockets = userIdToSocketsMap[user.customId] || [];
+        sockets.push({
+            clientId: data.clientId,
+            socket: data.socket,
+        });
+        userIdToSocketsMap[user.customId] = sockets;
     }
 
-    const sockets = userIdToSocketsMap[user.customId] || [];
-    sockets.push({
-      clientId: data.clientId,
-      socket: data.socket,
-    });
-    userIdToSocketsMap[user.customId] = sockets;
-  }
+    public removeSocketIdAndUser(data: RequestData) {
+        const user = socketIdToUserMap[data.socket.id];
+        delete socketIdToUserMap[data.socket.id];
 
-  public removeSocketIdAndUser(data: RequestData) {
-    const user = socketIdToUserMap[data.socket.id];
-    delete socketIdToUserMap[data.socket.id];
+        if (!user) {
+            return;
+        }
 
-    if (!user) {
-      return;
+        const socketIndex = this.getSocketIndex(user.customId, data.socket.id);
+
+        if (socketIndex === -1) {
+            return;
+        }
+
+        const sockets = userIdToSocketsMap[user.customId];
+        sockets.splice(socketIndex, 1);
+        userIdToSocketsMap[user.customId] = sockets;
     }
 
-    const socketIndex = this.getSocketIndex(user.customId, data.socket.id);
-
-    if (socketIndex === -1) {
-      return;
+    public getUserBySocketId(data: RequestData) {
+        return socketIdToUserMap[data.socket.id];
     }
 
-    const sockets = userIdToSocketsMap[user.customId];
-    sockets.splice(socketIndex, 1);
-    userIdToSocketsMap[user.customId] = sockets;
-  }
+    public attachSocketToRequestData(
+        ctx: IBaseContext,
+        data: RequestData,
+        user: IUser
+    ) {
+        const sockets = userIdToSocketsMap[user.customId];
 
-  public getUserBySocketId(data: RequestData) {
-    return socketIdToUserMap[data.socket.id];
-  }
+        if (!sockets) {
+            // this, and the next should be an error, shouldn't it?
+            return false;
+        }
 
-  public attachSocketToRequestData(
-    ctx: IBaseContext,
-    data: RequestData,
-    user: IUser
-  ) {
-    const sockets = userIdToSocketsMap[user.customId];
+        if (sockets.length === 0) {
+            // delete userIdToSocketsMap[user.customId];
+            return false;
+        }
 
-    if (!sockets) {
-      // this, and the next should be an error, shouldn't it?
-      return false;
+        const requestClientId = data.clientId;
+        const socketEntryIndex = sockets.findIndex(
+            (entry) => entry.clientId === requestClientId
+        );
+
+        if (socketEntryIndex === -1) {
+            return false;
+        }
+
+        const socketEntry = sockets[socketEntryIndex];
+        const savedUser = socketIdToUserMap[socketEntry.socket.id];
+
+        if (!savedUser || savedUser.customId !== user.customId) {
+            delete userIdToSocketsMap[user.customId];
+            sockets.forEach(
+                (entry) => delete socketIdToUserMap[entry.socket.id]
+            );
+            return false;
+        }
+
+        data.socket = socketEntry.socket;
+        return true;
     }
 
-    if (sockets.length === 0) {
-      // delete userIdToSocketsMap[user.customId];
-      return false;
+    public getUserSocketEntries(ctx: IBaseContext, userId: string) {
+        return userIdToSocketsMap[userId] || [];
     }
 
-    const requestClientId = data.clientId;
-    const socketEntryIndex = sockets.findIndex(
-      (entry) => entry.clientId === requestClientId
-    );
+    private getSocketIndex(userId: string, socketId: string) {
+        const sockets = userIdToSocketsMap[userId];
 
-    if (socketEntryIndex === -1) {
-      return false;
+        if (!sockets) {
+            return -1;
+        }
+
+        // if (sockets.length === 0) {
+        //   delete userIdToSocketsMap[userId];
+        //   return;
+        // }
+
+        const socketIndex = sockets.findIndex(
+            (entry) => entry.socket.id === socketId
+        );
+
+        return socketIndex;
     }
-
-    const socketEntry = sockets[socketEntryIndex];
-    const savedUser = socketIdToUserMap[socketEntry.socket.id];
-
-    if (!savedUser || savedUser.customId !== user.customId) {
-      delete userIdToSocketsMap[user.customId];
-      sockets.forEach((entry) => delete socketIdToUserMap[entry.socket.id]);
-      return false;
-    }
-
-    data.socket = socketEntry.socket;
-    return true;
-  }
-
-  private getSocketIndex(userId: string, socketId: string) {
-    const sockets = userIdToSocketsMap[userId];
-
-    if (!sockets) {
-      return -1;
-    }
-
-    // if (sockets.length === 0) {
-    //   delete userIdToSocketsMap[userId];
-    //   return;
-    // }
-
-    const socketIndex = sockets.findIndex(
-      (entry) => entry.socket.id === socketId
-    );
-
-    return socketIndex;
-  }
 }
 
 export const getSocketContext = createSingletonFunc(() => new SocketContext());
