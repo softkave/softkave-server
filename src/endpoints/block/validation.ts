@@ -160,7 +160,7 @@ const updateDescription = Joi.string()
     .max(blockConstants.maxDescriptionLength)
     .trim();
 
-const dueAt = Joi.date();
+const dueAt = Joi.date().allow(null);
 const createdAt = Joi.date();
 
 const updatedAt = Joi.date();
@@ -259,7 +259,7 @@ const blockValidationSchemas = {
     resolutionSchema,
     resolutionListSchema,
     boardResolutions: resolutionListSchema,
-    taskResolution: validationSchemas.uuid,
+    taskResolution: validationSchemas.uuid.allow(null),
 };
 
 export default blockValidationSchemas;
