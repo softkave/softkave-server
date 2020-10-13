@@ -1,0 +1,38 @@
+Sprint Implementation
+
+Idea :-
+Sprints are for grouping tasks to be worked on within a time duration.
+
+How will it work :-
+1. In a board, if sprints aren't set up yet, the user'll have to set them up first with a duration 
+which is the amount of time from the start date a sprint should run for.
+2. In the Sprints page ( inside boards ), a user can create multiple consecutive sprints
+( that is, the next sprint created will take place after the one before it ), add tasks to them 
+( except past sprints ), and delete them, but cannot delete past or the current running sprint.
+3. A user can start a sprint if there isn't one running yet, and only the next sprint in the list 
+can be started, and then the next once that one is completed, and so on. Once started, the sprint will 
+run for the duration defined in the sprint setup.
+4. The current sprint can be ended early, just in time, or late, but once ended, cannot be started again. 
+Once ended, if there are tasks in the sprint not completed yet, they'll roll over to the next sprint.
+
+How to setup sprints :-
+1. In the board, there'll be a button to setup sprint if not setup yet, OR maybe a sprints page, with a 
+setup sprints button if not setup yet.
+2. Sprint duration is the only required value needed. The user can also decide to automate the naming 
+of sprints, or should be done manually with suggestion.
+3. Once setup, users can add sprints, and work on and with them.
+
+Sprint name generation :-
+Every sprint has a start date, an end date, a start year ( the year is either expected to start or the 
+year it was started ), an end year ( same with start year, but relating to it's end ), it's index in 
+the overall sprints count, and it's number in the sprints starting that year. 
+
+Sprint 1, 2, 2 ... N + 1, N
+Sprint 1, 2, 2 ... N + 1, N, 2020
+Sprint 1, 2, 2 ... N + 1, N, July 2020
+Sprint 1, 2, 2 ... N + 1, N, Q3
+Sprint 1, 2, 2 ... N + 1, N, Q3, July 2020
+2020, Sprint 1, 2, 2 ... N + 1, N
+July 2020, Sprint 1, 2, 2 ... N + 1, N
+Q3, Sprint 1, 2, 2 ... N + 1, N, July 2020
+Q3 July 2020, Sprint 1, 2, 2 ... N + 1, N
