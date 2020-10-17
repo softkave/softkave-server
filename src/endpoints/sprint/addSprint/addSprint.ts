@@ -19,21 +19,6 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     }
 
     const now = new Date();
-
-    const previousSprint;
-    const sprint: ISprint = {
-        customId: getId(),
-        createdAt: getDate(now),
-        createdBy: user.customId,
-        duration: board.sprintOptions.duration,
-        parentId: data.boardId,
-        estimatedStartYear: now.getFullYear(),
-        overallIteration: 1,
-        rootBlockId: board.rootBlockId,
-        yearIteration: 1,
-    };
-
-    return await context.sprint.saveSprint(context, sprint);
 };
 
 export default addSprint;

@@ -1,11 +1,11 @@
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
-export interface IDeleteSprintParameters {
+export interface IStartSprintParameters {
     sprintId: string;
 }
 
-export type DeleteSprintEndpoint = Endpoint<
+export type StartSprintEndpoint = Endpoint<
     IBaseContext,
-    IDeleteSprintParameters
+    IStartSprintParameters
 >;

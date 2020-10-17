@@ -3,45 +3,55 @@ import { getDate } from "../../utilities/fns";
 
 export const sprintSchemaVersion = 1;
 
-export interface IBoardSprintDefinition {
-    duration: string;
-    createdAt: Date;
-    createdBy: string;
-    updatedAt?: Date;
-    updatedBy?: string;
+export enum SprintDuration {
+    OneWeek = "1 week",
+    TwoWeeks = "2 weeks",
+    OneMonth = "1 month",
 }
 
-export const boardSprintDefinitionSchema = {
-    createdAt: { type: Date, default: getDate },
+export enum SprintNamingType {
+    SystemGenerated = "system-generated",
+    UserProvided = "user-provided",
+}
+
+export interface IBoardSprintOptions {
+    duration: SprintDuration;
+    namingType: SprintNamingType;
+    updatedAt?: Date;
+    updatedBy?: string;
+    createdAt: Date;
+    createdBy: string;
+}
+
+export const boardSprintOptionsSchema = {
+    namingType: { type: String },
+    duration: { type: String },
+    createdAt: { type: Date, default: () => getDate() },
     createdBy: { type: String },
     updatedAt: { type: Date },
     updatedBy: { type: String },
-    duration: { type: String },
 };
 
-export interface ISprint extends IBoardSprintDefinition {
+export interface ISprint {
     customId: string;
-    parentId: string;
-    rootBlockId: string;
-    estimatedStartYear: number;
-    yearIteration: number;
-    overallIteration: number;
+    boardId: string;
+    orgId: string;
+    duration: SprintDuration;
+    sprintIndex: number;
+    name?: string;
     startDate?: Date;
     startedBy?: string;
     endDate?: Date;
     endedBy?: string;
-
-    // TODO: should we implement same delete strategy as in blocks
 }
 
 const sprintSchema = {
-    ...boardSprintDefinitionSchema,
     customId: { type: String, unique: true, index: true },
-    estimatedStartYear: { type: Number },
-    yearIteration: { type: Number },
-    overallIteration: { type: Number },
-    parentId: { type: String },
-    rootBlockId: { type: String },
+    boardId: { type: String },
+    orgId: { type: String },
+    duration: { type: String },
+    sprintIndex: { type: Number },
+    name: { type: String },
     startDate: { type: Date },
     startedBy: { type: String },
     endDate: { type: Date },

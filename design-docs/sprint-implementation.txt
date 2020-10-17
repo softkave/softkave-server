@@ -28,7 +28,8 @@ interface ISprintOptions {
 
 interface IBlock {
     ...
-    sprintOptions: ISprintOptions
+    sprintOptions?: ISprintOptions
+    currentSprintId?: string
 }
 
 Task assigned sprint in block ( type - task )
@@ -40,7 +41,7 @@ interface ITaskSprint {
 
 interface IBlock {
     ...
-    taskSprint: ITaskSprint
+    taskSprint?: ITaskSprint
 }
 
 Sprint 
@@ -49,7 +50,7 @@ interface ISprint {
     boardId: string
     orgId: string
     duration: string | Enum ["1 week", "2 weeks", "1 month"]
-    sprintInBoardIndex: number
+    sprintIndex: number
     name?: string
     startDate?: Date | string
     startedBy?: string

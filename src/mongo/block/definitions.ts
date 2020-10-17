@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
-import { boardSprintDefinitionSchema, IBoardSprintDefinition } from "../sprint";
+import { boardSprintOptionsSchema, IBoardSprintOptions } from "../sprint";
 
 export const blockSchemaVersion = 3; // increment when you make changes that are not backward compatible
 
@@ -121,6 +121,18 @@ export const boardStatusResolutionSchema = {
     updatedAt: { type: Date },
 };
 
+export interface ITaskSprint {
+    sprintId: string;
+    assignedAt: Date;
+    assignedBy: string;
+}
+
+const taskSprintSchema = {
+    sprintId: { type: String },
+    assignedAt: { type: Date },
+    assignedBy: { type: String },
+};
+
 export interface IBlock {
     // General
     customId: string;
@@ -152,13 +164,14 @@ export interface IBlock {
     taskResolution?: string;
     labels?: IBlockAssignedLabel[];
     dueAt?: Date;
+    taskSprint?: ITaskSprint;
 
     // Board
     boardStatuses?: IBlockStatus[];
     boardLabels?: IBlockLabel[];
     boardResolutions?: IBoardStatusResolution[];
     currentSprintId?: string;
-    sprintOptions?: IBoardSprintDefinition;
+    sprintOptions?: IBoardSprintOptions;
 }
 
 const blockSchema = {
@@ -191,14 +204,14 @@ const blockSchema = {
     statusAssignedAt: { type: Date },
     taskResolution: { type: String },
     labels: { type: [blockAssignedLabelSchema] },
-    taskSprintId: { type: String },
+    taskSprint: { type: taskSprintSchema },
 
     // Board
     boardStatuses: { type: [blockStatusSchema] },
     boardLabels: { type: [blockLabelSchema] },
     boardResolutions: { type: boardStatusResolutionSchema },
     currentSprintId: { type: String },
-    sprintOptions: { type: boardSprintDefinitionSchema },
+    sprintOptions: { type: boardSprintOptionsSchema },
 };
 
 export default blockSchema;
