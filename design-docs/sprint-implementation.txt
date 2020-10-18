@@ -21,7 +21,6 @@ interface ISprintOptions {
     duration: string | Enum ["1 week", "2 weeks", "1 month"]
     createdAt: Date | string
     createdBy: string
-    namingType: string | Enum ["system-generated", "user-provided"]
     updatedAt?: Date | string
     updatedBy?: string
 }

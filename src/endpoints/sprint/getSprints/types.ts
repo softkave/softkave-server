@@ -10,5 +10,5 @@ export interface IGetSprintsParameters {
 export type GetSprintsEndpoint = Endpoint<
     IBaseContext,
     IGetSprintsParameters,
-    ISprint[]
+    { sprints: ISprint[] }
 >;

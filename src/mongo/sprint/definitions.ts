@@ -9,14 +9,8 @@ export enum SprintDuration {
     OneMonth = "1 month",
 }
 
-export enum SprintNamingType {
-    SystemGenerated = "system-generated",
-    UserProvided = "user-provided",
-}
-
 export interface IBoardSprintOptions {
     duration: SprintDuration;
-    namingType: SprintNamingType;
     updatedAt?: Date;
     updatedBy?: string;
     createdAt: Date;

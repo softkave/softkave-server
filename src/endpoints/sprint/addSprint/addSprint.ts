@@ -1,9 +1,8 @@
-import { IBoardSprintDefinition, ISprint } from "../../../mongo/sprint";
-import { getDate } from "../../../utilities/fns";
-import getId from "../../../utilities/getId";
+import { ISprint } from "../../../mongo/sprint";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { SprintsNotSetupYetError, SprintsSetupAldreadyError } from "../errors";
+import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { AddSprintEndpoint } from "./types";
 import { addSprintJoiSchema } from "./validation";
 
@@ -18,7 +17,35 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         throw new SprintsNotSetupYetError();
     }
 
-    const now = new Date();
+    if (data.name) {
+        const sprintWithNameExists = await context.sprint.sprintExists(
+            context,
+            data.name,
+            data.boardId
+        );
+
+        if (sprintWithNameExists) {
+            throw new SprintWithNameExistsError();
+        }
+    }
+
+    const sprintsCount = await context.sprint.countSprints(
+        context,
+        data.boardId
+    );
+
+    let sprint: ISprint = {
+        customId: getNewId(),
+        boardId: data.boardId,
+        orgId: board.rootBlockId,
+        duration: board.sprintOptions.duration,
+        sprintIndex: sprintsCount,
+        name: data.name,
+    };
+
+    sprint = await context.sprint.saveSprint(context, sprint);
+
+    return { sprint };
 };
 
 export default addSprint;

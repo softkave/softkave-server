@@ -2,7 +2,7 @@ import Joi from "joi";
 import { validationSchemas } from "../../../utilities/validationUtils";
 import sprintValidationSchemas from "../validation";
 
-export const addSprintJoiSchema = Joi.object().keys({
+export const sprintExistsJoiSchema = Joi.object().keys({
+    name: sprintValidationSchemas.name.required(),
     boardId: validationSchemas.uuid.required(),
-    name: sprintValidationSchemas.name.optional(),
 });

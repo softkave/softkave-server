@@ -4,25 +4,34 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
 import { IBulkUpdateById } from "../../utilities/types";
-import { BlockDoesNotExistError } from "../block/errors";
 import { IBaseContext } from "./BaseContext";
 
 export interface ISprintContext {
-    saveSprint: (ctx: IBaseContext, block: ISprint) => Promise<ISprint>;
+    saveSprint: (ctx: IBaseContext, sprint: ISprint) => Promise<ISprint>;
     getSprintById: (
         ctx: IBaseContext,
         customId: string
     ) => Promise<ISprint | undefined>;
+    getSprintsByBoardId: (
+        ctx: IBaseContext,
+        boardId: string
+    ) => Promise<ISprint[]>;
     updateSprintById: (
         ctx: IBaseContext,
         customId: string,
-        data: Partial<ISprint>,
-        ensureBlockExists?: boolean
-    ) => Promise<boolean | undefined>;
+        data: Partial<ISprint>
+    ) => Promise<void>;
     bulkUpdateSprintsById: (
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateById<ISprint>>
+        sprints: Array<IBulkUpdateById<ISprint>>
     ) => Promise<void>;
+    sprintExists: (
+        ctx: IBaseContext,
+        name: string,
+        boardId: string
+    ) => Promise<boolean>;
+    deleteSprint: (ctx: IBaseContext, sprintId: string) => Promise<void>;
+    countSprints: (ctx: IBaseContext, boardId: string) => Promise<number>;
 }
 
 export default class SprintContext implements ISprintContext {
@@ -56,27 +65,12 @@ export default class SprintContext implements ISprintContext {
     public async updateSprintById(
         ctx: IBaseContext,
         customId: string,
-        data: Partial<ISprint>,
-        ensureBlockExists?: boolean
+        data: Partial<ISprint>
     ) {
         try {
-            if (ensureBlockExists) {
-                const sprint = await ctx.models.sprintModel.model
-                    .findOneAndUpdate({ customId }, data, {
-                        fields: "customId",
-                    })
-                    .exec();
-
-                if (sprint && sprint.customId) {
-                    return true;
-                } else {
-                    throw new BlockDoesNotExistError(); // should we include id
-                }
-            } else {
-                await ctx.models.sprintModel.model
-                    .updateOne({ customId }, data)
-                    .exec();
-            }
+            await ctx.models.sprintModel.model
+                .updateOne({ customId }, data)
+                .exec();
         } catch (error) {
             console.error(error);
             throw new ServerError();
@@ -116,6 +110,62 @@ export default class SprintContext implements ISprintContext {
                 throw new ServerError();
             }
 
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async getSprintsByBoardId(ctx: IBaseContext, boardId: string) {
+        try {
+            return await ctx.models.sprintModel.model
+                .find({
+                    boardId,
+                })
+                .lean()
+                .exec();
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async sprintExists(
+        ctx: IBaseContext,
+        name: string,
+        boardId: string
+    ) {
+        try {
+            return await ctx.models.sprintModel.model.exists({
+                boardId,
+                name: name.toLowerCase(),
+            });
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async deleteSprint(ctx: IBaseContext, sprintId: string) {
+        try {
+            await ctx.models.sprintModel.model
+                .deleteOne({
+                    customId: sprintId,
+                })
+                .exec();
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async countSprints(ctx: IBaseContext, boardId: string) {
+        try {
+            return await ctx.models.sprintModel.model
+                .count({
+                    boardId,
+                })
+                .exec();
+        } catch (error) {
             console.error(error);
             throw new ServerError();
         }

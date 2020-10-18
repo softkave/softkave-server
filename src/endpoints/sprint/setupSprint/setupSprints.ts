@@ -1,6 +1,5 @@
-import { IBoardSprintDefinition, ISprint } from "../../../mongo/sprint";
+import { IBoardSprintOptions } from "../../../mongo/sprint";
 import { getDate } from "../../../utilities/fns";
-import getId from "../../../utilities/getId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { SprintsSetupAldreadyError } from "../errors";
@@ -18,29 +17,15 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
         throw new SprintsSetupAldreadyError();
     }
 
-    const now = new Date();
-
-    const sprintDefinition: IBoardSprintDefinition = {
-        createdAt: getDate(now),
+    const sprintOptions: IBoardSprintOptions = {
+        createdAt: getDate(),
         createdBy: user.customId,
         duration: data.duration,
     };
 
-    const sprint: ISprint = {
-        ...sprintDefinition,
-        customId: getId(),
-        parentId: data.boardId,
-        estimatedStartYear: now.getFullYear(),
-        overallIteration: 1,
-        rootBlockId: board.rootBlockId,
-        yearIteration: 1,
-    };
-
     await context.block.updateBlockById(context, board.customId, {
-        sprintOptions: sprintDefinition,
+        sprintOptions,
     });
-
-    return await context.sprint.saveSprint(context, sprint);
 };
 
 export default setupSprints;

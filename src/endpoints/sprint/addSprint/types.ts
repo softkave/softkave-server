@@ -4,10 +4,11 @@ import { Endpoint } from "../../types";
 
 export interface IAddSprintParameters {
     boardId: string;
+    name?: string;
 }
 
 export type AddSprintEndpoint = Endpoint<
     IBaseContext,
     IAddSprintParameters,
-    ISprint
+    { sprint: ISprint }
 >;
