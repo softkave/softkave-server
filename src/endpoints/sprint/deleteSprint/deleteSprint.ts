@@ -1,6 +1,9 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { SprintDoesNotExistError } from "../errors";
+import {
+    CannotDeleteCurrentOrPastSprintError,
+    SprintDoesNotExistError,
+} from "../errors";
 import { DeleteSprintEndpoint } from "./types";
 import { deleteSprintJoiSchema } from "./validation";
 
@@ -16,6 +19,11 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     const board = await context.block.getBlockById(context, sprint.boardId);
 
     canReadBlock({ user, block: board });
+
+    if (!!sprint.startDate) {
+        throw new CannotDeleteCurrentOrPastSprintError();
+    }
+
     await context.sprint.deleteSprint(context, data.sprintId);
 };
 

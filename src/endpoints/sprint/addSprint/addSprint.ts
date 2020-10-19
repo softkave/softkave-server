@@ -1,4 +1,5 @@
 import { ISprint } from "../../../mongo/sprint";
+import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
@@ -41,6 +42,8 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         duration: board.sprintOptions.duration,
         sprintIndex: sprintsCount,
         name: data.name,
+        createdAt: getDate(),
+        createdBy: user.customId,
     };
 
     sprint = await context.sprint.saveSprint(context, sprint);

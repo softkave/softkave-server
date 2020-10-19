@@ -1,4 +1,4 @@
-import { ISprint, SprintDuration } from "../../../mongo/sprint";
+import { SprintDuration } from "../../../mongo/sprint";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 

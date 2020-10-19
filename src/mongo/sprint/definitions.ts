@@ -32,11 +32,15 @@ export interface ISprint {
     orgId: string;
     duration: SprintDuration;
     sprintIndex: number;
+    createdAt: Date;
+    createdBy: string;
     name?: string;
     startDate?: Date;
     startedBy?: string;
     endDate?: Date;
     endedBy?: string;
+    updatedAt?: Date;
+    updatedBy?: string;
 }
 
 const sprintSchema = {
@@ -50,6 +54,10 @@ const sprintSchema = {
     startedBy: { type: String },
     endDate: { type: Date },
     endedBy: { type: String },
+    createdAt: { type: Date, default: () => getDate() },
+    createdBy: { type: String },
+    updatedAt: { type: Date },
+    updatedBy: { type: String },
 };
 
 export default sprintSchema;

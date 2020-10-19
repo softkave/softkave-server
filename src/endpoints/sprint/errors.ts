@@ -23,3 +23,9 @@ export class SprintWithNameExistsError extends OperationError {
     public name = "SprintWithNameExistsError";
     public message = "Sprint with name provided exists";
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class CannotDeleteCurrentOrPastSprintError extends OperationError {
+    public name = "CannotDeleteCurrentOrPastSprintError";
+    public message = "Cannot delete current or ended sprints";
+}

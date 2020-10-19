@@ -1,4 +1,3 @@
-import { BlockType, IBlock } from "../../../mongo/block";
 import { ISprint } from "../../../mongo/sprint";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
