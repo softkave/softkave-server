@@ -1,8 +1,18 @@
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
-export interface IEndSprintsParameters {
+export interface IEndSprintParameters {
     sprintId: string;
 }
 
-export type EndSprintEndpoint = Endpoint<IBaseContext, IEndSprintsParameters>;
+export interface IEndSprintResult {
+    data: {
+        endDate: string;
+    };
+}
+
+export type EndSprintEndpoint = Endpoint<
+    IBaseContext,
+    IEndSprintParameters,
+    IEndSprintResult
+>;

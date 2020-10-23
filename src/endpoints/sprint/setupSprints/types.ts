@@ -3,11 +3,20 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface ISetupSprintsParameters {
-    duration: SprintDuration;
     boardId: string;
+    data: {
+        duration: SprintDuration;
+    };
+}
+
+export interface ISetupSprintsResult {
+    data: {
+        createdAt: string;
+    };
 }
 
 export type SetupSprintsEndpoint = Endpoint<
     IBaseContext,
-    ISetupSprintsParameters
+    ISetupSprintsParameters,
+    ISetupSprintsResult
 >;

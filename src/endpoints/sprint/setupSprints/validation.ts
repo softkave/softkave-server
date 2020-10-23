@@ -3,6 +3,10 @@ import { validationSchemas } from "../../../utilities/validationUtils";
 import sprintValidationSchemas from "../validation";
 
 export const setupSprintsJoiSchema = Joi.object().keys({
-    duration: sprintValidationSchemas.sprintDuration.required(),
     boardId: validationSchemas.uuid.required(),
+    data: Joi.object()
+        .keys({
+            duration: sprintValidationSchemas.sprintDuration.required(),
+        })
+        .required(),
 });

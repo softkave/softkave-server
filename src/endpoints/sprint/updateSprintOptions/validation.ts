@@ -4,5 +4,9 @@ import sprintValidationSchemas from "../validation";
 
 export const updateSprintOptionsJoiSchema = Joi.object().keys({
     boardId: validationSchemas.uuid.required(),
-    name: sprintValidationSchemas.name.optional(),
+    data: Joi.object()
+        .keys({
+            duration: sprintValidationSchemas.sprintDuration,
+        })
+        .required(),
 });

@@ -1,5 +1,5 @@
 import { IBoardSprintOptions } from "../../../mongo/sprint";
-import { getDate } from "../../../utilities/fns";
+import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { SprintsSetupAldreadyError } from "../errors";
@@ -20,12 +20,18 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
     const sprintOptions: IBoardSprintOptions = {
         createdAt: getDate(),
         createdBy: user.customId,
-        duration: data.duration,
+        duration: data.data.duration,
     };
 
     await context.block.updateBlockById(context, board.customId, {
         sprintOptions,
     });
+
+    return {
+        data: {
+            createdAt: getDateString(sprintOptions.createdAt),
+        },
+    };
 };
 
 export default setupSprints;

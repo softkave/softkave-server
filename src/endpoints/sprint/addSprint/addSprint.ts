@@ -18,16 +18,14 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         throw new SprintsNotSetupYetError();
     }
 
-    if (data.name) {
-        const sprintWithNameExists = await context.sprint.sprintExists(
-            context,
-            data.name,
-            data.boardId
-        );
+    const sprintWithNameExists = await context.sprint.sprintExists(
+        context,
+        data.data.name,
+        data.boardId
+    );
 
-        if (sprintWithNameExists) {
-            throw new SprintWithNameExistsError();
-        }
+    if (sprintWithNameExists) {
+        throw new SprintWithNameExistsError();
     }
 
     const sprintsCount = await context.sprint.countSprints(
@@ -39,16 +37,16 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         customId: getNewId(),
         boardId: data.boardId,
         orgId: board.rootBlockId,
-        duration: board.sprintOptions.duration,
+        duration: data.data.duration,
         sprintIndex: sprintsCount,
-        name: data.name,
+        name: data.data.name,
         createdAt: getDate(),
         createdBy: user.customId,
     };
 
     sprint = await context.sprint.saveSprint(context, sprint);
 
-    return { sprint };
+    return { data: sprint };
 };
 
 export default addSprint;

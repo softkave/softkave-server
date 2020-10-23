@@ -3,14 +3,14 @@ import { IBaseContext } from "./contexts/BaseContext";
 import RequestData from "./contexts/RequestData";
 
 export interface IBaseEndpointResult {
-  errors?: OperationError[];
+    errors?: OperationError[];
 }
 
 export type Endpoint<
-  C extends IBaseContext = IBaseContext,
-  T = any,
-  R = any
+    C extends IBaseContext = IBaseContext,
+    T = any,
+    R = any
 > = (
-  context: C,
-  instData: RequestData<T>
+    context: C,
+    instData: RequestData<T>
 ) => Promise<(R & IBaseEndpointResult) | undefined>;

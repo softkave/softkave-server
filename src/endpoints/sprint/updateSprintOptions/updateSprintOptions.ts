@@ -1,3 +1,4 @@
+import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { SprintsNotSetupYetError } from "../errors";
@@ -18,12 +19,24 @@ const updateSprintOptions: UpdateSprintOptionsEndpoint = async (
         throw new SprintsNotSetupYetError();
     }
 
+    const updatedAt = getDate();
+
     // TODO: how can we update only the changed parts?
     await context.block.updateBlockById(context, board.customId, {
-        sprintOptions: { ...board.sprintOptions, ...data.data },
+        sprintOptions: {
+            ...board.sprintOptions,
+            ...data.data,
+            updatedAt,
+            updatedBy: user.customId,
+        },
     });
 
     // TODO: update the rest of the sprints not started yet
+    await context.sprint.updateUnstartedSprints(context, board.customId, {
+        duration: data.data.duration,
+    });
+
+    return { data: { updatedAt: getDateString(updatedAt) } };
 };
 
 export default updateSprintOptions;

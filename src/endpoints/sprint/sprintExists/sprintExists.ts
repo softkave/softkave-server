@@ -9,12 +9,18 @@ const sprintExists: SprintExistsEndpoint = async (context, instData) => {
     const board = await context.block.getBlockByName(context, data.name);
 
     if (!board) {
-        return false;
+        return { data: false };
     }
 
     canReadBlock({ user, block: board });
 
-    return await context.sprint.sprintExists(context, data.name, data.boardId);
+    const doesSprintExist = await context.sprint.sprintExists(
+        context,
+        data.name,
+        data.boardId
+    );
+
+    return { data: doesSprintExist };
 };
 
 export default sprintExists;

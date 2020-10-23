@@ -1,5 +1,6 @@
+import { ITaskSprint } from "../../mongo/block";
 import mongoConstants from "../../mongo/constants";
-import { ISprint } from "../../mongo/sprint";
+import { IBoardSprintOptions, ISprint } from "../../mongo/sprint";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
@@ -32,6 +33,16 @@ export interface ISprintContext {
     ) => Promise<boolean>;
     deleteSprint: (ctx: IBaseContext, sprintId: string) => Promise<void>;
     countSprints: (ctx: IBaseContext, boardId: string) => Promise<number>;
+    getSprintByIndex: (
+        ctx: IBaseContext,
+        boardId: string,
+        index: number
+    ) => Promise<ISprint | undefined>;
+    updateUnstartedSprints: (
+        ctx: IBaseContext,
+        boardId: string,
+        data: Partial<ISprint>
+    ) => Promise<void>;
 }
 
 export default class SprintContext implements ISprintContext {
@@ -164,6 +175,46 @@ export default class SprintContext implements ISprintContext {
                 .count({
                     boardId,
                 })
+                .exec();
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async getSprintByIndex(
+        ctx: IBaseContext,
+        boardId: string,
+        index: number
+    ) {
+        try {
+            return await ctx.models.sprintModel.model
+                .findOne({
+                    boardId,
+                    sprintIndex: index,
+                })
+                .lean()
+                .exec();
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
+
+    public async updateUnstartedSprints(
+        ctx: IBaseContext,
+        boardId: string,
+        data: Partial<ISprint>
+    ) {
+        try {
+            await ctx.models.sprintModel.model
+                .updateMany(
+                    {
+                        boardId,
+                        startDate: null,
+                    },
+                    data
+                )
                 .exec();
         } catch (error) {
             console.error(error);

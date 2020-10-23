@@ -10,7 +10,14 @@ export interface IUpdateSprintParameters {
     };
 }
 
+export interface IUpdateSprintResult {
+    data: {
+        updatedAt: string;
+    };
+}
+
 export type UpdateSprintEndpoint = Endpoint<
     IBaseContext,
-    IUpdateSprintParameters
+    IUpdateSprintParameters,
+    IUpdateSprintResult
 >;

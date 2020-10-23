@@ -24,6 +24,13 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
         throw new CannotDeleteCurrentOrPastSprintError();
     }
 
+    await context.block.bulkUpdateTaskSprints(
+        context,
+        data.sprintId,
+        null,
+        user.customId
+    );
+
     await context.sprint.deleteSprint(context, data.sprintId);
 };
 

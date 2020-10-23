@@ -24,6 +24,11 @@ const sprintSchema = `
         createdBy: String
     }
 
+    input NewSprintInput {
+        name: String
+        duration: String
+    }
+
     type AddSprintResult {
         errors: [Error]
         data: Sprint
@@ -32,6 +37,15 @@ const sprintSchema = `
     input UpdateSprintInput {
         name: String
         duration: String
+    }
+
+    type UpdateSprintResultData {
+        updatedAt: String
+    }
+
+    type UpdateSprintResult {
+        errors: [Error]
+        data: UpdateSprintResultData
     }
 
     type GetSprintsResult {
@@ -43,9 +57,22 @@ const sprintSchema = `
         duration: String
     }
 
+    type UpdateSprintOptionsResultData {
+        updatedAt: String
+    }
+
+    type UpdateSprintOptionsResult {
+        errors: [Error]
+        data: UpdateSprintOptionsResultData
+    }
+
     type SprintExistsResult {
         errors: [Error]
         data: Boolean
+    }
+
+    input SprintOptionsInput {
+        duration: String
     }
 
     type SetupSprintsResult {
@@ -53,15 +80,33 @@ const sprintSchema = `
         data: SprintOptions
     }
 
+    type StartSprintResultData {
+        startDate: String
+    }
+
+    type StartSprintResult {
+        errors: [Error]
+        data: StartSprintResultData
+    }
+
+    type EndSprintResultData {
+        startDate: String
+    }
+
+    type EndSprintResult {
+        errors: [Error]
+        data: EndSprintResultData
+    }
+
     type SprintQuery {
-        addSprint (boardId: String!, name: String): AddSprintResult
-        updateSprint (sprintId: String!, data: UpdateSprintInput!): ErrorOnlyResponse
+        addSprint (boardId: String!, data: NewSprintInput!): AddSprintResult
+        updateSprint (sprintId: String!, data: UpdateSprintInput!): UpdateSprintResult
         deleteSprint (sprintId: String!): ErrorOnlyResponse
-        startSprint (sprintId: String!): ErrorOnlyResponse
-        endSprint (sprintId: String!): ErrorOnlyResponse
+        startSprint (sprintId: String!): StartSprintResult
+        endSprint (sprintId: String!): EndSprintResult
         getSprints (boardId: String!): GetSprintsResult
-        updateSprintOptions (boardId: String!, data: UpdateSprintOptionsInput): ErrorOnlyResponse
-        setupSprints (boardId: String!, duration: String!): SetupSprintsResult
+        updateSprintOptions (boardId: String!, data: UpdateSprintOptionsInput): UpdateSprintOptionsResult
+        setupSprints (boardId: String!, data: SprintOptionsInput!): SetupSprintsResult
         sprintExists (boardId: String!, name: String!): SprintExistsResult
     }
 `;

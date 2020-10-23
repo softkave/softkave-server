@@ -157,7 +157,6 @@ export interface IBlock {
     assignees?: IAssignee[];
     priority?: string;
     subTasks?: ISubTask[]; // should sub-tasks be their own blocks?
-    taskSprintId?: string;
     status?: string;
     statusAssignedBy?: string;
     statusAssignedAt?: Date;

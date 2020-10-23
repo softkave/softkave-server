@@ -29,3 +29,15 @@ export class CannotDeleteCurrentOrPastSprintError extends OperationError {
     public name = "CannotDeleteCurrentOrPastSprintError";
     public message = "Cannot delete current or ended sprints";
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class CannotRestartCurrentOrPastSprintsError extends OperationError {
+    public name = "CannotRestartCurrentOrPastSprintsError";
+    public message = "Cannot restart current or past sprints";
+}
+
+// tslint:disable-next-line: max-classes-per-file
+export class CannotStartSprintCauseCurrentSprintExistsError extends OperationError {
+    public name = "CannotStartSprintCauseCurrentSprintExistsError";
+    public message = "Please end the current sprint before starting a new one";
+}

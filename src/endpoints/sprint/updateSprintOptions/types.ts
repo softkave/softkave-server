@@ -9,7 +9,12 @@ export interface IUpdateSprintOptionsParameters {
     };
 }
 
+export interface IUpdateSprintOptionsResult {
+    data: { updatedAt: string };
+}
+
 export type UpdateSprintOptionsEndpoint = Endpoint<
     IBaseContext,
-    IUpdateSprintOptionsParameters
+    IUpdateSprintOptionsParameters,
+    IUpdateSprintOptionsResult
 >;
