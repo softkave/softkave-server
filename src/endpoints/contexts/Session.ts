@@ -1,14 +1,13 @@
 import merge from "lodash/merge";
 import moment from "moment";
 import { resolveJWTError } from "../../middlewares/handleErrors";
-import { IUser, IUserModel } from "../../mongo/user";
+import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
 import { PermissionDeniedError } from "../errors";
+import { JWTEndpoints } from "../types";
 import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
 import UserToken, { IBaseUserTokenData } from "../user/UserToken";
-import { JWTEndpoints } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import RequestData from "./RequestData";
 
@@ -16,155 +15,162 @@ import RequestData from "./RequestData";
 // for security purposes, in case someone forgets to check
 
 export interface ISessionContext {
-  addUserToSession: (ctx: IBaseContext, data: RequestData, user: IUser) => void;
-  getUser: (ctx: IBaseContext, data: RequestData) => Promise<IUser>;
-  getRequestToken: (ctx: IBaseContext, data: RequestData) => IBaseUserTokenData;
-  updateUser: (
-    ctx: IBaseContext,
-    data: RequestData,
-    partialUserData: Partial<IUser>
-  ) => Promise<void>;
-  assertUser: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
-  validateUserTokenData: (
-    ctx: IBaseContext,
-    tokenData: IBaseUserTokenData,
-    required?: boolean,
-    audience?: JWTEndpoints
-  ) => Promise<IUser>;
-  validateUserToken: (ctx: IBaseContext, token: string) => IBaseUserTokenData;
+    addUserToSession: (
+        ctx: IBaseContext,
+        data: RequestData,
+        user: IUser
+    ) => void;
+    getUser: (ctx: IBaseContext, data: RequestData) => Promise<IUser>;
+    getRequestToken: (
+        ctx: IBaseContext,
+        data: RequestData
+    ) => IBaseUserTokenData;
+    updateUser: (
+        ctx: IBaseContext,
+        data: RequestData,
+        partialUserData: Partial<IUser>
+    ) => Promise<void>;
+    assertUser: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
+    validateUserTokenData: (
+        ctx: IBaseContext,
+        tokenData: IBaseUserTokenData,
+        required?: boolean,
+        audience?: JWTEndpoints
+    ) => Promise<IUser>;
+    validateUserToken: (ctx: IBaseContext, token: string) => IBaseUserTokenData;
 }
 
 export default class SessionContext implements ISessionContext {
-  private static async __getUser(ctx: IBaseContext, data: RequestData) {
-    if (data.req) {
-      // TODO: not using cached data on multiple requests
-      if (data.req.userData) {
-        return data.req.userData;
-      }
+    private static async __getUser(ctx: IBaseContext, data: RequestData) {
+        if (data.req) {
+            // TODO: not using cached data on multiple requests
+            if (data.req.userData) {
+                return data.req.userData;
+            }
 
-      const user = await ctx.session.validateUserTokenData(
-        ctx,
-        data.req.user,
-        true,
-        JWTEndpoints.Login
-      );
+            const user = await ctx.session.validateUserTokenData(
+                ctx,
+                data.req.user,
+                true,
+                JWTEndpoints.Login
+            );
 
-      data.req.userData = user;
-      return user;
-    } else if (data.socket) {
-      const user = ctx.socket.getUserBySocketId(data);
+            data.req.userData = user;
+            return user;
+        } else if (data.socket) {
+            const user = ctx.socket.getUserBySocketId(data);
 
-      if (!user) {
-        throw new PermissionDeniedError();
-      }
+            if (!user) {
+                throw new PermissionDeniedError();
+            }
 
-      return user;
-    }
-  }
-
-  public validateUserToken(ctx: IBaseContext, token: string) {
-    try {
-      const tokenData = UserToken.decodeToken(token);
-      return tokenData;
-    } catch (error) {
-      console.error(error);
-      const JWTError = resolveJWTError(error);
-
-      if (JWTError) {
-        throw JWTError;
-      }
-
-      throw new PermissionDeniedError();
-    }
-  }
-
-  public async validateUserTokenData(
-    ctx: IBaseContext,
-    tokenData: IBaseUserTokenData,
-    required: boolean = true,
-    audience = JWTEndpoints.Login
-  ) {
-    if (!tokenData || !UserToken.containsAudience(tokenData, audience)) {
-      if (required) {
-        throw new InvalidCredentialsError();
-      }
+            return user;
+        }
     }
 
-    let user: IUser = null;
-    const query = {
-      customId: tokenData.sub.id,
-    };
+    public validateUserToken(ctx: IBaseContext, token: string) {
+        try {
+            const tokenData = UserToken.decodeToken(token);
+            return tokenData;
+        } catch (error) {
+            console.error(error);
+            const JWTError = resolveJWTError(error);
 
-    user = await ctx.models.userModel.model.findOne(query).exec();
+            if (JWTError) {
+                throw JWTError;
+            }
 
-    if (!user) {
-      throw new PermissionDeniedError();
+            throw new PermissionDeniedError();
+        }
     }
 
-    const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
-    const tokenDataPasswordLastChangedAt = moment(
-      tokenData.sub.passwordLastChangedAt
-    );
-
-    // validate password changes to logout user if using old password
-    if (
-      !tokenData.sub.passwordLastChangedAt ||
-      !user.passwordLastChangedAt ||
-      userPasswordLastChangedAt > tokenDataPasswordLastChangedAt
+    public async validateUserTokenData(
+        ctx: IBaseContext,
+        tokenData: IBaseUserTokenData,
+        required: boolean = true,
+        audience = JWTEndpoints.Login
     ) {
-      throw new LoginAgainError();
+        if (!tokenData || !UserToken.containsAudience(tokenData, audience)) {
+            if (required) {
+                throw new InvalidCredentialsError();
+            }
+        }
+
+        let user: IUser = null;
+        const query = {
+            customId: tokenData.sub.id,
+        };
+
+        user = await ctx.models.userModel.model.findOne(query).exec();
+
+        if (!user) {
+            throw new PermissionDeniedError();
+        }
+
+        const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
+        const tokenDataPasswordLastChangedAt = moment(
+            tokenData.sub.passwordLastChangedAt
+        );
+
+        // validate password changes to logout user if using old password
+        if (
+            !tokenData.sub.passwordLastChangedAt ||
+            !user.passwordLastChangedAt ||
+            userPasswordLastChangedAt > tokenDataPasswordLastChangedAt
+        ) {
+            throw new LoginAgainError();
+        }
+
+        return user;
     }
 
-    return user;
-  }
-
-  public addUserToSession(ctx: IBaseContext, data: RequestData, user: IUser) {
-    if (data.req) {
-      data.req.userData = user;
-    } else if (data.socket) {
-      ctx.socket.mapUserToSocketId(data, user);
-    }
-  }
-
-  public async getUser(ctx: IBaseContext, data: RequestData) {
-    return SessionContext.__getUser(ctx, data);
-  }
-
-  public async assertUser(ctx: IBaseContext, data: RequestData) {
-    return !!SessionContext.__getUser(ctx, data);
-  }
-
-  public getRequestToken(ctx: IBaseContext, data: RequestData) {
-    const tokenData = data.tokenData;
-
-    if (!tokenData) {
-      throw new InvalidCredentialsError();
+    public addUserToSession(ctx: IBaseContext, data: RequestData, user: IUser) {
+        if (data.req) {
+            data.req.userData = user;
+        } else if (data.socket) {
+            ctx.socket.mapUserToSocketId(data, user);
+        }
     }
 
-    return tokenData;
-  }
-
-  public async updateUser(
-    ctx: IBaseContext,
-    data: RequestData,
-    partialUserData: Partial<IUser>
-  ) {
-    const user = await this.getUser(ctx, data);
-
-    // TODO: is this safe, and does it work?
-    merge(user, partialUserData);
-
-    try {
-      await ctx.models.userModel.model
-        .updateOne({ customId: user.customId }, partialUserData)
-        .exec();
-    } catch (error) {
-      console.error(error);
-      throw new ServerError();
+    public async getUser(ctx: IBaseContext, data: RequestData) {
+        return SessionContext.__getUser(ctx, data);
     }
-  }
+
+    public async assertUser(ctx: IBaseContext, data: RequestData) {
+        return !!SessionContext.__getUser(ctx, data);
+    }
+
+    public getRequestToken(ctx: IBaseContext, data: RequestData) {
+        const tokenData = data.tokenData;
+
+        if (!tokenData) {
+            throw new InvalidCredentialsError();
+        }
+
+        return tokenData;
+    }
+
+    public async updateUser(
+        ctx: IBaseContext,
+        data: RequestData,
+        partialUserData: Partial<IUser>
+    ) {
+        const user = await this.getUser(ctx, data);
+
+        // TODO: is this safe, and does it work?
+        merge(user, partialUserData);
+
+        try {
+            await ctx.models.userModel.model
+                .updateOne({ customId: user.customId }, partialUserData)
+                .exec();
+        } catch (error) {
+            console.error(error);
+            throw new ServerError();
+        }
+    }
 }
 
 export const getSessionContext = createSingletonFunc(
-  () => new SessionContext()
+    () => new SessionContext()
 );

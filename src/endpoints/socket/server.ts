@@ -9,8 +9,8 @@ import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadC
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { IPublicNotificationData } from "../notification/types";
+import { JWTEndpoints } from "../types";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
-import { JWTEndpoints } from "../utils";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
 import subscribe from "./subscribe/subscribe";
 import unsubscribe from "./unsubscribe/unsubscribe";

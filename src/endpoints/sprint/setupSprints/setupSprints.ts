@@ -13,7 +13,7 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
 
     await canReadBlock({ user, block: board });
 
-    if (board.currentSprintId) {
+    if (!!board.sprintOptions) {
         throw new SprintsSetupAldreadyError();
     }
 

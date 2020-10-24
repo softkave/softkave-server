@@ -3,7 +3,7 @@ const sprintSchema = `
         customId: String
         boardId: String
         orgId: String
-        duration: string
+        duration: String
         sprintIndex: Int
         name: String
         startDate: String

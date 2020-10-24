@@ -1,10 +1,9 @@
 import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
 import { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../contexts/RequestData";
-import { JWTEndpoints } from "../../utils";
+import { JWTEndpoints } from "../../types";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";

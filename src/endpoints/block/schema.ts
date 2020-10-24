@@ -109,6 +109,20 @@ const blockSchema = `
     updatedAt: String
   }
 
+  type TaskSprint {
+    sprintId: String
+    assignedAt: String
+    assignedBy: String
+  }
+
+  type BoardSprintOptions {
+    duration: String
+    updatedAt: String
+    updatedBy: String
+    createdAt: String
+    createdBy: String
+  }
+
   type Block {
     customId: String
     createdBy: String
@@ -133,6 +147,9 @@ const blockSchema = `
     statusAssignedAt: String
     taskResolution: String
     labels: [BlockAssignedLabel]
+    taskSprint: TaskSprint
+    currentSprintId: String
+    sprintOptions: BoardSprintOptions
   }
 
   type SingleBlockOpResponse {

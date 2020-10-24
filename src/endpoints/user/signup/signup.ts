@@ -8,7 +8,7 @@ import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { JWTEndpoints } from "../../utils";
+import { JWTEndpoints } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
