@@ -1,10 +1,8 @@
 import { Server } from "socket.io";
 import { AuditLogResourceType } from "../../mongo/audit-log";
-import { IBlock } from "../../mongo/block";
+import { BlockType } from "../../mongo/block";
 import { INote } from "../../mongo/note";
-import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import getNewId from "../../utilities/getNewId";
 import { OutgoingSocketEvents } from "../socket/server";
 import { IBaseContext } from "./BaseContext";
 import RequestData from "./RequestData";
@@ -46,7 +44,7 @@ export interface IRoomContext {
         roomName: string,
         userId: string
     ) => boolean;
-    getBlockRoomName: (block: IBlock) => string;
+    getBlockRoomName: (type: BlockType, id: string) => string;
     getNoteRoomName: (note: INote) => string;
     getUserRoomName: (userId: string) => string;
     getChatRoomName: (roomId: string) => string;
@@ -177,8 +175,8 @@ export default class RoomContext implements IRoomContext {
         return `${AuditLogResourceType.User}-${userId}`;
     }
 
-    public getBlockRoomName(block: IBlock) {
-        return `${block.type}-${block.customId}`;
+    public getBlockRoomName(type: BlockType, id: string) {
+        return `${type}-${id}`;
     }
 
     public getNoteRoomName(note: INote) {

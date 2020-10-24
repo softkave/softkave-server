@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { validationSchemas } from "../../utilities/validationUtils";
 import { sprintConstants } from "./constants";
 
 const sprintDuration = Joi.string().allow(sprintConstants.durationOptions);

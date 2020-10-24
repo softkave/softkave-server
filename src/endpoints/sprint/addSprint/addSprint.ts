@@ -3,7 +3,12 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
+import {
+    IOutgoingNewSprintPacket,
+    OutgoingSocketEvents,
+} from "../../socket/server";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
+import getPublicSprintData from "../getPublicSprintData";
 import { AddSprintEndpoint } from "./types";
 import { addSprintJoiSchema } from "./validation";
 
@@ -45,6 +50,19 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     };
 
     sprint = await context.sprint.saveSprint(context, sprint);
+
+    const roomName = context.room.getBlockRoomName(board.type, board.customId);
+    const newSprintPacket: IOutgoingNewSprintPacket = {
+        sprint: getPublicSprintData(sprint),
+    };
+
+    context.room.broadcast(
+        context,
+        roomName,
+        OutgoingSocketEvents.NewSprint,
+        newSprintPacket,
+        instData
+    );
 
     return { data: sprint };
 };

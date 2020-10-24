@@ -90,14 +90,15 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     await context.block.markBlockDeleted(context, block.customId, user);
 
     fireAndForgetPromise(
-        broadcastBlockUpdate(
+        broadcastBlockUpdate({
+            block,
             context,
             instData,
-            block.customId,
-            { isDelete: true },
-            undefined,
-            block
-        )
+            updateType: { isDelete: true },
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.rootBlockId,
+        })
     );
 
     context.auditLog.insert(context, instData, {

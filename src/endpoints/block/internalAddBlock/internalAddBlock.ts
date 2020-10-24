@@ -59,6 +59,7 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
         statusAssignedBy: inputBlock.statusAssignedBy,
         statusAssignedAt: inputBlock.statusAssignedAt as any,
         taskResolution: inputBlock.taskResolution,
+        taskSprint: inputBlock.taskSprint,
     };
 
     const savedBlock = await context.block.saveBlock(context, block);

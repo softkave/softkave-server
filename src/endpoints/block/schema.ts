@@ -162,6 +162,12 @@ const blockSchema = `
     blocks: [Block]
   }
 
+  input TaskSprintInput {
+    sprintId: String
+    assignedAt: String
+    assignedBy: String
+  }
+
   input AddBlockInput {
     customId: String
     type: String
@@ -182,6 +188,7 @@ const blockSchema = `
     statusAssignedAt: String
     taskResolution: String
     labels: [BlockAssignedLabelInput]
+    taskSprint: TaskSprintInput
   }
 
   input UpdateBlockInput {
@@ -201,6 +208,7 @@ const blockSchema = `
     statusAssignedAt: String
     taskResolution: String
     labels: [BlockAssignedLabelInput]
+    taskSprint: TaskSprintInput
   }
 
   type CollaborationRequestFrom {

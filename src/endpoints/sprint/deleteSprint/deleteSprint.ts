@@ -1,6 +1,10 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
+    IOutgoingDeleteSprintPacket,
+    OutgoingSocketEvents,
+} from "../../socket/server";
+import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,
 } from "../errors";
@@ -32,6 +36,19 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     );
 
     await context.sprint.deleteSprint(context, data.sprintId);
+
+    const roomName = context.room.getBlockRoomName(board.type, board.customId);
+    const deleteSprintPacket: IOutgoingDeleteSprintPacket = {
+        sprintId: sprint.customId,
+    };
+
+    context.room.broadcast(
+        context,
+        roomName,
+        OutgoingSocketEvents.DeleteSprint,
+        deleteSprintPacket,
+        instData
+    );
 };
 
 export default deleteSprint;

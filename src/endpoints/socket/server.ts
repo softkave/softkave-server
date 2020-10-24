@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
+import { ISprint, SprintDuration } from "../../mongo/sprint";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
@@ -51,12 +52,14 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
                     ctx,
                     data.token
                 );
+
                 const user = await ctx.session.validateUserTokenData(
                     ctx,
                     tokenData,
                     true,
                     JWTEndpoints.Login
                 );
+
                 const requestData = RequestData.fromSocketRequest(
                     socket,
                     null,
@@ -233,6 +236,11 @@ export enum OutgoingSocketEvents {
     NewRoom = "newRoom",
     NewMessage = "newMessage",
     UpdateRoomReadCounter = "updateRoomReadCounter",
+    NewSprint = "newSprint",
+    UpdateSprint = "updateSprint",
+    EndSprint = "endSprint",
+    StartSprint = "startSprint",
+    DeleteSprint = "deleteSprint",
 }
 
 export interface IIncomingAuthPacket {
@@ -290,4 +298,34 @@ export interface IOutgoingUpdateRoomReadCounterPacket {
         userId: string;
         readCounter: string;
     };
+}
+
+export interface IOutgoingNewSprintPacket {
+    sprint: ISprint;
+}
+
+export interface IOutgoingUpdateSprintPacket {
+    sprintId: string;
+    data: {
+        name?: string;
+        duration?: SprintDuration;
+        updatedAt: string;
+        updatedBy: string;
+    };
+}
+
+export interface IOutgoingEndSprintPacket {
+    sprintId: string;
+    endedAt: string;
+    endedBy: string;
+}
+
+export interface IOutgoingStartSprintPacket {
+    sprintId: string;
+    startedAt: string;
+    startedBy: string;
+}
+
+export interface IOutgoingDeleteSprintPacket {
+    sprintId: string;
 }

@@ -77,6 +77,10 @@ export function extractFields<
     paths.objectFields.forEach((field) => {
         const propertyValue = data[field.property];
 
+        if (!propertyValue) {
+            return;
+        }
+
         result[field.property] = isArray(propertyValue)
             ? propertyValue.map((value) => extractFields(value, field.fields))
             : extractFields(propertyValue, field.fields);

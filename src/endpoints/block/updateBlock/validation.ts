@@ -20,6 +20,7 @@ const blockData = Joi.object().keys({
     statusAssignedAt: Joi.date(),
     taskResolution: blockValidationSchemas.taskResolution,
     labels: blockValidationSchemas.blockAssignedLabelsList,
+    taskSprint: blockValidationSchemas.taskSprint,
 });
 
 export const updateBlockJoiSchema = Joi.object().keys({

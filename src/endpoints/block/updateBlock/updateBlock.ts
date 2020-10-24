@@ -40,8 +40,15 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     await context.block.updateBlockById(context, data.blockId, updatesToSave);
 
     fireAndForgetPromise(
-        broadcastBlockUpdate(context, instData, data.blockId, {
-            isUpdate: true,
+        broadcastBlockUpdate({
+            block,
+            context,
+            instData,
+            updateType: { isUpdate: true },
+            data: updatesToSave,
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.rootBlockId,
         })
     );
 
@@ -50,9 +57,11 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     fireAndForgetPromise(
         processBoardStatusChanges(context, instData, block, user)
     );
+
     fireAndForgetPromise(
         processBoardResolutionsChanges(context, instData, block)
     );
+
     fireAndForgetPromise(processBoardLabelChanges(context, instData, block));
     fireAndForgetPromise(sendNewlyAssignedTaskEmail(context, instData, block));
 

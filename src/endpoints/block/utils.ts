@@ -84,7 +84,7 @@ const blockFields = getFields<IPublicBlock>({
     },
 });
 
-export function getPublicBlockData(block: IBlock): IPublicBlock {
+export function getPublicBlockDataExt(block: Partial<IBlock>): IPublicBlock {
     return extractFields(block, blockFields);
 }
 

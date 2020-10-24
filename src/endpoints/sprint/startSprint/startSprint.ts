@@ -2,6 +2,10 @@ import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
+    IOutgoingStartSprintPacket,
+    OutgoingSocketEvents,
+} from "../../socket/server";
+import {
     CannotRestartCurrentOrPastSprintsError,
     CannotStartSprintCauseCurrentSprintExistsError,
     SprintDoesNotExistError,
@@ -31,6 +35,7 @@ const startSprint: StartSprintEndpoint = async (context, instData) => {
     }
 
     const startDate = getDate();
+    const startDateStr = getDateString(startDate);
 
     await context.sprint.updateSprintById(context, sprint.customId, {
         startDate,
@@ -41,7 +46,22 @@ const startSprint: StartSprintEndpoint = async (context, instData) => {
         currentSprintId: sprint.customId,
     });
 
-    return { data: { startDate: getDateString(startDate) } };
+    const roomName = context.room.getBlockRoomName(board.type, board.customId);
+    const startSprintPacket: IOutgoingStartSprintPacket = {
+        sprintId: sprint.customId,
+        startedAt: startDateStr,
+        startedBy: user.customId,
+    };
+
+    context.room.broadcast(
+        context,
+        roomName,
+        OutgoingSocketEvents.StartSprint,
+        startSprintPacket,
+        instData
+    );
+
+    return { data: { startDate: startDateStr } };
 };
 
 export default startSprint;

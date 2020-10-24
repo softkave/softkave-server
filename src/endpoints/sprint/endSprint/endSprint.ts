@@ -1,6 +1,10 @@
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
+import {
+    IOutgoingEndSprintPacket,
+    OutgoingSocketEvents,
+} from "../../socket/server";
 import { SprintDoesNotExistError } from "../errors";
 import { EndSprintEndpoint } from "./types";
 import { endSprintJoiSchema } from "./validation";
@@ -19,6 +23,7 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
     canReadBlock({ user, block: board });
 
     const endDate = getDate();
+    const endDateStr = getDateString(endDate);
     const statusList = board.boardStatuses || [];
 
     if (statusList.length > 1) {
@@ -60,7 +65,22 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
         endedBy: user.customId,
     });
 
-    return { data: { endDate: getDateString(endDate) } };
+    const roomName = context.room.getBlockRoomName(board.type, board.customId);
+    const updateSprintPacket: IOutgoingEndSprintPacket = {
+        sprintId: sprint.customId,
+        endedAt: endDateStr,
+        endedBy: user.customId,
+    };
+
+    context.room.broadcast(
+        context,
+        roomName,
+        OutgoingSocketEvents.UpdateSprint,
+        updateSprintPacket,
+        instData
+    );
+
+    return { data: { endDate: endDateStr } };
 };
 
 export default endSprint;
