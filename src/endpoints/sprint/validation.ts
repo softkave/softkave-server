@@ -1,10 +1,13 @@
 import Joi from "joi";
-import { validationSchemas } from "../../utilities/validationUtils";
 import { sprintConstants } from "./constants";
 
 const sprintDuration = Joi.string().allow(sprintConstants.durationOptions);
 
-const name = Joi.string().trim().max(sprintConstants.maxNameLength).lowercase();
+const name = Joi.string()
+    .trim()
+    .max(sprintConstants.maxNameLength)
+    .lowercase()
+    .disallow("backlog");
 
 const sprintValidationSchemas = {
     sprintDuration,
