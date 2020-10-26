@@ -1,3 +1,4 @@
+import { IBlock } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
@@ -36,6 +37,29 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     );
 
     await context.sprint.deleteSprint(context, data.sprintId);
+
+    if (sprint.nextSprintId) {
+        await context.sprint.updateSprintById(context, sprint.nextSprintId, {
+            prevSprintId: sprint.prevSprintId,
+        });
+    }
+
+    const boardUpdates: Partial<IBlock> = {};
+
+    if (sprint.sprintIndex === board.nextSprintIndex - 1) {
+        boardUpdates.nextSprintIndex = board.nextSprintIndex - 1;
+    }
+
+    if (sprint.customId === board.lastSprintId) {
+        boardUpdates.lastSprintId = sprint.prevSprintId;
+    }
+
+    if (Object.keys(boardUpdates).length > 0) {
+        // If has board updates
+        await context.block.updateBlockById(context, board.customId, {
+            nextSprintIndex: board.nextSprintIndex - 1,
+        });
+    }
 
     const roomName = context.room.getBlockRoomName(board.type, board.customId);
     const deleteSprintPacket: IOutgoingDeleteSprintPacket = {

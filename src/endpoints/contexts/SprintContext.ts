@@ -1,6 +1,5 @@
-import { ITaskSprint } from "../../mongo/block";
 import mongoConstants from "../../mongo/constants";
-import { IBoardSprintOptions, ISprint } from "../../mongo/sprint";
+import { ISprint } from "../../mongo/sprint";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
@@ -32,12 +31,6 @@ export interface ISprintContext {
         boardId: string
     ) => Promise<boolean>;
     deleteSprint: (ctx: IBaseContext, sprintId: string) => Promise<void>;
-    countSprints: (ctx: IBaseContext, boardId: string) => Promise<number>;
-    getSprintByIndex: (
-        ctx: IBaseContext,
-        boardId: string,
-        index: number
-    ) => Promise<ISprint | undefined>;
     updateUnstartedSprints: (
         ctx: IBaseContext,
         boardId: string,
@@ -162,38 +155,6 @@ export default class SprintContext implements ISprintContext {
                 .deleteOne({
                     customId: sprintId,
                 })
-                .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async countSprints(ctx: IBaseContext, boardId: string) {
-        try {
-            return await ctx.models.sprintModel.model
-                .count({
-                    boardId,
-                })
-                .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async getSprintByIndex(
-        ctx: IBaseContext,
-        boardId: string,
-        index: number
-    ) {
-        try {
-            return await ctx.models.sprintModel.model
-                .findOne({
-                    boardId,
-                    sprintIndex: index,
-                })
-                .lean()
                 .exec();
         } catch (error) {
             console.error(error);

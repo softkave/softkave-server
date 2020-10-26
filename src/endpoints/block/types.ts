@@ -62,4 +62,6 @@ export interface IPublicBlock {
     currentSprintId?: string;
     taskSprint?: ITaskSprint;
     sprintOptions?: IBoardSprintOptions;
+    lastSprintId?: string;
+    nextSprintIndex?: number;
 }

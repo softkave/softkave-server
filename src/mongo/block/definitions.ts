@@ -171,6 +171,8 @@ export interface IBlock {
     boardResolutions?: IBoardStatusResolution[];
     currentSprintId?: string;
     sprintOptions?: IBoardSprintOptions;
+    lastSprintId?: string;
+    nextSprintIndex?: number;
 }
 
 const blockSchema = {
@@ -211,6 +213,8 @@ const blockSchema = {
     boardResolutions: { type: boardStatusResolutionSchema },
     currentSprintId: { type: String },
     sprintOptions: { type: boardSprintOptionsSchema },
+    lastSprintId: { type: String },
+    nextSprintIndex: { type: Number },
 };
 
 export default blockSchema;

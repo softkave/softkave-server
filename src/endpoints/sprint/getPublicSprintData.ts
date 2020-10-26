@@ -6,7 +6,8 @@ export default function getPublicSprintData(sprint: ISprint): ISprint {
         boardId: sprint.boardId,
         orgId: sprint.orgId,
         duration: sprint.duration,
-        sprintIndex: sprint.sprintIndex,
+        nextSprintId: sprint.nextSprintId,
+        prevSprintId: sprint.prevSprintId,
         createdAt: sprint.createdAt,
         createdBy: sprint.createdBy,
         name: sprint.name,
@@ -16,5 +17,6 @@ export default function getPublicSprintData(sprint: ISprint): ISprint {
         endedBy: sprint.endedBy,
         updatedAt: sprint.updatedAt,
         updatedBy: sprint.updatedBy,
+        sprintIndex: sprint.sprintIndex,
     };
 }

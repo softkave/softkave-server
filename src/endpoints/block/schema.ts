@@ -150,6 +150,8 @@ const blockSchema = `
     taskSprint: TaskSprint
     currentSprintId: String
     sprintOptions: BoardSprintOptions
+    lastSprintId: String
+    nextSprintIndex: Int
   }
 
   type SingleBlockOpResponse {

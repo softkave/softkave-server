@@ -56,12 +56,12 @@ export interface IBlockContext {
         userId: string,
         updatedAt?: Date
     ) => Promise<void>;
-    bulkGetSprintTasks: (
+    countSprintTasks: (
         ctx: IBaseContext,
         boardId: string,
         sprintId: string,
         statusIds?: string[]
-    ) => Promise<IBlock[]>;
+    ) => Promise<number>;
 }
 
 export default class BlockContext implements IBlockContext {
@@ -307,7 +307,7 @@ export default class BlockContext implements IBlockContext {
         }
     }
 
-    public async bulkGetSprintTasks(
+    public async countSprintTasks(
         ctx: IBaseContext,
         boardId: string,
         sprintId: string,
@@ -315,10 +315,10 @@ export default class BlockContext implements IBlockContext {
     ) {
         try {
             return await ctx.models.blockModel.model
-                .find({
+                .count({
                     parent: boardId,
                     isDeleted: false,
-                    status: { $in: statusIds },
+                    status: statusIds ? { $in: statusIds } : undefined,
                     "taskSprint.sprintId": sprintId,
                 })
                 .exec();

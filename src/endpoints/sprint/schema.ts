@@ -4,6 +4,8 @@ const sprintSchema = `
         boardId: String
         orgId: String
         duration: String
+        prevSprintId: String
+        nextSprintId: String
         sprintIndex: Int
         name: String
         startDate: String

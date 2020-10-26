@@ -211,10 +211,7 @@ const taskSprint = Joi.object()
         assignedAt: Joi.date(),
         assignedBy: validationSchemas.uuid.required(),
     })
-    .when("type", {
-        is: Joi.string().valid([BlockType.Board, BlockType.Org]),
-        then: Joi.forbidden(),
-    });
+    .allow(null);
 
 const newBlock = Joi.object().keys({
     name: newBlockOriginalName,

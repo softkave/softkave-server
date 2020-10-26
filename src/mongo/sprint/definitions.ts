@@ -31,10 +31,12 @@ export interface ISprint {
     boardId: string;
     orgId: string;
     duration: SprintDuration;
-    sprintIndex: number;
     createdAt: Date;
     createdBy: string;
-    name?: string;
+    name: string;
+    sprintIndex: number;
+    prevSprintId?: string;
+    nextSprintId?: string;
     startDate?: Date;
     startedBy?: string;
     endDate?: Date;
@@ -48,6 +50,8 @@ const sprintSchema = {
     boardId: { type: String },
     orgId: { type: String },
     duration: { type: String },
+    prevSprintId: { type: String },
+    nextSprintId: { type: String },
     sprintIndex: { type: Number },
     name: { type: String },
     startDate: { type: Date },

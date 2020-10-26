@@ -1,3 +1,4 @@
+import { IBlock } from "../../../mongo/block";
 import { ISprint } from "../../../mongo/sprint";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -33,23 +34,33 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         throw new SprintWithNameExistsError();
     }
 
-    const sprintsCount = await context.sprint.countSprints(
-        context,
-        data.boardId
-    );
-
     let sprint: ISprint = {
         customId: getNewId(),
         boardId: data.boardId,
         orgId: board.rootBlockId,
         duration: data.data.duration,
-        sprintIndex: sprintsCount,
         name: data.data.name,
         createdAt: getDate(),
         createdBy: user.customId,
+        prevSprintId: board.lastSprintId,
+        sprintIndex: board.nextSprintIndex,
     };
 
+    // TODO: can we bulk update these?
     sprint = await context.sprint.saveSprint(context, sprint);
+
+    if (board.lastSprintId) {
+        await context.sprint.updateSprintById(context, board.lastSprintId, {
+            nextSprintId: sprint.customId,
+        });
+    }
+
+    const boardUpdates: Partial<IBlock> = {
+        lastSprintId: sprint.customId,
+        nextSprintIndex: (board.nextSprintIndex || 0) + 1,
+    };
+
+    await context.block.updateBlockById(context, board.customId, boardUpdates);
 
     const roomName = context.room.getBlockRoomName(board.type, board.customId);
     const newSprintPacket: IOutgoingNewSprintPacket = {

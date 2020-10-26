@@ -27,18 +27,17 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
     const statusList = board.boardStatuses || [];
 
     if (statusList.length > 1) {
-        const incompleteTasks = await context.block.bulkGetSprintTasks(
+        const incompleteTasksCount = await context.block.countSprintTasks(
             context,
             board.customId,
             sprint.customId,
             statusList.slice(0, statusList.length - 1).map((s) => s.customId)
         );
 
-        if (incompleteTasks.length > 0) {
-            const nextSprint = await context.sprint.getSprintByIndex(
+        if (incompleteTasksCount > 0 && sprint.nextSprintId) {
+            const nextSprint = await context.sprint.getSprintById(
                 context,
-                board.customId,
-                sprint.sprintIndex
+                sprint.nextSprintId
             );
 
             if (nextSprint) {
