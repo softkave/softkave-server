@@ -1,5 +1,7 @@
 import { IBlock } from "../../../mongo/block";
+import { ISprint } from "../../../mongo/sprint";
 import { validate } from "../../../utilities/joiUtils";
+import { IBulkUpdateByIdItem } from "../../../utilities/types";
 import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingDeleteSprintPacket,
@@ -36,19 +38,32 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
         user.customId
     );
 
+    // TODO: bulk update and delete the sprints
     await context.sprint.deleteSprint(context, data.sprintId);
 
-    if (sprint.nextSprintId) {
-        await context.sprint.updateSprintById(context, sprint.nextSprintId, {
-            prevSprintId: sprint.prevSprintId,
+    const bulkSprintUpdates: Array<IBulkUpdateByIdItem<ISprint>> = [];
+
+    if (sprint.prevSprintId) {
+        bulkSprintUpdates.push({
+            id: sprint.prevSprintId,
+            data: {
+                nextSprintId: sprint.nextSprintId || null,
+            },
         });
     }
 
-    const boardUpdates: Partial<IBlock> = {};
-
-    if (sprint.sprintIndex === board.nextSprintIndex - 1) {
-        boardUpdates.nextSprintIndex = board.nextSprintIndex - 1;
+    if (sprint.nextSprintId) {
+        bulkSprintUpdates.push({
+            id: sprint.nextSprintId,
+            data: {
+                prevSprintId: sprint.nextSprintId,
+            },
+        });
     }
+
+    await context.sprint.bulkUpdateSprintsById(context, bulkSprintUpdates);
+
+    const boardUpdates: Partial<IBlock> = {};
 
     if (sprint.customId === board.lastSprintId) {
         boardUpdates.lastSprintId = sprint.prevSprintId;
@@ -56,9 +71,11 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
 
     if (Object.keys(boardUpdates).length > 0) {
         // If has board updates
-        await context.block.updateBlockById(context, board.customId, {
-            nextSprintIndex: board.nextSprintIndex - 1,
-        });
+        await context.block.updateBlockById(
+            context,
+            board.customId,
+            boardUpdates
+        );
     }
 
     const roomName = context.room.getBlockRoomName(board.type, board.customId);

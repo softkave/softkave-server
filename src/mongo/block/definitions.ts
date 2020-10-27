@@ -172,7 +172,6 @@ export interface IBlock {
     currentSprintId?: string;
     sprintOptions?: IBoardSprintOptions;
     lastSprintId?: string;
-    nextSprintIndex?: number;
 }
 
 const blockSchema = {
@@ -214,7 +213,6 @@ const blockSchema = {
     currentSprintId: { type: String },
     sprintOptions: { type: boardSprintOptionsSchema },
     lastSprintId: { type: String },
-    nextSprintIndex: { type: Number },
 };
 
 export default blockSchema;

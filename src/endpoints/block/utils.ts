@@ -83,7 +83,6 @@ const blockFields = getFields<IPublicBlock>({
         updatedBy: true,
     },
     lastSprintId: true,
-    nextSprintIndex: true,
 });
 
 export function getPublicBlockDataExt(block: Partial<IBlock>): IPublicBlock {

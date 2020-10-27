@@ -16,7 +16,7 @@ export type Endpoint<
 ) => Promise<(R & IBaseEndpointResult) | undefined>;
 
 export type GetFields<T extends object> = {
-    [K in keyof T]: T[K] extends Date
+    [K in keyof Required<T>]: T[K] extends Date
         ? boolean
         : T[K] extends any[]
         ? T[K][0] extends Date

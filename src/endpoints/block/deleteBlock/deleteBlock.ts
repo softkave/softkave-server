@@ -7,7 +7,7 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import logger from "../../../utilities/logger";
-import { IBulkUpdateById } from "../../../utilities/types";
+import { IBulkUpdateByIdItem } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../contexts/RequestData";
 import { fireAndForgetPromise } from "../../utils";
@@ -43,7 +43,7 @@ async function deleteOrgCleanup(
 
     const orgUsers = await context.user.getOrgUsers(context, block.customId);
     const notifications: INotification[] = [];
-    const updates: Array<IBulkUpdateById<IUser>> = [];
+    const updates: Array<IBulkUpdateByIdItem<IUser>> = [];
 
     orgUsers.forEach((orgUser) => {
         if (orgUser.customId !== user.customId) {

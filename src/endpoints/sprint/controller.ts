@@ -7,6 +7,7 @@ import endSprint from "./endSprint/endSprint";
 import getSprints from "./getSprints/getSprints";
 import setupSprints from "./setupSprints/setupSprints";
 import sprintExists from "./sprintExists/sprintExists";
+import startSprint from "./startSprint/startSprint";
 import updateSprint from "./updateSprint/updateSprint";
 import updateSprintOptions from "./updateSprintOptions/updateSprintOptions";
 
@@ -50,6 +51,15 @@ export default class SprintController {
     public setupSprints(data, req) {
         return wrapEndpoint(data, req, () =>
             setupSprints(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public startSprint(data, req) {
+        return wrapEndpoint(data, req, () =>
+            startSprint(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

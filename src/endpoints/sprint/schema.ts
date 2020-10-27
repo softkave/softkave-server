@@ -92,7 +92,7 @@ const sprintSchema = `
     }
 
     type EndSprintResultData {
-        startDate: String
+        endDate: String
     }
 
     type EndSprintResult {

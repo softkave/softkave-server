@@ -34,6 +34,15 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         throw new SprintWithNameExistsError();
     }
 
+    let prevSprint: ISprint;
+
+    if (board.lastSprintId) {
+        prevSprint = await context.sprint.getSprintById(
+            context,
+            board.lastSprintId
+        );
+    }
+
     let sprint: ISprint = {
         customId: getNewId(),
         boardId: data.boardId,
@@ -42,8 +51,8 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         name: data.data.name,
         createdAt: getDate(),
         createdBy: user.customId,
-        prevSprintId: board.lastSprintId,
-        sprintIndex: board.nextSprintIndex,
+        prevSprintId: prevSprint?.customId,
+        sprintIndex: (prevSprint?.sprintIndex || 0) + 1,
     };
 
     // TODO: can we bulk update these?
@@ -57,7 +66,6 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
 
     const boardUpdates: Partial<IBlock> = {
         lastSprintId: sprint.customId,
-        nextSprintIndex: (board.nextSprintIndex || 0) + 1,
     };
 
     await context.block.updateBlockById(context, board.customId, boardUpdates);

@@ -150,13 +150,19 @@ export default class RoomContext implements IRoomContext {
         rooms[roomName] = room;
     }
 
-    public broadcast(
+    public async broadcast(
         ctx: IBaseContext,
         roomName: string,
         eventName: OutgoingSocketEvents,
         eventData: any,
         data?: RequestData
     ) {
+        // TODO: how can we make this better? Also, getUser I think calls mongo again
+        if (data) {
+            const user = await ctx.session.getUser(ctx, data);
+            ctx.socket.attachSocketToRequestData(ctx, data, user);
+        }
+
         broadcast(
             roomName,
             eventName,

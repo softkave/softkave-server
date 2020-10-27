@@ -1,3 +1,4 @@
+import { ISprint } from "../../../mongo/sprint";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
@@ -27,32 +28,27 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
     const statusList = board.boardStatuses || [];
 
     if (statusList.length > 1) {
-        const incompleteTasksCount = await context.block.countSprintTasks(
-            context,
-            board.customId,
-            sprint.customId,
-            statusList.slice(0, statusList.length - 1).map((s) => s.customId)
-        );
+        let nextSprint: ISprint;
 
-        if (incompleteTasksCount > 0 && sprint.nextSprintId) {
-            const nextSprint = await context.sprint.getSprintById(
+        if (sprint.nextSprintId) {
+            nextSprint = await context.sprint.getSprintById(
                 context,
                 sprint.nextSprintId
             );
-
-            if (nextSprint) {
-                await context.block.bulkUpdateTaskSprints(
-                    context,
-                    sprint.customId,
-                    {
-                        sprintId: nextSprint.customId,
-                        assignedAt: endDate,
-                        assignedBy: user.customId,
-                    },
-                    user.customId
-                );
-            }
         }
+
+        await context.block.bulkUpdateTaskSprints(
+            context,
+            sprint.customId,
+            nextSprint
+                ? {
+                      sprintId: nextSprint.customId,
+                      assignedAt: endDate,
+                      assignedBy: user.customId,
+                  }
+                : null,
+            user.customId
+        );
     }
 
     await context.block.updateBlockById(context, board.customId, {

@@ -20,8 +20,6 @@ const broadcastBlockUpdate = async (args: IBroadcastBlockUpdateArgs) => {
     let { block, parentId } = args;
     const user = await context.session.getUser(context, instData);
 
-    context.socket.attachSocketToRequestData(context, instData, user);
-
     // TODO: should we do this here, for performance reasons?
     //      or should we pass it in from the caller
 

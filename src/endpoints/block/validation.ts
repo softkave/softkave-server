@@ -178,6 +178,7 @@ const priority = Joi.string()
     .when("type", {
         is: BlockType.Task,
         then: Joi.required(),
+        otherwise: Joi.allow(null),
     });
 
 const subTasks = Joi.array()
