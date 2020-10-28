@@ -1,0 +1,92 @@
+Sprint Implementation
+
+Idea :-
+Sprints are for grouping tasks to be worked on within a time duration.
+
+Sprint name generation examples :-
+Sprint 1, 2, 2 ... N + 1, N - N is sprint index
+Sprint 1, 2, 2 ... N + 1, N, 2020 - N is sprint index in year
+Sprint 1, 2, 2 ... N + 1, N, July 2020 - "
+Sprint 1, 2, 2 ... N + 1, N, Q3 - "
+Sprint 1, 2, 2 ... N + 1, N, Q3, July 2020 - "
+2020, Sprint 1, 2, 2 ... N + 1, N - "
+July 2020, Sprint 1, 2, 2 ... N + 1, N - "
+Q3, Sprint 1, 2, 2 ... N + 1, N, July 2020
+Q3 July 2020, Sprint 1, 2, 2 ... N + 1, N
+Sprint 1, 2, 2 ... N + 1, N, Q3 July 2020
+
+Data Types :-
+Sprint options in block ( type - board )
+interface ISprintOptions {
+    duration: string | Enum ["1 week", "2 weeks", "1 month"]
+    createdAt: Date | string
+    createdBy: string
+    updatedAt?: Date | string
+    updatedBy?: string
+}
+
+interface IBlock {
+    ...
+    sprintOptions?: ISprintOptions
+    currentSprintId?: string
+}
+
+Task assigned sprint in block ( type - task )
+interface ITaskSprint {
+    sprintId: string
+    assignedAt: Date | string
+    assignedBy: string
+}
+
+interface IBlock {
+    ...
+    taskSprint?: ITaskSprint
+}
+
+Sprint 
+interface ISprint {
+    customId: string
+    boardId: string
+    orgId: string
+    duration: string | Enum ["1 week", "2 weeks", "1 month"]
+    sprintIndex: number
+    name?: string
+    startDate?: Date | string
+    startedBy?: string
+    endDate?: Date | string
+    endedBy?: string
+}
+
+Endpoints :-
+1. setupSprint
+    1. If sprints are not setup yet, then update the board with the sprint definition
+
+2. addSprint
+    1. If sprints are setup in board, add a sprint based on the board's sprint definition Data
+    2. If the sprint [namingType] is "user-provided", then the sprint's name must be provided 
+    and must not be an existing name
+    3. Assign a number to the sprint and save it
+
+3. deleteSprint
+    1. If the sprint exists, it's not the current or an ended sprint, then delete it
+    2. Find all the tasks assigned to the sprint and update them
+
+4. startSprint
+    1. If the sprint exists, and there isn't a current sprint, and the sprint is the next in line, 
+    then start it and add the startDate and other fields
+
+5. endSprint
+    1. If the sprint is the current sprint, then end it
+    2. If the sprint has unfinished tasks, assign them to the next sprint
+
+6. getSprints
+    1. Query the database as return all the sprints belonging to the board querying with
+
+1. addBlock
+    1. Update the data types and logic for new tasks to be assigned to sprints
+
+2. updateBlock
+    1. Update the data types and logic for tasks beign updated to be assigned to sprints
+
+
+    Aren't we supposed to pick them accordingly 

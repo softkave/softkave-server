@@ -42,14 +42,15 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         });
 
         fireAndForgetPromise(
-            broadcastBlockUpdate(
+            broadcastBlockUpdate({
                 context,
                 instData,
-                org.customId,
-                { isNew: true },
-                org,
-                org
-            )
+                updateType: { isNew: true },
+                data: org,
+                block: org,
+                blockId: org.customId,
+                blockType: org.type,
+            })
         );
 
         return {
@@ -79,14 +80,16 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     });
 
     fireAndForgetPromise(
-        broadcastBlockUpdate(
+        broadcastBlockUpdate({
+            block,
             context,
             instData,
-            block.customId,
-            { isNew: true },
-            rootParent,
-            block
-        )
+            updateType: { isNew: true },
+            data: block,
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.rootBlockId,
+        })
     );
 
     // TODO: analyze all the net calls you're making and look for ways to reduce them

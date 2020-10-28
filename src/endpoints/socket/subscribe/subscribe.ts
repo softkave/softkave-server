@@ -27,7 +27,11 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
 
                 canReadBlock({ user, block });
 
-                const roomName = context.room.getBlockRoomName(block);
+                const roomName = context.room.getBlockRoomName(
+                    block.type,
+                    block.customId
+                );
+
                 context.room.subscribe(instData, roomName);
                 break;
             }

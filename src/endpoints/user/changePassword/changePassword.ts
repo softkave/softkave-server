@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { JWTEndpoints } from "../../utils";
+import { JWTEndpoints } from "../../types";
 import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
 import { ChangePasswordEndpoint } from "./types";

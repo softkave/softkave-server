@@ -178,6 +178,7 @@ const priority = Joi.string()
     .when("type", {
         is: BlockType.Task,
         then: Joi.required(),
+        otherwise: Joi.allow(null),
     });
 
 const subTasks = Joi.array()
@@ -205,6 +206,14 @@ const taskStatusSchema = validationSchemas.uuid.when("type", {
     otherwise: Joi.allow(null),
 });
 
+const taskSprint = Joi.object()
+    .keys({
+        sprintId: validationSchemas.uuid.required(),
+        assignedAt: Joi.date(),
+        assignedBy: validationSchemas.uuid.required(),
+    })
+    .allow(null);
+
 const newBlock = Joi.object().keys({
     name: newBlockOriginalName,
     description,
@@ -213,21 +222,22 @@ const newBlock = Joi.object().keys({
     parent,
     rootBlockId,
     priority,
-    assignees: taskAssignees,
+    taskSprint,
     subTasks,
+    statusAssignedBy,
+    assignees: taskAssignees,
     customId: blockId,
     type: userUpdateableblockTypeSchema,
     boardStatuses: statusListSchema,
     boardLabels: boardLabelList,
     boardResolutions: resolutionListSchema,
     status: taskStatusSchema,
-    statusAssignedBy,
+    taskResolution: validationSchemas.uuid,
+    labels: blockAssignedLabelsList,
     statusAssignedAt: Joi.date().when("type", {
         is: BlockType.Task,
         then: Joi.required(),
     }),
-    taskResolution: validationSchemas.uuid,
-    labels: blockAssignedLabelsList,
 });
 
 const blockValidationSchemas = {
@@ -238,16 +248,12 @@ const blockValidationSchemas = {
     createdAt,
     color,
     createdBy,
-    assignees: taskAssignees,
     priority,
     subTasks,
     parent,
     rootBlockId,
     updatedAt,
     newBlock,
-    blockTypesList: blockTypesSchema,
-    type: userUpdateableblockTypeSchema,
-    fullBlockType: fullBlockTypeSchema,
     statusSchema,
     labelSchema,
     statusListSchema,
@@ -258,7 +264,12 @@ const blockValidationSchemas = {
     statusAssignedBy,
     resolutionSchema,
     resolutionListSchema,
+    taskSprint,
+    assignees: taskAssignees,
     boardResolutions: resolutionListSchema,
+    blockTypesList: blockTypesSchema,
+    type: userUpdateableblockTypeSchema,
+    fullBlockType: fullBlockTypeSchema,
     taskResolution: validationSchemas.uuid.allow(null),
 };
 

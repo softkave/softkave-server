@@ -6,7 +6,9 @@ import {
     IBlockStatus,
     IBoardStatusResolution,
     ISubTask,
+    ITaskSprint,
 } from "../../mongo/block";
+import { IBoardSprintOptions } from "../../mongo/sprint";
 
 export interface INewBlockInput {
     // TODO: should we generate customId on our side, and have maybe something like clientGivenId
@@ -30,6 +32,7 @@ export interface INewBlockInput {
     statusAssignedAt?: string;
     taskResolution?: string;
     labels?: IBlockAssignedLabel[];
+    taskSprint?: ITaskSprint;
 }
 
 export interface IPublicBlock {
@@ -56,4 +59,8 @@ export interface IPublicBlock {
     statusAssignedAt?: Date;
     taskResolution?: string;
     labels?: IBlockAssignedLabel[];
+    currentSprintId?: string;
+    taskSprint?: ITaskSprint;
+    sprintOptions?: IBoardSprintOptions;
+    lastSprintId?: string;
 }

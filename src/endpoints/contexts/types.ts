@@ -6,6 +6,7 @@ import { ICommentModel } from "../../mongo/comment";
 import { INoteModel } from "../../mongo/note";
 import { INotificationModel } from "../../mongo/notification";
 import { IRoomModel } from "../../mongo/room";
+import { ISprintModel } from "../../mongo/sprint";
 import { IUser, IUserModel } from "../../mongo/user";
 import { IBaseUserTokenData } from "../user/UserToken";
 
@@ -16,6 +17,7 @@ export interface IContextModels {
     auditLogModel: IAuditLogModel;
     noteModel: INoteModel;
     commentModel: ICommentModel;
+    sprintModel: ISprintModel;
     chatModel: IChatModel;
     roomModel: IRoomModel;
 }

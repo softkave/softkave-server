@@ -6,6 +6,7 @@ import { getCommentModel } from "../../mongo/comment";
 import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getRoomModel } from "../../mongo/room";
+import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
@@ -25,6 +26,7 @@ import {
 import { getRoomContext, IRoomContext } from "./RoomContext";
 import { getSessionContext, ISessionContext } from "./Session";
 import { getSocketContext, ISocketContext } from "./SocketContext";
+import { getSprintContext, ISprintContext } from "./SprintContext";
 import { IContextModels } from "./types";
 import { getUserContext, IUserContext } from "./UserContext";
 
@@ -41,6 +43,7 @@ export interface IBaseContext {
     models: IContextModels;
     socketServer: Server;
     comment: ICommentContext;
+    sprint: ISprintContext;
     chat: IChatContext;
 }
 
@@ -54,6 +57,7 @@ export default class BaseContext implements IBaseContext {
     public socket: ISocketContext = getSocketContext();
     public room: IRoomContext = getRoomContext();
     public broadcastHistory = getBroadcastHistoryContext();
+    public sprint = getSprintContext();
     public models: IContextModels = {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
@@ -61,6 +65,7 @@ export default class BaseContext implements IBaseContext {
         auditLogModel: getAuditLogModel(),
         noteModel: getNoteModel(),
         commentModel: getCommentModel(),
+        sprintModel: getSprintModel(),
         chatModel: getChatModel(),
         roomModel: getRoomModel(),
     };

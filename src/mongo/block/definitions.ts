@@ -1,5 +1,6 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
+import { boardSprintOptionsSchema, IBoardSprintOptions } from "../sprint";
 
 export const blockSchemaVersion = 3; // increment when you make changes that are not backward compatible
 
@@ -120,7 +121,20 @@ export const boardStatusResolutionSchema = {
     updatedAt: { type: Date },
 };
 
+export interface ITaskSprint {
+    sprintId: string;
+    assignedAt: Date;
+    assignedBy: string;
+}
+
+const taskSprintSchema = {
+    sprintId: { type: String },
+    assignedAt: { type: Date },
+    assignedBy: { type: String },
+};
+
 export interface IBlock {
+    // General
     customId: string;
     createdBy: string;
     createdAt: Date;
@@ -128,56 +142,77 @@ export interface IBlock {
     name?: string;
     lowerCasedName?: string;
     description?: string;
-    dueAt?: Date;
-    color?: string;
     updatedAt?: Date;
     updatedBy?: string;
     parent?: string;
     rootBlockId?: string;
+    isDeleted?: boolean;
+    deletedAt?: Date;
+    deletedBy?: string;
+
+    // Org and boards
+    color?: string;
+
+    // Task
     assignees?: IAssignee[];
     priority?: string;
     subTasks?: ISubTask[]; // should sub-tasks be their own blocks?
-    boardStatuses?: IBlockStatus[];
-    boardLabels?: IBlockLabel[];
-    boardResolutions?: IBoardStatusResolution[];
     status?: string;
     statusAssignedBy?: string;
     statusAssignedAt?: Date;
     taskResolution?: string;
     labels?: IBlockAssignedLabel[];
-    isDeleted?: boolean;
-    deletedAt?: Date;
-    deletedBy?: string;
+    dueAt?: Date;
+    taskSprint?: ITaskSprint;
+
+    // Board
+    boardStatuses?: IBlockStatus[];
+    boardLabels?: IBlockLabel[];
+    boardResolutions?: IBoardStatusResolution[];
+    currentSprintId?: string;
+    sprintOptions?: IBoardSprintOptions;
+    lastSprintId?: string;
 }
 
 const blockSchema = {
+    // General
     customId: { type: String, unique: true, index: true },
     name: { type: String },
     lowerCasedName: { type: String, index: true },
     description: { type: String },
-    dueAt: { type: Date },
     createdAt: { type: Date, default: () => getDate() },
     createdBy: { type: String },
-    color: { type: String },
     updatedAt: { type: Date },
     updatedBy: { type: String },
     type: { type: String, index: true },
     parent: { type: String, index: true },
     rootBlockId: { type: String },
+    isDeleted: { type: Boolean, default: false, index: true },
+    deletedAt: { type: Date },
+    deletedBy: { type: String },
+
+    // Org and board
+    color: { type: String },
+
+    // Task
     assignees: { type: [blockAssigneeSchema] },
     priority: { type: String },
     subTasks: { type: [subTaskSchema] },
-    boardStatuses: { type: [blockStatusSchema] },
-    boardLabels: { type: [blockLabelSchema] },
-    boardResolutions: { type: boardStatusResolutionSchema },
+    dueAt: { type: Date },
     status: { type: String },
     statusAssignedBy: { type: String },
     statusAssignedAt: { type: Date },
     taskResolution: { type: String },
     labels: { type: [blockAssignedLabelSchema] },
-    isDeleted: { type: Boolean, default: false, index: true },
-    deletedAt: { type: Date },
-    deletedBy: { type: String },
+    taskSprint: { type: taskSprintSchema },
+
+    // Board
+    boardStatuses: { type: [blockStatusSchema] },
+    boardLabels: { type: [blockLabelSchema] },
+    boardResolutions: { type: boardStatusResolutionSchema },
+    currentSprintId: { type: String },
+    sprintOptions: { type: boardSprintOptionsSchema },
+    lastSprintId: { type: String },
 };
 
 export default blockSchema;

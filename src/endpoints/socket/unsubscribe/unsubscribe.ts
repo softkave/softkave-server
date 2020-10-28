@@ -16,7 +16,11 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
                     context,
                     dt.customId
                 );
-                const roomName = context.room.getBlockRoomName(block);
+                const roomName = context.room.getBlockRoomName(
+                    block.type,
+                    block.customId
+                );
+
                 context.room.leave(instData, roomName);
                 break;
             }
