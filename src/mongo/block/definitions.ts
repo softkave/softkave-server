@@ -89,6 +89,12 @@ export enum BlockType {
     Task = "task",
 }
 
+export enum BlockPriority {
+    Important = "important",
+    NotImportant = "not important",
+    VeryImportant = "very important",
+}
+
 export interface IBlockAssignedLabel {
     customId: string;
     assignedBy: string;

@@ -33,7 +33,7 @@ const auditLogModel = getAuditLogModel();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET not present");
+    throw new Error("JWT_SECRET not present");
 }
 
 const app = express();
@@ -44,26 +44,26 @@ const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
 const graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
-  whiteListedCorsOrigins.push(/localhost/);
+    whiteListedCorsOrigins.push(/localhost/);
 }
 
 const corsOption: CorsOptions = {
-  origin: whiteListedCorsOrigins,
-  optionsSuccessStatus: 200,
-  credentials: true,
+    origin: whiteListedCorsOrigins,
+    optionsSuccessStatus: 200,
+    credentials: true,
 };
 
 if (process.env.NODE_ENV === "production") {
-  app.use(httpToHttps);
+    app.use(httpToHttps);
 }
 
 app.use(cors(corsOption));
 
 app.use(
-  expressJwt({
-    secret: JWT_SECRET,
-    credentialsRequired: false,
-  })
+    expressJwt({
+        secret: JWT_SECRET,
+        credentialsRequired: false,
+    })
 );
 
 // 3 months in secs -- 60 secs * 60 mins * 24 hours * 30 days * 3 months
@@ -100,33 +100,33 @@ app.use(
 // });
 
 app.use(
-  bodyParser.json({
-    type: "application/json",
-  })
+    bodyParser.json({
+        type: "application/json",
+    })
 );
 
 app.use(
-  "/graphql",
-  graphqlHTTP({
-    graphiql,
-    schema: indexSchema,
-    rootValue: getEndpointController(),
-  })
+    "/graphql",
+    graphqlHTTP({
+        graphiql,
+        schema: indexSchema,
+        rootValue: getEndpointController(),
+    })
 );
 
 const httpServer = http.createServer(app);
 const io = socketio(httpServer, {
-  path: "/socket",
-  serveClient: false,
-  handlePreflightRequest: (server, req, res) => {
-    const headers = {
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Origin": req.headers.origin, // or the specific origin you want to give access to,
-      "Access-Control-Allow-Credentials": "true",
-    };
-    res.writeHead(200, headers);
-    res.end();
-  },
+    path: "/socket",
+    serveClient: false,
+    handlePreflightRequest: (server, req, res) => {
+        const headers = {
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Origin": req.headers.origin, // or the specific origin you want to give access to,
+            "Access-Control-Allow-Credentials": "true",
+        };
+        res.writeHead(200, headers);
+        res.end();
+    },
 });
 
 setupSocketServer(io);
@@ -134,46 +134,46 @@ setupSocketServer(io);
 app.use(handleErrors);
 
 connection.wait().then(async () => {
-  // TODO: move index creation to DB pipeline
-  await userModel.waitTillReady();
-  await blockModel.waitTillReady();
-  await notificationModel.waitTillReady();
-  await auditLogModel.waitTillReady();
+    // TODO: move index creation to DB pipeline
+    await userModel.waitTillReady();
+    await blockModel.waitTillReady();
+    await notificationModel.waitTillReady();
+    await auditLogModel.waitTillReady();
 
-  // scripts
+    // scripts
 
-  httpServer.listen(port, () => {
-    logger.info(appInfo.appName);
-    logger.info("server started");
-    logger.info("port: " + port);
-  });
+    httpServer.listen(port, () => {
+        logger.info(appInfo.appName);
+        logger.info("server started");
+        logger.info("port: " + port);
+    });
 });
 
 // TODO: consider converting the codebase to use 4 spaces for tab
 // for better readability
 
 process.on("uncaughtException", (exp, origin) => {
-  // TODO: we changed all logger.error to console.error because
-  // we were missing a lot of data, particularly the stack trace with
-  // logger.error. Maybe implement a fix for this in winston
+    // TODO: we changed all logger.error to console.error because
+    // we were missing a lot of data, particularly the stack trace with
+    // logger.error. Maybe implement a fix for this in winston
 
-  // TODO: the stack trace attached to the error references the compiled
-  // .js code. How can we transform it to the .ts code, maybe using
-  // the source map?
+    // TODO: the stack trace attached to the error references the compiled
+    // .js code. How can we transform it to the .ts code, maybe using
+    // the source map?
 
-  // TODO: maybe do the same for the other logger methods, and remember
-  // to remove the outputCapture option in vscode's debug config
+    // TODO: maybe do the same for the other logger methods, and remember
+    // to remove the outputCapture option in vscode's debug config
 
-  // TODO: the problem with using console instead of winston is
-  // that we may not be able to persist the logs, like in a db
+    // TODO: the problem with using console instead of winston is
+    // that we may not be able to persist the logs, like in a db
 
-  // TODO: maybe implement a way for capturing the errors as is,
-  // and comparing it with what is logged to see how much data we're missing
-  console.error(exp);
-  logger.info(origin);
+    // TODO: maybe implement a way for capturing the errors as is,
+    // and comparing it with what is logged to see how much data we're missing
+    console.error(exp);
+    logger.info(origin);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  logger.info(promise);
-  logger.info(reason);
+    logger.info(promise);
+    logger.info(reason);
 });
