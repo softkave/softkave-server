@@ -51,7 +51,7 @@ const updateSprintOptions: UpdateSprintOptionsEndpoint = async (
             },
             blockId: board.customId,
             blockType: board.type,
-            parentId: board.rootBlockId,
+            parentId: board.parent,
         })
     );
 

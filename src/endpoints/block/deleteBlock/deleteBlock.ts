@@ -97,7 +97,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
             updateType: { isDelete: true },
             blockId: block.customId,
             blockType: block.type,
-            parentId: block.rootBlockId,
+            parentId: block.parent,
         })
     );
 

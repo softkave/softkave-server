@@ -48,7 +48,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             data: updatesToSave,
             blockId: block.customId,
             blockType: block.type,
-            parentId: block.rootBlockId,
+            parentId: block.parent,
         })
     );
 

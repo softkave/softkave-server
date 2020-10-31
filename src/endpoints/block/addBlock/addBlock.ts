@@ -88,7 +88,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
             data: block,
             blockId: block.customId,
             blockType: block.type,
-            parentId: block.rootBlockId,
+            parentId: block.parent,
         })
     );
 

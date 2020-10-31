@@ -40,7 +40,7 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
             },
             blockId: board.customId,
             blockType: board.type,
-            parentId: board.rootBlockId,
+            parentId: board.parent,
         })
     );
 

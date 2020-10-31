@@ -84,7 +84,7 @@ const broadcastBlockUpdate = async (args: IBroadcastBlockUpdateArgs) => {
             block = await context.block.getBlockById(context, blockId);
         }
 
-        parentId = block.rootBlockId!;
+        parentId = block.parent!;
     }
 
     if (blockType === BlockType.Board) {
