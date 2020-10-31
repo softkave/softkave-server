@@ -13,6 +13,7 @@ import { ILoginParameters } from "./types";
 const userEmail = "ywordk@gmail.com";
 const correctPassword = "01234567";
 const incorrectPassword = "abcdefgh";
+const now = getDate();
 
 const getInstanceData = ({ useIncorrectPassword = false } = {}) => {
     const instData: RequestData<ILoginParameters> = {
@@ -38,10 +39,10 @@ const getContext = () => {
                     hash: await argon2.hash(correctPassword),
                     customId: "",
                     name: "Abayomi Akintomide",
-                    createdAt: getDate(),
+                    createdAt: now,
                     forgotPasswordHistory: [],
-                    passwordLastChangedAt: getDate(),
-                    notificationsLastCheckedAt: getDate(),
+                    passwordLastChangedAt: now,
+                    notificationsLastCheckedAt: now,
                     rootBlockId: "",
                     orgs: [{ customId: "" }],
                     color: "",
@@ -73,7 +74,6 @@ test("allow login if password is correct", async () => {
     const user = await context.user.getUserByEmail(context, userEmail);
     const publicUserData = getPublicUserData(user);
 
-    // TODO: this will fail cause, no client id
     await expect(login(context, instData)).resolves.toMatchObject({
         user: publicUserData,
         token: UserToken.newToken({
