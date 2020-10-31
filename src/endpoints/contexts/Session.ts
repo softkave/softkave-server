@@ -36,12 +36,20 @@ export interface ISessionContext {
         tokenData: IBaseUserTokenData,
         required?: boolean,
         audience?: JWTEndpoints
-    ) => Promise<IUser>;
+    ) => Promise<IUser | undefined>;
     validateUserToken: (ctx: IBaseContext, token: string) => IBaseUserTokenData;
+    tryGetUser: (
+        ctx: IBaseContext,
+        data: RequestData
+    ) => Promise<IUser | undefined>;
 }
 
 export default class SessionContext implements ISessionContext {
-    private static async __getUser(ctx: IBaseContext, data: RequestData) {
+    private static async __getUser(
+        ctx: IBaseContext,
+        data: RequestData,
+        required = true
+    ): Promise<IUser | undefined> {
         if (data.req) {
             // TODO: not using cached data on multiple requests
             if (data.req.userData) {
@@ -51,9 +59,13 @@ export default class SessionContext implements ISessionContext {
             const user = await ctx.session.validateUserTokenData(
                 ctx,
                 data.req.user,
-                true,
+                required,
                 JWTEndpoints.Login
             );
+
+            if (!user) {
+                return;
+            }
 
             data.req.userData = user;
             return user;
@@ -61,7 +73,11 @@ export default class SessionContext implements ISessionContext {
             const user = ctx.socket.getUserBySocketId(data);
 
             if (!user) {
-                throw new PermissionDeniedError();
+                if (required) {
+                    throw new PermissionDeniedError();
+                } else {
+                    return;
+                }
             }
 
             return user;
@@ -93,6 +109,8 @@ export default class SessionContext implements ISessionContext {
         if (!tokenData || !UserToken.containsAudience(tokenData, audience)) {
             if (required) {
                 throw new InvalidCredentialsError();
+            } else {
+                return;
             }
         }
 
@@ -138,6 +156,10 @@ export default class SessionContext implements ISessionContext {
 
     public async assertUser(ctx: IBaseContext, data: RequestData) {
         return !!SessionContext.__getUser(ctx, data);
+    }
+
+    public async tryGetUser(ctx: IBaseContext, data: RequestData) {
+        return SessionContext.__getUser(ctx, data, false);
     }
 
     public getRequestToken(ctx: IBaseContext, data: RequestData) {
