@@ -1,18 +1,14 @@
-Softkave - Collaboration Request
+Softkave | Collaboration Request
 
 You have a new collaboration request from Abayomi Isaac of Softkave
 
-Message :-
+Message: 
 How are you Isaac, we had a talk yesterday, this is our official offer.
 
-Expiration :-
-This request is set to expire in a month, on 06/07/2020 03:21AM.
+Expiration: 
+This request is set to expire in a month, on 12/03/2020 11:03AM.
 
-To respond to this request,
-Login to your account using :-
+To respond to this request, login to your account here - 
 https://www.softkave.com/login
 
-Then, open the app menu, goto Notifications and you'll find the request there.
-Login > Open app menu > Notifications
-
-Thank you, and have a nice day.
+Have a nice day!
