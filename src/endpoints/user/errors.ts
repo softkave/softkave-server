@@ -10,14 +10,14 @@ export class EmailAddressNotAvailableError extends OperationError {
 export class InvalidCredentialsError extends OperationError {
     public name = "InvalidCredentialsError";
     public message = "Invalid credentials";
-    public action = ServerRecommendedActions.LoginAgain;
+    public action = ServerRecommendedActions.LOGIN_AGAIN;
 }
 
 // tslint:disable-next-line: max-classes-per-file
 export class CredentialsExpiredError extends OperationError {
     public name = "CredentialsExpiredError";
     public message = "Credentials expired";
-    public action = ServerRecommendedActions.LoginAgain;
+    public action = ServerRecommendedActions.LOGIN_AGAIN;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -36,7 +36,7 @@ export class InvalidEmailOrPasswordError extends OperationError {
 export class LoginAgainError extends OperationError {
     public name = "LoginAgainError";
     public message = "Please login again";
-    public action = ServerRecommendedActions.LoginAgain;
+    public action = ServerRecommendedActions.LOGIN_AGAIN;
 }
 
 // tslint:disable-next-line: max-classes-per-file
