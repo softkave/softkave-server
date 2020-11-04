@@ -8,22 +8,24 @@ import RequestData from "./RequestData";
 export interface IUserClientSocketEntry {
     clientId: string;
     socket: Socket;
-    // TODO: should we keep a list of all the rooms a client is subscribed to?
+    // TODO:
+    // Should we keep a list of all the rooms a client is subscribed to?
     // It'll make re-subscribing after socket reconnection and removing the socket from the room
     // on disconnection easier. But we'll only keep the data for some minutes, because the client
     // could have genuinely disconnected
 }
 
-const socketIdToUserMap: { [key: string]: IUser } = {};
-const userIdToSocketsMap: {
+const authenticatedSockets: { [key: string]: string } = {};
+const userIdToSocketEntriesMap: {
     [key: string]: IUserClientSocketEntry[];
 } = {};
 
 export interface ISocketContext {
     assertSocket: (data: RequestData) => boolean;
     mapUserToSocketId: (data: RequestData, user: IUser) => void;
-    removeSocketIdAndUser: (data: RequestData) => void;
-    getUserBySocketId: (data: RequestData) => IUser | undefined;
+    disconnectSocket: (data: RequestData) => void;
+    disconnectUser: (userId: string) => void;
+    getUserIdBySocketId: (data: RequestData) => string | undefined;
     attachSocketToRequestData: (
         ctx: IBaseContext,
         data: RequestData,
@@ -45,7 +47,7 @@ export default class SocketContext implements ISocketContext {
     }
 
     public mapUserToSocketId(data: RequestData, user: IUser) {
-        socketIdToUserMap[data.socket.id] = user;
+        authenticatedSockets[data.socket.id] = user.customId;
 
         const existingSocketIndex = this.getSocketIndex(
             user.customId,
@@ -56,35 +58,58 @@ export default class SocketContext implements ISocketContext {
             return;
         }
 
-        const sockets = userIdToSocketsMap[user.customId] || [];
+        const sockets = userIdToSocketEntriesMap[user.customId] || [];
+
         sockets.push({
             clientId: data.clientId,
             socket: data.socket,
         });
-        userIdToSocketsMap[user.customId] = sockets;
+
+        userIdToSocketEntriesMap[user.customId] = sockets;
     }
 
-    public removeSocketIdAndUser(data: RequestData) {
-        const user = socketIdToUserMap[data.socket.id];
-        delete socketIdToUserMap[data.socket.id];
+    public disconnectSocket(data: RequestData) {
+        const userId = authenticatedSockets[data.socket.id];
 
-        if (!user) {
+        if (!userId) {
             return;
         }
 
-        const socketIndex = this.getSocketIndex(user.customId, data.socket.id);
+        delete authenticatedSockets[data.socket.id];
+
+        const socketIndex = this.getSocketIndex(userId, data.socket.id);
 
         if (socketIndex === -1) {
             return;
         }
 
-        const sockets = userIdToSocketsMap[user.customId];
-        sockets.splice(socketIndex, 1);
-        userIdToSocketsMap[user.customId] = sockets;
+        const socketEntries = userIdToSocketEntriesMap[userId];
+
+        socketEntries.splice(socketIndex, 1);
+
+        if (socketEntries.length > 0) {
+            userIdToSocketEntriesMap[userId] = socketEntries;
+        } else {
+            delete userIdToSocketEntriesMap[userId];
+        }
     }
 
-    public getUserBySocketId(data: RequestData) {
-        return socketIdToUserMap[data.socket.id];
+    public disconnectUser(userId: string) {
+        const socketEntries = userIdToSocketEntriesMap[userId];
+
+        if (!socketEntries) {
+            return;
+        }
+
+        delete userIdToSocketEntriesMap[userId];
+
+        socketEntries.forEach((entry) => {
+            delete authenticatedSockets[entry.socket.id];
+        });
+    }
+
+    public getUserIdBySocketId(data: RequestData) {
+        return authenticatedSockets[data.socket.id];
     }
 
     public attachSocketToRequestData(
@@ -92,35 +117,37 @@ export default class SocketContext implements ISocketContext {
         data: RequestData,
         user: IUser
     ) {
-        const sockets = userIdToSocketsMap[user.customId];
+        const socketEntries = userIdToSocketEntriesMap[user.customId];
 
-        if (!sockets) {
-            // this, and the next should be an error, shouldn't it?
+        if (!socketEntries) {
+            // TODO: this, and the next should be an error, shouldn't it?
             return false;
         }
 
-        if (sockets.length === 0) {
-            // delete userIdToSocketsMap[user.customId];
+        if (socketEntries.length === 0) {
+            delete userIdToSocketEntriesMap[user.customId];
             return false;
         }
 
-        const requestClientId = data.clientId;
-        const socketEntryIndex = sockets.findIndex(
-            (entry) => entry.clientId === requestClientId
+        const clientId = data.clientId;
+
+        if (!clientId) {
+            return false;
+        }
+
+        const entryIndex = socketEntries.findIndex(
+            (entry) => entry.clientId === clientId
         );
 
-        if (socketEntryIndex === -1) {
+        if (entryIndex === -1) {
             return false;
         }
 
-        const socketEntry = sockets[socketEntryIndex];
-        const savedUser = socketIdToUserMap[socketEntry.socket.id];
+        const socketEntry = socketEntries[entryIndex];
+        const userId = authenticatedSockets[socketEntry.socket.id];
 
-        if (!savedUser || savedUser.customId !== user.customId) {
-            delete userIdToSocketsMap[user.customId];
-            sockets.forEach(
-                (entry) => delete socketIdToUserMap[entry.socket.id]
-            );
+        if (!userId || userId !== user.customId) {
+            this.disconnectUser(userId);
             return false;
         }
 
@@ -129,11 +156,11 @@ export default class SocketContext implements ISocketContext {
     }
 
     public getUserSocketEntries(ctx: IBaseContext, userId: string) {
-        return userIdToSocketsMap[userId] || [];
+        return userIdToSocketEntriesMap[userId] || [];
     }
 
     private getSocketIndex(userId: string, socketId: string) {
-        const sockets = userIdToSocketsMap[userId];
+        const sockets = userIdToSocketEntriesMap[userId];
 
         if (!sockets) {
             return -1;

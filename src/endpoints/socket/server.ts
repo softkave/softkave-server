@@ -192,7 +192,7 @@ function toSocketReturnError(err) {
 async function onDisconnect(ctx: IBaseContext, socket: Socket) {
     // TODO: leave all the rooms the socket was a part of
     try {
-        ctx.socket.removeSocketIdAndUser(RequestData.fromSocketRequest(socket));
+        ctx.socket.disconnectSocket(RequestData.fromSocketRequest(socket));
     } catch (error) {
         console.error(error);
     }

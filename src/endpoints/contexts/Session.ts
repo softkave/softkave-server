@@ -6,7 +6,11 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { PermissionDeniedError } from "../errors";
 import { JWTEndpoints } from "../types";
-import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
+import {
+    InvalidCredentialsError,
+    LoginAgainError,
+    UserDoesNotExistError,
+} from "../user/errors";
 import UserToken, { IBaseUserTokenData } from "../user/UserToken";
 import { IBaseContext } from "./BaseContext";
 import RequestData from "./RequestData";
@@ -42,6 +46,7 @@ export interface ISessionContext {
         ctx: IBaseContext,
         data: RequestData
     ) => Promise<IUser | undefined>;
+    clearCachedUserData: (ctx: IBaseContext, data: RequestData) => void;
 }
 
 export default class SessionContext implements ISessionContext {
@@ -63,16 +68,15 @@ export default class SessionContext implements ISessionContext {
                 JWTEndpoints.Login
             );
 
-            if (!user) {
-                return;
-            }
-
+            // TODO:
+            // Caching the user data when we have multi-tenancy can be problematic
+            // cause the user may have been updated before a string of requests are complete
             data.req.userData = user;
             return user;
         } else if (data.socket) {
-            const user = ctx.socket.getUserBySocketId(data);
+            const userId = ctx.socket.getUserIdBySocketId(data);
 
-            if (!user) {
+            if (!userId) {
                 if (required) {
                     throw new PermissionDeniedError();
                 } else {
@@ -80,8 +84,23 @@ export default class SessionContext implements ISessionContext {
                 }
             }
 
+            const user = await ctx.models.userModel.model
+                .findOne({
+                    customId: userId,
+                })
+                .exec();
+
+            if (!user) {
+                ctx.socket.disconnectUser(userId);
+                throw new UserDoesNotExistError();
+            }
+
             return user;
         }
+    }
+
+    public clearCachedUserData(ctx: IBaseContext, data: RequestData) {
+        delete data.req.userData;
     }
 
     public validateUserToken(ctx: IBaseContext, token: string) {
@@ -122,7 +141,7 @@ export default class SessionContext implements ISessionContext {
         user = await ctx.models.userModel.model.findOne(query).exec();
 
         if (!user) {
-            throw new PermissionDeniedError();
+            throw new UserDoesNotExistError();
         }
 
         const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
@@ -130,7 +149,7 @@ export default class SessionContext implements ISessionContext {
             tokenData.sub.passwordLastChangedAt
         );
 
-        // validate password changes to logout user if using old password
+        // validate password changes to logout user if using old password or old token format
         if (
             !tokenData.sub.passwordLastChangedAt ||
             !user.passwordLastChangedAt ||

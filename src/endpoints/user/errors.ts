@@ -43,6 +43,7 @@ export class LoginAgainError extends OperationError {
 export class UserDoesNotExistError extends OperationError {
     public name = "UserDoesNotExistError";
     public message = "User does not exist";
+    public action = ServerRecommendedActions.LOGOUT;
 }
 
 // tslint:disable-next-line: max-classes-per-file

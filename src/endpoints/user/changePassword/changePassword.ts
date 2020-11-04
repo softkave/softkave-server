@@ -19,6 +19,9 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
         passwordLastChangedAt: getDate(),
     });
 
+    context.socket.disconnectUser(user.customId);
+    context.session.clearCachedUserData(context, instData);
+
     return {
         user: getPublicUserData(user),
         clientId: getNewId(),

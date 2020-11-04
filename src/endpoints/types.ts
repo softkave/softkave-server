@@ -45,4 +45,5 @@ export enum JWTEndpoints {
 
 export enum ServerRecommendedActions {
     LoginAgain = "login-again",
+    LOGOUT = "LOGOUT",
 }
