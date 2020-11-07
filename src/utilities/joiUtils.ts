@@ -14,8 +14,6 @@ export function validate<DataType>(
     });
 
     if (error) {
-        logger.info(error);
-
         const errorArray = error.details.map((err) => {
             return new InvalidInputError({
                 field: err.path.join("."),
