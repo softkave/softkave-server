@@ -8,12 +8,12 @@ import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId } from "../utils";
+import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import { AddBlockEndpoint } from "./types";
-import { addBlockJoiSchema } from "./validation";
+import { newBlockJoiSchema } from "./validation";
 
 const addBlock: AddBlockEndpoint = async (context, instData) => {
-    const data = validate(instData.data.block, addBlockJoiSchema);
+    const data = validate(instData.data.block, newBlockJoiSchema);
     const newBlock = data;
     const user = await context.session.getUser(context, instData);
 
@@ -54,7 +54,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         );
 
         return {
-            block: org,
+            block: getPublicBlockData(org),
         };
     }
 
@@ -95,7 +95,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     // TODO: analyze all the net calls you're making and look for ways to reduce them
 
     return {
-        block,
+        block: getPublicBlockData(block),
     };
 };
 

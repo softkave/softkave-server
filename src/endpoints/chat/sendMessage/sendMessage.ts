@@ -12,6 +12,7 @@ import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
 } from "../errors";
+import { getPublicChatData, getPublicRoomData } from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
@@ -49,7 +50,9 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         context.room.subscribeUser(context, room.name, user.customId);
         context.room.subscribeUser(context, room.name, data.recipientId);
 
-        const newRoomPacket: IOutgoingNewRoomPacket = { room };
+        const newRoomPacket: IOutgoingNewRoomPacket = {
+            room: getPublicRoomData(room),
+        };
 
         await context.room.broadcast(
             context,
@@ -67,7 +70,9 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.message
     );
 
-    const outgoingNewMessagePacket: IOutgoingSendMessagePacket = { chat };
+    const outgoingNewMessagePacket: IOutgoingSendMessagePacket = {
+        chat: getPublicChatData(chat),
+    };
 
     await context.room.broadcast(
         context,
@@ -99,7 +104,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         );
     }
 
-    return { chat };
+    return { chat: getPublicChatData(chat) };
 };
 
 export default sendMessage;

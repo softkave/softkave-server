@@ -1,92 +1,99 @@
 import { BlockType, IBlock } from "../../mongo/block";
+import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicBlock } from "./types";
 
 const blockFields = getFields<IPublicBlock>({
     customId: true,
     createdBy: true,
-    createdAt: true,
+    createdAt: getDateString,
     type: true,
     name: true,
     description: true,
     dueAt: true,
     color: true,
-    updatedAt: true,
+    updatedAt: getDateString,
     updatedBy: true,
     parent: true,
     rootBlockId: true,
     assignees: {
-        assignedAt: true,
+        assignedAt: getDateString,
         assignedBy: true,
         userId: true,
     },
     priority: true,
     subTasks: {
-        createdAt: true,
+        createdAt: getDateString,
         createdBy: true,
         customId: true,
         description: true,
-        completedAt: true,
+        completedAt: getDateString,
         completedBy: true,
-        updatedAt: true,
+        updatedAt: getDateString,
         updatedBy: true,
     },
     boardStatuses: {
-        createdAt: true,
+        createdAt: getDateString,
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: true,
+        updatedAt: getDateString,
         updatedBy: true,
         color: true,
         name: true,
     },
     boardLabels: {
-        createdAt: true,
+        createdAt: getDateString,
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: true,
+        updatedAt: getDateString,
         updatedBy: true,
         color: true,
         name: true,
     },
     boardResolutions: {
-        createdAt: true,
+        createdAt: getDateString,
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: true,
+        updatedAt: getDateString,
         updatedBy: true,
         name: true,
     },
     status: true,
     statusAssignedBy: true,
-    statusAssignedAt: true,
+    statusAssignedAt: getDateString,
     taskResolution: true,
     labels: {
-        assignedAt: true,
+        assignedAt: getDateString,
         assignedBy: true,
         customId: true,
     },
     currentSprintId: true,
     taskSprint: {
-        assignedAt: true,
+        assignedAt: getDateString,
         assignedBy: true,
         sprintId: true,
     },
     sprintOptions: {
-        createdAt: true,
+        createdAt: getDateString,
         createdBy: true,
         duration: true,
-        updatedAt: true,
+        updatedAt: getDateString,
         updatedBy: true,
     },
     lastSprintId: true,
 });
 
-export function getPublicBlockDataExt(block: Partial<IBlock>): IPublicBlock {
+export function getPublicBlockData(block: Partial<IBlock>): IPublicBlock {
     return extractFields(block, blockFields);
+}
+
+export function getPublicBlocksArray(
+    blocks: Array<Partial<IBlock>>
+): IPublicBlock[] {
+    return blocks.map((block) => extractFields(block, blockFields));
 }
 
 export function getBlockRootBlockId(block: IBlock) {

@@ -1,14 +1,14 @@
-import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicUserData } from "../types";
 
 export interface IGetUserDataResult {
-  user: IUser;
-  clientId: string;
+    user: IPublicUserData;
+    clientId: string;
 }
 
 export type GetUserDataEndpoint = Endpoint<
-  IBaseContext,
-  undefined,
-  IGetUserDataResult
+    IBaseContext,
+    undefined,
+    IGetUserDataResult
 >;

@@ -9,7 +9,7 @@ import {
     OutgoingSocketEvents,
 } from "../../socket/server";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
-import getPublicSprintData from "../getPublicSprintData";
+import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";
 import { addSprintJoiSchema } from "./validation";
 
@@ -83,7 +83,7 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
         instData
     );
 
-    return { data: sprint };
+    return { data: getPublicSprintData(sprint) };
 };
 
 export default addSprint;

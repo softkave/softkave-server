@@ -1,3 +1,4 @@
+import { getPublicChatsArray, getPublicRoomsArray } from "../utils";
 import { GetUserRoomsAndChatsEndpoint } from "./type";
 
 const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
@@ -13,7 +14,10 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
         rooms.map((rm) => rm.customId)
     );
 
-    return { rooms, chats };
+    return {
+        rooms: getPublicRoomsArray(rooms),
+        chats: getPublicChatsArray(chats),
+    };
 };
 
 export default getUserRoomsAndChats;

@@ -1,5 +1,6 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
+import { getPublicSprintArray } from "../utils";
 import { GetSprintsEndpoint } from "./types";
 import { getSprintsJoiSchema } from "./validation";
 
@@ -15,7 +16,7 @@ const getSprints: GetSprintsEndpoint = async (context, instData) => {
         board.customId
     );
 
-    return { data: sprints };
+    return { data: getPublicSprintArray(sprints) };
 };
 
 export default getSprints;

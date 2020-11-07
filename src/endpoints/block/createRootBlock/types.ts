@@ -1,25 +1,25 @@
-import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { Endpoint } from "../../types";
 import {
-  IInternalAddBlockContext,
-  InternalAddBlockEndpoint,
+    IInternalAddBlockContext,
+    InternalAddBlockEndpoint,
 } from "../internalAddBlock/types";
+import { IPublicBlock } from "../types";
 
 export interface ICreateRootBlockParameters {
-  user: IUser;
+    user: IUser;
 }
 
 export interface ICreateRootBlockResult {
-  block: IBlock;
+    block: IPublicBlock;
 }
 
 export interface ICreateRootBlockContext extends IInternalAddBlockContext {
-  addBlock: InternalAddBlockEndpoint;
+    addBlock: InternalAddBlockEndpoint;
 }
 
 export type CreateRootBlockEndpoint = Endpoint<
-  ICreateRootBlockContext,
-  ICreateRootBlockParameters,
-  ICreateRootBlockResult
+    ICreateRootBlockContext,
+    ICreateRootBlockParameters,
+    ICreateRootBlockResult
 >;

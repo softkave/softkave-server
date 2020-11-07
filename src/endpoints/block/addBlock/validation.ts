@@ -3,7 +3,7 @@ import { BlockType } from "../../../mongo/block/definitions";
 import { validationSchemas } from "../../../utilities/validationUtils";
 import blockValidationSchemas from "../validation";
 
-const newBlockJoiSchema = Joi.object().keys({
+export const newBlockJoiSchema = Joi.object().keys({
     name: blockValidationSchemas.name.required(),
     description: blockValidationSchemas.description,
     dueAt: blockValidationSchemas.dueAt,
@@ -48,8 +48,4 @@ const newBlockJoiSchema = Joi.object().keys({
     boardResolutions: blockValidationSchemas.boardResolutions,
     taskResolution: validationSchemas.uuid.allow(null),
     labels: blockValidationSchemas.blockAssignedLabelsList,
-});
-
-export const addBlockJoiSchema = Joi.object().keys({
-    block: newBlockJoiSchema,
 });

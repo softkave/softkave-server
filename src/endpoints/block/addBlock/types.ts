@@ -1,25 +1,24 @@
-import { IBlock } from "../../../mongo/block";
 import { Endpoint } from "../../types";
 import {
-  IInternalAddBlockContext,
-  InternalAddBlockEndpoint,
+    IInternalAddBlockContext,
+    InternalAddBlockEndpoint,
 } from "../internalAddBlock/types";
-import { INewBlockInput } from "../types";
+import { INewBlockInput, IPublicBlock } from "../types";
 
 export interface IAddBlockParameters {
-  block: INewBlockInput;
+    block: INewBlockInput;
 }
 
 export interface IAddBlockContext extends IInternalAddBlockContext {
-  addBlock: InternalAddBlockEndpoint;
+    addBlock: InternalAddBlockEndpoint;
 }
 
 export interface IAddBlockResult {
-  block: IBlock;
+    block: IPublicBlock;
 }
 
 export type AddBlockEndpoint = Endpoint<
-  IAddBlockContext,
-  IAddBlockParameters,
-  IAddBlockResult
+    IAddBlockContext,
+    IAddBlockParameters,
+    IAddBlockResult
 >;

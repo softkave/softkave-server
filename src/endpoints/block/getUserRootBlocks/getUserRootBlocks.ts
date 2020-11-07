@@ -1,15 +1,16 @@
+import { getPublicBlocksArray } from "../utils";
 import { GetUserRootBlocksEndpoint } from "./types";
 
 const getUserRootBlocks: GetUserRootBlocksEndpoint = async (
-  context,
-  instData
+    context,
+    instData
 ) => {
-  const user = await context.session.getUser(context, instData);
-  const blocks = await context.block.getUserRootBlocks(context, user);
+    const user = await context.session.getUser(context, instData);
+    const blocks = await context.block.getUserRootBlocks(context, user);
 
-  return {
-    blocks,
-  };
+    return {
+        blocks: getPublicBlocksArray(blocks),
+    };
 };
 
 export default getUserRootBlocks;

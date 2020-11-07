@@ -15,23 +15,29 @@ export type Endpoint<
     instData: RequestData<T>
 ) => Promise<(R & IBaseEndpointResult) | undefined>;
 
-export type GetFields<T extends object> = {
-    [K in keyof Required<T>]: T[K] extends Date
-        ? boolean
-        : T[K] extends any[]
-        ? T[K][0] extends Date
-            ? boolean
-            : T[K][0] extends object
-            ? GetFields<T[K][0]>
-            : boolean
-        : T[K] extends object
-        ? GetFields<T[K]>
-        : boolean;
+export type ExtractFieldTransformer<T, Result = any> = (val: T) => Result;
+
+export type ExtractFieldsFrom<T extends object> = {
+    [Key in keyof Required<T>]: T[Key] extends Date
+        ? boolean | ExtractFieldTransformer<Date>
+        : T[Key] extends any[]
+        ? T[Key][0] extends Date
+            ? boolean | ExtractFieldTransformer<Date>
+            : T[Key][0] extends object
+            ? ExtractFieldsFrom<T[Key][0]>
+            : boolean | ExtractFieldTransformer<T[Key][0]>
+        : T[Key] extends object
+        ? ExtractFieldsFrom<T[Key]>
+        : boolean | ExtractFieldTransformer<T[Key]>;
 };
 
 export interface IObjectPaths<O extends object> {
     object: O;
-    stringFields: string[];
+    scalarFields: string[];
+    scalarFieldsWithTransformers: Array<{
+        property: string;
+        transformer: ExtractFieldTransformer<any>;
+    }>;
     objectFields: Array<{
         property: string;
         fields: IObjectPaths<any>;

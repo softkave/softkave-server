@@ -1,6 +1,7 @@
 import { CollaborationRequestStatusType } from "../../../mongo/notification";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { getPublicBlockData } from "../../block/utils";
 import { PermissionDeniedError } from "../../errors";
 import {
     CollaborationRequestAcceptedError,
@@ -87,7 +88,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
             await context.session.updateUser(context, instData, {
                 orgs: userOrgs,
             });
-            return { block: ownerBlock };
+            return { block: getPublicBlockData(ownerBlock) };
         } else {
             // TODO: should we log an error because it means the user already has the org
         }

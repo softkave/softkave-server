@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
-import { ISprint, SprintDuration } from "../../mongo/sprint";
+import { SprintDuration } from "../../mongo/sprint";
 import { ServerError } from "../../utilities/errors";
 import { IPublicBlock } from "../block/types";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
@@ -10,6 +10,7 @@ import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadC
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { IPublicNotificationData } from "../notification/types";
+import { IPublicSprint } from "../sprint/types";
 import { JWTEndpoints } from "../types";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
@@ -301,7 +302,7 @@ export interface IOutgoingUpdateRoomReadCounterPacket {
 }
 
 export interface IOutgoingNewSprintPacket {
-    sprint: ISprint;
+    sprint: IPublicSprint;
 }
 
 export interface IOutgoingUpdateSprintPacket {

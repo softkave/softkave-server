@@ -2,7 +2,7 @@ import { BlockType, IBlock } from "../../mongo/block";
 import { IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
 import { IBlockUpdatePacket, OutgoingSocketEvents } from "../socket/server";
-import { getPublicBlockDataExt } from "./utils";
+import { getPublicBlockData } from "./utils";
 
 export interface IBroadcastBlockUpdateArgs {
     context: IBaseContext;
@@ -37,7 +37,7 @@ const broadcastBlockUpdate = async (args: IBroadcastBlockUpdateArgs) => {
         // Con: it may be slower, considering that graphql already kind of does this
         // Idea: maybe convert the REST version, and others, but leave the endpoints themselves
         // clean
-        eventData.block = getPublicBlockDataExt(data);
+        eventData.block = getPublicBlockData(data);
     }
 
     if (blockType === BlockType.Org) {
