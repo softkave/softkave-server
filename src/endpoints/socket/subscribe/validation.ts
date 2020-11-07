@@ -6,9 +6,10 @@ export const subscribeJoiSchema = Joi.object().keys({
     items: Joi.array()
         .items(
             Joi.object().keys({
-                customId: validationSchemas.uuid,
-                type: socketValidationSchemas.resourceType,
+                customId: validationSchemas.uuid.required(),
+                type: socketValidationSchemas.resourceType.required(),
             })
         )
-        .max(50),
+        .max(50)
+        .unique("customId"),
 });

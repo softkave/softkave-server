@@ -37,6 +37,20 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
         updatesToSave.lowerCasedName = updateData.name.toLowerCase();
     }
 
+    if (updateData.status && updateData.status !== block.status) {
+        const assignees = updateData.assignees || block.assignees || [];
+
+        if (assignees.length === 0) {
+            assignees.push({
+                userId: user.customId,
+                assignedAt: getDate(),
+                assignedBy: user.customId,
+            });
+
+            updatesToSave.assignees = assignees;
+        }
+    }
+
     await context.block.updateBlockById(context, data.blockId, updatesToSave);
 
     fireAndForgetPromise(

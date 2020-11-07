@@ -1,7 +1,8 @@
 import Joi from "joi";
+import { validationSchemas } from "../../../utilities/validationUtils";
 import blockValidationSchemas from "../validation";
 
 export const getBlockChildrenJoiSchema = Joi.object().keys({
-  blockId: blockValidationSchemas.blockId,
-  typeList: blockValidationSchemas.blockTypesList,
+    blockId: validationSchemas.uuid.required(),
+    typeList: blockValidationSchemas.blockTypesList,
 });

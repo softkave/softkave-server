@@ -5,7 +5,7 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
 import logger from "../../utilities/logger";
-import { IBulkUpdateByIdItem } from "../../utilities/types";
+import { IUpdateItemById } from "../../utilities/types";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IBaseContext } from "./BaseContext";
 
@@ -30,7 +30,7 @@ export interface IBlockContext {
     ) => Promise<boolean | undefined>;
     bulkUpdateBlocksById: (
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateByIdItem<IBlock>>
+        blocks: Array<IUpdateItemById<IBlock>>
     ) => Promise<void>;
     saveBlock: (ctx: IBaseContext, block: IBlock) => Promise<IBlock>;
     markBlockDeleted: (
@@ -126,7 +126,7 @@ export default class BlockContext implements IBlockContext {
 
     public async bulkUpdateBlocksById(
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateByIdItem<IBlock>>
+        blocks: Array<IUpdateItemById<IBlock>>
     ) {
         try {
             const opts = blocks.map((b) => ({

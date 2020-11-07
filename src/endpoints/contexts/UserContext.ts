@@ -3,7 +3,7 @@ import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-import { IBulkUpdateByIdItem } from "../../utilities/types";
+import { IUpdateItemById } from "../../utilities/types";
 import { UserDoesNotExistError } from "../user/errors";
 import { ICollaborator } from "../user/types";
 import { IBaseContext } from "./BaseContext";
@@ -37,7 +37,7 @@ export interface IUserContext {
     getOrgUsers: (ctx: IBaseContext, blockId: string) => Promise<IUser[]>;
     bulkUpdateUsersById: (
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateByIdItem<IUser>>
+        blocks: Array<IUpdateItemById<IUser>>
     ) => Promise<void>;
 }
 
@@ -184,7 +184,7 @@ export default class UserContext implements IUserContext {
 
     public async bulkUpdateUsersById(
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateByIdItem<IUser>>
+        blocks: Array<IUpdateItemById<IUser>>
     ) {
         try {
             const opts = blocks.map((item) => ({

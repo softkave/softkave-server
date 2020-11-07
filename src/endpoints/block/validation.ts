@@ -9,16 +9,12 @@ const taskCollaboratorSchema = Joi.object().keys({
     assignedAt: Joi.date().required(),
 });
 
-const taskCollaboratorsListSchema = Joi.array()
-    .max(blockConstants.maxTaskCollaboratorsLength)
-    .unique("userId")
-    .items(taskCollaboratorSchema);
-
 const userUpdateableTypes = [
     BlockType.Org,
     BlockType.Board,
     BlockType.Task,
 ] as BlockType[];
+
 const userUpdateableblockTypeSchema = Joi.string()
     .lowercase()
     .valid(userUpdateableTypes);
@@ -26,7 +22,6 @@ const userUpdateableblockTypeSchema = Joi.string()
 const fullBlockTypes = [...userUpdateableTypes, BlockType.Root] as BlockType[];
 const fullBlockTypeSchema = Joi.string().lowercase().valid(fullBlockTypes);
 const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
-
 const subTasksSchema = Joi.object().keys({
     customId: Joi.string().uuid().required(),
     description: Joi.string()
@@ -43,7 +38,7 @@ const subTasksSchema = Joi.object().keys({
 
 // TODO: run trim on all string inputs
 const labelSchema = Joi.object().keys({
-    color,
+    color: color.required(),
     customId: Joi.string().uuid().required(),
     name: Joi.string()
         .lowercase()
@@ -63,7 +58,7 @@ const labelSchema = Joi.object().keys({
 });
 
 const statusSchema = Joi.object().keys({
-    color,
+    color: color.required(),
     customId: Joi.string().uuid().required(),
     name: Joi.string()
         .trim()
@@ -104,146 +99,80 @@ const resolutionSchema = Joi.object().keys({
 const statusListSchema = Joi.array()
     .max(blockConstants.maxAvailableLabels)
     .items(statusSchema)
-    .when("type", {
-        is: BlockType.Board,
-        then: Joi.required(),
-    });
-
-// TODO: should labels and statuses be unique?
-// .unique((a: IBlockStatus, b: IBlockStatus) => {
-//   return a.customId === b.customId || a.name === b.name;
-// });
+    .unique("customId")
+    .unique("name");
 
 const boardLabelList = Joi.array()
     .max(blockConstants.maxAvailableLabels)
     .items(labelSchema)
-    .when("type", {
-        is: BlockType.Board,
-        then: Joi.required(),
-    });
+    .unique("customId")
+    .unique("name");
 
 const resolutionListSchema = Joi.array()
     .max(blockConstants.maxAvailableLabels)
     .items(resolutionSchema)
-    .when("type", {
-        is: BlockType.Board,
-        then: Joi.required(),
-        otherwise: Joi.allow(null),
-    });
+    .unique("customId")
+    .unique("name");
 
 const blockTypesSchema = Joi.array()
     .max(blockConstants.blockTypesCount)
     .unique()
     .items(userUpdateableblockTypeSchema);
 
-const blockId = validationSchemas.uuid;
-
 const name = Joi.string().trim().max(blockConstants.maxNameLength);
 
-const updateBlockName = name.when("type", {
-    is: Joi.string().valid([BlockType.Task] as BlockType[]),
-    then: Joi.allow(null),
-    otherwise: Joi.required(),
-});
-
-const newBlockOriginalName = name.required();
-
-const lowerCasedName = name.lowercase();
-
 const description = Joi.string()
-    .allow("")
-    .max(blockConstants.maxDescriptionLength)
-    .trim();
-
-const updateDescription = Joi.string()
-    .allow(["", null])
+    .allow(null)
     .max(blockConstants.maxDescriptionLength)
     .trim();
 
 const dueAt = Joi.date().allow(null);
 const createdAt = Joi.date();
-
-const updatedAt = Joi.date();
-const parent = validationSchemas.uuid.when("type", {
-    is: Joi.string().valid([BlockType.Board, BlockType.Task] as BlockType[]),
-    then: Joi.required(),
-});
-
+const updatedAt = Joi.date().allow(null);
+const parent = validationSchemas.uuid;
 const rootBlockId = parent;
 const createdBy = validationSchemas.uuid;
-const taskAssignees = taskCollaboratorsListSchema;
+const taskAssignees = Joi.array()
+    .max(blockConstants.maxTaskCollaboratorsLength)
+    .unique("userId")
+    .items(taskCollaboratorSchema);
+
 const priority = Joi.string()
     .lowercase()
-    .valid(blockConstants.priorityValuesArray)
-    .when("type", {
-        is: BlockType.Task,
-        then: Joi.required(),
-        otherwise: Joi.allow(null),
-    });
+    .valid(blockConstants.priorityValuesArray);
 
 const subTasks = Joi.array()
     .items(subTasksSchema)
-    .max(blockConstants.maxSubTasksLength);
+    .max(blockConstants.maxSubTasksLength)
+    .unique("customId");
 
 const blockAssignedLabels = Joi.object().keys({
-    customId: validationSchemas.uuid,
-    assignedBy: validationSchemas.uuid,
-    assignedAt: Joi.date(),
+    customId: validationSchemas.uuid.required(),
+    assignedBy: validationSchemas.uuid.required(),
+    assignedAt: Joi.date().required(),
 });
 
 const blockAssignedLabelsList = Joi.array()
     .items(blockAssignedLabels)
-    .max(blockConstants.maxAvailableLabels);
+    .max(blockConstants.maxAvailableLabels)
+    .unique("customId");
 
 const statusAssignedBy = validationSchemas.uuid.allow("system").when("type", {
     is: BlockType.Task,
     then: Joi.required(),
-}); // TODO: exploitable
-
-const taskStatusSchema = validationSchemas.uuid.when("type", {
-    is: BlockType.Task,
-    then: Joi.required(),
-    otherwise: Joi.allow(null),
-});
+}); // TODO: "system" exploitable
 
 const taskSprint = Joi.object()
     .keys({
         sprintId: validationSchemas.uuid.required(),
-        assignedAt: Joi.date(),
+        assignedAt: Joi.date().required(),
         assignedBy: validationSchemas.uuid.required(),
     })
     .allow(null);
 
-const newBlock = Joi.object().keys({
-    name: newBlockOriginalName,
-    description,
-    dueAt,
-    color,
-    parent,
-    rootBlockId,
-    priority,
-    taskSprint,
-    subTasks,
-    statusAssignedBy,
-    assignees: taskAssignees,
-    customId: blockId,
-    type: userUpdateableblockTypeSchema,
-    boardStatuses: statusListSchema,
-    boardLabels: boardLabelList,
-    boardResolutions: resolutionListSchema,
-    status: taskStatusSchema,
-    taskResolution: validationSchemas.uuid,
-    labels: blockAssignedLabelsList,
-    statusAssignedAt: Joi.date().when("type", {
-        is: BlockType.Task,
-        then: Joi.required(),
-    }),
-});
-
 const blockValidationSchemas = {
-    updateBlockName,
-    lowerCasedName,
-    blockId,
+    name,
+    description,
     dueAt,
     createdAt,
     color,
@@ -253,24 +182,21 @@ const blockValidationSchemas = {
     parent,
     rootBlockId,
     updatedAt,
-    newBlock,
     statusSchema,
     labelSchema,
     statusListSchema,
     boardLabelList,
-    updateDescription,
     blockAssignedLabels,
     blockAssignedLabelsList,
     statusAssignedBy,
     resolutionSchema,
     resolutionListSchema,
     taskSprint,
-    assignees: taskAssignees,
+    taskAssignees,
     boardResolutions: resolutionListSchema,
     blockTypesList: blockTypesSchema,
     type: userUpdateableblockTypeSchema,
     fullBlockType: fullBlockTypeSchema,
-    taskResolution: validationSchemas.uuid.allow(null),
 };
 
 export default blockValidationSchemas;

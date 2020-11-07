@@ -1,7 +1,7 @@
 import { IBlock } from "../../../mongo/block";
 import { ISprint } from "../../../mongo/sprint";
 import { validate } from "../../../utilities/joiUtils";
-import { IBulkUpdateByIdItem } from "../../../utilities/types";
+import { IUpdateItemById } from "../../../utilities/types";
 import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingDeleteSprintPacket,
@@ -41,7 +41,7 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     // TODO: bulk update and delete the sprints
     await context.sprint.deleteSprint(context, data.sprintId);
 
-    const bulkSprintUpdates: Array<IBulkUpdateByIdItem<ISprint>> = [];
+    const bulkSprintUpdates: Array<IUpdateItemById<ISprint>> = [];
 
     if (sprint.prevSprintId) {
         bulkSprintUpdates.push({

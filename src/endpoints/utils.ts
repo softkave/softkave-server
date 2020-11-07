@@ -1,6 +1,7 @@
 import { pick } from "lodash";
 import isArray from "lodash/isArray";
 import isDate from "lodash/isDate";
+import isNull from "lodash/isNull";
 import isObject from "lodash/isObject";
 import { GetFields, IObjectPaths } from "./types";
 
@@ -49,7 +50,7 @@ export function getFields<T extends object>(
         (paths, key) => {
             const value = data[key];
 
-            if (isObject(value) && !isDate(value)) {
+            if (!isNull(value) && isObject(value) && !isDate(value)) {
                 paths.objectFields.push({
                     property: key,
                     fields: getFields(value as any),
@@ -77,6 +78,8 @@ export function extractFields<
     paths.objectFields.forEach((field) => {
         const propertyValue = data[field.property];
 
+        // TODO: if you ever update this to allow null,
+        // make sure to strip those fields in the Joi schema
         if (!propertyValue) {
             return;
         }

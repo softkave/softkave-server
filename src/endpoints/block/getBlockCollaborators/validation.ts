@@ -1,6 +1,6 @@
 import Joi from "joi";
-import blockValidationSchemas from "../validation";
+import { validationSchemas } from "../../../utilities/validationUtils";
 
 export const getBlockCollaboratorsJoiSchema = Joi.object().keys({
-  blockId: blockValidationSchemas.blockId,
+    blockId: validationSchemas.uuid.required(),
 });

@@ -4,18 +4,21 @@ import { notificationConstants } from "../../notification/constants";
 import { blockConstants } from "../constants";
 
 const newCollaboratorSchema = Joi.object().keys({
-  customId: validationSchemas.uuid,
-  email: Joi.string().required().trim().email().lowercase(),
-  body: Joi.string().max(notificationConstants.maxAddCollaboratorMessageLength),
-  expiresAt: Joi.date(),
+    customId: validationSchemas.uuid.required(),
+    email: Joi.string().required().trim().email().lowercase().required(),
+    body: Joi.string()
+        .max(notificationConstants.maxAddCollaboratorMessageLength)
+        .allow(null),
+    expiresAt: Joi.date().allow(null),
 });
 
 const newCollaboratorsListSchema = Joi.array()
-  .items(newCollaboratorSchema)
-  .max(blockConstants.maxAddCollaboratorValuesLength)
-  .unique("email");
+    .items(newCollaboratorSchema)
+    .max(blockConstants.maxAddCollaboratorValuesLength)
+    .unique("email")
+    .unique("customId");
 
 export const addCollaboratorsJoiSchema = Joi.object().keys({
-  blockId: validationSchemas.uuid,
-  collaborators: newCollaboratorsListSchema,
+    blockId: validationSchemas.uuid.required(),
+    collaborators: newCollaboratorsListSchema.required(),
 });

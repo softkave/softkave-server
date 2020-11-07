@@ -9,11 +9,11 @@ import { fireAndForgetPromise } from "../../utils";
 import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
-import blockValidationSchemas from "../validation";
 import { AddBlockEndpoint } from "./types";
+import { addBlockJoiSchema } from "./validation";
 
 const addBlock: AddBlockEndpoint = async (context, instData) => {
-    const data = validate(instData.data.block, blockValidationSchemas.newBlock);
+    const data = validate(instData.data.block, addBlockJoiSchema);
     const newBlock = data;
     const user = await context.session.getUser(context, instData);
 

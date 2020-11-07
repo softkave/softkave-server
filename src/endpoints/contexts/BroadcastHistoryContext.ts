@@ -3,7 +3,6 @@ import moment from "moment";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { OutgoingSocketEvents } from "../socket/server";
 import { IBaseContext } from "./BaseContext";
-import RequestData from "./RequestData";
 
 interface IBroadcastHistoryItem {
     event: OutgoingSocketEvents;

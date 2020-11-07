@@ -1,15 +1,17 @@
-export type SingletonFuncInit<T, A extends any[]> = (...args: A) => T;
+export type SingletonFuncInit<Singleton, Arguments extends any[]> = (
+    ...args: Arguments
+) => Singleton;
 
-export default function createSingletonFunc<T, A extends any[]>(
-  init: SingletonFuncInit<T, A>
-): SingletonFuncInit<T, A> {
-  let data = null;
+export default function createSingletonFunc<Singleton, Arguments extends any[]>(
+    init: SingletonFuncInit<Singleton, Arguments>
+): SingletonFuncInit<Singleton, Arguments> {
+    let data = null;
 
-  return (...args: A) => {
-    if (!data) {
-      data = init(...args);
-    }
+    return (...args: Arguments) => {
+        if (!data) {
+            data = init(...args);
+        }
 
-    return data;
-  };
+        return data;
+    };
 }

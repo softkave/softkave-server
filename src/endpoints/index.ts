@@ -1,5 +1,4 @@
 import { buildSchema } from "graphql";
-import { utilitySchema } from "../utilities/schema-utils";
 import blockSchema from "./block/schema";
 import EndpointController from "./controller";
 import noteSchema from "./note/schema";
@@ -9,7 +8,18 @@ import systemSchema from "./system/schema";
 import userSchema from "./user/schema";
 
 const rootSchema = `
-    ${utilitySchema}
+    type Error {
+        field: String
+        message: String
+        type: String
+        action: String
+        name: String
+    }
+
+    type ErrorOnlyResponse {
+        errors: [Error]
+    }
+
     ${userSchema}
     ${blockSchema}
     ${noteSchema}

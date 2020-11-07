@@ -3,7 +3,7 @@ import { ISprint } from "../../mongo/sprint";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import logger from "../../utilities/logger";
-import { IBulkUpdateByIdItem } from "../../utilities/types";
+import { IUpdateItemById } from "../../utilities/types";
 import { IBaseContext } from "./BaseContext";
 
 export interface ISprintContext {
@@ -23,7 +23,7 @@ export interface ISprintContext {
     ) => Promise<void>;
     bulkUpdateSprintsById: (
         ctx: IBaseContext,
-        sprints: Array<IBulkUpdateByIdItem<ISprint>>
+        sprints: Array<IUpdateItemById<ISprint>>
     ) => Promise<void>;
     sprintExists: (
         ctx: IBaseContext,
@@ -83,7 +83,7 @@ export default class SprintContext implements ISprintContext {
 
     public async bulkUpdateSprintsById(
         ctx: IBaseContext,
-        blocks: Array<IBulkUpdateByIdItem<ISprint>>
+        blocks: Array<IUpdateItemById<ISprint>>
     ) {
         try {
             const opts = blocks.map((b) => ({

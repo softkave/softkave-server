@@ -1,6 +1,4 @@
-export type DataType = "string" | "number" | "array";
-
-export interface IBulkUpdateByIdItem<T> {
+export interface IUpdateItemById<T> {
     id: string;
     data: Partial<T>;
 }
