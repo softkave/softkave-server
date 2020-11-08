@@ -30,13 +30,13 @@ const publicNotificationFields = getFields<IPublicNotificationData>({
 });
 
 export function getPublicNotificationData(
-    notification: INotification
+    notification: Partial<INotification>
 ): IPublicNotificationData {
     return extractFields(notification, publicNotificationFields);
 }
 
 export function getPublicNotificationsArray(
-    notifications: INotification[]
+    notifications: Array<Partial<INotification>>
 ): IPublicNotificationData[] {
     return notifications.map((notification) =>
         extractFields(notification, publicNotificationFields)

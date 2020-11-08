@@ -1,4 +1,8 @@
 import { BlockType, IBlock } from "../../mongo/block";
+import {
+    CollaborationRequestStatusType,
+    INotification,
+} from "../../mongo/notification";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicBlock } from "./types";
@@ -115,4 +119,14 @@ export function getBlockTypeName(blockType: BlockType) {
         default:
             return "Block";
     }
+}
+
+export function isRequestAccepted(request: INotification) {
+    if (Array.isArray(request.statusHistory)) {
+        return !!request.statusHistory.find((status) => {
+            return status.status === CollaborationRequestStatusType.Accepted;
+        });
+    }
+
+    return false;
 }

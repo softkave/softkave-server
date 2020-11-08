@@ -271,6 +271,11 @@ const blockSchema = `
     expiresAt: String
   }
 
+  type AddCollaboratorResult {
+      errors: [Error]
+      data: [Notification]
+  }
+
   type BlockQuery {
     addBlock (block: AddBlockInput!) : ErrorOnlyResponse
     updateBlock (
@@ -286,7 +291,7 @@ const blockSchema = `
     addCollaborators (
       blockId: String!,
       collaborators: [AddCollaboratorInput!]!,
-    ) : ErrorOnlyResponse
+    ) : AddCollaboratorResult
     removeCollaborator (
       blockId: String!,
       collaboratorId: String!

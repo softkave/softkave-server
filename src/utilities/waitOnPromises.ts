@@ -1,27 +1,18 @@
-const statusFulfilled = "fulfilled";
-const statusRejected = "rejected";
-
-export type PromiseStatus = typeof statusRejected | typeof statusFulfilled;
-
-export const promiseStatus: { [key: string]: PromiseStatus } = {
-    fulfilled: statusFulfilled,
-    rejected: statusRejected,
-};
-
-export interface IAllSettledPromiseArgument {
-    promise: Promise<any>;
-    id: string;
+export interface IPromiseWithId<T = any> {
+    promise: Promise<T>;
+    id: string | number;
 }
 
-export interface ISettledPromise {
-    status: PromiseStatus;
-    id: string;
-    value?: any;
-    reason?: any;
+export interface ISettledPromise<V = any, R = any> {
+    fulfilled: boolean;
+    rejected: boolean;
+    id: string | number;
+    value?: V;
+    reason?: R;
 }
 
 const waitOnPromises = (
-    promises: IAllSettledPromiseArgument[]
+    promises: IPromiseWithId[]
 ): Promise<ISettledPromise[]> => {
     return Promise.all(
         promises.map((promise) => {
@@ -29,14 +20,16 @@ const waitOnPromises = (
                 promise.promise
                     .then((result) =>
                         resolve({
-                            status: statusFulfilled,
+                            fulfilled: true,
+                            rejected: false,
                             value: result,
                             id: promise.id,
                         })
                     )
                     .catch((error) =>
                         resolve({
-                            status: statusRejected,
+                            fulfilled: false,
+                            rejected: true,
                             reason: error,
                             id: promise.id,
                         })

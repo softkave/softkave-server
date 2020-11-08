@@ -228,12 +228,11 @@ enum IncomingSocketEvents {
 
 export enum OutgoingSocketEvents {
     BlockUpdate = "blockUpdate",
-    OrgNewNotifications = "orgNewNotifications",
-    UserNewNotifications = "userNewNotifications",
+    OrgNewCollaborationRequests = "orgNewCollaborationRequests",
+    UserNewCollaborationRequest = "userNewCollaborationRequest",
     UserUpdate = "userUpdate",
-    UpdateNotification = "updateNotification",
+    UpdateCollaborationRequests = "updateCollaborationRequests",
     UserCollaborationRequestResponse = "userCollabReqResponse",
-    OrgCollaborationRequestResponse = "orgCollabReqResponse",
     NewRoom = "newRoom",
     NewMessage = "newMessage",
     UpdateRoomReadCounter = "updateRoomReadCounter",
@@ -265,13 +264,21 @@ export interface INewNotificationsPacket {
     notifications: IPublicNotificationData[];
 }
 
+export interface INewNotificationPacket {
+    notification: IPublicNotificationData;
+}
+
 export interface IUserUpdatePacket {
     notificationsLastCheckedAt: string;
 }
 
 export interface IUpdateNotificationPacket {
     customId: string;
-    data: { readAt: string };
+    data: Partial<IPublicNotificationData>;
+}
+
+export interface IUpdateNotificationsPacket {
+    notifications: IUpdateNotificationPacket[];
 }
 
 export interface IUserCollaborationRequestResponsePacket {
