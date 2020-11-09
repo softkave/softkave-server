@@ -7,7 +7,7 @@ import {
     IOutgoingSendMessagePacket,
     IOutgoingUpdateRoomReadCounterPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,

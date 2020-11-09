@@ -4,7 +4,7 @@ import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingUpdateSprintPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import { SprintDoesNotExistError } from "../errors";
 import { UpdateSprintEndpoint } from "./types";
 import { updateSprintJoiSchema } from "./validation";

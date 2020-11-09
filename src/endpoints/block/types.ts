@@ -9,6 +9,7 @@ import {
     ITaskSprint,
 } from "../../mongo/block";
 import { IBoardSprintOptions } from "../../mongo/sprint";
+import { ConvertDatesToStrings } from "../../utilities/types";
 
 export interface INewBlockInput {
     // TODO: should we generate customId on our side, and have maybe something like clientGivenId
@@ -35,16 +36,16 @@ export interface INewBlockInput {
     taskSprint?: ITaskSprint;
 }
 
-export interface IPublicBlock {
+export type IPublicBlock = ConvertDatesToStrings<{
     customId: string;
     createdBy: string;
-    createdAt: Date;
+    createdAt: string;
     type: BlockType;
     name: string;
     description?: string;
-    dueAt?: Date;
+    dueAt?: string;
     color?: string;
-    updatedAt?: Date;
+    updatedAt?: string;
     updatedBy?: string;
     parent?: string;
     rootBlockId?: string;
@@ -56,11 +57,11 @@ export interface IPublicBlock {
     boardResolutions?: IBoardStatusResolution[];
     status?: string;
     statusAssignedBy?: string;
-    statusAssignedAt?: Date;
+    statusAssignedAt?: string;
     taskResolution?: string;
     labels?: IBlockAssignedLabel[];
     currentSprintId?: string;
     taskSprint?: ITaskSprint;
     sprintOptions?: IBoardSprintOptions;
     lastSprintId?: string;
-}
+}>;

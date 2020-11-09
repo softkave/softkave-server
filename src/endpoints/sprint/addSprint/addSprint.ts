@@ -7,7 +7,7 @@ import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingNewSprintPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";

@@ -12,7 +12,7 @@ import waitOnPromises, {
 } from "../../../utilities/waitOnPromises";
 import { getPublicNotificationData } from "../../notification/utils";
 import {
-    IUpdateNotificationsPacket,
+    IOutgoingUpdateNotificationsPacket,
     OutgoingSocketEvents,
 } from "../../socket/server";
 import { fireAndForgetPromise } from "../../utils";
@@ -77,7 +77,7 @@ export default async function sendEmails(
         context.notification.bulkUpdateNotificationsById(context, updates)
     );
 
-    const updateNotificationsPacket: IUpdateNotificationsPacket = {
+    const updateNotificationsPacket: IOutgoingUpdateNotificationsPacket = {
         notifications: updates.map((update) => ({
             customId: update.id,
             data: getPublicNotificationData(update.data),

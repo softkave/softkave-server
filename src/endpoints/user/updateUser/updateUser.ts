@@ -1,6 +1,9 @@
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { IUserUpdatePacket, OutgoingSocketEvents } from "../../socket/server";
+import {
+    IOutgoingUserUpdatePacket,
+    OutgoingSocketEvents,
+} from "../../socket/outgoingEventTypes";
 import { UpdateUserEndpoint } from "./types";
 import { updateUserJoiSchema } from "./validation";
 
@@ -9,7 +12,7 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
 
     if (data.notificationsLastCheckedAt) {
-        const broadcastData: IUserUpdatePacket = {
+        const broadcastData: IOutgoingUserUpdatePacket = {
             notificationsLastCheckedAt: getDateString(
                 data.notificationsLastCheckedAt
             ),

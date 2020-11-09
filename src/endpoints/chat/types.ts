@@ -1,5 +1,6 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
+import { ConvertDatesToStrings } from "../../utilities/types";
 
-export type IPublicRoomData = IRoom;
-export type IPublicChatData = IChat;
+export type IPublicRoomData = ConvertDatesToStrings<IRoom>;
+export type IPublicChatData = ConvertDatesToStrings<IChat>;

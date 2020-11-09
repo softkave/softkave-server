@@ -1,7 +1,10 @@
 import { BlockType, IBlock } from "../../mongo/block";
 import { IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
-import { IBlockUpdatePacket, OutgoingSocketEvents } from "../socket/server";
+import {
+    IOutgoingBlockUpdatePacket,
+    OutgoingSocketEvents,
+} from "../socket/outgoingEventTypes";
 import { getPublicBlockData } from "./utils";
 
 export interface IBroadcastBlockUpdateArgs {
@@ -23,7 +26,7 @@ const broadcastBlockUpdate = async (args: IBroadcastBlockUpdateArgs) => {
     // TODO: should we do this here, for performance reasons?
     //      or should we pass it in from the caller
 
-    const eventData: IBlockUpdatePacket = {
+    const eventData: IOutgoingBlockUpdatePacket = {
         customId: blockId,
         ...updateType,
     };

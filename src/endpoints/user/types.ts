@@ -1,6 +1,7 @@
 import { IUserOrg } from "../../mongo/user";
+import { ConvertDatesToStrings } from "../../utilities/types";
 
-export interface IPublicUserData {
+export type IPublicUserData = ConvertDatesToStrings<{
     customId: string;
     name: string;
     email: string;
@@ -9,11 +10,11 @@ export interface IPublicUserData {
     orgs: IUserOrg[];
     color: string;
     notificationsLastCheckedAt?: string;
-}
+}>;
 
-export interface ICollaborator {
+export type ICollaborator = ConvertDatesToStrings<{
     customId: string;
     name: string;
     email: string;
     color: string;
-}
+}>;

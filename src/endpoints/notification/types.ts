@@ -1,3 +1,4 @@
 import { INotification } from "../../mongo/notification";
+import { ConvertDatesToStrings } from "../../utilities/types";
 
-export type IPublicNotificationData = INotification;
+export type IPublicNotificationData = ConvertDatesToStrings<INotification>;

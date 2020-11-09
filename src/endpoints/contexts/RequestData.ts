@@ -1,84 +1,94 @@
 import { Socket } from "socket.io";
 import logger from "../../utilities/logger";
-import { IBaseUserTokenData } from "../user/UserToken";
+import { InvalidRequestError } from "../errors";
+import { IIncomingSocketEventPacket } from "../socket/types";
+import UserToken, { IBaseUserTokenData } from "../user/UserToken";
+import { getBaseContext } from "./BaseContext";
 import { IServerRequest } from "./types";
 
+const ctx = getBaseContext();
+
 interface IRequestContructorParams<T, TokenData> {
-  req?: IServerRequest;
-  socket?: Socket;
-  data?: T;
-  tokenData?: TokenData;
-  userAgent?: string;
-  ips?: string[];
-  clientId?: string;
+    req?: IServerRequest;
+    socket?: Socket;
+    data?: T;
+    tokenData?: TokenData;
+    userAgent?: string;
+    ips?: string[];
+    clientId?: string;
 }
 
 export default class RequestData<
-  T = any,
-  TokenData extends IBaseUserTokenData = IBaseUserTokenData
+    T = any,
+    TokenData extends IBaseUserTokenData = IBaseUserTokenData
 > {
-  public static fromExpressRequest<DataType>(
-    req: IServerRequest,
-    data?: DataType
-  ): RequestData {
-    const requestData = new RequestData();
+    public static fromExpressRequest<DataType>(
+        req: IServerRequest,
+        data?: DataType
+    ): RequestData {
+        const requestData = new RequestData();
 
-    requestData.req = req;
-    requestData.data = data;
-    requestData.tokenData = req.user;
-    requestData.ips =
-      Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
-    requestData.userAgent = req.headers["user-agent"];
-    requestData.clientId = req.headers["x-client-id"] as string;
+        requestData.req = req;
+        requestData.data = data;
+        requestData.tokenData = req.user;
+        requestData.ips =
+            Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
+        requestData.userAgent = req.headers["user-agent"];
+        requestData.clientId = req.headers["x-client-id"] as string;
 
-    // TODO: remove later
-    if (!requestData.clientId) {
-      logger.info("no client id");
+        // TODO: remove later
+        if (!requestData.clientId) {
+            logger.info("no client id");
+        }
+
+        return requestData;
     }
 
-    return requestData;
-  }
+    public static fromSocketRequest<DataType>(
+        socket: Socket,
+        data: IIncomingSocketEventPacket<DataType>,
+        skipTokenHandling?: boolean
+    ): RequestData {
+        const requestData = new RequestData();
 
-  public static fromSocketRequest<
-    DataType,
-    TokenData extends IBaseUserTokenData
-  >(
-    socket: Socket,
-    data?: DataType,
-    tokenData?: TokenData,
-    clientId?: string
-  ): RequestData {
-    const requestData = new RequestData();
+        requestData.socket = socket;
+        requestData.data = data?.data;
+        requestData.ips = [socket.handshake.address];
+        requestData.userAgent = socket.handshake.headers
+            ? socket.handshake.headers["user-agent"]
+            : undefined;
 
-    requestData.socket = socket;
-    requestData.data = data;
-    requestData.tokenData = tokenData;
-    requestData.ips = [socket.handshake.address];
-    requestData.userAgent = socket.handshake.headers
-      ? socket.handshake.headers["user-agent"]
-      : undefined;
-    requestData.clientId = clientId || ""; // socket requests usually don't carry client id
+        if (!skipTokenHandling) {
+            if (!data.token) {
+                throw new InvalidRequestError();
+            }
 
-    return requestData;
-  }
+            const tokenData = ctx.session.validateUserToken(ctx, data.token);
 
-  public req?: IServerRequest | null;
-  public socket?: Socket | null;
-  public data?: T;
-  public tokenData?: TokenData | null;
-  public userAgent?: string;
-  public clientId?: string;
-  public ips: string[];
+            requestData.tokenData = tokenData;
+            requestData.clientId = UserToken.getClientId(tokenData);
+        }
 
-  public constructor(arg?: IRequestContructorParams<T, TokenData>) {
-    if (arg) {
-      this.req = arg.req;
-      this.socket = arg.socket;
-      this.data = arg.data;
-      this.tokenData = arg.tokenData;
-      this.userAgent = arg.userAgent;
-      this.ips = arg.ips;
-      this.clientId = arg.clientId;
+        return requestData;
     }
-  }
+
+    public req?: IServerRequest | null;
+    public socket?: Socket | null;
+    public data?: T;
+    public tokenData?: TokenData | null;
+    public userAgent?: string;
+    public clientId?: string;
+    public ips: string[];
+
+    public constructor(arg?: IRequestContructorParams<T, TokenData>) {
+        if (arg) {
+            this.req = arg.req;
+            this.socket = arg.socket;
+            this.data = arg.data;
+            this.tokenData = arg.tokenData;
+            this.userAgent = arg.userAgent;
+            this.ips = arg.ips;
+            this.clientId = arg.clientId;
+        }
+    }
 }

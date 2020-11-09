@@ -4,7 +4,7 @@ import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingUpdateRoomReadCounterPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import { UpdateRoomReadCounterEndpoint } from "./type";
 import { updateRoomReadCounterJoiSchema } from "./validation";
 

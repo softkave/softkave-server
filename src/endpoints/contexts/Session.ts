@@ -144,16 +144,17 @@ export default class SessionContext implements ISessionContext {
             throw new UserDoesNotExistError();
         }
 
-        const userPasswordLastChangedAt = moment(user.passwordLastChangedAt);
-        const tokenDataPasswordLastChangedAt = moment(
-            tokenData.sub.passwordLastChangedAt
+        const userPasswordLastChangedAt = user.passwordLastChangedAt;
+        const tokenPasswordLastChangedAt = UserToken.getPasswordLastChangedAt(
+            tokenData
         );
 
         // validate password changes to logout user if using old password or old token format
         if (
-            !tokenData.sub.passwordLastChangedAt ||
-            !user.passwordLastChangedAt ||
-            userPasswordLastChangedAt > tokenDataPasswordLastChangedAt
+            !userPasswordLastChangedAt ||
+            !tokenPasswordLastChangedAt ||
+            moment(userPasswordLastChangedAt) >
+                moment(tokenPasswordLastChangedAt)
         ) {
             throw new LoginAgainError();
         }

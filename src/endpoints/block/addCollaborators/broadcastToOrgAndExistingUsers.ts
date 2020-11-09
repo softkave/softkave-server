@@ -6,10 +6,9 @@ import {
     getPublicNotificationsArray,
 } from "../../notification/utils";
 import {
-    INewNotificationPacket,
-    INewNotificationsPacket,
+    IOutgoingNewNotificationsPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import { IAddCollaboratorsContext } from "./types";
 
 export interface IAddCollaboratorsBroadcastFnData {
@@ -24,7 +23,7 @@ export function broadcastToOrgsAndExistingUsers(
 ) {
     const { collaborationRequests, block, indexedExistingUsers } = data;
 
-    const orgBroadcastPacket: INewNotificationsPacket = {
+    const orgBroadcastPacket: IOutgoingNewNotificationsPacket = {
         notifications: getPublicNotificationsArray(collaborationRequests),
     };
 
@@ -51,8 +50,8 @@ export function broadcastToOrgsAndExistingUsers(
             existingUser.customId
         );
 
-        const newRequestPacket: INewNotificationPacket = {
-            notification: getPublicNotificationData(request),
+        const newRequestPacket: IOutgoingNewNotificationsPacket = {
+            notifications: [getPublicNotificationData(request)],
         };
 
         context.room.broadcast(

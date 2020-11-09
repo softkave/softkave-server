@@ -1,20 +1,17 @@
 import { Server, Socket } from "socket.io";
-import { IChat } from "../../mongo/chat";
-import { IRoom } from "../../mongo/room";
-import { SprintDuration } from "../../mongo/sprint";
 import { ServerError } from "../../utilities/errors";
-import { IPublicBlock } from "../block/types";
+import logger from "../../utilities/logger";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
 import sendMessage from "../chat/sendMessage/sendMessage";
 import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../contexts/RequestData";
-import { IPublicNotificationData } from "../notification/types";
-import { IPublicSprint } from "../sprint/types";
-import { JWTEndpoints } from "../types";
-import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
+import authSocketHandler from "./eventHandlers/authSocketHandler";
+import disconnectSocketHandler from "./eventHandlers/disconnectSocketHandler";
 import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
+import { IncomingSocketEvents } from "./incomingEventTypes";
 import subscribe from "./subscribe/subscribe";
+import { IOutgoingSocketEventPacket, SocketEventHandler } from "./types";
 import unsubscribe from "./unsubscribe/unsubscribe";
 
 // REMINDER
@@ -31,7 +28,7 @@ import unsubscribe from "./unsubscribe/unsubscribe";
 
 // TODO: disconnect sockets that don't auth in 5 minutes
 
-function sendAck(fn, ack?: any) {
+export function sendAck(fn, data?: any, errors?: any) {
     // sometimes, there isn't an ack return function on socket event
     // I think it's because we currently have the socket.io using both http and socket
     // so when it's using http, there isn't an ack fn
@@ -40,163 +37,58 @@ function sendAck(fn, ack?: any) {
     // I also think it's because some of the requests are being made before the socket
     // connection completes authentication, so, maybe wait until auth is complete on the client
     if (fn) {
+        const ack: IOutgoingSocketEventPacket<any> = {
+            data,
+            errors: (Array.isArray(errors) ? errors : [errors]) as any,
+        };
+
         fn(ack);
     }
+}
+
+function makeHandler(
+    ctx: IBaseContext,
+    socket: Socket,
+    handler: SocketEventHandler
+) {
+    return async (data, fn) => {
+        try {
+            const requestData = RequestData.fromSocketRequest(
+                socket,
+                data,
+                handler.skipTokenHandling
+            );
+            const result = await handler(ctx, requestData, fn);
+
+            sendAck(fn, result);
+        } catch (error) {
+            logger.error(error);
+            sendAck(fn, undefined, error);
+        }
+    };
 }
 
 async function onConnection(ctx: IBaseContext, socket: Socket) {
     socket.on(
         IncomingSocketEvents.Auth,
-        async (data: IIncomingAuthPacket, fn) => {
-            try {
-                const tokenData = await ctx.session.validateUserToken(
-                    ctx,
-                    data.token
-                );
-
-                const user = await ctx.session.validateUserTokenData(
-                    ctx,
-                    tokenData,
-                    true,
-                    JWTEndpoints.Login
-                );
-
-                const requestData = RequestData.fromSocketRequest(
-                    socket,
-                    null,
-                    tokenData,
-                    data.clientId
-                );
-
-                ctx.socket.mapUserToSocketId(requestData, user);
-
-                const userRoomName = ctx.room.getUserRoomName(user.customId);
-                ctx.room.subscribe(requestData, userRoomName);
-
-                const result: IOutgoingAuthPacket = {
-                    valid: true,
-                };
-
-                sendAck(fn, result);
-            } catch (error) {
-                const result: IOutgoingAuthPacket = { valid: false };
-                console.error(error);
-                sendAck(fn, result);
-                socket.disconnect();
-            }
-        }
+        makeHandler(ctx, socket, authSocketHandler)
     );
-
-    socket.on("disconnect", () => {
-        try {
-            // TODO: clear all socket data in the SocketContext
-            onDisconnect(ctx, socket);
-        } catch (err) {
-            console.error(err);
-        }
-    });
-
-    socket.on(IncomingSocketEvents.Subscribe, async (data, fn) => {
-        try {
-            await subscribe(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            sendAck(fn);
-        } catch (error) {
-            // TODO: improve error handling and send the error back to the clients
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.Unsubscribe, async (data, fn) => {
-        try {
-            await unsubscribe(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            sendAck(fn);
-        } catch (error) {
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, async (data, fn) => {
-        try {
-            // TODO: complete implementation
-            const broadcasts = await fetchBroadcasts(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            // sendAck(fn, broadcasts);
-        } catch (error) {
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.GetUserRoomsAndChats, async (data, fn) => {
-        try {
-            const result = await getUserRoomsAndChats(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            sendAck(fn, result);
-        } catch (error) {
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.SendMessage, async (data, fn) => {
-        try {
-            const chat = await sendMessage(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            sendAck(fn, chat);
-        } catch (error) {
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-
-    socket.on(IncomingSocketEvents.UpdateRoomReadCounter, async (data, fn) => {
-        try {
-            await updateRoomReadCounter(
-                getBaseContext(),
-                RequestData.fromSocketRequest(socket, data)
-            );
-
-            sendAck(fn);
-        } catch (error) {
-            console.error(error);
-            sendAck(fn, toSocketReturnError(error));
-        }
-    });
-}
-
-function toSocketReturnError(err) {
-    const errors = Array.isArray(err) ? err : [err];
-    return {
-        errors,
-    };
-}
-
-async function onDisconnect(ctx: IBaseContext, socket: Socket) {
-    // TODO: leave all the rooms the socket was a part of
-    try {
-        ctx.socket.disconnectSocket(RequestData.fromSocketRequest(socket));
-    } catch (error) {
-        console.error(error);
-    }
+    socket.on("disconnect", makeHandler(ctx, socket, disconnectSocketHandler));
+    socket.on(
+        IncomingSocketEvents.Subscribe,
+        makeHandler(ctx, socket, subscribe)
+    );
+    socket.on(
+        IncomingSocketEvents.Unsubscribe,
+        makeHandler(ctx, socket, unsubscribe)
+    );
+    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, fetchBroadcasts);
+    socket.on(IncomingSocketEvents.GetUserRoomsAndChats, getUserRoomsAndChats);
+    socket.on(IncomingSocketEvents.SendMessage, sendMessage);
+    socket.on(
+        IncomingSocketEvents.UpdateRoomReadCounter,
+        updateRoomReadCounter
+    );
 }
 
 let socketServer: Server = null;
@@ -214,126 +106,4 @@ export function getSocketServer() {
     }
 
     return socketServer;
-}
-
-enum IncomingSocketEvents {
-    Subscribe = "subscribe",
-    Unsubscribe = "unsubscribe",
-    Auth = "auth",
-    FetchMissingBroadcasts = "fetchMissingBroadcasts",
-    SendMessage = "sendMessage",
-    GetUserRoomsAndChats = "getUserRoomsAndChats",
-    UpdateRoomReadCounter = "updateRoomReadCounter",
-}
-
-export enum OutgoingSocketEvents {
-    BlockUpdate = "blockUpdate",
-    OrgNewCollaborationRequests = "orgNewCollaborationRequests",
-    UserNewCollaborationRequest = "userNewCollaborationRequest",
-    UserUpdate = "userUpdate",
-    UpdateCollaborationRequests = "updateCollaborationRequests",
-    UserCollaborationRequestResponse = "userCollabReqResponse",
-    NewRoom = "newRoom",
-    NewMessage = "newMessage",
-    UpdateRoomReadCounter = "updateRoomReadCounter",
-    NewSprint = "newSprint",
-    UpdateSprint = "updateSprint",
-    EndSprint = "endSprint",
-    StartSprint = "startSprint",
-    DeleteSprint = "deleteSprint",
-}
-
-export interface IIncomingAuthPacket {
-    token: string;
-    clientId: string;
-}
-
-export interface IOutgoingAuthPacket {
-    valid: boolean;
-}
-
-export interface IBlockUpdatePacket {
-    customId: string;
-    isNew?: boolean;
-    isUpdate?: boolean;
-    isDelete?: boolean;
-    block?: Partial<IPublicBlock>;
-}
-
-export interface INewNotificationsPacket {
-    notifications: IPublicNotificationData[];
-}
-
-export interface INewNotificationPacket {
-    notification: IPublicNotificationData;
-}
-
-export interface IUserUpdatePacket {
-    notificationsLastCheckedAt: string;
-}
-
-export interface IUpdateNotificationPacket {
-    customId: string;
-    data: Partial<IPublicNotificationData>;
-}
-
-export interface IUpdateNotificationsPacket {
-    notifications: IUpdateNotificationPacket[];
-}
-
-export interface IUserCollaborationRequestResponsePacket {
-    customId: string;
-    response: CollaborationRequestResponse;
-    org?: IPublicBlock;
-}
-
-export interface IOrgCollaborationRequestResponsePacket {
-    customId: string;
-    response: CollaborationRequestResponse;
-}
-
-export interface IOutgoingNewRoomPacket {
-    room: IRoom;
-}
-
-export interface IOutgoingSendMessagePacket {
-    chat: IChat;
-}
-
-export interface IOutgoingUpdateRoomReadCounterPacket {
-    roomId: string;
-    member: {
-        userId: string;
-        readCounter: string;
-    };
-}
-
-export interface IOutgoingNewSprintPacket {
-    sprint: IPublicSprint;
-}
-
-export interface IOutgoingUpdateSprintPacket {
-    sprintId: string;
-    data: {
-        name?: string;
-        duration?: SprintDuration;
-        updatedAt: string;
-        updatedBy: string;
-    };
-}
-
-export interface IOutgoingEndSprintPacket {
-    sprintId: string;
-    endedAt: string;
-    endedBy: string;
-}
-
-export interface IOutgoingStartSprintPacket {
-    sprintId: string;
-    startedAt: string;
-    startedBy: string;
-}
-
-export interface IOutgoingDeleteSprintPacket {
-    sprintId: string;
 }

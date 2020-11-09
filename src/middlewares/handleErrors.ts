@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import {
+    JsonWebTokenError,
+    NotBeforeError,
+    TokenExpiredError,
+} from "jsonwebtoken";
 import multer from "multer";
 import {
     CredentialsExpiredError,
@@ -8,13 +12,14 @@ import {
 import { ServerError } from "../utilities/errors";
 
 export function resolveJWTError(err: Error) {
-    if (
-        err.name === JsonWebTokenError.name ||
-        err.name === "UnauthorizedError"
-    ) {
-        return new InvalidCredentialsError();
-    } else if (err.name === TokenExpiredError.name) {
-        return new CredentialsExpiredError();
+    switch (err.name) {
+        case JsonWebTokenError.name:
+        case "UnauthorizedError":
+        case NotBeforeError.name: // TODO: should this be resolved as invalid?
+            return new InvalidCredentialsError();
+
+        case TokenExpiredError.name:
+            return new CredentialsExpiredError();
     }
 }
 

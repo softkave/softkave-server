@@ -4,7 +4,7 @@ import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingStartSprintPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import {
     CannotRestartCurrentOrPastSprintsError,
     CannotStartSprintCauseCurrentSprintExistsError,

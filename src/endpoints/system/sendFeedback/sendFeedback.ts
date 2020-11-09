@@ -7,7 +7,9 @@ import {
 import { getDate, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import broadcastBlockUpdate from "../../block/broadcastBlockUpdate";
 import { INewBlockInput } from "../../block/types";
+import { fireAndForgetPromise } from "../../utils";
 import { systemConstants } from "../constants";
 import { SendFeedbackEndpoint } from "./types";
 import { sendFeedbackJoiSchema } from "./validation";
@@ -47,12 +49,25 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
         statusAssignedAt: getDateString(),
     };
 
-    await context.saveTask(context, {
+    const savedTaskResult = await context.saveTask(context, {
         ...instData,
         data: {
             block: task,
         },
     });
+
+    fireAndForgetPromise(
+        broadcastBlockUpdate({
+            context,
+            instData,
+            blockId: task.customId,
+            updateType: { isNew: true },
+            blockType: BlockType.Task,
+            data: savedTaskResult.block,
+            parentId: feedbackBoard.customId,
+            block: savedTaskResult.block,
+        })
+    );
 };
 
 export default sendFeedback;

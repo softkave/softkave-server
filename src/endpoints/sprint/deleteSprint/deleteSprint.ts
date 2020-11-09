@@ -6,7 +6,7 @@ import canReadBlock from "../../block/canReadBlock";
 import {
     IOutgoingDeleteSprintPacket,
     OutgoingSocketEvents,
-} from "../../socket/server";
+} from "../../socket/outgoingEventTypes";
 import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,

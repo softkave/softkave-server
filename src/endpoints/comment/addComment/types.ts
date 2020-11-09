@@ -1,18 +1,17 @@
-import { IComment } from "../../../mongo/comment";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-import { INewCommentInput } from "../types";
+import { INewCommentInput, IPublicCommentData } from "../types";
 
 export interface IAddCommentParameters {
-  comment: INewCommentInput;
+    comment: INewCommentInput;
 }
 
 export interface IAddCommentResult {
-  comment: IComment;
+    comment: IPublicCommentData;
 }
 
 export type AddCommentEndpoint = Endpoint<
-  IBaseContext,
-  IAddCommentParameters,
-  IAddCommentResult
+    IBaseContext,
+    IAddCommentParameters,
+    IAddCommentResult
 >;

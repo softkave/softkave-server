@@ -22,11 +22,14 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     context.socket.disconnectUser(user.customId);
     context.session.clearCachedUserData(context, instData);
 
+    const clientId = getNewId();
+
     return {
+        clientId,
         user: getPublicUserData(user),
-        clientId: getNewId(),
         token: UserToken.newToken({
             user,
+            clientId,
             audience: [JWTEndpoints.Login],
         }),
     };
