@@ -1,13 +1,16 @@
-import mongoConstants from "../../mongo/constants";
 import { ISprint } from "../../mongo/sprint";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
+import cast from "../../utilities/fns";
+import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
+import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface ISprintContext {
-    saveSprint: (ctx: IBaseContext, sprint: ISprint) => Promise<ISprint>;
+    saveSprint: (
+        ctx: IBaseContext,
+        sprint: Omit<ISprint, "customId">
+    ) => Promise<ISprint>;
     getSprintById: (
         ctx: IBaseContext,
         customId: string
@@ -20,7 +23,7 @@ export interface ISprintContext {
         ctx: IBaseContext,
         customId: string,
         data: Partial<ISprint>
-    ) => Promise<void>;
+    ) => Promise<ISprint | undefined>;
     bulkUpdateSprintsById: (
         ctx: IBaseContext,
         sprints: Array<IUpdateItemById<ISprint>>
@@ -39,53 +42,39 @@ export interface ISprintContext {
 }
 
 export default class SprintContext implements ISprintContext {
-    public async getSprintById(ctx: IBaseContext, customId: string) {
-        try {
-            return await ctx.models.sprintModel.model
+    public getSprintById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string) => {
+            return ctx.models.sprintModel.model
                 .findOne({
                     customId,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async bulkGetSprintsByIds(ctx: IBaseContext, customIds: string[]) {
-        try {
-            const query = {
-                customId: { $in: customIds },
-            };
-
-            return await ctx.models.sprintModel.model.find(query).exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async updateSprintById(
-        ctx: IBaseContext,
-        customId: string,
-        data: Partial<ISprint>
-    ) {
-        try {
-            await ctx.models.sprintModel.model
-                .updateOne({ customId }, data)
+    public bulkGetSprintsByIds = wrapFireAndThrowError(
+        (ctx: IBaseContext, customIds: string[]) => {
+            return ctx.models.sprintModel.model
+                .find({
+                    customId: { $in: customIds },
+                })
+                .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async bulkUpdateSprintsById(
-        ctx: IBaseContext,
-        blocks: Array<IUpdateItemById<ISprint>>
-    ) {
-        try {
+    public updateSprintById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string, data: Partial<ISprint>) => {
+            return ctx.models.sprintModel.model
+                .findOneAndUpdate({ customId }, data)
+                .lean()
+                .exec();
+        }
+    );
+
+    public bulkUpdateSprintsById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<ISprint>>) => {
             const opts = blocks.map((b) => ({
                 updateOne: {
                     filter: { customId: b.id },
@@ -94,80 +83,41 @@ export default class SprintContext implements ISprintContext {
             }));
 
             await ctx.models.sprintModel.model.bulkWrite(opts);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async saveSprint(ctx: IBaseContext, sprint: ISprint) {
-        try {
-            const newSprint = new ctx.models.sprintModel.model(sprint);
-            await newSprint.save();
-            return newSprint;
-        } catch (error) {
-            logger.error(error);
-
-            // Adding a block fails with code 11000 if unique fields like customId
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
-            }
-
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async getSprintsByBoardId(ctx: IBaseContext, boardId: string) {
-        try {
-            return await ctx.models.sprintModel.model
+    public getSprintsByBoardId = wrapFireAndThrowError(
+        (ctx: IBaseContext, boardId: string) => {
+            return ctx.models.sprintModel.model
                 .find({
                     boardId,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async sprintExists(
-        ctx: IBaseContext,
-        name: string,
-        boardId: string
-    ) {
-        try {
-            return await ctx.models.sprintModel.model.exists({
+    public sprintExists = wrapFireAndThrowError(
+        (ctx: IBaseContext, name: string, boardId: string) => {
+            return ctx.models.sprintModel.model.exists({
                 boardId,
                 name: name.toLowerCase(),
             });
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async deleteSprint(ctx: IBaseContext, sprintId: string) {
-        try {
+    public deleteSprint = wrapFireAndThrowError(
+        async (ctx: IBaseContext, sprintId: string) => {
             await ctx.models.sprintModel.model
                 .deleteOne({
                     customId: sprintId,
                 })
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async updateUnstartedSprints(
-        ctx: IBaseContext,
-        boardId: string,
-        data: Partial<ISprint>
-    ) {
-        try {
+    public updateUnstartedSprints = wrapFireAndThrowError(
+        async (ctx: IBaseContext, boardId: string, data: Partial<ISprint>) => {
             await ctx.models.sprintModel.model
                 .updateMany(
                     {
@@ -177,10 +127,20 @@ export default class SprintContext implements ISprintContext {
                     data
                 )
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
+    );
+
+    public async saveSprint(
+        ctx: IBaseContext,
+        sprint: Omit<ISprint, "customId">
+    ) {
+        const sprintDoc = new ctx.models.sprintModel.model(sprint);
+
+        return saveNewItemToDb(async () => {
+            sprintDoc.customId = getNewId();
+            await sprintDoc.save();
+            return sprintDoc;
+        });
     }
 }
 

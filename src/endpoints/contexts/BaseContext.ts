@@ -12,6 +12,10 @@ import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
+import BroadcastHelpers, {
+    getBroadcastHelpers,
+    IBroadcastHelpers,
+} from "./BroadcastHelpers";
 import {
     getBroadcastHistoryContext,
     IBroadcastHistoryContext,
@@ -24,7 +28,7 @@ import {
     INotificationContext,
 } from "./NotificationContext";
 import { getRoomContext, IRoomContext } from "./RoomContext";
-import { getSessionContext, ISessionContext } from "./Session";
+import { getSessionContext, ISessionContext } from "./SessionContext";
 import { getSocketContext, ISocketContext } from "./SocketContext";
 import { getSprintContext, ISprintContext } from "./SprintContext";
 import { IContextModels } from "./types";
@@ -45,6 +49,7 @@ export interface IBaseContext {
     comment: ICommentContext;
     sprint: ISprintContext;
     chat: IChatContext;
+    broadcastHelpers: IBroadcastHelpers;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -72,6 +77,7 @@ export default class BaseContext implements IBaseContext {
     public socketServer: Server = getSocketServer();
     public comment = getCommentContext();
     public chat = getChatContext();
+    public broadcastHelpers = getBroadcastHelpers();
 }
 
 export const getBaseContext = createSingletonFunc(() => new BaseContext());

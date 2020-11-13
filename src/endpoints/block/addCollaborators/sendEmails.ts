@@ -10,7 +10,7 @@ import { getDate } from "../../../utilities/fns";
 import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
-import { getPublicNotificationData } from "../../notification/utils";
+import { getPublicNotificationData } from "../../notifications/utils";
 import {
     IOutgoingUpdateNotificationsPacket,
     OutgoingSocketEvents,

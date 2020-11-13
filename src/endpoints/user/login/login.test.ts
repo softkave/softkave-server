@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import { IBaseContext } from "../../contexts/BaseContext";
-import RequestData from "../../contexts/RequestData";
+import RequestData from "../../RequestData";
 import { JWTEndpoints } from "../../types";
 import { InvalidEmailOrPasswordError } from "../errors";
 import UserToken from "../UserToken";

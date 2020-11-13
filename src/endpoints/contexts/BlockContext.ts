@@ -1,12 +1,11 @@
+import { FilterQuery } from "mongoose";
 import { BlockType, IBlock, ITaskSprint } from "../../mongo/block";
-import mongoConstants from "../../mongo/constants";
 import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
-import logger from "../../utilities/logger";
+import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
-import { BlockDoesNotExistError } from "../block/errors";
+import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IBlockContext {
@@ -25,20 +24,17 @@ export interface IBlockContext {
     updateBlockById: (
         ctx: IBaseContext,
         customId: string,
-        data: Partial<IBlock>,
-        ensureBlockExists?: boolean
-    ) => Promise<boolean | undefined>;
+        data: Partial<IBlock>
+    ) => Promise<IBlock | undefined>;
     bulkUpdateBlocksById: (
         ctx: IBaseContext,
         blocks: Array<IUpdateItemById<IBlock>>
     ) => Promise<void>;
-    saveBlock: (ctx: IBaseContext, block: IBlock) => Promise<IBlock>;
-    markBlockDeleted: (
+    saveBlock: (
         ctx: IBaseContext,
-        customId: string,
-        user: IUser
-    ) => Promise<void>;
-    markBlockChildrenDeleted: (
+        block: Omit<IBlock, "customId">
+    ) => Promise<IBlock>;
+    markBlockDeleted: (
         ctx: IBaseContext,
         customId: string,
         user: IUser
@@ -56,79 +52,50 @@ export interface IBlockContext {
         userId: string,
         updatedAt?: Date
     ) => Promise<void>;
-    countSprintTasks: (
+    blockExists: (
         ctx: IBaseContext,
-        boardId: string,
-        sprintId: string,
-        statusIds?: string[]
-    ) => Promise<number>;
+        name: string,
+        type: BlockType,
+        parent?: string
+    ) => Promise<boolean>;
 }
 
 export default class BlockContext implements IBlockContext {
-    public async getBlockById(ctx: IBaseContext, customId: string) {
-        try {
-            return await ctx.models.blockModel.model
+    public getBlockById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string) => {
+            return ctx.models.blockModel.model
                 .findOne({
                     customId,
                     isDeleted: false,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async bulkGetBlocksByIds(ctx: IBaseContext, customIds: string[]) {
-        try {
-            const query = {
-                customId: { $in: customIds },
-                isDeleted: false,
-            };
-
-            return await ctx.models.blockModel.model.find(query).exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    public bulkGetBlocksByIds = wrapFireAndThrowError(
+        (ctx: IBaseContext, customIds: string[]) => {
+            return ctx.models.blockModel.model
+                .find({
+                    customId: { $in: customIds },
+                    isDeleted: false,
+                })
+                .lean()
+                .exec();
         }
-    }
+    );
 
-    public async updateBlockById(
-        ctx: IBaseContext,
-        customId: string,
-        data: Partial<IBlock>,
-        ensureBlockExists?: boolean
-    ) {
-        try {
-            if (ensureBlockExists) {
-                const block = await ctx.models.blockModel.model
-                    .findOneAndUpdate({ customId, isDeleted: false }, data, {
-                        fields: "customId",
-                    })
-                    .exec();
-
-                if (block && block.customId) {
-                    return true;
-                } else {
-                    throw new BlockDoesNotExistError(); // should we include id
-                }
-            } else {
-                await ctx.models.blockModel.model
-                    .updateOne({ customId, isDeleted: false }, data)
-                    .exec();
-            }
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    public updateBlockById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string, data: Partial<IBlock>) => {
+            return ctx.models.blockModel.model
+                .findOneAndUpdate({ customId, isDeleted: false }, data)
+                .lean()
+                .exec();
         }
-    }
+    );
 
-    public async bulkUpdateBlocksById(
-        ctx: IBaseContext,
-        blocks: Array<IUpdateItemById<IBlock>>
-    ) {
-        try {
+    public bulkUpdateBlocksById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<IBlock>>) => {
             const opts = blocks.map((b) => ({
                 updateOne: {
                     filter: { customId: b.id, isDeleted: false },
@@ -136,54 +103,24 @@ export default class BlockContext implements IBlockContext {
                 },
             }));
 
+            // TODO: retry failed updates
             await ctx.models.blockModel.model.bulkWrite(opts);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getBlockByName(ctx: IBaseContext, name: string) {
-        try {
-            return await ctx.models.blockModel.model
+    public getBlockByName = wrapFireAndThrowError(
+        (ctx: IBaseContext, name: string) => {
+            return ctx.models.blockModel.model
                 .findOne({
                     lowerCasedName: name.toLowerCase(),
                     isDeleted: false,
                 })
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async saveBlock(ctx: IBaseContext, block: IBlock) {
-        try {
-            const newBlock = new ctx.models.blockModel.model(block);
-
-            await newBlock.save();
-
-            return newBlock;
-        } catch (error) {
-            logger.error(error);
-
-            // Adding a block fails with code 11000 if unique fields like customId
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
-            }
-
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async markBlockDeleted(
-        ctx: IBaseContext,
-        customId: string,
-        user: IUser
-    ) {
-        try {
+    public markBlockDeleted = wrapFireAndThrowError(
+        async (ctx: IBaseContext, customId: string, user: IUser) => {
             const update: Partial<IBlock> = {
                 isDeleted: true,
                 deletedBy: user.customId,
@@ -191,23 +128,20 @@ export default class BlockContext implements IBlockContext {
             };
 
             await ctx.models.blockModel.model
-                .updateOne({ customId }, update)
+                .updateOne(
+                    { $or: [{ customId }, { parent: customId }] },
+                    update
+                )
                 .exec();
-
-            await ctx.block.markBlockChildrenDeleted(ctx, customId, user);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getBlockChildren(
-        ctx: IBaseContext,
-        blockId: string,
-        typeList?: BlockType[]
-    ) {
-        try {
-            const query: any = { isDeleted: false };
+    public getBlockChildren = wrapFireAndThrowError(
+        async (ctx: IBaseContext, blockId: string, typeList?: BlockType[]) => {
+            const query: FilterQuery<IBlock> = {
+                isDeleted: false,
+                parent: blockId,
+            };
 
             if (typeList) {
                 query.type = {
@@ -215,79 +149,39 @@ export default class BlockContext implements IBlockContext {
                 };
             }
 
-            query.parent = blockId;
-            const blocks = await ctx.models.blockModel.model.find(query).exec();
-
-            return blocks;
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async markBlockChildrenDeleted(
-        ctx: IBaseContext,
-        customId: string,
-        user: IUser
-    ) {
-        try {
-            const update: Partial<IBlock> = {
-                isDeleted: true,
-                deletedBy: user.customId,
-                deletedAt: getDate(),
-            };
-
-            await ctx.models.blockModel.model
-                .updateMany({ parent: customId }, update)
+            const blocks = await ctx.models.blockModel.model
+                .find(query)
+                .lean()
                 .exec();
 
-            const blockChildren = await ctx.block.getBlockChildren(
-                ctx,
-                customId
-            );
-
-            // TODO: how can we find out if all the children are marked deleted?
-            // TODO: what happens when one of them fails?
-            // TODO: should we wait for all the children to be deleted?
-            blockChildren.map((block) =>
-                ctx.block
-                    .markBlockChildrenDeleted(ctx, block.customId, user)
-                    .catch((error) => {
-                        // fire and forget
-                        // TODO: log error
-                    })
-            );
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+            return blocks;
         }
-    }
+    );
 
-    public async getUserRootBlocks(ctx: IBaseContext, user: IUser) {
-        try {
+    public getUserRootBlocks = wrapFireAndThrowError(
+        (ctx: IBaseContext, user: IUser) => {
             const organizationIds = user.orgs.map((org) => org.customId);
-            const query = {
-                customId: {
-                    $in: organizationIds,
-                },
-                isDeleted: false,
-            };
 
-            return await ctx.models.blockModel.model.find(query).lean().exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+            return ctx.models.blockModel.model
+                .find({
+                    customId: {
+                        $in: organizationIds,
+                    },
+                    isDeleted: false,
+                })
+                .lean()
+                .exec();
         }
-    }
+    );
 
-    public async bulkUpdateTaskSprints(
-        ctx: IBaseContext,
-        sprintId: string,
-        taskSprint: ITaskSprint | null,
-        userId: string,
-        updatedAt: Date = getDate()
-    ) {
-        try {
+    public bulkUpdateTaskSprints = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            sprintId: string,
+            taskSprint: ITaskSprint | null,
+            userId: string,
+            updatedAt: Date = getDate()
+        ) => {
             await ctx.models.blockModel.model
                 .updateMany(
                     {
@@ -301,31 +195,37 @@ export default class BlockContext implements IBlockContext {
                     }
                 )
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async countSprintTasks(
-        ctx: IBaseContext,
-        boardId: string,
-        sprintId: string,
-        statusIds?: string[]
-    ) {
-        try {
-            return await ctx.models.blockModel.model
-                .count({
-                    parent: boardId,
-                    isDeleted: false,
-                    status: statusIds ? { $in: statusIds } : undefined,
-                    "taskSprint.sprintId": sprintId,
-                })
-                .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    public blockExists = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            name: string,
+            type: BlockType,
+            parent?: string
+        ) => {
+            const query: FilterQuery<IBlock> = {
+                type,
+                lowerCasedName: name.toLowerCase(),
+                isDeleted: false,
+            };
+
+            if (parent) {
+                query.parent = parent;
+            }
+
+            return ctx.models.blockModel.model.exists(query);
         }
+    );
+
+    public async saveBlock(ctx: IBaseContext, block: Omit<IBlock, "customId">) {
+        const blockDoc = new ctx.models.blockModel.model(block);
+        return saveNewItemToDb(async () => {
+            blockDoc.customId = getNewId();
+            await blockDoc.save();
+            return blockDoc;
+        });
     }
 }
 

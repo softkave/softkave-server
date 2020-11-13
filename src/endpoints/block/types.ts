@@ -11,29 +11,58 @@ import {
 import { IBoardSprintOptions } from "../../mongo/sprint";
 import { ConvertDatesToStrings } from "../../utilities/types";
 
-export interface INewBlockInput {
-    // TODO: should we generate customId on our side, and have maybe something like clientGivenId
-    // with prefix c_id...?
+export interface IAssigneeInput {
+    userId: string;
+}
+
+export interface ISubTaskInput {
+    description: string;
+    completedBy?: string;
+}
+
+export interface IBlockStatusInput {
+    name: string;
+    color: string;
+    description?: string;
+}
+
+export interface IBlockLabelInput {
+    name: string;
+    color: string;
+    description?: string;
+}
+
+export interface IBoardStatusResolutionInput {
+    name: string;
+    description?: string;
+}
+
+export interface IBlockAssignedLabelInput {
     customId: string;
+}
+
+export interface ITaskSprintInput {
+    sprintId: string;
+}
+
+export interface INewBlockInput {
     type: BlockType;
     name: string;
     description?: string;
-    dueAt?: string;
+    dueAt?: number;
     color?: string;
     parent?: string;
     rootBlockId?: string;
-    assignees?: IAssignee[];
+    assignees?: IAssigneeInput[];
     priority?: string;
-    subTasks?: ISubTask[];
-    boardStatuses?: IBlockStatus[];
-    boardLabels?: IBlockLabel[];
-    boardResolutions?: IBoardStatusResolution[];
+    subTasks?: ISubTaskInput[];
+    boardStatuses?: IBlockStatusInput[];
+    boardLabels?: IBlockLabelInput[];
+    boardResolutions?: IBoardStatusResolutionInput[];
     status?: string;
-    statusAssignedBy?: string;
-    statusAssignedAt?: string;
     taskResolution?: string;
-    labels?: IBlockAssignedLabel[];
-    taskSprint?: ITaskSprint;
+    labels?: IBlockAssignedLabelInput[];
+    taskSprint?: ITaskSprintInput;
 }
 
 export type IPublicBlock = ConvertDatesToStrings<{

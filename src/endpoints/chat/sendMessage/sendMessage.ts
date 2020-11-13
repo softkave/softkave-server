@@ -3,16 +3,10 @@ import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import {
-    IOutgoingNewRoomPacket,
-    IOutgoingSendMessagePacket,
-    IOutgoingUpdateRoomReadCounterPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
-import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
 } from "../errors";
-import { getPublicChatData, getPublicRoomData } from "../utils";
+import { getPublicChatData } from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
@@ -28,6 +22,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     let room: IRoom;
 
     if (data.roomId) {
+        // TODO: maybe leave out the readCounters when getting the rooms
         room = await context.chat.getRoomById(context, data.roomId);
     } else if (data.recipientId) {
         room = await context.chat.insertRoom(
@@ -49,17 +44,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         // It's a new room/chat
         context.room.subscribeUser(context, room.name, user.customId);
         context.room.subscribeUser(context, room.name, data.recipientId);
-
-        const newRoomPacket: IOutgoingNewRoomPacket = {
-            room: getPublicRoomData(room),
-        };
-
-        await context.room.broadcast(
-            context,
-            room.name,
-            OutgoingSocketEvents.NewRoom,
-            newRoomPacket
-        );
+        context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
     }
 
     const chat = await context.chat.insertMessage(
@@ -70,37 +55,28 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.message
     );
 
-    const outgoingNewMessagePacket: IOutgoingSendMessagePacket = {
-        chat: getPublicChatData(chat),
-    };
-
-    await context.room.broadcast(
+    context.broadcastHelpers.broadcastNewMessage(
         context,
-        room.name,
-        OutgoingSocketEvents.NewMessage,
-        outgoingNewMessagePacket,
-        instaData
+        instaData,
+        room,
+        chat
     );
 
     if (data.roomId) {
         const readCounter = getDateString();
+
         await context.chat.updateMemberReadCounter(
             context,
             data.roomId,
             user.customId
         );
 
-        const outgoingUpdateRoomCounterPacket: IOutgoingUpdateRoomReadCounterPacket = {
-            roomId: room.customId,
-            member: { readCounter, userId: user.customId },
-        };
-
-        await context.room.broadcast(
+        context.broadcastHelpers.broadcastRoomReadCounterUpdate(
             context,
-            room.name,
-            OutgoingSocketEvents.UpdateRoomReadCounter,
-            outgoingUpdateRoomCounterPacket,
-            instaData
+            instaData,
+            user,
+            room.customId,
+            readCounter
         );
     }
 

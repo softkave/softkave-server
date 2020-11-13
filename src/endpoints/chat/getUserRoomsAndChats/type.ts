@@ -1,19 +1,14 @@
-import { IChat } from "../../../mongo/chat";
-import { IRoom } from "../../../mongo/room";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-
-export interface IGetUserRoomsAndChatsParameters {
-    orgId: string;
-}
+import { IPublicChatData, IPublicRoomData } from "../types";
 
 export interface IGetUserRoomsAndChatsEndpointResult {
-    rooms: IRoom[];
-    chats: IChat[];
+    rooms: IPublicRoomData[];
+    chats: IPublicChatData[];
 }
 
 export type GetUserRoomsAndChatsEndpoint = Endpoint<
     IBaseContext,
-    IGetUserRoomsAndChatsParameters,
+    {},
     IGetUserRoomsAndChatsEndpointResult
 >;

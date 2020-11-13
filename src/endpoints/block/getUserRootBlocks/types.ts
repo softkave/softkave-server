@@ -3,11 +3,11 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetUserRootBlocksResult {
-  blocks: IBlock[];
+    blocks: IBlock[];
 }
 
 export type GetUserRootBlocksEndpoint = Endpoint<
-  IBaseContext,
-  undefined,
-  IGetUserRootBlocksResult
+    IBaseContext,
+    undefined,
+    IGetUserRootBlocksResult
 >;

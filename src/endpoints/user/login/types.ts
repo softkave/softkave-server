@@ -3,18 +3,18 @@ import { Endpoint } from "../../types";
 import { IPublicUserData } from "../types";
 
 export interface ILoginParameters {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 export interface ILoginResult {
-  user: IPublicUserData;
-  token: string;
-  clientId: string;
+    user: IPublicUserData;
+    token: string;
+    clientId: string;
 }
 
 export type LoginEndpoint = Endpoint<
-  IBaseContext,
-  ILoginParameters,
-  ILoginResult
+    IBaseContext,
+    ILoginParameters,
+    ILoginResult
 >;

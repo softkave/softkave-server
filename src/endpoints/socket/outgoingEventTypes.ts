@@ -2,8 +2,9 @@ import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
 import { SprintDuration } from "../../mongo/sprint";
 import { IPublicBlock } from "../block/types";
-import { IPublicNotificationData } from "../notification/types";
-import { IPublicSprint } from "../sprint/types";
+import { IPublicChatData, IPublicRoomData } from "../chat/types";
+import { IPublicNotificationData } from "../notifications/types";
+import { IPublicSprint } from "../sprints/types";
 import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
 
 export enum OutgoingSocketEvents {
@@ -12,7 +13,7 @@ export enum OutgoingSocketEvents {
     UserNewCollaborationRequest = "userNewCollaborationRequest",
     UserUpdate = "userUpdate",
     UpdateCollaborationRequests = "updateCollaborationRequests",
-    UserCollaborationRequestResponse = "userCollabReqResponse",
+    CollaborationRequestResponse = "collabReqResponse",
     NewRoom = "newRoom",
     NewMessage = "newMessage",
     UpdateRoomReadCounter = "updateRoomReadCounter",
@@ -53,11 +54,11 @@ export interface IOutgoingCollaborationRequestResponsePacket {
 }
 
 export interface IOutgoingNewRoomPacket {
-    room: IRoom;
+    room: IPublicRoomData;
 }
 
 export interface IOutgoingSendMessagePacket {
-    chat: IChat;
+    chat: IPublicChatData;
 }
 
 export interface IOutgoingUpdateRoomReadCounterPacket {

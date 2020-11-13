@@ -1,10 +1,11 @@
-import InternalAddBlockContext from "../internalAddBlock/context";
+import BaseContext from "../../contexts/BaseContext";
 import internalAddBlock from "../internalAddBlock/internalAddBlock";
 import { IAddBlockContext } from "./types";
 
-export default class AddBlockContext extends InternalAddBlockContext
-  implements IAddBlockContext {
-  public async addBlock(context, instData) {
-    return await internalAddBlock(context, instData);
-  }
+export default class AddBlockContext
+    extends BaseContext
+    implements IAddBlockContext {
+    public async addBlock(context, instData) {
+        return await internalAddBlock(context, instData);
+    }
 }

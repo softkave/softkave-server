@@ -1,16 +1,16 @@
 import { IBlockStatus } from "../../../mongo/block";
 
 function getStatusChangedFields(
-  old: IBlockStatus,
-  nw: IBlockStatus
+    s1: IBlockStatus,
+    s2: IBlockStatus
 ): Array<keyof IBlockStatus> {
-  return ["color", "description", "name"].reduce((accumulator, field) => {
-    if (old[field] !== nw[field]) {
-      accumulator.push(field);
-    }
+    return ["color", "description", "name"].reduce((accumulator, field) => {
+        if (s1[field] !== s2[field]) {
+            accumulator.push(field);
+        }
 
-    return accumulator;
-  }, []);
+        return accumulator;
+    }, []);
 }
 
 export default getStatusChangedFields;

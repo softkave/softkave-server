@@ -1,17 +1,14 @@
 import { AuditLogActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
-import { IBlock } from "../../../mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
 import { INotification, NotificationType } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import logger from "../../../utilities/logger";
 import { IUpdateItemById } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
-import RequestData from "../../contexts/RequestData";
-import { fireAndForgetPromise } from "../../utils";
-import broadcastBlockUpdate from "../broadcastBlockUpdate";
+import RequestData from "../../RequestData";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
@@ -89,17 +86,13 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     await canReadBlock({ user, block });
     await context.block.markBlockDeleted(context, block.customId, user);
 
-    fireAndForgetPromise(
-        broadcastBlockUpdate({
-            block,
-            context,
-            instData,
-            updateType: { isDelete: true },
-            blockId: block.customId,
-            blockType: block.type,
-            parentId: block.parent,
-        })
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block,
+        updateType: { isDelete: true },
+        blockId: block.customId,
+        blockType: block.type,
+        parentId: block.parent,
+    });
 
     context.auditLog.insert(context, instData, {
         action: AuditLogActionType.Delete,
@@ -108,7 +101,7 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
         organizationId: getBlockRootBlockId(block),
     });
 
-    if (block.type === "org") {
+    if (block.type === BlockType.Org) {
         deleteOrgCleanup(context, instData, block).catch((error) =>
             console.error(error)
         );

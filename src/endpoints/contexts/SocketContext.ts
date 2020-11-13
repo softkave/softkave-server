@@ -2,8 +2,8 @@ import { Socket } from "socket.io";
 import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
+import RequestData from "../RequestData";
 import { IBaseContext } from "./BaseContext";
-import RequestData from "./RequestData";
 
 export interface IUserClientSocketEntry {
     clientId: string;
@@ -165,11 +165,6 @@ export default class SocketContext implements ISocketContext {
         if (!sockets) {
             return -1;
         }
-
-        // if (sockets.length === 0) {
-        //   delete userIdToSocketsMap[userId];
-        //   return;
-        // }
 
         const socketIndex = sockets.findIndex(
             (entry) => entry.socket.id === socketId

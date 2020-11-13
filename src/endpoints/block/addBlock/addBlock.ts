@@ -5,22 +5,20 @@ import {
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
-import { fireAndForgetPromise } from "../../utils";
-import broadcastBlockUpdate from "../broadcastBlockUpdate";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import { AddBlockEndpoint } from "./types";
-import { newBlockJoiSchema } from "./validation";
+import { addBlockJoiSchema } from "./validation";
 
 const addBlock: AddBlockEndpoint = async (context, instData) => {
-    const data = validate(instData.data.block, newBlockJoiSchema);
-    const newBlock = data;
+    const data = validate(instData.data, addBlockJoiSchema);
+    const newBlock = data.block;
     const user = await context.session.getUser(context, instData);
 
     if (newBlock.type === BlockType.Org) {
         const orgSaveResult = await context.addBlock(context, {
             ...instData,
-            data: { block: data },
+            data,
         });
 
         const org = orgSaveResult.block;
@@ -41,17 +39,13 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
             organizationId: org.customId,
         });
 
-        fireAndForgetPromise(
-            broadcastBlockUpdate({
-                context,
-                instData,
-                updateType: { isNew: true },
-                data: org,
-                block: org,
-                blockId: org.customId,
-                blockType: org.type,
-            })
-        );
+        context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+            updateType: { isNew: true },
+            data: org,
+            block: org,
+            blockId: org.customId,
+            blockType: org.type,
+        });
 
         return {
             block: getPublicBlockData(org),
@@ -67,7 +61,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
 
     const result = await context.addBlock(context, {
         ...instData,
-        data: { block: data },
+        data,
     });
 
     const block = result.block;
@@ -79,18 +73,14 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         organizationId: getBlockRootBlockId(block),
     });
 
-    fireAndForgetPromise(
-        broadcastBlockUpdate({
-            block,
-            context,
-            instData,
-            updateType: { isNew: true },
-            data: block,
-            blockId: block.customId,
-            blockType: block.type,
-            parentId: block.parent,
-        })
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block,
+        updateType: { isNew: true },
+        data: block,
+        blockId: block.customId,
+        blockType: block.type,
+        parentId: block.parent,
+    });
 
     // TODO: analyze all the net calls you're making and look for ways to reduce them
 

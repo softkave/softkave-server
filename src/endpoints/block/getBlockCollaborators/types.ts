@@ -3,15 +3,15 @@ import { Endpoint } from "../../types";
 import { ICollaborator } from "../../user/types";
 
 export interface IGetBlockCollaboratorsParameters {
-  blockId: string;
+    blockId: string;
 }
 
 export interface IGetBlockCollaboratorsResult {
-  collaborators: ICollaborator[];
+    collaborators: ICollaborator[];
 }
 
 export type GetBlockCollaboratorsEndpoint = Endpoint<
-  IBaseContext,
-  IGetBlockCollaboratorsParameters,
-  IGetBlockCollaboratorsResult
+    IBaseContext,
+    IGetBlockCollaboratorsParameters,
+    IGetBlockCollaboratorsResult
 >;

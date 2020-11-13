@@ -1,18 +1,16 @@
 import { Server, Socket } from "socket.io";
 import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
 import sendMessage from "../chat/sendMessage/sendMessage";
 import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
 import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
-import RequestData from "../contexts/RequestData";
-import authSocketHandler from "./eventHandlers/authSocketHandler";
-import disconnectSocketHandler from "./eventHandlers/disconnectSocketHandler";
-import fetchBroadcasts from "./fetchBroadcasts/fetchBroadcasts";
+import fetchBroadcasts from "../rooms/fetchBroadcasts/fetchBroadcasts";
+import subscribe from "../rooms/subscribe/subscribe";
+import unsubscribe from "../rooms/unsubscribe/unsubscribe";
+import authSocketHandler from "./incoming/authSocketHandler";
+import disconnectSocketHandler from "./incoming/disconnectSocketHandler";
 import { IncomingSocketEvents } from "./incomingEventTypes";
-import subscribe from "./subscribe/subscribe";
-import { IOutgoingSocketEventPacket, SocketEventHandler } from "./types";
-import unsubscribe from "./unsubscribe/unsubscribe";
+import { makeSocketHandler } from "./utils";
 
 // REMINDER
 // The current implementation authenticates once, then accepts all other requests
@@ -28,66 +26,38 @@ import unsubscribe from "./unsubscribe/unsubscribe";
 
 // TODO: disconnect sockets that don't auth in 5 minutes
 
-export function sendAck(fn, data?: any, errors?: any) {
-    // sometimes, there isn't an ack return function on socket event
-    // I think it's because we currently have the socket.io using both http and socket
-    // so when it's using http, there isn't an ack fn
-    // possible fix is scticking only to socket, but will need to investigate
-    //
-    // I also think it's because some of the requests are being made before the socket
-    // connection completes authentication, so, maybe wait until auth is complete on the client
-    if (fn) {
-        const ack: IOutgoingSocketEventPacket<any> = {
-            data,
-            errors: (Array.isArray(errors) ? errors : [errors]) as any,
-        };
-
-        fn(ack);
-    }
-}
-
-function makeHandler(
-    ctx: IBaseContext,
-    socket: Socket,
-    handler: SocketEventHandler
-) {
-    return async (data, fn) => {
-        try {
-            const requestData = RequestData.fromSocketRequest(
-                socket,
-                data,
-                handler.skipTokenHandling
-            );
-            const result = await handler(ctx, requestData, fn);
-
-            sendAck(fn, result);
-        } catch (error) {
-            logger.error(error);
-            sendAck(fn, undefined, error);
-        }
-    };
-}
-
 async function onConnection(ctx: IBaseContext, socket: Socket) {
     socket.on(
         IncomingSocketEvents.Auth,
-        makeHandler(ctx, socket, authSocketHandler)
+        makeSocketHandler(ctx, socket, authSocketHandler)
     );
-    socket.on("disconnect", makeHandler(ctx, socket, disconnectSocketHandler));
+    socket.on(
+        "disconnect",
+        makeSocketHandler(ctx, socket, disconnectSocketHandler)
+    );
     socket.on(
         IncomingSocketEvents.Subscribe,
-        makeHandler(ctx, socket, subscribe)
+        makeSocketHandler(ctx, socket, subscribe)
     );
     socket.on(
         IncomingSocketEvents.Unsubscribe,
-        makeHandler(ctx, socket, unsubscribe)
+        makeSocketHandler(ctx, socket, unsubscribe)
     );
-    socket.on(IncomingSocketEvents.FetchMissingBroadcasts, fetchBroadcasts);
-    socket.on(IncomingSocketEvents.GetUserRoomsAndChats, getUserRoomsAndChats);
-    socket.on(IncomingSocketEvents.SendMessage, sendMessage);
+    socket.on(
+        IncomingSocketEvents.FetchMissingBroadcasts,
+        makeSocketHandler(ctx, socket, fetchBroadcasts)
+    );
+    socket.on(
+        IncomingSocketEvents.GetUserRoomsAndChats,
+        makeSocketHandler(ctx, socket, getUserRoomsAndChats)
+    );
+    socket.on(
+        IncomingSocketEvents.SendMessage,
+        makeSocketHandler(ctx, socket, sendMessage)
+    );
     socket.on(
         IncomingSocketEvents.UpdateRoomReadCounter,
-        updateRoomReadCounter
+        makeSocketHandler(ctx, socket, updateRoomReadCounter)
     );
 }
 

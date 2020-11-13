@@ -1,2 +1,2 @@
-export * from "./controller";
+export * from "./SystemEndpointsGraphQLController";
 export * from "./schema";

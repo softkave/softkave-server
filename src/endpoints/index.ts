@@ -1,9 +1,9 @@
 import { buildSchema } from "graphql";
 import blockSchema from "./block/schema";
-import EndpointController from "./controller";
-import noteSchema from "./note/schema";
+import EndpointsGraphQLController from "./EndpointsGraphQLController";
+import noteSchema from "./notes/schema";
 import endpointSchema from "./schema";
-import sprintSchema from "./sprint/schema";
+import sprintSchema from "./sprints/schema";
 import systemSchema from "./system/schema";
 import userSchema from "./user/schema";
 
@@ -30,4 +30,4 @@ const rootSchema = `
 
 const compiledSchema = buildSchema(rootSchema);
 
-export { compiledSchema as indexSchema, EndpointController };
+export { compiledSchema as indexSchema, EndpointsGraphQLController };

@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken";
 import { IUser } from "../../mongo/user";
 import { LoginAgainError } from "./errors";
 
-const CURRENT_TOKEN_VERSION = 4;
-const GENERAL_AUDIENCE = "*";
+export const CURRENT_USER_TOKEN_VERSION = 4;
+export const USER_TOKEN_UNIVERSAL_AUDIENCE = "*";
 
 export interface IUserTokenSubject {
     id: string;
@@ -29,7 +29,7 @@ export interface INewUserTokenParameters {
 }
 
 export default class UserToken {
-    public static newToken(p: INewUserTokenParameters) {
+    public static newUserTokenData(p: INewUserTokenParameters) {
         const subject: IUserTokenSubject = {
             id: p.user.customId,
             email: p.user.email,
@@ -38,10 +38,10 @@ export default class UserToken {
             ...p.additionalData,
         };
 
-        const payload: object = {
+        const payload: Omit<IBaseUserTokenData, "iat"> = {
             sub: subject,
             aud: p.audience || [],
-            version: CURRENT_TOKEN_VERSION,
+            version: CURRENT_USER_TOKEN_VERSION,
         };
 
         if (p.expires) {
@@ -49,6 +49,11 @@ export default class UserToken {
             payload.exp = p.expires / 1000; // exp is in seconds
         }
 
+        return payload;
+    }
+
+    public static newToken(p: INewUserTokenParameters) {
+        const payload = UserToken.newUserTokenData(p);
         return jwt.sign(payload, process.env.JWT_SECRET);
     }
 
@@ -66,12 +71,16 @@ export default class UserToken {
         UserToken.checkVersion(tokenData);
         const audience = tokenData.aud;
         return !!audience.find(
-            (nextAud) => nextAud === GENERAL_AUDIENCE || nextAud === aud
+            (nextAud) =>
+                nextAud === USER_TOKEN_UNIVERSAL_AUDIENCE || nextAud === aud
         );
     }
 
     public static checkVersion(tokenData: IBaseUserTokenData) {
-        if (!tokenData.version || tokenData.version !== CURRENT_TOKEN_VERSION) {
+        if (
+            !tokenData.version ||
+            tokenData.version !== CURRENT_USER_TOKEN_VERSION
+        ) {
             throw new LoginAgainError();
         }
     }

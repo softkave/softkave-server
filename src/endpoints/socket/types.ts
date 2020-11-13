@@ -1,15 +1,8 @@
-import { Socket } from "socket.io";
-import OperationError from "../../utilities/OperationError";
 import { IBaseContext } from "../contexts/BaseContext";
-import RequestData from "../contexts/RequestData";
+import RequestData from "../RequestData";
 
 export interface IIncomingSocketEventPacket<T> {
     token: string;
-    data: T;
-}
-
-export interface IOutgoingSocketEventPacket<T> {
-    errors?: OperationError;
     data?: T;
 }
 

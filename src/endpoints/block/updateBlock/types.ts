@@ -1,16 +1,16 @@
-import {
-    IAssignee,
-    IBlock,
-    IBlockAssignedLabel,
-    IBlockLabel,
-    IBlockStatus,
-    IBoardStatusResolution,
-    ISubTask,
-} from "../../../mongo/block";
+import { IAssignee, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
-import { Endpoint } from "../../types";
+import { Endpoint, IUpdateComplexTypeArrayInput } from "../../types";
 import { TransferBlockEndpoint } from "../transferBlock/types";
+import {
+    IAssigneeInput,
+    IBlockAssignedLabelInput,
+    IBlockLabelInput,
+    IBlockStatusInput,
+    IBoardStatusResolutionInput,
+    ISubTaskInput,
+} from "../types";
 
 export interface IUpdateBlockInput {
     name?: string;
@@ -18,17 +18,17 @@ export interface IUpdateBlockInput {
     color?: string;
     priority?: string;
     parent?: string;
-    subTasks?: ISubTask[];
-    dueAt?: Date; // not really a date, it's a string
-    assignees?: IAssignee[];
-    boardStatuses?: IBlockStatus[];
-    boardLabels?: IBlockLabel[];
-    boardResolutions?: IBoardStatusResolution[];
+    subTasks?: IUpdateComplexTypeArrayInput<ISubTaskInput>;
+    dueAt?: number;
+    assignees?: IUpdateComplexTypeArrayInput<IAssigneeInput>;
+    boardStatuses?: IUpdateComplexTypeArrayInput<IBlockStatusInput>;
+    boardLabels?: IUpdateComplexTypeArrayInput<IBlockLabelInput>;
+    boardResolutions?: IUpdateComplexTypeArrayInput<
+        IBoardStatusResolutionInput
+    >;
     status?: string;
-    statusAssignedBy?: string;
-    statusAssignedAt?: Date; // not really a date, it's a string
     taskResolution?: string;
-    labels?: IBlockAssignedLabel[];
+    labels?: IUpdateComplexTypeArrayInput<IBlockAssignedLabelInput>;
 }
 
 export interface ITaskAssigneesDiff {
@@ -70,5 +70,6 @@ export interface IUpdateBlockContext extends IBaseContext {
 
 export type UpdateBlockEndpoint = Endpoint<
     IUpdateBlockContext,
-    IUpdateBlockParameters
+    IUpdateBlockParameters,
+    { block: IBlock }
 >;

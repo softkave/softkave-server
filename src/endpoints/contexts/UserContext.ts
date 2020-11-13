@@ -1,11 +1,9 @@
-import mongoConstants from "../../mongo/constants";
 import { IUser } from "../../mongo/user";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
+import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
-import { UserDoesNotExistError } from "../user/errors";
 import { ICollaborator } from "../user/types";
+import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IUserContext {
@@ -24,11 +22,13 @@ export interface IUserContext {
     updateUserById: (
         ctx: IBaseContext,
         customId: string,
-        data: Partial<IUser>,
-        ensureUserExists?: boolean
-    ) => Promise<boolean | undefined>;
+        data: Partial<IUser>
+    ) => Promise<IUser | undefined>;
     bulkGetUsersById: (ctx: IBaseContext, ids: string[]) => Promise<IUser[]>;
-    saveUser: (ctx: IBaseContext, user: IUser) => Promise<IUser>;
+    saveUser: (
+        ctx: IBaseContext,
+        user: Omit<IUser, "customId">
+    ) => Promise<IUser>;
     userExists: (ctx: IBaseContext, email: string) => Promise<boolean>;
     getBlockCollaborators: (
         ctx: IBaseContext,
@@ -42,118 +42,63 @@ export interface IUserContext {
 }
 
 export default class UserContext implements IUserContext {
-    public async getUserByEmail(ctx: IBaseContext, email: string) {
-        try {
-            return await ctx.models.userModel.model
+    public getUserByEmail = wrapFireAndThrowError(
+        (ctx: IBaseContext, email: string) => {
+            return ctx.models.userModel.model
                 .findOne({
                     email,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getUserById(ctx: IBaseContext, customId: string) {
-        try {
-            return await ctx.models.userModel.model
+    public getUserById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string) => {
+            return ctx.models.userModel.model
                 .findOne({
                     customId,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async updateUserById(
-        ctx: IBaseContext,
-        customId: string,
-        data: Partial<IUser>,
-        ensureUserExists?: boolean
-    ) {
-        try {
-            if (ensureUserExists) {
-                const user = await ctx.models.userModel.model
-                    .findOneAndUpdate({ customId }, data, {
-                        fields: "customId",
-                    })
-                    .exec();
-
-                if (user && user.customId) {
-                    return true;
-                } else {
-                    throw new UserDoesNotExistError(); // should we include id
-                }
-            } else {
-                await ctx.models.userModel.model
-                    .updateOne({ customId }, data)
-                    .exec();
-            }
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    public updateUserById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string, data: Partial<IUser>) => {
+            return ctx.models.userModel.model
+                .findOneAndUpdate({ customId }, data)
+                .lean()
+                .exec();
         }
-    }
+    );
 
-    public async bulkGetUsersById(ctx: IBaseContext, ids: string[]) {
-        try {
-            return await ctx.models.userModel.model
+    public bulkGetUsersById = wrapFireAndThrowError(
+        (ctx: IBaseContext, ids: string[]) => {
+            return ctx.models.userModel.model
                 .find({ customId: { $in: ids } })
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async saveUser(ctx: IBaseContext, user: IUser) {
-        try {
-            const userDoc = new ctx.models.userModel.model(user);
-            await userDoc.save();
-            return userDoc;
-        } catch (error) {
-            logger.error(error);
-
-            // Adding a user fails with code 11000 if unique fields in this case email or customId exists
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
-            }
-
-            console.error(error);
-            throw new ServerError();
+    public userExists = wrapFireAndThrowError(
+        (ctx: IBaseContext, email: string) => {
+            return ctx.models.userModel.model.exists({ email });
         }
-    }
+    );
 
-    public async userExists(ctx: IBaseContext, email: string) {
-        try {
-            return await ctx.models.userModel.model.exists({ email });
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async bulkGetUsersByEmail(ctx: IBaseContext, emails: string[]) {
-        try {
-            return await ctx.models.userModel.model
+    public bulkGetUsersByEmail = wrapFireAndThrowError(
+        (ctx: IBaseContext, emails: string[]) => {
+            return ctx.models.userModel.model
                 .find({ email: { $in: emails } }, "email orgs")
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getBlockCollaborators(ctx: IBaseContext, blockId: string) {
-        try {
-            return await ctx.models.userModel.model
+    public getBlockCollaborators = wrapFireAndThrowError(
+        (ctx: IBaseContext, blockId: string) => {
+            return ctx.models.userModel.model
                 .find(
                     {
                         orgs: { $elemMatch: { customId: blockId } },
@@ -162,40 +107,37 @@ export default class UserContext implements IUserContext {
                 )
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getOrgUsers(ctx: IBaseContext, blockId: string) {
-        try {
-            return await ctx.models.userModel.model
+    public getOrgUsers = wrapFireAndThrowError(
+        (ctx: IBaseContext, blockId: string) => {
+            return ctx.models.userModel.model
                 .find({
                     orgs: { $elemMatch: { customId: blockId } },
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async bulkUpdateUsersById(
-        ctx: IBaseContext,
-        blocks: Array<IUpdateItemById<IUser>>
-    ) {
-        try {
+    public bulkUpdateUsersById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<IUser>>) => {
             const opts = blocks.map((item) => ({
                 updateOne: { filter: { customId: item.id }, update: item.data },
             }));
 
             await ctx.models.userModel.model.bulkWrite(opts);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
+    );
+
+    public async saveUser(ctx: IBaseContext, user: IUser) {
+        const userDoc = new ctx.models.userModel.model(user);
+        return saveNewItemToDb(async () => {
+            userDoc.customId = getNewId();
+            await userDoc.save();
+            return userDoc;
+        });
     }
 }
 

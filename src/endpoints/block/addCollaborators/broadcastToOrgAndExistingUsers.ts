@@ -4,7 +4,7 @@ import { IUser } from "../../../mongo/user/definitions";
 import {
     getPublicNotificationData,
     getPublicNotificationsArray,
-} from "../../notification/utils";
+} from "../../notifications/utils";
 import {
     IOutgoingNewNotificationsPacket,
     OutgoingSocketEvents,

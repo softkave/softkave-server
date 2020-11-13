@@ -86,7 +86,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         })
     );
 
-    return { data: collaborationRequests };
+    return { requests: collaborationRequests };
 };
 
 export default addCollaborators;

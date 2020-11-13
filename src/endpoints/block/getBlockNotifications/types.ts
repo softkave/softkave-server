@@ -3,15 +3,15 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockNotificationsParameters {
-  blockId: string;
+    blockId: string;
 }
 
 export interface IGetBlockNotificationsResult {
-  notifications: INotification[];
+    notifications: INotification[];
 }
 
 export type GetBlockNotificationsEndpoint = Endpoint<
-  IBaseContext,
-  IGetBlockNotificationsParameters,
-  IGetBlockNotificationsResult
+    IBaseContext,
+    IGetBlockNotificationsParameters,
+    IGetBlockNotificationsResult
 >;

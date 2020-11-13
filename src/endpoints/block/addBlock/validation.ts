@@ -49,3 +49,7 @@ export const newBlockJoiSchema = Joi.object().keys({
     taskResolution: validationSchemas.uuid.allow(null),
     labels: blockValidationSchemas.blockAssignedLabelsList,
 });
+
+export const addBlockJoiSchema = Joi.object().keys({
+    block: newBlockJoiSchema.required(),
+});

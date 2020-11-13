@@ -4,7 +4,16 @@ import isDate from "lodash/isDate";
 import isFunction from "lodash/isFunction";
 import isNull from "lodash/isNull";
 import isObject from "lodash/isObject";
-import { ExtractFieldsFrom, IObjectPaths } from "./types";
+import mongoConstants from "../mongo/constants";
+import { ServerError } from "../utilities/errors";
+import cast, { indexArray } from "../utilities/fns";
+import logger from "../utilities/logger";
+import {
+    ExtractFieldsDefaultScalarTypes,
+    ExtractFieldsFrom,
+    IObjectPaths,
+    IUpdateComplexTypeArrayInput,
+} from "./types";
 
 export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
     try {
@@ -42,9 +51,35 @@ export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
     }
 };
 
-export function getFields<T extends object>(
-    data: ExtractFieldsFrom<T>
-): IObjectPaths<T> {
+export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
+    fn: Fn,
+    throwError = true
+): Fn => {
+    return cast<Fn>(async (...args) => {
+        try {
+            return await fn(...args);
+        } catch (error) {
+            logger.error(error);
+
+            if (throwError) {
+                throw error;
+            }
+        }
+    });
+};
+
+export const wrapFireAndDontThrow: typeof wrapFireAndThrowError = (fn) => {
+    return wrapFireAndThrowError(fn, false);
+};
+
+export function getFields<
+    T extends object,
+    ScalarTypes = ExtractFieldsDefaultScalarTypes,
+    ExtraArgs = any,
+    Result extends Partial<Record<keyof T, any>> = T
+>(
+    data: ExtractFieldsFrom<T, ScalarTypes, ExtraArgs, Result>
+): IObjectPaths<T, ExtraArgs, Result> {
     const keys = Object.keys(data);
 
     return keys.reduce(
@@ -71,15 +106,23 @@ export function getFields<T extends object>(
             scalarFields: [],
             scalarFieldsWithTransformers: [],
             objectFields: [],
-            object: ({} as unknown) as T,
-        } as IObjectPaths<T>
+            object: cast<T>({}),
+            extraArgs: cast<ExtraArgs>({}),
+            result: cast<Result>({}),
+        } as IObjectPaths<T, ExtraArgs, Result>
     );
 }
 
 export function extractFields<
-    T extends object = object,
-    Result extends object = object
->(data: T, paths: IObjectPaths<Result>): Result {
+    ObjectPaths extends IObjectPaths<any, any, any>,
+    Data extends Partial<
+        Record<keyof ObjectPaths["object"], any>
+    > = ObjectPaths["object"]
+>(
+    data: Data,
+    paths: ObjectPaths,
+    extraArgs?: ObjectPaths["extraArgs"]
+): ObjectPaths["result"] {
     const result = pick(data, paths.scalarFields);
 
     paths.scalarFieldsWithTransformers.forEach(({ property, transformer }) => {
@@ -91,7 +134,7 @@ export function extractFields<
             return;
         }
 
-        result[property] = transformer(propValue);
+        result[property] = transformer(propValue, extraArgs);
     });
 
     paths.objectFields.forEach(({ property, fields }) => {
@@ -104,9 +147,58 @@ export function extractFields<
         }
 
         result[property] = isArray(propValue)
-            ? propValue.map((value) => extractFields(value, fields))
-            : extractFields(propValue, fields);
+            ? propValue.map((value) => extractFields(value, fields, extraArgs))
+            : extractFields(propValue, fields, extraArgs);
     });
 
-    return (result as unknown) as Result;
+    return (result as unknown) as ObjectPaths["result"];
+}
+
+export function getUpdateComplexTypeArrayInput<T>(
+    input: IUpdateComplexTypeArrayInput<T>
+): IUpdateComplexTypeArrayInput<T> & {
+    updateMap: {
+        [key: string]: IUpdateComplexTypeArrayInput<T>["update"][0];
+    };
+    removeMap: {
+        [key: string]: IUpdateComplexTypeArrayInput<T>["remove"][0];
+    };
+} {
+    return {
+        add: input.add || [],
+        remove: input.remove || [],
+        update: input.update || [],
+        updateMap: indexArray(input.update || [], { path: "id" }),
+        removeMap: indexArray(input.remove || []),
+    };
+}
+
+// TODO: internal/nested docs with customId or unique indexes should be validated before call
+export async function saveNewItemToDb<Fn extends (...args: any) => any>(
+    saveFn: Fn
+): Promise<ReturnType<Fn>> {
+    let tryAgain = false;
+
+    do {
+        try {
+            const doc = await saveFn();
+            return doc;
+        } catch (error) {
+            logger.error(error);
+
+            // Adding a block fails with code 11000 if unique fields like customId
+            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
+                // Retry once, and throw error if it occurs again
+                if (!tryAgain) {
+                    tryAgain = true;
+                    continue;
+                } else {
+                    tryAgain = false;
+                }
+            }
+
+            logger.error(error);
+            throw new ServerError();
+        }
+    } while (tryAgain);
 }

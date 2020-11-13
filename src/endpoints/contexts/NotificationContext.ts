@@ -1,10 +1,8 @@
-import mongoConstants from "../../mongo/constants";
 import { INotification } from "../../mongo/notification";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
-import logger from "../../utilities/logger";
+import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
-import { NotificationDoesNotExistError } from "../notification/errors";
+import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface INotificationContext {
@@ -19,9 +17,8 @@ export interface INotificationContext {
     updateNotificationById: (
         ctx: IBaseContext,
         customId: string,
-        data: Partial<INotification>,
-        ensureNotificationExists?: boolean
-    ) => Promise<boolean | undefined>;
+        data: Partial<INotification>
+    ) => Promise<INotification | undefined>;
     deleteNotificationById: (
         ctx: IBaseContext,
         customId: string
@@ -34,7 +31,7 @@ export interface INotificationContext {
     bulkSaveNotifications: (
         ctx: IBaseContext,
         notifications: INotification[]
-    ) => Promise<void>;
+    ) => Promise<INotification[]>;
     bulkUpdateNotificationsById: (
         ctx: IBaseContext,
         notifications: Array<IUpdateItemById<INotification>>
@@ -45,87 +42,51 @@ export interface INotificationContext {
     ) => Promise<INotification[]>;
     saveNotification: (
         ctx: IBaseContext,
-        notification: INotification
-    ) => Promise<void>;
+        notification: Omit<INotification, "customId">
+    ) => Promise<INotification>;
 }
 
 export default class NotificationContext implements INotificationContext {
-    public async getNotificationById(ctx: IBaseContext, id: string) {
-        try {
-            return await ctx.models.notificationModel.model
+    public getNotificationById = wrapFireAndThrowError(
+        (ctx: IBaseContext, id: string) => {
+            return ctx.models.notificationModel.model
                 .findOne({ customId: id })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async updateNotificationById(
-        ctx: IBaseContext,
-        customId: string,
-        data: Partial<INotification>,
-        ensureNotificationExists?: boolean
-    ) {
-        try {
-            if (ensureNotificationExists) {
-                const notification = await ctx.models.notificationModel.model
-                    .findOneAndUpdate({ customId }, data, {
-                        fields: "customId",
-                    })
-                    .exec();
-
-                if (notification && notification.customId) {
-                    return true;
-                } else {
-                    throw new NotificationDoesNotExistError(); // should we include id
-                }
-            } else {
-                await ctx.models.notificationModel.model
-                    .updateOne({ customId }, data)
-                    .exec();
-            }
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    public updateNotificationById = wrapFireAndThrowError(
+        (ctx: IBaseContext, customId: string, data: Partial<INotification>) => {
+            return ctx.models.notificationModel.model
+                .findOneAndUpdate({ customId }, data)
+                .lean()
+                .exec();
         }
-    }
+    );
 
-    public async getUserNotifications(ctx: IBaseContext, email: string) {
-        try {
-            const requests = await ctx.models.notificationModel.model
+    public getUserNotifications = wrapFireAndThrowError(
+        (ctx: IBaseContext, email: string) => {
+            return ctx.models.notificationModel.model
                 .find({
                     "to.email": email,
                 })
                 .lean()
                 .exec();
-
-            return requests;
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async deleteNotificationById(ctx: IBaseContext, id: string) {
-        try {
+    public deleteNotificationById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, id: string) => {
             await ctx.models.notificationModel.model
                 .deleteOne({ customId: id })
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getCollaborationRequestsByRecipientEmail(
-        ctx: IBaseContext,
-        emails: string[],
-        blockId: string
-    ) {
-        try {
-            return await ctx.models.notificationModel.model
+    public getCollaborationRequestsByRecipientEmail = wrapFireAndThrowError(
+        (ctx: IBaseContext, emails: string[], blockId: string) => {
+            return ctx.models.notificationModel.model
                 .find({
                     "to.email": {
                         $in: emails,
@@ -134,62 +95,30 @@ export default class NotificationContext implements INotificationContext {
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
-
-    public async bulkSaveNotifications(
-        ctx: IBaseContext,
-        notifications: INotification[]
-    ) {
-        try {
-            await ctx.models.notificationModel.model.insertMany(notifications);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
+    );
+    public bulkSaveNotifications = wrapFireAndThrowError(
+        (ctx: IBaseContext, notifications: INotification[]) => {
+            return ctx.models.notificationModel.model.insertMany(notifications);
         }
-    }
+    );
 
-    public async getNotificationsByBlockId(ctx: IBaseContext, blockId: string) {
-        try {
-            return await ctx.models.notificationModel.model
+    public getNotificationsByBlockId = wrapFireAndThrowError(
+        (ctx: IBaseContext, blockId: string) => {
+            return ctx.models.notificationModel.model
                 .find({
                     "from.blockId": blockId,
                 })
                 .lean()
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async saveNotification(
-        ctx: IBaseContext,
-        notification: INotification
-    ) {
-        try {
-            const n = new ctx.models.notificationModel.model(notification);
-            n.save();
-        } catch (error) {
-            console.error(error);
-
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
-            }
-
-            throw new ServerError();
-        }
-    }
-
-    public async bulkUpdateNotificationsById(
-        ctx: IBaseContext,
-        notifications: Array<IUpdateItemById<INotification>>
-    ) {
-        try {
+    public bulkUpdateNotificationsById = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            notifications: Array<IUpdateItemById<INotification>>
+        ) => {
             const opts = notifications.map((notification) => ({
                 updateOne: {
                     filter: { customId: notification.id },
@@ -198,10 +127,22 @@ export default class NotificationContext implements INotificationContext {
             }));
 
             await ctx.models.blockModel.model.bulkWrite(opts);
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
+    );
+
+    public async saveNotification(
+        ctx: IBaseContext,
+        notification: Omit<INotification, "customId">
+    ) {
+        const notificationDoc = new ctx.models.notificationModel.model(
+            notification
+        );
+
+        return saveNewItemToDb(() => {
+            notificationDoc.customId = getNewId();
+            notificationDoc.save();
+            return notificationDoc;
+        });
     }
 }
 

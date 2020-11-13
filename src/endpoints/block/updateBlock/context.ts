@@ -4,16 +4,16 @@ import appInfo from "../../../res/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
 import logger from "../../../utilities/logger";
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
+import IBaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext } from "./types";
 
 export default class UpdateBlockContext
-    extends BaseContext
+    extends IBaseContext
     implements IUpdateBlockContext {
     public async transferBlock(context, instData) {
-        await transferBlock(context, instData);
+        return await transferBlock(context, instData);
     }
 
     public async sendAssignedTaskEmailNotification(

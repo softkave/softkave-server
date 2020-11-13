@@ -1,6 +1,6 @@
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
-import { NotificationDoesNotExistError } from "../../notification/errors";
+import { NotificationDoesNotExistError } from "../../notifications/errors";
 import { IOutgoingUpdateNotificationsPacket } from "../../socket/outgoingEventTypes";
 import { MarkNotificationReadEndpoint } from "./types";
 import { updateCollaborationRequestSchema } from "./validation";

@@ -3,9 +3,10 @@ import { AuditLogResourceType } from "../../mongo/audit-log";
 import { BlockType } from "../../mongo/block";
 import { INote } from "../../mongo/note";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { OutgoingSocketEvents } from "../socket/server";
+import RequestData from "../RequestData";
+import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
+import { wrapFireAndDontThrow } from "../utils";
 import { IBaseContext } from "./BaseContext";
-import RequestData from "./RequestData";
 
 /**
  * RoomContext
@@ -98,84 +99,92 @@ function broadcast(
 }
 
 export default class RoomContext implements IRoomContext {
-    public subscribe(data: RequestData, roomName: string) {
-        if (data.socket) {
-            joinRoom(roomName, data.socket.id);
+    public subscribe = wrapFireAndDontThrow(
+        (data: RequestData, roomName: string) => {
+            if (data.socket) {
+                joinRoom(roomName, data.socket.id);
+            }
         }
-    }
+    );
 
-    public leave(data: RequestData, roomName: string) {
-        if (data.socket) {
-            leaveRoom(roomName, data.socket.id);
+    public leave = wrapFireAndDontThrow(
+        (data: RequestData, roomName: string) => {
+            if (data.socket) {
+                leaveRoom(roomName, data.socket.id);
+            }
         }
-    }
+    );
 
-    public isUserInRoom(ctx: IBaseContext, roomName: string, userId: string) {
-        const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
-        const room = rooms[roomName];
+    public isUserInRoom = wrapFireAndDontThrow(
+        (ctx: IBaseContext, roomName: string, userId: string) => {
+            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            const room = rooms[roomName];
 
-        if (!room) {
-            return false;
+            if (!room) {
+                return false;
+            }
+
+            return !!socketEntries.find((entry) => !!room[entry.socket.id]);
         }
+    );
 
-        return !!socketEntries.find((entry) => !!room[entry.socket.id]);
-    }
+    public subscribeUser = wrapFireAndDontThrow(
+        (ctx: IBaseContext, roomName: string, userId: string) => {
+            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
 
-    public subscribeUser(ctx: IBaseContext, roomName: string, userId: string) {
-        const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            if (socketEntries.length === 0) {
+                return;
+            }
 
-        if (socketEntries.length === 0) {
-            return;
+            const room = rooms[roomName] || {};
+            socketEntries.find((entry) => {
+                room[entry.socket.id] = true;
+            });
+
+            rooms[roomName] = room;
         }
+    );
 
-        const room = rooms[roomName] || {};
-        socketEntries.find((entry) => {
-            room[entry.socket.id] = true;
-        });
+    public unSubscribeUser = wrapFireAndDontThrow(
+        (ctx: IBaseContext, roomName: string, userId: string) => {
+            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            const room = rooms[roomName] || {};
+            socketEntries.find((entry) => {
+                delete room[entry.socket.id];
+            });
 
-        rooms[roomName] = room;
-    }
-
-    public unSubscribeUser(
-        ctx: IBaseContext,
-        roomName: string,
-        userId: string
-    ) {
-        const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
-        const room = rooms[roomName] || {};
-        socketEntries.find((entry) => {
-            delete room[entry.socket.id];
-        });
-
-        rooms[roomName] = room;
-    }
-
-    public async broadcast(
-        ctx: IBaseContext,
-        roomName: string,
-        eventName: OutgoingSocketEvents,
-        eventData: any,
-        data?: RequestData
-    ) {
-        // TODO: how can we make this better? Also, getUser I think calls mongo again
-        if (data) {
-            const user = await ctx.session.getUser(ctx, data);
-            ctx.socket.attachSocketToRequestData(ctx, data, user);
+            rooms[roomName] = room;
         }
+    );
 
-        broadcast(
-            roomName,
-            eventName,
-            eventData,
-            ctx.socketServer,
-            data?.socket?.id
-        );
+    public broadcast = wrapFireAndDontThrow(
+        async (
+            ctx: IBaseContext,
+            roomName: string,
+            eventName: OutgoingSocketEvents,
+            eventData: any,
+            data?: RequestData
+        ) => {
+            // TODO: how can we make this better? Also, getUser I think calls mongo again
+            if (data && !data.socket) {
+                const user = await ctx.session.getUser(ctx, data);
+                ctx.socket.attachSocketToRequestData(ctx, data, user);
+            }
 
-        ctx.broadcastHistory.insert(ctx, roomName, {
-            data: eventData,
-            event: eventName,
-        });
-    }
+            broadcast(
+                roomName,
+                eventName,
+                eventData,
+                ctx.socketServer,
+                data?.socket?.id
+            );
+
+            ctx.broadcastHistory.insert(ctx, roomName, {
+                data: eventData,
+                event: eventName,
+            });
+        }
+    );
 
     public getUserRoomName(userId: string) {
         return `${AuditLogResourceType.User}-${userId}`;

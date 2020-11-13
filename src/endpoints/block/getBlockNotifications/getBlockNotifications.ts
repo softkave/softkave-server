@@ -1,5 +1,5 @@
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicNotificationsArray } from "../../notification/utils";
+import { getPublicNotificationsArray } from "../../notifications/utils";
 import canReadBlock from "../canReadBlock";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";

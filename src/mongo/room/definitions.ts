@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
 
-export interface IRoomMemberWithReadCounter {
+export interface IRoomMemberReadCounter {
     userId: string;
     readCounter: Date;
 }
@@ -17,7 +17,7 @@ export interface IRoom {
     orgId: string;
     createdAt: Date;
     createdBy: string;
-    members: IRoomMemberWithReadCounter[];
+    members: IRoomMemberReadCounter[];
     updatedAt?: Date;
     updatedBy?: string;
 }

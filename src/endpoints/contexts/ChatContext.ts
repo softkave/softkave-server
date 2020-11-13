@@ -1,11 +1,10 @@
 import { IChat } from "../../mongo/chat";
-import mongoConstants from "../../mongo/constants";
-import { IRoom, IRoomMemberWithReadCounter } from "../../mongo/room";
+import { IRoom, IRoomMemberReadCounter } from "../../mongo/room";
 import createSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import logger from "../../utilities/logger";
+import UserToken from "../user/UserToken";
+import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IChatContext {
@@ -40,54 +39,49 @@ export interface IChatContext {
         name: string,
         initialMembers?: string[]
     ) => Promise<IRoom>;
+    getUserRoomReadCounter: (
+        ctx: IBaseContext,
+        userId: string,
+        roomId: string
+    ) => Promise<IRoomMemberReadCounter | undefined>;
 }
 
 export default class ChatContext implements IChatContext {
-    public async getMessages(ctx: IBaseContext, roomIds: string[]) {
-        try {
-            return await ctx.models.chatModel.model
+    public getMessages = wrapFireAndThrowError(
+        async (ctx: IBaseContext, roomIds: string[]) => {
+            return ctx.models.chatModel.model
                 .find({
                     roomId: { $in: roomIds },
                 })
+                .lean()
                 .exec();
-        } catch (error) {
-            logger.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getRooms(ctx: IBaseContext, userId: string) {
-        try {
-            return await ctx.models.roomModel.model
+    public getRooms = wrapFireAndThrowError(
+        async (ctx: IBaseContext, userId: string) => {
+            return ctx.models.roomModel.model
                 .find({
                     members: { $elemMatch: { userId } },
                 })
+                .lean()
                 .exec();
-        } catch (error) {
-            logger.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async getRoomById(ctx: IBaseContext, roomId: string) {
-        try {
-            return await ctx.models.roomModel.model
+    public getRoomById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, roomId: string) => {
+            return ctx.models.roomModel.model
                 .findOne({
                     customId: roomId,
                 })
+                .lean()
                 .exec();
-        } catch (error) {
-            logger.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async addMemberToRoom(
-        ctx: IBaseContext,
-        roomId: string,
-        userId: string
-    ) {
-        try {
+    public addMemberToRoom = wrapFireAndThrowError(
+        async (ctx: IBaseContext, roomId: string, userId: string) => {
             await ctx.models.roomModel.model
                 .updateOne(
                     { customId: roomId },
@@ -101,19 +95,16 @@ export default class ChatContext implements IChatContext {
                     }
                 )
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async updateMemberReadCounter(
-        ctx: IBaseContext,
-        roomId: string,
-        userId: string,
-        readCounter: Date | string
-    ) {
-        try {
+    public updateMemberReadCounter = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            roomId: string,
+            userId: string,
+            readCounter: Date | string
+        ) => {
             await ctx.models.roomModel.model
                 .updateOne(
                     {
@@ -127,94 +118,82 @@ export default class ChatContext implements IChatContext {
                     }
                 )
                 .exec();
-        } catch (error) {
-            console.error(error);
-            throw new ServerError();
         }
-    }
+    );
 
-    public async insertMessage(
-        ctx: IBaseContext,
-        orgId: string,
-        senderId: string,
-        roomId: string,
-        message: string
-    ) {
-        try {
-            const newMessage = new ctx.models.chatModel.model({
-                customId: getNewId(),
-                orgId,
-                message,
-                roomId,
-                sender: senderId,
-                createdAt: getDate(),
-            });
-
-            await newMessage.save();
-            return newMessage;
-        } catch (error) {
-            logger.error(error);
-
-            // Adding a block fails with code 11000 if unique fields like customId
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
-            }
-
-            console.error(error);
-            throw new ServerError();
-        }
-    }
-
-    public async insertRoom(
-        ctx: IBaseContext,
-        orgId: string,
-        userId: string,
-        name: string | null,
-        initialMembers?: string[]
-    ) {
-        try {
-            const members: IRoomMemberWithReadCounter[] = [userId]
+    public insertRoom = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            orgId: string,
+            userId: string,
+            name: string | null,
+            initialMembers?: string[]
+        ) => {
+            const members: IRoomMemberReadCounter[] = [userId]
                 .concat(initialMembers)
                 .map((id) => ({ userId: id, readCounter: getDate() }));
 
-            const roomId = getNewId();
-            const roomName = name || ctx.room.getChatRoomName(roomId);
-            const newRoom = new ctx.models.roomModel.model({
-                orgId,
-                members,
-                customId: roomId,
-                name: roomName,
-                createdAt: getDate(),
-                createdBy: userId,
+            return saveNewItemToDb(async () => {
+                const roomId = getNewId();
+                const roomName = name || ctx.room.getChatRoomName(roomId);
+                const newRoom = new ctx.models.roomModel.model({
+                    orgId,
+                    members,
+                    customId: roomId,
+                    name: roomName,
+                    createdAt: getDate(),
+                    createdBy: userId,
+                });
+
+                await newRoom.save();
+                return newRoom;
             });
+        }
+    );
 
-            await newRoom.save();
-            return newRoom;
-        } catch (error) {
-            logger.error(error);
+    public insertMessage = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            orgId: string,
+            senderId: string,
+            roomId: string,
+            message: string
+        ) => {
+            return saveNewItemToDb(async () => {
+                const newMessage = new ctx.models.chatModel.model({
+                    customId: getNewId(),
+                    orgId,
+                    message,
+                    roomId,
+                    sender: senderId,
+                    createdAt: getDate(),
+                });
 
-            // Adding a block fails with code 11000 if unique fields like customId
-            if (error.code === mongoConstants.indexNotUniqueErrorCode) {
-                // TODO: Implement a way to get a new customId and retry
-                throw new ServerError();
+                await newMessage.save();
+                return newMessage;
+            });
+        }
+    );
+
+    public getUserRoomReadCounter = wrapFireAndThrowError(
+        async (ctx: IBaseContext, userId: string, roomId: string) => {
+            const room = await ctx.models.roomModel.model
+                .findOne(
+                    {
+                        customId: roomId,
+                        "members.userId": userId,
+                    },
+                    { "members.$": 1 }
+                    // { members: { $elemMatch: { userId } } }
+                )
+                .lean()
+                .exec();
+
+            if (room) {
+                return room.members[0];
             }
-
-            console.error(error);
-            throw new ServerError();
         }
-    }
-
-    public async insertPrivateMessage(ctx: IBaseContext, data: IChat) {
-        try {
-            const c = new ctx.models.chatModel.model(data);
-            await c.save();
-            return c;
-        } catch (error) {
-            logger.error(error);
-            throw new ServerError();
-        }
-    }
+    );
 }
 
 export const getChatContext = createSingletonFunc(() => new ChatContext());

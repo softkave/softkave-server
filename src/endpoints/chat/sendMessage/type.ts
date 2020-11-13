@@ -1,6 +1,6 @@
-import { IChat } from "../../../mongo/chat";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicChatData } from "../types";
 
 export interface ISendMessageParameters {
     orgId: string;
@@ -10,7 +10,7 @@ export interface ISendMessageParameters {
 }
 
 export interface ISendMessageEndpointResult {
-    chat: IChat;
+    chat: IPublicChatData;
 }
 
 export type SendMessageEndpoint = Endpoint<

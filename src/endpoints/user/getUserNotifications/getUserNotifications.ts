@@ -1,4 +1,4 @@
-import { getPublicNotificationsArray } from "../../notification/utils";
+import { getPublicNotificationsArray } from "../../notifications/utils";
 import { GetCollaborationRequestsEndpoint } from "./types";
 
 const getCollaborationRequests: GetCollaborationRequestsEndpoint = async (

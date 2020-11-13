@@ -25,6 +25,6 @@ const blockData = Joi.object().keys({
 });
 
 export const updateBlockJoiSchema = Joi.object().keys({
-    data: blockData,
+    data: blockData.required(),
     blockId: validationSchemas.uuid.required(),
 });
