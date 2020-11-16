@@ -1,9 +1,9 @@
-import { INotification } from "../../../mongo/notification";
 import { IBaseContext } from "../../contexts/BaseContext";
+import { IPublicNotificationData } from "../../notifications/types";
 import { Endpoint } from "../../types";
 
 export interface IGetCollaborationRequestsResult {
-    notifications: INotification[];
+    notifications: IPublicNotificationData[];
 }
 
 export type GetCollaborationRequestsEndpoint = Endpoint<

@@ -33,7 +33,7 @@ const sprintSchema = `
 
     type AddSprintResult {
         errors: [Error]
-        data: Sprint
+        sprint: Sprint
     }
 
     input UpdateSprintInput {
@@ -41,36 +41,28 @@ const sprintSchema = `
         duration: String
     }
 
-    type UpdateSprintResultData {
-        updatedAt: String
-    }
-
     type UpdateSprintResult {
         errors: [Error]
-        data: UpdateSprintResultData
+        sprint: Sprint
     }
 
     type GetSprintsResult {
         errors: [Error]
-        data: [Sprint]
+        sprints: [Sprint]
     }
 
     input UpdateSprintOptionsInput {
         duration: String
     }
 
-    type UpdateSprintOptionsResultData {
-        updatedAt: String
-    }
-
     type UpdateSprintOptionsResult {
         errors: [Error]
-        data: UpdateSprintOptionsResultData
+        sprintOptions: SprintOptions
     }
 
     type SprintExistsResult {
         errors: [Error]
-        data: Boolean
+        exists: Boolean
     }
 
     input SprintOptionsInput {
@@ -79,25 +71,17 @@ const sprintSchema = `
 
     type SetupSprintsResult {
         errors: [Error]
-        data: SprintOptions
-    }
-
-    type StartSprintResultData {
-        startDate: String
+        sprintOptions: SprintOptions
     }
 
     type StartSprintResult {
         errors: [Error]
-        data: StartSprintResultData
-    }
-
-    type EndSprintResultData {
-        endDate: String
+        startDate: String
     }
 
     type EndSprintResult {
         errors: [Error]
-        data: EndSprintResultData
+        endDate: String
     }
 
     type SprintQuery {

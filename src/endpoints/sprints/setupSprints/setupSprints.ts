@@ -1,8 +1,9 @@
 import { IBoardSprintOptions } from "../../../mongo/sprint";
-import { getDate, getDateString } from "../../../utilities/fns";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { SprintsSetupAldreadyError } from "../errors";
+import { getPublicSprintOptions } from "../utils";
 import { SetupSprintsEndpoint } from "./types";
 import { setupSprintsJoiSchema } from "./validation";
 
@@ -27,21 +28,23 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
         sprintOptions,
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        block: board,
-        updateType: { isUpdate: true },
-        data: {
-            sprintOptions,
+    context.broadcastHelpers.broadcastBlockUpdate(
+        context,
+        {
+            block: board,
+            updateType: { isUpdate: true },
+            data: {
+                sprintOptions,
+            },
+            blockId: board.customId,
+            blockType: board.type,
+            parentId: board.parent,
         },
-        blockId: board.customId,
-        blockType: board.type,
-        parentId: board.parent,
-    });
+        instData
+    );
 
     return {
-        data: {
-            createdAt: getDateString(sprintOptions.createdAt),
-        },
+        sprintOptions: getPublicSprintOptions(sprintOptions),
     };
 };
 

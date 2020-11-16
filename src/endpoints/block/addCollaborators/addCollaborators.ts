@@ -70,7 +70,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         collaborationRequests
     );
 
-    broadcastToOrgsAndExistingUsers(context, {
+    broadcastToOrgsAndExistingUsers(context, instData, {
         block,
         collaborationRequests,
         indexedExistingUsers,
@@ -78,7 +78,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
     // TODO: maybe deffer sending email till end of day
     fireAndForgetPromise(
-        sendEmails(context, {
+        sendEmails(context, instData, {
             user,
             block,
             indexedExistingUsers,

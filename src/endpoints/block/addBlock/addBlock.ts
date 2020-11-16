@@ -39,13 +39,17 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
             organizationId: org.customId,
         });
 
-        context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-            updateType: { isNew: true },
-            data: org,
-            block: org,
-            blockId: org.customId,
-            blockType: org.type,
-        });
+        context.broadcastHelpers.broadcastBlockUpdate(
+            context,
+            {
+                updateType: { isNew: true },
+                data: org,
+                block: org,
+                blockId: org.customId,
+                blockType: org.type,
+            },
+            instData
+        );
 
         return {
             block: getPublicBlockData(org),
@@ -73,14 +77,18 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         organizationId: getBlockRootBlockId(block),
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        block,
-        updateType: { isNew: true },
-        data: block,
-        blockId: block.customId,
-        blockType: block.type,
-        parentId: block.parent,
-    });
+    context.broadcastHelpers.broadcastBlockUpdate(
+        context,
+        {
+            block,
+            updateType: { isNew: true },
+            data: block,
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.parent,
+        },
+        instData
+    );
 
     // TODO: analyze all the net calls you're making and look for ways to reduce them
 

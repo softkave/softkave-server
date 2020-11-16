@@ -35,14 +35,18 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
         update
     );
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        block,
-        updateType: { isUpdate: true },
-        data: update,
-        blockId: block.customId,
-        blockType: block.type,
-        parentId: block.parent,
-    });
+    context.broadcastHelpers.broadcastBlockUpdate(
+        context,
+        {
+            block,
+            updateType: { isUpdate: true },
+            data: update,
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.parent,
+        },
+        instData
+    );
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data

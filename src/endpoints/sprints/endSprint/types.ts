@@ -6,9 +6,7 @@ export interface IEndSprintParameters {
 }
 
 export interface IEndSprintResult {
-    data: {
-        endDate: string;
-    };
+    endDate: string;
 }
 
 export type EndSprintEndpoint = Endpoint<

@@ -1,6 +1,7 @@
-import { BlockType, IBlock } from "../../../mongo/block";
+import { BlockType } from "../../../mongo/block";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicBlock } from "../types";
 
 export interface IGetBlockChildrenParameters {
     blockId: string;
@@ -8,7 +9,7 @@ export interface IGetBlockChildrenParameters {
 }
 
 export interface IGetBlockChildrenResult {
-    blocks: IBlock[];
+    blocks: IPublicBlock[];
 }
 
 export type GetBlockChildrenEndpoint = Endpoint<

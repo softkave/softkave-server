@@ -1,15 +1,15 @@
 import { IBlock } from "../../../mongo/block";
+import { CollaborationRequestResponse } from "../../../mongo/notification";
+import { IPublicBlock } from "../../block/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-
-export type CollaborationRequestResponse = "accepted" | "declined";
 
 export interface IRespondToCollaborationRequestParameters {
     requestId: string;
     response: CollaborationRequestResponse;
 }
 export interface IRespondToCollaborationRequestResult {
-    block: IBlock;
+    block?: IPublicBlock;
 }
 
 export type RespondToCollaborationRequestEndpoint = Endpoint<

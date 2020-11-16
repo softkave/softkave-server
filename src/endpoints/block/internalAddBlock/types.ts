@@ -3,8 +3,12 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { INewBlockInput } from "../types";
 
+export interface IInternalAddBlockNewBlockInput extends INewBlockInput {
+    statusAssignedBy?: string;
+}
+
 export interface IInternalAddBlockParameters {
-    block: INewBlockInput;
+    block: IInternalAddBlockNewBlockInput;
 }
 
 export interface IInternalAddBlockResult {

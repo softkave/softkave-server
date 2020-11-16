@@ -44,7 +44,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         // It's a new room/chat
         context.room.subscribeUser(context, room.name, user.customId);
         context.room.subscribeUser(context, room.name, data.recipientId);
-        context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
+        context.broadcastHelpers.broadcastNewRoom(context, room);
     }
 
     const chat = await context.chat.insertMessage(
@@ -57,9 +57,9 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     context.broadcastHelpers.broadcastNewMessage(
         context,
-        instaData,
         room,
-        chat
+        chat,
+        instaData
     );
 
     if (data.roomId) {
@@ -73,10 +73,10 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
         context.broadcastHelpers.broadcastRoomReadCounterUpdate(
             context,
-            instaData,
             user,
             room.customId,
-            readCounter
+            readCounter,
+            instaData
         );
     }
 

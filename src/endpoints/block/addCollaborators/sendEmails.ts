@@ -11,10 +11,7 @@ import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
 import { getPublicNotificationData } from "../../notifications/utils";
-import {
-    IOutgoingUpdateNotificationsPacket,
-    OutgoingSocketEvents,
-} from "../../socket/server";
+import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IAddCollaboratorsContext } from "./types";
 
@@ -27,6 +24,7 @@ export interface IAddCollaboratorsSendEmailsFnProps {
 
 export default async function sendEmails(
     context: IAddCollaboratorsContext,
+    instData: RequestData,
     data: IAddCollaboratorsSendEmailsFnProps
 ) {
     const { user, block, indexedExistingUsers, requests } = data;
@@ -77,22 +75,14 @@ export default async function sendEmails(
         context.notification.bulkUpdateNotificationsById(context, updates)
     );
 
-    const updateNotificationsPacket: IOutgoingUpdateNotificationsPacket = {
-        notifications: updates.map((update) => ({
-            customId: update.id,
+    // TODO: public data vs internal
+    context.broadcastHelpers.broadcastCollaborationRequestsUpdateToBlock(
+        context,
+        block,
+        updates.map((update) => ({
+            ...update,
             data: getPublicNotificationData(update.data),
         })),
-    };
-
-    const blockRoomName = context.room.getBlockRoomName(
-        block.type,
-        block.customId
-    );
-
-    context.room.broadcast(
-        context,
-        blockRoomName,
-        OutgoingSocketEvents.UpdateCollaborationRequests,
-        updateNotificationsPacket
+        instData
     );
 }

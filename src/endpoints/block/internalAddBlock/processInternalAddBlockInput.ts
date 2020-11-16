@@ -5,7 +5,7 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { ExtractFieldsDefaultScalarTypes } from "../../types";
 import { extractFields, getFields } from "../../utils";
-import { INewBlockInput } from "../types";
+import { IInternalAddBlockNewBlockInput } from "./types";
 
 interface IInternalAddBlockExtractFieldsExtraArgs {
     user: IUser;
@@ -19,10 +19,10 @@ type P<T1, T2> = {
     };
 
 const fields = getFields<
-    INewBlockInput,
+    IInternalAddBlockNewBlockInput,
     ExtractFieldsDefaultScalarTypes | object | any[],
     IInternalAddBlockExtractFieldsExtraArgs,
-    { [key in keyof INewBlockInput]: IBlock[key] }
+    { [key in keyof IInternalAddBlockNewBlockInput]: IBlock[key] }
 >({
     type: true,
     name: true,
@@ -74,6 +74,7 @@ const fields = getFields<
         }));
     },
     status: true,
+    statusAssignedBy: true,
     taskResolution: true,
     labels: (data, args) => {
         return data.map((assignedLabel) => ({
@@ -93,7 +94,7 @@ const fields = getFields<
 });
 
 export default function processInternalAddBlockInput(
-    data: INewBlockInput,
+    data: IInternalAddBlockNewBlockInput,
     user: IUser
 ): Omit<IBlock, "customId"> {
     const update = extractFields(data, fields, {

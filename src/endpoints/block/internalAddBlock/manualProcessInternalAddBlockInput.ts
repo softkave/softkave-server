@@ -3,10 +3,10 @@ import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
-import { INewBlockInput } from "../types";
+import { IInternalAddBlockNewBlockInput } from "./types";
 
 export default function manualProcessInternalAddBlockInput(
-    inputBlock: INewBlockInput,
+    inputBlock: IInternalAddBlockNewBlockInput,
     user: IUser
 ) {
     const now = getDate();
@@ -65,7 +65,10 @@ export default function manualProcessInternalAddBlockInput(
             customId: getNewId(),
         })),
         status: inputBlock.status,
-        statusAssignedBy: inputBlock.status ? user.customId : undefined,
+        statusAssignedBy:
+            inputBlock.statusAssignedBy || inputBlock.status
+                ? user.customId
+                : undefined,
         statusAssignedAt: inputBlock.status ? now : undefined,
         taskResolution: inputBlock.taskResolution,
         taskSprint: inputBlock.taskSprint

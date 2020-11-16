@@ -1,9 +1,9 @@
-import InternalAddBlockContext from "../../block/internalAddBlock/context";
 import internalAddBlock from "../../block/internalAddBlock/internalAddBlock";
+import BaseContext from "../../contexts/BaseContext";
 import { ISendFeedbackContext } from "./types";
 
 export default class SendFeedbackContext
-    extends InternalAddBlockContext
+    extends BaseContext
     implements ISendFeedbackContext {
     public async saveTask(context, instData) {
         return await internalAddBlock(context, instData);

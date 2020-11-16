@@ -1,5 +1,5 @@
-import { INotification } from "../../../mongo/notification";
 import { IBaseContext } from "../../contexts/BaseContext";
+import { IPublicNotificationData } from "../../notifications/types";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockNotificationsParameters {
@@ -7,7 +7,7 @@ export interface IGetBlockNotificationsParameters {
 }
 
 export interface IGetBlockNotificationsResult {
-    notifications: INotification[];
+    notifications: IPublicNotificationData[];
 }
 
 export type GetBlockNotificationsEndpoint = Endpoint<

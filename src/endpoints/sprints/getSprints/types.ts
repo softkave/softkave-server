@@ -1,6 +1,6 @@
-import { ISprint } from "../../../mongo/sprint";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicSprint } from "../types";
 
 export interface IGetSprintsParameters {
     boardId: string;
@@ -9,5 +9,5 @@ export interface IGetSprintsParameters {
 export type GetSprintsEndpoint = Endpoint<
     IBaseContext,
     IGetSprintsParameters,
-    { data: ISprint[] }
+    { sprints: IPublicSprint[] }
 >;

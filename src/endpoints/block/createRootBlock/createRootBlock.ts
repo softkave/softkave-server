@@ -1,5 +1,4 @@
 import randomColor from "randomcolor";
-import uuid from "uuid/v4";
 import { BlockType } from "../../../mongo/block";
 import { INewBlockInput } from "../types";
 import { getPublicBlockData } from "../utils";
@@ -8,7 +7,6 @@ import { CreateRootBlockEndpoint } from "./types";
 const createRootBlock: CreateRootBlockEndpoint = async (context, instData) => {
     const user = await instData.data.user;
     const rootBlockInput: INewBlockInput = {
-        customId: uuid(),
         name: `root_${user.customId}`,
         color: randomColor(),
         type: BlockType.Root,

@@ -9,5 +9,5 @@ export interface ISprintExistsParameters {
 export type SprintExistsEndpoint = Endpoint<
     IBaseContext,
     ISprintExistsParameters,
-    { data: boolean }
+    { exists: boolean }
 >;

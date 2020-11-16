@@ -74,6 +74,17 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         req.from.blockId
     );
 
+    const publicBlock = getPublicBlockData(ownerBlock);
+
+    context.broadcastHelpers.broadcastCollaborationRequestResponse(
+        context,
+        user,
+        req,
+        data.response,
+        publicBlock,
+        instData
+    );
+
     if (!ownerBlock) {
         // if the org does not exist or has been deleted
         // TODO: should we log something here?
@@ -85,43 +96,16 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
             const userOrgs = user.orgs.concat({
                 customId: ownerBlock.customId,
             });
+
             await context.session.updateUser(context, instData, {
                 orgs: userOrgs,
             });
-            return { block: getPublicBlockData(ownerBlock) };
+
+            return { block: publicBlock };
         } else {
             // TODO: should we log an error because it means the user already has the org
         }
     }
-
-    // const orgsBroadcastData: IOrgCollaborationRequestResponsePacket = {
-    //   customId: req.customId,
-    //   response: data.response,
-    // };
-
-    // const blockRoomName = context.room.getBlockRoomName(ownerBlock);
-    // context.room.broadcast(
-    //   context,
-    //   blockRoomName,
-    //   OutgoingSocketEvents.OrgCollaborationRequestResponse,
-    //   orgsBroadcastData,
-    //   instData
-    // );
-
-    // const userClientsBroadcastData: IUserCollaborationRequestResponsePacket = {
-    //   customId: req.customId,
-    //   response: data.response,
-    //   org: userAccepted ? toPublicBlockData(ownerBlock) : undefined,
-    // };
-
-    // const userRoomName = context.room.getUserPersonalRoomName(user);
-    // context.room.broadcast(
-    //   context,
-    //   userRoomName,
-    //   OutgoingSocketEvents.UserCollaborationRequestResponse,
-    //   userClientsBroadcastData,
-    //   instData
-    // );
 };
 
 export default respondToCollaborationRequest;

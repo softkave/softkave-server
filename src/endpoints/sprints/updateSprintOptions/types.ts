@@ -1,6 +1,7 @@
 import { SprintDuration } from "../../../mongo/sprint";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicSprintOptions } from "../types";
 
 export interface IUpdateSprintOptionsParameters {
     boardId: string;
@@ -10,7 +11,7 @@ export interface IUpdateSprintOptionsParameters {
 }
 
 export interface IUpdateSprintOptionsResult {
-    data: { updatedAt: string };
+    sprintOptions: IPublicSprintOptions;
 }
 
 export type UpdateSprintOptionsEndpoint = Endpoint<

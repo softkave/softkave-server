@@ -1,6 +1,7 @@
 import { SprintDuration } from "../../../mongo/sprint";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicSprintOptions } from "../types";
 
 export interface ISetupSprintsParameters {
     boardId: string;
@@ -10,9 +11,7 @@ export interface ISetupSprintsParameters {
 }
 
 export interface ISetupSprintsResult {
-    data: {
-        createdAt: string;
-    };
+    sprintOptions: IPublicSprintOptions;
 }
 
 export type SetupSprintsEndpoint = Endpoint<

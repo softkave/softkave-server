@@ -86,13 +86,17 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     await canReadBlock({ user, block });
     await context.block.markBlockDeleted(context, block.customId, user);
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        block,
-        updateType: { isDelete: true },
-        blockId: block.customId,
-        blockType: block.type,
-        parentId: block.parent,
-    });
+    context.broadcastHelpers.broadcastBlockUpdate(
+        context,
+        {
+            block,
+            updateType: { isDelete: true },
+            blockId: block.customId,
+            blockType: block.type,
+            parentId: block.parent,
+        },
+        instData
+    );
 
     context.auditLog.insert(context, instData, {
         action: AuditLogActionType.Delete,

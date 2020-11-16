@@ -14,5 +14,5 @@ export interface IAddSprintParameters {
 export type AddSprintEndpoint = Endpoint<
     IBaseContext,
     IAddSprintParameters,
-    { data: IPublicSprint }
+    { sprint: IPublicSprint }
 >;

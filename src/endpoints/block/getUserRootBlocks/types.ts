@@ -1,9 +1,9 @@
-import { IBlock } from "../../../mongo/block";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
+import { IPublicBlock } from "../types";
 
 export interface IGetUserRootBlocksResult {
-    blocks: IBlock[];
+    blocks: IPublicBlock[];
 }
 
 export type GetUserRootBlocksEndpoint = Endpoint<

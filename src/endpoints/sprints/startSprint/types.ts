@@ -6,9 +6,7 @@ export interface IStartSprintParameters {
 }
 
 export interface IStartSprintResult {
-    data: {
-        startDate: string;
-    };
+    startDate: string;
 }
 
 export type StartSprintEndpoint = Endpoint<

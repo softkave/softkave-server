@@ -1,3 +1,4 @@
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import { NotificationDoesNotExistError } from "../../notifications/errors";
@@ -27,7 +28,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
     const update: IOutgoingUpdateNotificationsPacket = {
         notifications: [
             {
-                customId: notification.customId,
+                id: notification.customId,
                 data: { readAt: data.readAt },
             },
         ],
@@ -36,17 +37,20 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
     await context.notification.updateNotificationById(
         context,
         data.notificationId,
-        update
+        { readAt: getDate(data.readAt) }
     );
 
-    // const roomName = context.room.getUserPersonalRoomName(user);
-    // context.room.broadcast(
-    //   context,
-    //   roomName,
-    //   OutgoingSocketEvents.UpdateNotification,
-    //   update,
-    //   instData
-    // );
+    context.broadcastHelpers.broadcastCollaborationRequestsUpdateToUser(
+        context,
+        user,
+        [
+            {
+                id: notification.customId,
+                data: { readAt: data.readAt },
+            },
+        ],
+        instData
+    );
 };
 
 export default markNotificationRead;

@@ -1,14 +1,7 @@
 import { IBlock } from "../../../mongo/block";
 import { INotification } from "../../../mongo/notification/definitions";
 import { IUser } from "../../../mongo/user/definitions";
-import {
-    getPublicNotificationData,
-    getPublicNotificationsArray,
-} from "../../notifications/utils";
-import {
-    IOutgoingNewNotificationsPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
+import RequestData from "../../RequestData";
 import { IAddCollaboratorsContext } from "./types";
 
 export interface IAddCollaboratorsBroadcastFnData {
@@ -19,24 +12,16 @@ export interface IAddCollaboratorsBroadcastFnData {
 
 export function broadcastToOrgsAndExistingUsers(
     context: IAddCollaboratorsContext,
+    instData: RequestData,
     data: IAddCollaboratorsBroadcastFnData
 ) {
     const { collaborationRequests, block, indexedExistingUsers } = data;
 
-    const orgBroadcastPacket: IOutgoingNewNotificationsPacket = {
-        notifications: getPublicNotificationsArray(collaborationRequests),
-    };
-
-    const blockRoomName = context.room.getBlockRoomName(
-        block.type,
-        block.customId
-    );
-
-    context.room.broadcast(
+    context.broadcastHelpers.broadcastNewOrgCollaborationRequests(
         context,
-        blockRoomName,
-        OutgoingSocketEvents.OrgNewCollaborationRequests,
-        orgBroadcastPacket
+        block,
+        collaborationRequests,
+        instData
     );
 
     collaborationRequests.forEach((request) => {
@@ -46,19 +31,11 @@ export function broadcastToOrgsAndExistingUsers(
             return;
         }
 
-        const userRoomName = context.room.getUserRoomName(
-            existingUser.customId
-        );
-
-        const newRequestPacket: IOutgoingNewNotificationsPacket = {
-            notifications: [getPublicNotificationData(request)],
-        };
-
-        context.room.broadcast(
+        context.broadcastHelpers.broadcastNewUserCollaborationRequest(
             context,
-            userRoomName,
-            OutgoingSocketEvents.UserNewCollaborationRequest,
-            newRequestPacket
+            existingUser,
+            request,
+            instData
         );
     });
 }

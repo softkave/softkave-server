@@ -1,8 +1,9 @@
 import { IBoardSprintOptions } from "../../../mongo/sprint";
-import { getDate, getDateString } from "../../../utilities/fns";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { SprintsNotSetupYetError } from "../errors";
+import { getPublicSprintOptions } from "../utils";
 import { UpdateSprintOptionsEndpoint } from "./types";
 import { updateSprintOptionsJoiSchema } from "./validation";
 
@@ -29,27 +30,37 @@ const updateSprintOptions: UpdateSprintOptionsEndpoint = async (
     };
 
     // TODO: how can we update only the changed parts?
-    await context.block.updateBlockById(context, board.customId, {
-        sprintOptions,
-    });
+    const updatedBlock = await context.block.updateBlockById(
+        context,
+        board.customId,
+        {
+            sprintOptions,
+        }
+    );
 
     // TODO: update the rest of the sprints not started yet
     await context.sprint.updateUnstartedSprints(context, board.customId, {
         duration: data.data.duration,
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        block: board,
-        updateType: { isUpdate: true },
-        data: {
-            sprintOptions,
+    context.broadcastHelpers.broadcastBlockUpdate(
+        context,
+        {
+            block: board,
+            updateType: { isUpdate: true },
+            data: {
+                sprintOptions,
+            },
+            blockId: board.customId,
+            blockType: board.type,
+            parentId: board.parent,
         },
-        blockId: board.customId,
-        blockType: board.type,
-        parentId: board.parent,
-    });
+        instData
+    );
 
-    return { data: { updatedAt: getDateString(updatedAt) } };
+    return {
+        sprintOptions: getPublicSprintOptions(updatedBlock.sprintOptions),
+    };
 };
 
 export default updateSprintOptions;

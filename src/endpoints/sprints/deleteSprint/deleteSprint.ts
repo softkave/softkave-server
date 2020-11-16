@@ -4,10 +4,6 @@ import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
 import canReadBlock from "../../block/canReadBlock";
 import {
-    IOutgoingDeleteSprintPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
-import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,
 } from "../errors";
@@ -78,16 +74,10 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
         );
     }
 
-    const roomName = context.room.getBlockRoomName(board.type, board.customId);
-    const deleteSprintPacket: IOutgoingDeleteSprintPacket = {
-        sprintId: sprint.customId,
-    };
-
-    context.room.broadcast(
+    context.broadcastHelpers.broadcastDeleteSprint(
         context,
-        roomName,
-        OutgoingSocketEvents.DeleteSprint,
-        deleteSprintPacket,
+        board,
+        sprint,
         instData
     );
 };

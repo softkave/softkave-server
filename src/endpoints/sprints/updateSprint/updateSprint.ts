@@ -1,11 +1,8 @@
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import {
-    IOutgoingUpdateSprintPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
 import { SprintDoesNotExistError } from "../errors";
+import { getPublicSprintData } from "../utils";
 import { UpdateSprintEndpoint } from "./types";
 import { updateSprintJoiSchema } from "./validation";
 
@@ -23,33 +20,29 @@ const updateSprint: UpdateSprintEndpoint = async (context, instData) => {
     await canReadBlock({ user, block: board });
 
     const updatedAt = getDate();
-
-    await context.sprint.updateSprintById(context, sprint.customId, {
-        ...data.data,
-        updatedAt,
-        updatedBy: user.customId,
-    });
-
     const updatedAtStr = getDateString(updatedAt);
-    const roomName = context.room.getBlockRoomName(board.type, board.customId);
-    const startSprintPacket: IOutgoingUpdateSprintPacket = {
-        sprintId: sprint.customId,
-        data: {
-            ...data.data,
-            updatedAt: updatedAtStr,
-            updatedBy: user.customId,
-        },
-    };
 
-    context.room.broadcast(
+    const updatedSprint = await context.sprint.updateSprintById(
         context,
-        roomName,
-        OutgoingSocketEvents.UpdateSprint,
-        startSprintPacket,
+        sprint.customId,
+        {
+            ...data.data,
+            updatedAt,
+            updatedBy: user.customId,
+        }
+    );
+
+    context.broadcastHelpers.broadcastSprintUpdate(
+        context,
+        user,
+        board,
+        sprint,
+        data.data,
+        updatedAtStr,
         instData
     );
 
-    return { data: { updatedAt: updatedAtStr } };
+    return { sprint: getPublicSprintData(updatedSprint) };
 };
 
 export default updateSprint;

@@ -1,7 +1,8 @@
-import { ISprint } from "../../mongo/sprint";
+import { string } from "joi";
+import { IBoardSprintOptions, ISprint } from "../../mongo/sprint";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
-import { IPublicSprint } from "./types";
+import { IPublicSprint, IPublicSprintOptions } from "./types";
 
 const publicSprintFields = getFields<IPublicSprint>({
     customId: true,
@@ -22,10 +23,24 @@ const publicSprintFields = getFields<IPublicSprint>({
     updatedBy: true,
 });
 
+const sprintOptionsFields = getFields<IPublicSprintOptions>({
+    duration: true,
+    updatedAt: true,
+    updatedBy: true,
+    createdAt: true,
+    createdBy: true,
+});
+
 export function getPublicSprintData(sprint: ISprint): IPublicSprint {
     return extractFields(sprint, publicSprintFields);
 }
 
 export function getPublicSprintArray(sprints: ISprint[]): IPublicSprint[] {
     return sprints.map((sprint) => extractFields(sprint, publicSprintFields));
+}
+
+export function getPublicSprintOptions(
+    sprintOption: IBoardSprintOptions
+): IPublicSprintOptions {
+    return extractFields(sprintOption, sprintOptionsFields);
 }

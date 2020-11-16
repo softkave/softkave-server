@@ -1,11 +1,11 @@
 import { IChat } from "../../mongo/chat";
+import { CollaborationRequestResponse } from "../../mongo/notification/definitions";
 import { IRoom } from "../../mongo/room";
 import { SprintDuration } from "../../mongo/sprint";
 import { IPublicBlock } from "../block/types";
 import { IPublicChatData, IPublicRoomData } from "../chat/types";
 import { IPublicNotificationData } from "../notifications/types";
 import { IPublicSprint } from "../sprints/types";
-import { CollaborationRequestResponse } from "../user/respondToCollaborationRequest/types";
 
 export enum OutgoingSocketEvents {
     BlockUpdate = "blockUpdate",
@@ -42,7 +42,7 @@ export interface IOutgoingUserUpdatePacket {
 
 export interface IOutgoingUpdateNotificationsPacket {
     notifications: Array<{
-        customId: string;
+        id: string;
         data: Partial<IPublicNotificationData>;
     }>;
 }

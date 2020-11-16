@@ -4,10 +4,6 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import {
-    IOutgoingNewSprintPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";
@@ -70,20 +66,16 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
 
     await context.block.updateBlockById(context, board.customId, boardUpdates);
 
-    const roomName = context.room.getBlockRoomName(board.type, board.customId);
-    const newSprintPacket: IOutgoingNewSprintPacket = {
-        sprint: getPublicSprintData(sprint),
-    };
+    const publicSprint = getPublicSprintData(sprint);
 
-    context.room.broadcast(
+    context.broadcastHelpers.broadcastNewSprint(
         context,
-        roomName,
-        OutgoingSocketEvents.NewSprint,
-        newSprintPacket,
+        board,
+        publicSprint,
         instData
     );
 
-    return { data: getPublicSprintData(sprint) };
+    return { sprint: publicSprint };
 };
 
 export default addSprint;

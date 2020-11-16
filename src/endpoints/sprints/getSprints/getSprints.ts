@@ -16,7 +16,7 @@ const getSprints: GetSprintsEndpoint = async (context, instData) => {
         board.customId
     );
 
-    return { data: getPublicSprintArray(sprints) };
+    return { sprints: getPublicSprintArray(sprints) };
 };
 
 export default getSprints;

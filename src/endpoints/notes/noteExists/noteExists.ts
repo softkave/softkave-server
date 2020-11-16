@@ -6,29 +6,29 @@ import { NoteExistsEndpoint } from "./types";
 import { noteExistsJoiSchema } from "./validation";
 
 const noteExists: NoteExistsEndpoint = async (context, instData) => {
-  const data = validate(instData.data, noteExistsJoiSchema);
-  const user = await context.session.getUser(context, instData);
-  const block = await context.block.getBlockById(context, data.blockId);
+    const data = validate(instData.data, noteExistsJoiSchema);
+    const user = await context.session.getUser(context, instData);
+    const block = await context.block.getBlockById(context, data.blockId);
 
-  if (!block) {
-    throw new BlockDoesNotExistError();
-  }
+    if (!block) {
+        throw new BlockDoesNotExistError();
+    }
 
-  canReadBlock({ user, block });
+    canReadBlock({ user, block });
 
-  const note = await context.note.getNoteByName(
-    context,
-    data.name,
-    data.blockId
-  );
+    const note = await context.note.getNoteByName(
+        context,
+        data.name,
+        data.blockId
+    );
 
-  canReadNote({ note, block, user });
+    canReadNote({ note, block, user });
 
-  if (!note) {
-    return false;
-  }
+    if (!note) {
+        return { exists: false };
+    }
 
-  return true;
+    return { exists: true };
 };
 
 export default noteExists;

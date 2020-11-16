@@ -2,10 +2,6 @@ import { ISprint } from "../../../mongo/sprint";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import {
-    IOutgoingEndSprintPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
 import { SprintDoesNotExistError } from "../errors";
 import { EndSprintEndpoint } from "./types";
 import { endSprintJoiSchema } from "./validation";
@@ -60,22 +56,20 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
         endedBy: user.customId,
     });
 
-    const roomName = context.room.getBlockRoomName(board.type, board.customId);
-    const updateSprintPacket: IOutgoingEndSprintPacket = {
-        sprintId: sprint.customId,
-        endedAt: endDateStr,
-        endedBy: user.customId,
-    };
-
-    context.room.broadcast(
+    context.broadcastHelpers.broadcastSprintUpdate(
         context,
-        roomName,
-        OutgoingSocketEvents.UpdateSprint,
-        updateSprintPacket,
+        user,
+        board,
+        sprint,
+        {
+            endDate,
+            endedBy: user.customId,
+        },
+        endDateStr,
         instData
     );
 
-    return { data: { endDate: endDateStr } };
+    return { endDate: endDateStr };
 };
 
 export default endSprint;

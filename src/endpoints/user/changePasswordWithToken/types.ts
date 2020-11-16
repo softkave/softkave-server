@@ -1,4 +1,4 @@
-import IBaseContext, { IBaseContext } from "../../contexts/BaseContext";
+import IBaseContext from "../../contexts/BaseContext";
 import RequestData from "../../RequestData";
 import { Endpoint } from "../../types";
 import { IChangePasswordParameters } from "../changePassword/types";
