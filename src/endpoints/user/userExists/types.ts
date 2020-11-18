@@ -8,5 +8,5 @@ export interface IUserExistsParameters {
 export type UserExistsEndpoint = Endpoint<
     IBaseContext,
     IUserExistsParameters,
-    boolean
+    { exists: boolean }
 >;

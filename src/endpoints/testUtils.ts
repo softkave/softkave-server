@@ -7,10 +7,8 @@ import getNewId from "../utilities/getNewId";
 import { IBaseContext } from "./contexts/BaseContext";
 import { IServerRequest } from "./contexts/types";
 import RequestData from "./RequestData";
-import UserToken, {
-    IBaseUserTokenData,
-    USER_TOKEN_UNIVERSAL_AUDIENCE,
-} from "./user/UserToken";
+import { JWTEndpoints } from "./types";
+import UserToken, { IBaseUserTokenData } from "./user/UserToken";
 
 const testClientId = getNewId();
 const testUserAgent = "server-test-123";
@@ -50,7 +48,7 @@ export async function getTestUserTokenData() {
     const user = await getTestUser();
     const data = UserToken.newUserTokenData({
         user,
-        audience: [USER_TOKEN_UNIVERSAL_AUDIENCE],
+        audience: [JWTEndpoints.Universal],
         clientId: testClientId,
     });
 
@@ -70,7 +68,7 @@ export async function getTestToken() {
     const user = await getTestUser();
     testToken = UserToken.newToken({
         user,
-        audience: [USER_TOKEN_UNIVERSAL_AUDIENCE],
+        audience: [JWTEndpoints.Universal],
         clientId: testClientId,
     });
 

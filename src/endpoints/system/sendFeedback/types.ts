@@ -3,8 +3,9 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface ISendFeedbackParameters {
-    title: string;
-    message?: string;
+    feedback: string;
+    description?: string;
+    notifyEmail?: string;
 }
 
 export interface ISendFeedbackContext extends IBaseContext {

@@ -37,12 +37,7 @@ export default class RequestData<
         requestData.ips =
             Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
         requestData.userAgent = req.headers["user-agent"];
-        requestData.clientId = req.headers["x-client-id"] as string;
-
-        // TODO: remove later
-        if (!requestData.clientId) {
-            logger.info("no client id");
-        }
+        requestData.clientId = UserToken.getClientId(req.user);
 
         return requestData;
     }

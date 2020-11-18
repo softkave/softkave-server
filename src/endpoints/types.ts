@@ -75,6 +75,7 @@ export interface IObjectPaths<
 export enum JWTEndpoints {
     ChangePassword = "change-password",
     Login = "login",
+    Universal = "*",
 }
 
 export enum ServerRecommendedActions {

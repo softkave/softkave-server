@@ -25,7 +25,6 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     const clientId = getNewId();
 
     return {
-        clientId,
         user: getPublicUserData(user),
         token: UserToken.newToken({
             user,

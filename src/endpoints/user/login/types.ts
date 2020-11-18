@@ -10,7 +10,6 @@ export interface ILoginParameters {
 export interface ILoginResult {
     user: IPublicUserData;
     token: string;
-    clientId: string;
 }
 
 export type LoginEndpoint = Endpoint<

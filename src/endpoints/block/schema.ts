@@ -240,7 +240,7 @@ const blockSchema = `
 
     type AddCollaboratorResult {
         errors: [Error]
-        data: [Notification]
+        requests: [Notification]
     }
 
     type AddBlockResponse {

@@ -36,7 +36,7 @@ const userSchema = `
 
   type UserExistsResult {
     errors: [Error]
-    userExists: Boolean
+    exists: Boolean
   }
 
   type RespondToCollaborationRequestResponse {

@@ -25,9 +25,9 @@ const login: LoginEndpoint = async (context, instData) => {
 
             if (passwordMatch) {
                 return {
-                    clientId: getNewId(),
                     user: getPublicUserData(userData),
                     token: UserToken.newToken({
+                        clientId: getNewId(),
                         user: userData,
                         audience: [JWTEndpoints.Login],
                     }),

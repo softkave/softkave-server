@@ -10,6 +10,7 @@ import {
     IBlockStatusInput,
     IBoardStatusResolutionInput,
     ISubTaskInput,
+    ITaskSprintInput,
 } from "../types";
 
 export interface IUpdateBlockInput {
@@ -29,6 +30,7 @@ export interface IUpdateBlockInput {
     status?: string;
     taskResolution?: string;
     labels?: IUpdateComplexTypeArrayInput<IBlockAssignedLabelInput>;
+    taskSprint?: ITaskSprintInput;
 }
 
 export interface ITaskAssigneesDiff {

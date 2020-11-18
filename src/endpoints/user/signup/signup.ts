@@ -53,10 +53,10 @@ const signup: SignupEndpoint = async (context, instData) => {
 
     return {
         user: getPublicUserData(user),
-        clientId: getNewId(),
         token: UserToken.newToken({
             user,
             audience: [JWTEndpoints.Login],
+            clientId: getNewId(),
         }),
     };
 };

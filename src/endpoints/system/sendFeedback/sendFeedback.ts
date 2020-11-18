@@ -23,10 +23,11 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
     const status0: IBlockStatus | undefined = statuses[0];
     const subTasks: ISubTask[] = [];
 
-    if (user) {
+    if (data.notifyEmail || user) {
+        const email = data.notifyEmail || user.email;
         subTasks.push({
             customId: getNewId(),
-            description: `Reach out to ${user.email} on progress of feedback or anything else.`,
+            description: `Reach out to ${email} on progress of feedback or anything else.`,
             createdAt: getDate(),
             createdBy: systemConstants.yomi,
         });
@@ -38,8 +39,8 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
             block: {
                 subTasks,
                 type: BlockType.Task,
-                name: data.title,
-                description: data.message,
+                name: data.feedback,
+                description: data.description,
                 parent: feedbackBoard.customId,
                 rootBlockId: feedbackBoard.rootBlockId,
                 priority: BlockPriority.Important,

@@ -1,6 +1,10 @@
 const systemSchema = `
     type SystemQuery {
-        sendFeedback (title: String!, message: String): ErrorOnlyResponse
+        sendFeedback (
+            feedback: String!,
+            description: String,
+            notifyEmail: String
+        ): ErrorOnlyResponse
     }
 `;
 

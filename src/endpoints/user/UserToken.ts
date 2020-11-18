@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
 import { IUser } from "../../mongo/user";
-import { LoginAgainError } from "./errors";
+import { JWTEndpoints } from "../types";
+import { InvalidCredentialsError, LoginAgainError } from "./errors";
 
 export const CURRENT_USER_TOKEN_VERSION = 4;
-export const USER_TOKEN_UNIVERSAL_AUDIENCE = "*";
 
 export interface IUserTokenSubject {
     id: string;
     email: string;
     td?: string; // passwordLastChangedAt
-    cl?: string; // clientId
+    clientId?: string;
 }
 
 export interface IBaseUserTokenData {
@@ -22,7 +22,7 @@ export interface IBaseUserTokenData {
 
 export interface INewUserTokenParameters {
     user: IUser;
-    audience: string[];
+    audience: JWTEndpoints[];
     clientId?: string;
     additionalData?: any;
     expires?: number;
@@ -34,7 +34,7 @@ export default class UserToken {
             id: p.user.customId,
             email: p.user.email,
             plca: p.user.passwordLastChangedAt,
-            cl: p.clientId,
+            clientId: p.clientId,
             ...p.additionalData,
         };
 
@@ -67,13 +67,22 @@ export default class UserToken {
         return tokenData;
     }
 
-    public static containsAudience(tokenData: IBaseUserTokenData, aud: string) {
+    public static containsAudience(
+        tokenData: IBaseUserTokenData,
+        aud: JWTEndpoints,
+        checkClientId = true
+    ) {
         UserToken.checkVersion(tokenData);
         const audience = tokenData.aud;
-        return !!audience.find(
-            (nextAud) =>
-                nextAud === USER_TOKEN_UNIVERSAL_AUDIENCE || nextAud === aud
+        const hasAudience = !!audience.find(
+            (nextAud) => nextAud === JWTEndpoints.Universal || nextAud === aud
         );
+
+        if (hasAudience && checkClientId && !tokenData.sub.clientId) {
+            throw new InvalidCredentialsError();
+        }
+
+        return hasAudience;
     }
 
     public static checkVersion(tokenData: IBaseUserTokenData) {
@@ -90,6 +99,6 @@ export default class UserToken {
     }
 
     public static getClientId(tokenData: IBaseUserTokenData) {
-        return tokenData.sub.cl;
+        return tokenData.sub.clientId;
     }
 }

@@ -12,6 +12,7 @@ import {
     getFields,
     getUpdateComplexTypeArrayInput,
 } from "../../utils";
+import { ITaskSprintInput } from "../types";
 import { IUpdateBlockInput } from "./types";
 
 interface IUpdateBlockExtractFieldsExtraArgs {
@@ -98,7 +99,9 @@ function processAssignees<T1, T2>(
 
 const fields = getFields<
     IUpdateBlockInput,
-    ExtractFieldsDefaultScalarTypes | IUpdateComplexTypeArrayInput<any>,
+    | ExtractFieldsDefaultScalarTypes
+    | IUpdateComplexTypeArrayInput<any>
+    | ITaskSprintInput,
     IUpdateBlockExtractFieldsExtraArgs,
     Partial<IBlock>
 >({
@@ -164,6 +167,13 @@ const fields = getFields<
     status: true,
     taskResolution: true,
     labels: (...args) => processAssignees("labels", "customId", ...args),
+    taskSprint: (data, args) => {
+        return {
+            sprintId: data.sprintId,
+            assignedAt: getDate(),
+            assignedBy: args.user.customId,
+        };
+    },
 });
 
 export default function processUpdateBlockInput(
