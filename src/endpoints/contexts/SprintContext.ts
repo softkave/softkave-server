@@ -1,5 +1,5 @@
 import { ISprint } from "../../mongo/sprint";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import cast from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
@@ -144,4 +144,4 @@ export default class SprintContext implements ISprintContext {
     }
 }
 
-export const getSprintContext = createSingletonFunc(() => new SprintContext());
+export const getSprintContext = makeSingletonFunc(() => new SprintContext());

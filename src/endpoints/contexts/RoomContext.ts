@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { AuditLogResourceType } from "../../mongo/audit-log";
 import { BlockType } from "../../mongo/block";
 import { INote } from "../../mongo/note";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndDontThrow } from "../utils";
@@ -203,4 +203,4 @@ export default class RoomContext implements IRoomContext {
     }
 }
 
-export const getRoomContext = createSingletonFunc(() => new RoomContext());
+export const getRoomContext = makeSingletonFunc(() => new RoomContext());

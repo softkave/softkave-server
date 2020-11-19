@@ -1,5 +1,5 @@
 import { IUser } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
 import { ICollaborator } from "../user/types";
@@ -141,4 +141,4 @@ export default class UserContext implements IUserContext {
     }
 }
 
-export const getUserContext = createSingletonFunc(() => new UserContext());
+export const getUserContext = makeSingletonFunc(() => new UserContext());

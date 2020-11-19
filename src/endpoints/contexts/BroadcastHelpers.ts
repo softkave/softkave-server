@@ -8,7 +8,7 @@ import {
 import { IRoom } from "../../mongo/room";
 import { ISprint } from "../../mongo/sprint";
 import { IUser } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import { IUpdateItemById } from "../../utilities/types";
 import { IPublicBlock } from "../block/types";
@@ -91,6 +91,7 @@ export interface IBroadcastHelpers {
         user: IUser,
         request: INotification,
         response: CollaborationRequestResponse,
+        respondedAt: string,
         org: IPublicBlock,
         instData?: RequestData
     ) => void;
@@ -569,6 +570,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             user: IUser,
             request: INotification,
             response: CollaborationRequestResponse,
+            respondedAt: string,
             org: IPublicBlock,
             instData?: RequestData
         ) => {
@@ -578,6 +580,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             );
             const orgsBroadcastData: IOutgoingCollaborationRequestResponsePacket = {
                 response,
+                respondedAt,
                 customId: request.customId,
             };
 
@@ -592,6 +595,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             const userRoomName = context.room.getUserRoomName(user.customId);
             const userClientsBroadcastData: IOutgoingCollaborationRequestResponsePacket = {
                 response,
+                respondedAt,
                 customId: request.customId,
                 org:
                     response === CollaborationRequestStatusType.Accepted
@@ -639,6 +643,6 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     );
 }
 
-export const getBroadcastHelpers = createSingletonFunc(
+export const getBroadcastHelpers = makeSingletonFunc(
     () => new BroadcastHelpers()
 );

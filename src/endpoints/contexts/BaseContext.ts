@@ -8,7 +8,7 @@ import { getNotificationModel } from "../../mongo/notification";
 import { getRoomModel } from "../../mongo/room";
 import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
@@ -80,4 +80,4 @@ export default class BaseContext implements IBaseContext {
     public broadcastHelpers = getBroadcastHelpers();
 }
 
-export const getBaseContext = createSingletonFunc(() => new BaseContext());
+export const getBaseContext = makeSingletonFunc(() => new BaseContext());

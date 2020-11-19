@@ -1,5 +1,5 @@
 import { CollaborationRequestStatusType } from "../../../mongo/notification";
-import { getDate } from "../../../utilities/fns";
+import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getPublicBlockData } from "../../block/utils";
 import { PermissionDeniedError } from "../../errors";
@@ -58,11 +58,14 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
     const statusHistory = req.statusHistory || [];
     const userAccepted =
         data.response === CollaborationRequestStatusType.Accepted;
+    const respondedAt = getDate();
+    const respondedAtStr = getDateString(respondedAt);
+
     statusHistory.push({
         status: userAccepted
             ? CollaborationRequestStatusType.Accepted
             : CollaborationRequestStatusType.Declined,
-        date: getDate(),
+        date: respondedAt,
     });
 
     await context.notification.updateNotificationById(context, data.requestId, {
@@ -81,6 +84,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         user,
         req,
         data.response,
+        respondedAtStr,
         publicBlock,
         instData
     );
@@ -101,7 +105,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
                 orgs: userOrgs,
             });
 
-            return { block: publicBlock };
+            return { block: publicBlock, respondedAt: respondedAtStr };
         } else {
             // TODO: should we log an error because it means the user already has the org
         }

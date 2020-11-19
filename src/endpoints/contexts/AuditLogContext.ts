@@ -4,7 +4,7 @@ import {
     IAuditLog,
     IAuditLogChange,
 } from "../../mongo/audit-log";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import RequestData from "../RequestData";
@@ -77,6 +77,6 @@ export default class AuditLogContext implements IAuditLogContext {
     }
 }
 
-export const getAuditLogContext = createSingletonFunc(
+export const getAuditLogContext = makeSingletonFunc(
     () => new AuditLogContext()
 );

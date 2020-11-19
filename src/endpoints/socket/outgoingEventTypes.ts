@@ -50,6 +50,7 @@ export interface IOutgoingUpdateNotificationsPacket {
 export interface IOutgoingCollaborationRequestResponsePacket {
     customId: string;
     response: CollaborationRequestResponse;
+    respondedAt: string;
     org?: IPublicBlock;
 }
 

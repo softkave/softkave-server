@@ -1,7 +1,7 @@
 import { FilterQuery } from "mongoose";
 import { BlockType, IBlock, ITaskSprint } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
@@ -229,4 +229,4 @@ export default class BlockContext implements IBlockContext {
     }
 }
 
-export const getBlockContext = createSingletonFunc(() => new BlockContext());
+export const getBlockContext = makeSingletonFunc(() => new BlockContext());

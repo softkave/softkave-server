@@ -2,7 +2,7 @@ import merge from "lodash/merge";
 import moment from "moment";
 import { resolveJWTError } from "../../middlewares/handleErrors";
 import { IUser } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
 import { PermissionDeniedError } from "../errors";
 import RequestData from "../RequestData";
@@ -214,6 +214,4 @@ export default class SessionContext implements ISessionContext {
     }
 }
 
-export const getSessionContext = createSingletonFunc(
-    () => new SessionContext()
-);
+export const getSessionContext = makeSingletonFunc(() => new SessionContext());

@@ -1,6 +1,6 @@
 import findLastIndex from "lodash/findLastIndex";
 import moment from "moment";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
@@ -138,6 +138,6 @@ export default class BroadcastHistoryContext
     );
 }
 
-export const getBroadcastHistoryContext = createSingletonFunc(
+export const getBroadcastHistoryContext = makeSingletonFunc(
     () => new BroadcastHistoryContext()
 );

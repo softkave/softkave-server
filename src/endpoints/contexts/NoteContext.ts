@@ -1,6 +1,6 @@
 import { INote } from "../../mongo/note";
 import { IUser } from "../../mongo/user";
-import createSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
@@ -112,4 +112,4 @@ export default class NoteContext implements INoteContext {
     }
 }
 
-export const getNoteContext = createSingletonFunc(() => new NoteContext());
+export const getNoteContext = makeSingletonFunc(() => new NoteContext());

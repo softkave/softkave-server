@@ -10,6 +10,7 @@ export interface IRespondToCollaborationRequestParameters {
 }
 export interface IRespondToCollaborationRequestResult {
     block?: IPublicBlock;
+    respondedAt: string;
 }
 
 export type RespondToCollaborationRequestEndpoint = Endpoint<
