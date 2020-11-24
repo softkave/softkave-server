@@ -2,7 +2,6 @@ import moment from "moment";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
 import { ExtractFieldsDefaultScalarTypes } from "../../types";
 import { extractFields, getFields } from "../../utils";
 import { IInternalAddBlockNewBlockInput } from "./types";
@@ -10,13 +9,6 @@ import { IInternalAddBlockNewBlockInput } from "./types";
 interface IInternalAddBlockExtractFieldsExtraArgs {
     user: IUser;
 }
-
-type P<T1, T2> = {
-    [key in keyof T1]: key extends keyof T2 ? T1[key] : never;
-} &
-    {
-        [key in keyof T2]: key extends keyof T1 ? T1[key] : never;
-    };
 
 const fields = getFields<
     IInternalAddBlockNewBlockInput,
@@ -46,7 +38,6 @@ const fields = getFields<
             ...subTask,
             createdAt: getDate(),
             createdBy: args.user.customId,
-            customId: getNewId(),
         }));
     },
     boardStatuses: (data, args) => {
@@ -54,7 +45,6 @@ const fields = getFields<
             ...status,
             createdAt: getDate(),
             createdBy: args.user.customId,
-            customId: getNewId(),
         }));
     },
     boardLabels: (data, args) => {
@@ -62,7 +52,6 @@ const fields = getFields<
             ...label,
             createdAt: getDate(),
             createdBy: args.user.customId,
-            customId: getNewId(),
         }));
     },
     boardResolutions: (data, args) => {
@@ -70,7 +59,6 @@ const fields = getFields<
             ...resolution,
             createdAt: getDate(),
             createdBy: args.user.customId,
-            customId: getNewId(),
         }));
     },
     status: true,
@@ -81,7 +69,6 @@ const fields = getFields<
             ...assignedLabel,
             assignedAt: getDate(),
             assignedBy: args.user.customId,
-            customId: getNewId(),
         }));
     },
     taskSprint: (data, args) => {

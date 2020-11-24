@@ -2,7 +2,6 @@ import moment from "moment";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
 import { IInternalAddBlockNewBlockInput } from "./types";
 
 export default function manualProcessInternalAddBlockInput(
@@ -38,31 +37,26 @@ export default function manualProcessInternalAddBlockInput(
             ...subTask,
             createdAt: now,
             createdBy: user.customId,
-            customId: getNewId(),
         })),
         boardLabels: (inputBlock.boardLabels || []).map((status) => ({
             ...status,
             createdAt: now,
             createdBy: user.customId,
-            customId: getNewId(),
         })),
         boardStatuses: (inputBlock.boardStatuses || []).map((status) => ({
             ...status,
             createdAt: now,
             createdBy: user.customId,
-            customId: getNewId(),
         })),
         boardResolutions: (inputBlock.boardResolutions || []).map((status) => ({
             ...status,
             createdAt: now,
             createdBy: user.customId,
-            customId: getNewId(),
         })),
         labels: (inputBlock.labels || []).map((assignedLabel) => ({
             ...assignedLabel,
             assignedAt: now,
             assignedBy: user.customId,
-            customId: getNewId(),
         })),
         status: inputBlock.status,
         statusAssignedBy:

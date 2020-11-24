@@ -10,29 +10,31 @@ import {
 } from "../../mongo/block";
 import { IBoardSprintOptions } from "../../mongo/sprint";
 import { ConvertDatesToStrings } from "../../utilities/types";
+import { IResourceWithId } from "../types";
 
 export interface IAssigneeInput {
     userId: string;
 }
 
-export interface ISubTaskInput {
+export interface ISubTaskInput extends IResourceWithId {
     description: string;
     completedBy?: string;
 }
 
-export interface IBlockStatusInput {
+export interface IBlockStatusInput extends IResourceWithId {
+    name: string;
+    color: string;
+    position: number;
+    description?: string;
+}
+
+export interface IBlockLabelInput extends IResourceWithId {
     name: string;
     color: string;
     description?: string;
 }
 
-export interface IBlockLabelInput {
-    name: string;
-    color: string;
-    description?: string;
-}
-
-export interface IBoardStatusResolutionInput {
+export interface IBoardStatusResolutionInput extends IResourceWithId {
     name: string;
     description?: string;
 }

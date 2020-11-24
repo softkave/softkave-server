@@ -5,8 +5,6 @@ import { blockConstants } from "./constants";
 
 const taskCollaboratorSchema = Joi.object().keys({
     userId: validationSchemas.uuid.required(),
-    assignedBy: validationSchemas.uuid.required(),
-    assignedAt: Joi.date().required(),
 });
 
 const userUpdateableTypes = [
@@ -22,24 +20,20 @@ const userUpdateableblockTypeSchema = Joi.string()
 const fullBlockTypes = [...userUpdateableTypes, BlockType.Root] as BlockType[];
 const fullBlockTypeSchema = Joi.string().lowercase().valid(fullBlockTypes);
 const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
+
 const subTasksSchema = Joi.object().keys({
-    customId: Joi.string().uuid().required(),
+    customId: validationSchemas.uuid,
     description: Joi.string()
         .trim()
         .max(blockConstants.maxDescriptionLength)
         .required(),
     completedBy: Joi.string().uuid().allow(null),
-    completedAt: Joi.date().allow(null),
-    createdAt: Joi.date().required(),
-    createdBy: Joi.string().uuid().required(),
-    updatedAt: Joi.date().allow(null),
-    updatedBy: Joi.string().uuid().allow(null),
 });
 
 // TODO: run trim on all string inputs
 const labelSchema = Joi.object().keys({
+    customId: validationSchemas.uuid,
     color: color.required(),
-    customId: Joi.string().uuid().required(),
     name: Joi.string()
         .lowercase()
         .trim()
@@ -51,15 +45,11 @@ const labelSchema = Joi.object().keys({
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
-    createdAt: Joi.date().required(),
-    createdBy: Joi.string().uuid().required(),
-    updatedAt: Joi.date().allow(null),
-    updatedBy: Joi.string().uuid().allow(null),
 });
 
 const statusSchema = Joi.object().keys({
+    customId: validationSchemas.uuid,
     color: color.required(),
-    customId: Joi.string().uuid().required(),
     name: Joi.string()
         .trim()
         .lowercase()
@@ -71,14 +61,11 @@ const statusSchema = Joi.object().keys({
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
-    createdAt: Joi.date().required(),
-    createdBy: Joi.string().uuid().allow("system").required(), // TODO: find a fix. allowing system can be exploited
-    updatedAt: Joi.date().allow(null),
-    updatedBy: Joi.string().uuid().allow(null),
+    position: Joi.number().min(0),
 });
 
 const resolutionSchema = Joi.object().keys({
-    customId: Joi.string().uuid().required(),
+    customId: validationSchemas.uuid,
     name: Joi.string()
         .trim()
         .lowercase()
@@ -90,26 +77,22 @@ const resolutionSchema = Joi.object().keys({
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
-    createdAt: Joi.date().required(),
-    createdBy: Joi.string().uuid().required(),
-    updatedAt: Joi.date().allow(null),
-    updatedBy: Joi.string().uuid().allow(null),
 });
 
 const statusListSchema = Joi.array()
-    .max(blockConstants.maxAvailableLabels)
+    .max(blockConstants.maxStatuses)
     .items(statusSchema)
     .unique("customId")
     .unique("name");
 
 const boardLabelList = Joi.array()
-    .max(blockConstants.maxAvailableLabels)
+    .max(blockConstants.maxLabels)
     .items(labelSchema)
     .unique("customId")
     .unique("name");
 
 const resolutionListSchema = Joi.array()
-    .max(blockConstants.maxAvailableLabels)
+    .max(blockConstants.maxResolutions)
     .items(resolutionSchema)
     .unique("customId")
     .unique("name");
@@ -143,7 +126,7 @@ const priority = Joi.string()
 
 const subTasks = Joi.array()
     .items(subTasksSchema)
-    .max(blockConstants.maxSubTasksLength)
+    .max(blockConstants.maxSubTasks)
     .unique("customId");
 
 const blockAssignedLabels = Joi.object().keys({
@@ -154,7 +137,7 @@ const blockAssignedLabels = Joi.object().keys({
 
 const blockAssignedLabelsList = Joi.array()
     .items(blockAssignedLabels)
-    .max(blockConstants.maxAvailableLabels)
+    .max(blockConstants.maxAssignedLabels)
     .unique("customId");
 
 const statusAssignedBy = validationSchemas.uuid.allow("system").when("type", {

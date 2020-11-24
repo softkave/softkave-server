@@ -1,6 +1,5 @@
 import Joi, { Schema as JoiSchema, ValidationOptions } from "joi";
 import { InvalidInputError } from "./errors";
-import logger from "./logger";
 
 export function validate<DataType>(
     data: DataType,

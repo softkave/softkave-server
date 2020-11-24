@@ -24,3 +24,21 @@ export function stripOnEmpty(schema: Joi.Schema, fieldName: string) {
         then: Joi.any().strip(),
     });
 }
+
+export function complexFieldJoiSchema(
+    schema: Joi.Schema,
+    max: number,
+    uniqueIdField: string
+) {
+    return Joi.object().keys({
+        add: Joi.array()
+            .items(schema.required())
+            .unique(uniqueIdField)
+            .max(max),
+        update: Joi.array()
+            .items(schema.required)
+            .unique(uniqueIdField)
+            .max(max),
+        remove: Joi.array().items(uuid.required()).max(max),
+    });
+}

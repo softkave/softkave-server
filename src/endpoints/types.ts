@@ -86,5 +86,9 @@ export enum ServerRecommendedActions {
 export interface IUpdateComplexTypeArrayInput<T> {
     add?: T[];
     remove?: string[];
-    update?: Array<IUpdateItemById<T>>;
+    update?: T[];
+}
+
+export interface IResourceWithId {
+    customId: string;
 }

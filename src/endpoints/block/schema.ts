@@ -21,6 +21,7 @@ const blockSchema = `
     }
 
     input SubTaskInput {
+        customId: String
         description: string;
         completedBy?: string;
     }
@@ -37,6 +38,7 @@ const blockSchema = `
     }
 
     input StatusInput {
+        customId: String
         name: string;
         color: string;
         description?: string;
@@ -54,6 +56,7 @@ const blockSchema = `
     }
 
     input LabelInput {
+        customId: String
         name: string;
         color: string;
         description?: string;
@@ -80,6 +83,7 @@ const blockSchema = `
     }
 
     input BoardStatusResolutionInput {
+        customId: String
         name: string;
         description?: string;
     }

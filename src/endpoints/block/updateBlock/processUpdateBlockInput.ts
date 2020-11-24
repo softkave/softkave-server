@@ -1,100 +1,25 @@
 import moment from "moment";
-import { BlockType, IAssignee, IBlock, ISubTask } from "../../../mongo/block";
+import { BlockType, IBlock, ISubTask } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import cast, { getDate } from "../../../utilities/fns";
+import { IdExistsError } from "../../../utilities/errors";
+import { getDate, indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
+import OperationError from "../../../utilities/OperationError";
 import {
     ExtractFieldsDefaultScalarTypes,
     IUpdateComplexTypeArrayInput,
 } from "../../types";
 import {
     extractFields,
+    getComplexTypeArrayInput,
     getFields,
-    getUpdateComplexTypeArrayInput,
 } from "../../utils";
-import { ITaskSprintInput } from "../types";
+import { IBlockStatusInput, ITaskSprintInput } from "../types";
 import { IUpdateBlockInput } from "./types";
 
 interface IUpdateBlockExtractFieldsExtraArgs {
     user: IUser;
     block: IBlock;
-}
-
-function processStatuses<T1, T2>(
-    field: "boardStatuses" | "boardLabels" | "boardResolutions",
-    data: IUpdateComplexTypeArrayInput<T1>,
-    args: IUpdateBlockExtractFieldsExtraArgs
-) {
-    const statuses: T2[] = cast<T2[]>(args.block[field] || []);
-    const { add, updateMap, removeMap } = getUpdateComplexTypeArrayInput(data);
-
-    return (
-        statuses
-            // possible bug hiding spot
-            // @ts-ignore
-            .filter((status) => !removeMap[status.customId])
-            .map((status) => {
-                // possible bug hiding spot
-                // @ts-ignore
-                const incomingUpdate = updateMap[status.customId];
-
-                if (!incomingUpdate) {
-                    return status;
-                }
-
-                const updatedStatus = {
-                    ...status,
-                    updatedAt: getDate(),
-                    updatedBy: args.user.customId,
-                };
-
-                return updatedStatus;
-            })
-            .concat(
-                add.map((status) => {
-                    // possible bug hiding spot
-                    // @ts-ignore
-                    const newStatus: T2 = {
-                        ...status,
-                        createdAt: getDate(),
-                        createdBy: args.user.customId,
-                        customId: getNewId(),
-                    };
-
-                    return newStatus;
-                })
-            )
-    );
-}
-
-function processAssignees<T1, T2>(
-    field: "assignees" | "labels",
-    idField: "customId" | "userId",
-    data: IUpdateComplexTypeArrayInput<T1>,
-    args: IUpdateBlockExtractFieldsExtraArgs
-) {
-    // possible bug hiding spot
-    // @ts-ignore
-    const assignees: T2[] = args.block[field] || [];
-    const { add, removeMap } = getUpdateComplexTypeArrayInput(data);
-
-    return assignees
-        .filter((assignee) => !removeMap[assignee[idField]])
-        .concat(
-            // possible bug hiding spot
-            // @ts-ignore
-            add.map((assignee) => {
-                // possible bug hiding spot
-                // @ts-ignore
-                const newAssignee: IAssignee = {
-                    ...assignee,
-                    assignedAt: getDate(),
-                    assignedBy: args.user.customId,
-                };
-
-                return newAssignee;
-            })
-        );
 }
 
 const fields = getFields<
@@ -112,9 +37,27 @@ const fields = getFields<
     parent: true,
     subTasks: (data, args) => {
         const subTasks = args.block.subTasks || [];
-        const { add, updateMap, removeMap } = getUpdateComplexTypeArrayInput(
-            data
+        const { add, updateMap, removeMap } = getComplexTypeArrayInput(
+            data,
+            "customId"
         );
+
+        // TODO: id conflict check
+        // problem is the field of the error
+        // this function is removed from the endpoint, and we don't have the full field path
+        // should we omit it, and let the client expect it, or find a way to add it?
+
+        // const subTaskIdsMap = indexArray(subTasks, { path: "customId" });
+
+        // const idExistsIndex = add.findIndex(
+        //     (item) => !!subTaskIdsMap[item.customId]
+        // );
+
+        // if (idExistsIndex !== -1) {
+        //     throw new IdExistsError({
+        //         value: add[idExistsIndex].customId,
+        //     });
+        // }
 
         return subTasks
             .filter((subTask) => !removeMap[subTask.customId])
@@ -132,7 +75,7 @@ const fields = getFields<
                     updatedBy: args.user.customId,
                 };
 
-                if (incomingUpdate.data.completedBy) {
+                if (incomingUpdate.completedBy) {
                     updatedSubTask.completedAt = getDate();
                     updatedSubTask.completedBy = args.user.customId;
                 }
@@ -160,13 +103,181 @@ const fields = getFields<
     dueAt: (data) => {
         return getDate(moment().add(data, "milliseconds").valueOf());
     },
-    assignees: (...args) => processAssignees("assignees", "userId", ...args),
-    boardStatuses: (...args) => processStatuses("boardStatuses", ...args),
-    boardLabels: (...args) => processStatuses("boardLabels", ...args),
-    boardResolutions: (...args) => processStatuses("boardResolutions", ...args),
+    assignees: (data, args) => {
+        const assignees = args.block.assignees || [];
+        const { add, removeMap } = getComplexTypeArrayInput(data, "userId");
+
+        return assignees
+            .filter((assignee) => !removeMap[assignee.userId])
+            .concat(
+                add.map((assignee) => {
+                    const newAssignee = {
+                        ...assignee,
+                        assignedAt: getDate(),
+                        assignedBy: args.user.customId,
+                    };
+
+                    return newAssignee;
+                })
+            );
+    },
+    boardStatuses: (
+        data: IUpdateComplexTypeArrayInput<IBlockStatusInput>,
+        args: IUpdateBlockExtractFieldsExtraArgs
+    ) => {
+        const statuses = args.block.boardStatuses || [];
+        const { add, update, updateMap, removeMap } = getComplexTypeArrayInput(
+            data,
+            "customId"
+        );
+
+        const updatedStatuses = statuses
+            .filter((status) => !removeMap[status.customId])
+            .map((status) => {
+                const incomingUpdate = updateMap[status.customId];
+
+                if (!incomingUpdate) {
+                    return status;
+                }
+
+                const updatedStatus = {
+                    ...status,
+                    ...incomingUpdate,
+                    updatedAt: getDate(),
+                    updatedBy: args.user.customId,
+                };
+
+                return updatedStatus;
+            });
+
+        add.forEach((statusInput) => {
+            const status = {
+                ...statusInput,
+                createdAt: getDate(),
+                createdBy: args.user.customId,
+            };
+
+            updatedStatuses.splice(statusInput.position, 0, status);
+        });
+
+        const statusPosMap = indexArray(updatedStatuses, {
+            path: "customId",
+            reducer: (u1, u2, i) => i,
+        });
+
+        update.forEach((statusInput) => {
+            const currentPos = statusPosMap[statusInput.customId];
+
+            if (currentPos !== statusInput.position) {
+                const status = updatedStatuses.splice(currentPos, 1);
+                updatedStatuses.splice(statusInput.position, 0, status[0]);
+            }
+        });
+
+        return updatedStatuses;
+    },
+    boardLabels: (
+        data: IUpdateComplexTypeArrayInput<IBlockStatusInput>,
+        args: IUpdateBlockExtractFieldsExtraArgs
+    ) => {
+        const labels = args.block.boardLabels || [];
+        const { add, updateMap, removeMap } = getComplexTypeArrayInput(
+            data,
+            "customId"
+        );
+
+        const updatedLabels = labels
+            .filter((label) => !removeMap[label.customId])
+            .map((label) => {
+                const incomingUpdate = updateMap[label.customId];
+
+                if (!incomingUpdate) {
+                    return label;
+                }
+
+                const updatedLabel = {
+                    ...label,
+                    ...incomingUpdate,
+                    updatedAt: getDate(),
+                    updatedBy: args.user.customId,
+                };
+
+                return updatedLabel;
+            });
+
+        add.forEach((labelInput) => {
+            const label = {
+                ...labelInput,
+                createdAt: getDate(),
+                createdBy: args.user.customId,
+            };
+
+            updatedLabels.push(label);
+        });
+
+        return updatedLabels;
+    },
+    boardResolutions: (
+        data: IUpdateComplexTypeArrayInput<IBlockStatusInput>,
+        args: IUpdateBlockExtractFieldsExtraArgs
+    ) => {
+        const resolutions = args.block.boardResolutions || [];
+        const { add, updateMap, removeMap } = getComplexTypeArrayInput(
+            data,
+            "customId"
+        );
+
+        const updatedResolutions = resolutions
+            .filter((resolution) => !removeMap[resolution.customId])
+            .map((resolution) => {
+                const incomingUpdate = updateMap[resolution.customId];
+
+                if (!incomingUpdate) {
+                    return resolution;
+                }
+
+                const updatedResolution = {
+                    ...resolution,
+                    ...incomingUpdate,
+                    updatedAt: getDate(),
+                    updatedBy: args.user.customId,
+                };
+
+                return updatedResolution;
+            });
+
+        add.forEach((resolutionInput) => {
+            const resolution = {
+                ...resolutionInput,
+                createdAt: getDate(),
+                createdBy: args.user.customId,
+            };
+
+            updatedResolutions.push(resolution);
+        });
+
+        return updatedResolutions;
+    },
     status: true,
     taskResolution: true,
-    labels: (...args) => processAssignees("labels", "customId", ...args),
+    labels: (data, args) => {
+        const labels = args.block.labels || [];
+        const { add, removeMap } = getComplexTypeArrayInput(data, "customId");
+
+        return labels
+            .filter((label) => !removeMap[label.customId])
+            .concat(
+                add.map((label) => {
+                    const newLabel = {
+                        ...label,
+                        assignedAt: getDate(),
+                        assignedBy: args.user.customId,
+                    };
+
+                    return newLabel;
+                })
+            );
+    },
     taskSprint: (data, args) => {
         return {
             sprintId: data.sprintId,

@@ -154,9 +154,13 @@ export function extractFields<
     return (result as unknown) as ObjectPaths["result"];
 }
 
-export function getUpdateComplexTypeArrayInput<T>(
-    input: IUpdateComplexTypeArrayInput<T>
+export function getComplexTypeArrayInput<T>(
+    input: IUpdateComplexTypeArrayInput<T>,
+    indexPath: T extends object ? keyof T : never
 ): IUpdateComplexTypeArrayInput<T> & {
+    addMap: {
+        [key: string]: IUpdateComplexTypeArrayInput<T>["add"][0];
+    };
     updateMap: {
         [key: string]: IUpdateComplexTypeArrayInput<T>["update"][0];
     };
@@ -168,7 +172,8 @@ export function getUpdateComplexTypeArrayInput<T>(
         add: input.add || [],
         remove: input.remove || [],
         update: input.update || [],
-        updateMap: indexArray(input.update || [], { path: "id" }),
+        addMap: indexArray(input.add || [], { path: indexPath }),
+        updateMap: indexArray(input.update || [], { path: indexPath }),
         removeMap: indexArray(input.remove || []),
     };
 }
