@@ -31,17 +31,7 @@ export const newBlockJoiSchema = Joi.object().keys({
         then: Joi.required(),
         otherwise: Joi.allow(null),
     }),
-    statusAssignedBy: blockValidationSchemas.statusAssignedBy.when("type", {
-        is: BlockType.Task,
-        then: Joi.required(),
-        otherwise: Joi.allow(null),
-    }),
-    statusAssignedAt: Joi.date().when("type", {
-        is: BlockType.Task,
-        then: Joi.required(),
-    }),
     assignees: blockValidationSchemas.taskAssignees,
-    customId: validationSchemas.uuid.required(),
     type: blockValidationSchemas.type.required(),
     boardStatuses: blockValidationSchemas.statusListSchema,
     boardLabels: blockValidationSchemas.boardLabelList,

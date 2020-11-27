@@ -25,6 +25,7 @@ export function makeSocketHandler(
     return async (data, fn) => {
         try {
             const requestData = RequestData.fromSocketRequest(
+                ctx,
                 socket,
                 data,
                 handler.skipTokenHandling
@@ -33,7 +34,7 @@ export function makeSocketHandler(
 
             sendAck(fn, result);
         } catch (error) {
-            logger.error(error);
+            console.error(error);
             sendAck(fn, { errors: Array.isArray(error) ? error : [error] });
         }
     };

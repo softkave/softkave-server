@@ -88,7 +88,9 @@ export default class BlockContext implements IBlockContext {
     public updateBlockById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<IBlock>) => {
             return ctx.models.blockModel.model
-                .findOneAndUpdate({ customId, isDeleted: false }, data)
+                .findOneAndUpdate({ customId, isDeleted: false }, data, {
+                    new: true,
+                })
                 .lean()
                 .exec();
         }
@@ -128,7 +130,7 @@ export default class BlockContext implements IBlockContext {
             };
 
             await ctx.models.blockModel.model
-                .updateOne(
+                .updateMany(
                     { $or: [{ customId }, { parent: customId }] },
                     update
                 )

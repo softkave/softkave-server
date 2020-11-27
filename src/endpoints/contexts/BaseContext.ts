@@ -12,10 +12,7 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
-import BroadcastHelpers, {
-    getBroadcastHelpers,
-    IBroadcastHelpers,
-} from "./BroadcastHelpers";
+import { getBroadcastHelpers, IBroadcastHelpers } from "./BroadcastHelpers";
 import {
     getBroadcastHistoryContext,
     IBroadcastHistoryContext,

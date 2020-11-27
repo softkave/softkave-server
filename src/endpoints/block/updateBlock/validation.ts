@@ -10,39 +10,38 @@ const blockData = Joi.object().keys({
     name: blockValidationSchemas.name,
     description: blockValidationSchemas.description,
     color: blockValidationSchemas.color,
-    priority: blockValidationSchemas.priority,
+    priority: blockValidationSchemas.priority.allow(null),
     assignees: complexFieldJoiSchema(
-        blockValidationSchemas.taskAssignees,
+        blockValidationSchemas.taskCollaboratorSchema,
         blockConstants.maxTaskCollaboratorsLength,
         "userId"
     ),
-    type: blockValidationSchemas.type,
-    parent: blockValidationSchemas.parent,
+    parent: blockValidationSchemas.parent.allow(null),
     subTasks: complexFieldJoiSchema(
-        blockValidationSchemas.subTasks,
+        blockValidationSchemas.subTasksSchema,
         blockConstants.maxSubTasks,
         "customId"
     ),
     boardStatuses: complexFieldJoiSchema(
-        blockValidationSchemas.statusListSchema,
+        blockValidationSchemas.statusSchema,
         blockConstants.maxStatuses,
         "customId"
     ),
     boardLabels: complexFieldJoiSchema(
-        blockValidationSchemas.boardLabelList,
+        blockValidationSchemas.labelSchema,
         blockConstants.maxLabels,
         "customId"
     ),
     boardResolutions: complexFieldJoiSchema(
-        blockValidationSchemas.boardResolutions,
+        blockValidationSchemas.resolutionSchema,
         blockConstants.maxResolutions,
         "customId"
     ),
-    status: validationSchemas.uuid,
+    status: validationSchemas.uuid.allow(null),
     dueAt: blockValidationSchemas.dueAt,
     taskResolution: validationSchemas.uuid.allow(null),
     labels: complexFieldJoiSchema(
-        blockValidationSchemas.blockAssignedLabelsList,
+        blockValidationSchemas.blockAssignedLabel,
         blockConstants.maxAssignedLabels,
         "customId"
     ),

@@ -1,3 +1,4 @@
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -8,13 +9,13 @@ import noteExists from "./noteExists/noteExists";
 import updateNote from "./updateNote/updateNote";
 
 export default class NotesEndpointsGraphQLController {
-    public static addNote(data, req) {
+    public addNote(data, req) {
         return wrapEndpoint(data, req, () =>
             addNote(getBaseContext(), RequestData.fromExpressRequest(req, data))
         );
     }
 
-    public static noteExists(data, req) {
+    public noteExists(data, req) {
         return wrapEndpoint(data, req, () =>
             noteExists(
                 getBaseContext(),
@@ -23,7 +24,7 @@ export default class NotesEndpointsGraphQLController {
         );
     }
 
-    public static deleteNote(data, req) {
+    public deleteNote(data, req) {
         return wrapEndpoint(data, req, () =>
             deleteNote(
                 getBaseContext(),
@@ -32,7 +33,7 @@ export default class NotesEndpointsGraphQLController {
         );
     }
 
-    public static updateNote(data, req) {
+    public updateNote(data, req) {
         return wrapEndpoint(data, req, () =>
             updateNote(
                 getBaseContext(),
@@ -41,7 +42,7 @@ export default class NotesEndpointsGraphQLController {
         );
     }
 
-    public static getNotes(data, req) {
+    public getNotes(data, req) {
         return wrapEndpoint(data, req, () =>
             getNotes(
                 getBaseContext(),
@@ -50,3 +51,7 @@ export default class NotesEndpointsGraphQLController {
         );
     }
 }
+
+export const getNotesEndpointsGraphQLController = makeSingletonFunc(
+    () => new NotesEndpointsGraphQLController()
+);

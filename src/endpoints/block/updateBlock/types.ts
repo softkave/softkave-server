@@ -9,6 +9,7 @@ import {
     IBlockLabelInput,
     IBlockStatusInput,
     IBoardStatusResolutionInput,
+    IPublicBlock,
     ISubTaskInput,
     ITaskSprintInput,
 } from "../types";
@@ -24,9 +25,7 @@ export interface IUpdateBlockInput {
     assignees?: IUpdateComplexTypeArrayInput<IAssigneeInput>;
     boardStatuses?: IUpdateComplexTypeArrayInput<IBlockStatusInput>;
     boardLabels?: IUpdateComplexTypeArrayInput<IBlockLabelInput>;
-    boardResolutions?: IUpdateComplexTypeArrayInput<
-        IBoardStatusResolutionInput
-    >;
+    boardResolutions?: IUpdateComplexTypeArrayInput<IBoardStatusResolutionInput>;
     status?: string;
     taskResolution?: string;
     labels?: IUpdateComplexTypeArrayInput<IBlockAssignedLabelInput>;
@@ -73,5 +72,5 @@ export interface IUpdateBlockContext extends IBaseContext {
 export type UpdateBlockEndpoint = Endpoint<
     IUpdateBlockContext,
     IUpdateBlockParameters,
-    { block: IBlock }
+    { block: IPublicBlock }
 >;

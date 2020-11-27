@@ -1,4 +1,3 @@
-import logger from "../../../utilities/logger";
 import { SocketEventHandler } from "../types";
 
 const disconnectSocketHandler: SocketEventHandler = async (ctx, data) => {
@@ -6,7 +5,7 @@ const disconnectSocketHandler: SocketEventHandler = async (ctx, data) => {
     try {
         ctx.socket.disconnectSocket(data);
     } catch (error) {
-        logger.error(error);
+        console.error(error);
     }
 };
 

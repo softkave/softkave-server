@@ -1,12 +1,9 @@
 import { Socket } from "socket.io";
-import logger from "../utilities/logger";
-import { getBaseContext } from "./contexts/BaseContext";
+import { IBaseContext } from "./contexts/BaseContext";
 import { IServerRequest } from "./contexts/types";
 import { InvalidRequestError } from "./errors";
 import { IIncomingSocketEventPacket } from "./socket/types";
 import UserToken, { IBaseUserTokenData } from "./user/UserToken";
-
-const ctx = getBaseContext();
 
 export interface IRequestContructorParams<
     T = any,
@@ -37,12 +34,16 @@ export default class RequestData<
         requestData.ips =
             Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
         requestData.userAgent = req.headers["user-agent"];
-        requestData.clientId = UserToken.getClientId(req.user);
+
+        if (req.user) {
+            requestData.clientId = UserToken.getClientId(req.user);
+        }
 
         return requestData;
     }
 
     public static fromSocketRequest<DataType>(
+        ctx: IBaseContext,
         socket: Socket,
         data: IIncomingSocketEventPacket<DataType>,
         skipTokenHandling?: boolean

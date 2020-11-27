@@ -48,7 +48,7 @@ export default class NoteContext implements INoteContext {
     public updateNoteById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<INote>) => {
             return ctx.models.noteModel.model
-                .findOneAndUpdate({ customId }, data)
+                .findOneAndUpdate({ customId }, data, { new: true })
                 .lean()
                 .exec();
         }

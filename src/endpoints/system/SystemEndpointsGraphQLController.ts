@@ -1,10 +1,11 @@
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import SendFeedbackContext from "./sendFeedback/context";
 import sendFeedback from "./sendFeedback/sendFeedback";
 
 export default class SystemEndpointsGraphQLController {
-    public static sendFeedback(data, req) {
+    public sendFeedback(data, req) {
         return wrapEndpoint(data, req, () =>
             sendFeedback(
                 new SendFeedbackContext(),
@@ -13,3 +14,7 @@ export default class SystemEndpointsGraphQLController {
         );
     }
 }
+
+export const getSystemEndpointsGraphQLController = makeSingletonFunc(
+    () => new SystemEndpointsGraphQLController()
+);

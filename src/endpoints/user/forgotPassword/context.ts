@@ -1,11 +1,11 @@
-import IBaseContext from "../../contexts/BaseContext";
+import BaseContext from "../../contexts/BaseContext";
 import sendChangePasswordEmail, {
     ISendChangePasswordEmailParameters,
 } from "../sendChangePasswordEmail";
 import { IForgotPasswordContext } from "./types";
 
 export default class ForgotPasswordContext
-    extends IBaseContext
+    extends BaseContext
     implements IForgotPasswordContext {
     public async sendChangePasswordEmail(
         props: ISendChangePasswordEmailParameters

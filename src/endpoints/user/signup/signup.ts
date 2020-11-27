@@ -17,10 +17,7 @@ import { newUserInputSchema } from "./validation";
 
 const signup: SignupEndpoint = async (context, instData) => {
     const data = validate(instData.data.user, newUserInputSchema);
-    const userExists = await context.userExists(context, {
-        ...instData,
-        data: { email: data.email },
-    });
+    const userExists = await context.user.userExists(context, data.email);
 
     if (userExists) {
         throw new EmailAddressNotAvailableError({ field: "email" });

@@ -1,3 +1,4 @@
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -12,7 +13,7 @@ import updateSprint from "./updateSprint/updateSprint";
 import updateSprintOptions from "./updateSprintOptions/updateSprintOptions";
 
 export default class SprintsEndpointsGraphQLController {
-    public static addSprint(data, req) {
+    public addSprint(data, req) {
         return wrapEndpoint(data, req, () =>
             addSprint(
                 getBaseContext(),
@@ -21,7 +22,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static deleteSprint(data, req) {
+    public deleteSprint(data, req) {
         return wrapEndpoint(data, req, () =>
             deleteSprint(
                 getBaseContext(),
@@ -30,7 +31,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static sprintExists(data, req) {
+    public sprintExists(data, req) {
         return wrapEndpoint(data, req, () =>
             sprintExists(
                 getBaseContext(),
@@ -39,7 +40,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static getSprints(data, req) {
+    public getSprints(data, req) {
         return wrapEndpoint(data, req, () =>
             getSprints(
                 getBaseContext(),
@@ -48,7 +49,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static setupSprints(data, req) {
+    public setupSprints(data, req) {
         return wrapEndpoint(data, req, () =>
             setupSprints(
                 getBaseContext(),
@@ -57,7 +58,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static startSprint(data, req) {
+    public startSprint(data, req) {
         return wrapEndpoint(data, req, () =>
             startSprint(
                 getBaseContext(),
@@ -66,7 +67,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static endSprint(data, req) {
+    public endSprint(data, req) {
         return wrapEndpoint(data, req, () =>
             endSprint(
                 getBaseContext(),
@@ -75,7 +76,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static updateSprintOptions(data, req) {
+    public updateSprintOptions(data, req) {
         return wrapEndpoint(data, req, () =>
             updateSprintOptions(
                 getBaseContext(),
@@ -84,7 +85,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 
-    public static updateSprint(data, req) {
+    public updateSprint(data, req) {
         return wrapEndpoint(data, req, () =>
             updateSprint(
                 getBaseContext(),
@@ -93,3 +94,7 @@ export default class SprintsEndpointsGraphQLController {
         );
     }
 }
+
+export const getSprintsEndpointsGraphQLController = makeSingletonFunc(
+    () => new SprintsEndpointsGraphQLController()
+);

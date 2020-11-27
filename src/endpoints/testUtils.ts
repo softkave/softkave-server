@@ -4,7 +4,7 @@ import { Server, Socket } from "socket.io";
 import { IUser } from "../mongo/user";
 import cast, { getDate } from "../utilities/fns";
 import getNewId from "../utilities/getNewId";
-import { IBaseContext } from "./contexts/BaseContext";
+import { getBaseContext, IBaseContext } from "./contexts/BaseContext";
 import { IServerRequest } from "./contexts/types";
 import RequestData from "./RequestData";
 import { JWTEndpoints } from "./types";
@@ -100,7 +100,7 @@ export async function getTestExpressRequestData() {
 }
 
 export async function getTestSocketRequestData() {
-    return RequestData.fromSocketRequest(getTestSocket(), {
+    return RequestData.fromSocketRequest(getBaseContext(), getTestSocket(), {
         token: await getTestToken(),
     });
 }

@@ -3,25 +3,22 @@ import createRootBlock from "../../block/createRootBlock/createRootBlock";
 import userExists from "../userExists/userExists";
 import { ISignupContext } from "./types";
 
-export default class SignupContext extends CreateRootBlockContext
-  implements ISignupContext {
-  public async createUserRootBlock(context, instData) {
-    return await createRootBlock(context, instData);
-  }
-
-  public async userExists(context, instData) {
-    return userExists(context, instData);
-  }
+export default class SignupContext
+    extends CreateRootBlockContext
+    implements ISignupContext {
+    public async createUserRootBlock(context, instData) {
+        return await createRootBlock(context, instData);
+    }
 }
 
 let cxt: ISignupContext = null;
 
 export function getSignupContext() {
-  if (cxt) {
+    if (cxt) {
+        return cxt;
+    }
+
+    cxt = new SignupContext();
+
     return cxt;
-  }
-
-  cxt = new SignupContext();
-
-  return cxt;
 }

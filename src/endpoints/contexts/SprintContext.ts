@@ -1,6 +1,5 @@
 import { ISprint } from "../../mongo/sprint";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import cast from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
@@ -67,7 +66,7 @@ export default class SprintContext implements ISprintContext {
     public updateSprintById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<ISprint>) => {
             return ctx.models.sprintModel.model
-                .findOneAndUpdate({ customId }, data)
+                .findOneAndUpdate({ customId }, data, { new: true })
                 .lean()
                 .exec();
         }

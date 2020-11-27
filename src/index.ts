@@ -9,7 +9,8 @@ import socketio from "socket.io";
 // import multer from "multer";
 // import multerS3 from "multer-s3";
 // import { nanoid } from "nanoid";
-import { EndpointsGraphQLController, indexSchema } from "./endpoints";
+import { indexSchema } from "./endpoints";
+import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
 import { setupSocketServer } from "./endpoints/socket/server";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
@@ -109,7 +110,7 @@ app.use(
     graphqlHTTP({
         graphiql,
         schema: indexSchema,
-        rootValue: EndpointsGraphQLController,
+        rootValue: getEndpointsGraphQLController(),
     })
 );
 

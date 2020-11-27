@@ -129,14 +129,12 @@ const subTasks = Joi.array()
     .max(blockConstants.maxSubTasks)
     .unique("customId");
 
-const blockAssignedLabels = Joi.object().keys({
+const blockAssignedLabel = Joi.object().keys({
     customId: validationSchemas.uuid.required(),
-    assignedBy: validationSchemas.uuid.required(),
-    assignedAt: Joi.date().required(),
 });
 
 const blockAssignedLabelsList = Joi.array()
-    .items(blockAssignedLabels)
+    .items(blockAssignedLabel)
     .max(blockConstants.maxAssignedLabels)
     .unique("customId");
 
@@ -161,6 +159,7 @@ const blockValidationSchemas = {
     color,
     createdBy,
     priority,
+    subTasksSchema,
     subTasks,
     parent,
     rootBlockId,
@@ -169,12 +168,13 @@ const blockValidationSchemas = {
     labelSchema,
     statusListSchema,
     boardLabelList,
-    blockAssignedLabels,
+    blockAssignedLabel,
     blockAssignedLabelsList,
     statusAssignedBy,
     resolutionSchema,
     resolutionListSchema,
     taskSprint,
+    taskCollaboratorSchema,
     taskAssignees,
     boardResolutions: resolutionListSchema,
     blockTypesList: blockTypesSchema,

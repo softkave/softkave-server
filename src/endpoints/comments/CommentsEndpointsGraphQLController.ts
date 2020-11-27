@@ -5,7 +5,7 @@ import addComment from "./addComment/addComment";
 import getComments from "./getComments/getComments";
 
 export default class CommentsEndpointsGraphQLController {
-    public static addComment(data, req) {
+    public addComment(data, req) {
         return wrapEndpoint(data, req, () =>
             addComment(
                 getBaseContext(),
@@ -14,7 +14,7 @@ export default class CommentsEndpointsGraphQLController {
         );
     }
 
-    public static getComments(data, req) {
+    public getComments(data, req) {
         return wrapEndpoint(data, req, () =>
             getComments(
                 getBaseContext(),
@@ -26,6 +26,6 @@ export default class CommentsEndpointsGraphQLController {
 
 const controller: CommentsEndpointsGraphQLController = new CommentsEndpointsGraphQLController();
 
-export function getCommentController() {
+export function getCommentsEndpointsGraphQLController() {
     return controller;
 }

@@ -3,16 +3,16 @@ import MongoConnection from "./MongoConnection";
 let conn: MongoConnection = null;
 
 export function getDefaultConnection() {
-  if (conn) {
+    if (conn) {
+        return conn;
+    }
+
+    const MONGODB_URI = process.env.MONGODB_URI;
+
+    conn = new MongoConnection(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+    });
     return conn;
-  }
-
-  const MONGODB_URI = process.env.MONGODB_URI;
-  const options = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
-
-  conn = new MongoConnection(MONGODB_URI, options);
-  return conn;
 }

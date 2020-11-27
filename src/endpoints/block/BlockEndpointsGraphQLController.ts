@@ -1,3 +1,4 @@
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -18,7 +19,7 @@ import UpdateBlockContext from "./updateBlock/context";
 import updateBlock from "./updateBlock/updateBlock";
 
 export default class BlockEndpointsGraphQLController {
-    public static addBlock(data, req) {
+    public addBlock(data, req) {
         return wrapEndpoint(data, req, () =>
             addBlock(
                 new AddBlockContext(),
@@ -27,7 +28,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static addCollaborators(data, req) {
+    public addCollaborators(data, req) {
         return wrapEndpoint(data, req, () =>
             addCollaborators(
                 new AddCollaboratorsContext(),
@@ -36,7 +37,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static blockExists(data, req) {
+    public blockExists(data, req) {
         return wrapEndpoint(data, req, () =>
             blockExists(
                 getBaseContext(),
@@ -45,7 +46,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static deleteBlock(data, req) {
+    public deleteBlock(data, req) {
         return wrapEndpoint(data, req, () =>
             deleteBlock(
                 getBaseContext(),
@@ -54,7 +55,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static getUserRootBlocks(data, req) {
+    public getUserRootBlocks(data, req) {
         return wrapEndpoint(data, req, () =>
             getUserRootBlocks(
                 getBaseContext(),
@@ -63,7 +64,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static getBlockChildren(data, req) {
+    public getBlockChildren(data, req) {
         return wrapEndpoint(data, req, () =>
             getBlockChildren(
                 getBaseContext(),
@@ -72,7 +73,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static getBlockNotifications(data, req) {
+    public getBlockNotifications(data, req) {
         return wrapEndpoint(data, req, () =>
             getBlockNotifications(
                 getBaseContext(),
@@ -81,7 +82,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static getBlockCollaborators(data, req) {
+    public getBlockCollaborators(data, req) {
         return wrapEndpoint(data, req, () =>
             getBlockCollaborators(
                 getBaseContext(),
@@ -90,7 +91,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static removeCollaborator(data, req) {
+    public removeCollaborator(data, req) {
         return wrapEndpoint(data, req, () =>
             removeCollaborator(
                 getBaseContext(),
@@ -99,7 +100,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static revokeCollaborationRequest(data, req) {
+    public revokeCollaborationRequest(data, req) {
         return wrapEndpoint(data, req, () =>
             revokeCollaborationRequest(
                 getBaseContext(),
@@ -108,7 +109,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static transferBlock(data, req) {
+    public transferBlock(data, req) {
         return wrapEndpoint(data, req, () =>
             transferBlock(
                 getBaseContext(),
@@ -117,7 +118,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public static updateBlock(data, req) {
+    public updateBlock(data, req) {
         return wrapEndpoint(data, req, () =>
             updateBlock(
                 new UpdateBlockContext(),
@@ -126,3 +127,7 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 }
+
+export const getBlockEndpointsGraphQLController = makeSingletonFunc(
+    () => new BlockEndpointsGraphQLController()
+);

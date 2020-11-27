@@ -47,7 +47,7 @@ async function sendCollabReqEmail(props: ISendCollaborationRequestEmailProps) {
 
         return result;
     } catch (error) {
-        logger.error(error);
+        console.error(error);
         throw error;
     }
 }

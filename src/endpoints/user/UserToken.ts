@@ -33,7 +33,7 @@ export default class UserToken {
         const subject: IUserTokenSubject = {
             id: p.user.customId,
             email: p.user.email,
-            plca: p.user.passwordLastChangedAt,
+            td: p.user.passwordLastChangedAt,
             clientId: p.clientId,
             ...p.additionalData,
         };

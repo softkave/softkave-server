@@ -36,7 +36,7 @@ export function complexFieldJoiSchema(
             .unique(uniqueIdField)
             .max(max),
         update: Joi.array()
-            .items(schema.required)
+            .items(schema.required())
             .unique(uniqueIdField)
             .max(max),
         remove: Joi.array().items(uuid.required()).max(max),

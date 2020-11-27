@@ -59,7 +59,7 @@ export default class NotificationContext implements INotificationContext {
     public updateNotificationById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<INotification>) => {
             return ctx.models.notificationModel.model
-                .findOneAndUpdate({ customId }, data)
+                .findOneAndUpdate({ customId }, data, { new: true })
                 .lean()
                 .exec();
         }

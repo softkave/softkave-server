@@ -112,7 +112,11 @@ export default class SessionContext implements ISessionContext {
             merge(user, partialUserData);
 
             return ctx.models.userModel.model
-                .findOneAndUpdate({ customId: user.customId }, partialUserData)
+                .findOneAndUpdate(
+                    { customId: user.customId },
+                    partialUserData,
+                    { new: true }
+                )
                 .lean()
                 .exec();
         }

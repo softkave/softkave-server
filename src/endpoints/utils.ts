@@ -59,7 +59,7 @@ export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
         try {
             return await fn(...args);
         } catch (error) {
-            logger.error(error);
+            console.error(error);
 
             if (throwError) {
                 throw error;
@@ -86,15 +86,15 @@ export function getFields<
         (paths, key) => {
             const value = data[key];
 
-            if (!isNull(value) && isObject(value) && !isDate(value)) {
-                paths.objectFields.push({
-                    property: key,
-                    fields: getFields(value as any),
-                });
-            } else if (isFunction(value)) {
+            if (isFunction(value)) {
                 paths.scalarFieldsWithTransformers.push({
                     property: key,
                     transformer: value,
+                });
+            } else if (!isNull(value) && isObject(value) && !isDate(value)) {
+                paths.objectFields.push({
+                    property: key,
+                    fields: getFields(value as any),
                 });
             } else {
                 paths.scalarFields.push(key);
@@ -189,7 +189,7 @@ export async function saveNewItemToDb<Fn extends (...args: any) => any>(
             const doc = await saveFn();
             return doc;
         } catch (error) {
-            logger.error(error);
+            console.error(error);
 
             // Adding a block fails with code 11000 if unique fields like customId
             if (error.code === mongoConstants.indexNotUniqueErrorCode) {
@@ -202,8 +202,21 @@ export async function saveNewItemToDb<Fn extends (...args: any) => any>(
                 }
             }
 
-            logger.error(error);
+            console.error(error);
             throw new ServerError();
         }
     } while (tryAgain);
+}
+
+export function getComplexTypeArrayInputGraphQLSchema(
+    inputName: string,
+    type: string
+) {
+    return `
+        input ${inputName} {
+            add: [${type}]
+            update: [${type}]
+            remove: [String]
+        }
+    `;
 }

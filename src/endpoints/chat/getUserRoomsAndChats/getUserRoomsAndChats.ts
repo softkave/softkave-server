@@ -14,9 +14,12 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
         rooms.map((rm) => rm.customId)
     );
 
+    const publicRoomsData = getPublicRoomsArray(rooms);
+    const publicChatsData = getPublicChatsArray(chats);
+
     return {
-        rooms: getPublicRoomsArray(rooms),
-        chats: getPublicChatsArray(chats),
+        rooms: publicRoomsData,
+        chats: publicChatsData,
     };
 };
 

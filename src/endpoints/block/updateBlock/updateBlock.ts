@@ -5,7 +5,7 @@ import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId } from "../utils";
+import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
@@ -29,7 +29,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
     const update = processUpdateBlockInput(block, updateData, user);
 
-    let updatedTask = await context.block.updateBlockById(
+    let updatedBlock = await context.block.updateBlockById(
         context,
         data.blockId,
         update
@@ -87,10 +87,10 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             },
         });
 
-        updatedTask = result.draggedBlock;
+        updatedBlock = result.draggedBlock;
     }
 
-    return { block: updatedTask };
+    return { block: getPublicBlockData(updatedBlock) };
 };
 
 export default updateBlock;

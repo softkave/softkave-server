@@ -1,3 +1,4 @@
+import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -18,7 +19,7 @@ import updateUser from "./updateUser/updateUser";
 import userExists from "./userExists/userExists";
 
 export default class UserEndpointsGraphQLController {
-    public static signup(data, req) {
+    public signup(data, req) {
         return wrapEndpoint(data, req, () =>
             signup(
                 getSignupContext(),
@@ -27,7 +28,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static changePassword(data, req) {
+    public changePassword(data, req) {
         return wrapEndpoint(data, req, () =>
             changePassword(
                 getBaseContext(),
@@ -36,7 +37,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static changePasswordWithToken(data, req) {
+    public changePasswordWithToken(data, req) {
         return wrapEndpoint(data, req, () =>
             changePasswordWithToken(
                 getChangePasswordWithTokenContext(),
@@ -45,7 +46,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static forgotPassword(data, req) {
+    public forgotPassword(data, req) {
         return wrapEndpoint(data, req, () =>
             forgotPassword(
                 new ForgotPasswordContext(),
@@ -54,7 +55,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static getChangePasswordTokenData(data, req) {
+    public getChangePasswordTokenData(data, req) {
         return wrapEndpoint(data, req, () =>
             getChangePasswordTokenData(
                 getBaseContext(),
@@ -63,7 +64,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static getUserNotifications(data, req) {
+    public getUserNotifications(data, req) {
         return wrapEndpoint(data, req, () =>
             getUserNotifications(
                 getBaseContext(),
@@ -72,7 +73,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static getUserData(data, req) {
+    public getUserData(data, req) {
         return wrapEndpoint(data, req, () =>
             getUserData(
                 getBaseContext(),
@@ -81,13 +82,13 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static login(data, req) {
+    public login(data, req) {
         return wrapEndpoint(data, req, () =>
             login(getBaseContext(), RequestData.fromExpressRequest(req, data))
         );
     }
 
-    public static respondToCollaborationRequest(data, req) {
+    public respondToCollaborationRequest(data, req) {
         return wrapEndpoint(data, req, () =>
             respondToCollaborationRequest(
                 getBaseContext(),
@@ -96,7 +97,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static markNotificationRead(data, req) {
+    public markNotificationRead(data, req) {
         return wrapEndpoint(data, req, () =>
             markNotificationRead(
                 getBaseContext(),
@@ -105,7 +106,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static updateUser(data, req) {
+    public updateUser(data, req) {
         return wrapEndpoint(data, req, () =>
             updateUser(
                 getBaseContext(),
@@ -114,7 +115,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public static userExists(data, req) {
+    public userExists(data, req) {
         return wrapEndpoint(data, req, () =>
             userExists(
                 getBaseContext(),
@@ -123,3 +124,7 @@ export default class UserEndpointsGraphQLController {
         );
     }
 }
+
+export const getUserEndpointsGraphQLController = makeSingletonFunc(
+    () => new UserEndpointsGraphQLController()
+);

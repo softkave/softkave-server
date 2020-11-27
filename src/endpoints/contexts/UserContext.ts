@@ -67,7 +67,7 @@ export default class UserContext implements IUserContext {
     public updateUserById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<IUser>) => {
             return ctx.models.userModel.model
-                .findOneAndUpdate({ customId }, data)
+                .findOneAndUpdate({ customId }, data, { new: true })
                 .lean()
                 .exec();
         }

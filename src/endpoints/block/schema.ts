@@ -1,3 +1,5 @@
+import { getComplexTypeArrayInputGraphQLSchema } from "../utils";
+
 const blockSchema = `
     type Assignee {
         userId: String
@@ -6,7 +8,7 @@ const blockSchema = `
     }
 
     input AssigneeInput {
-        userId: string;
+        userId: String
     }
 
     type SubTask {
@@ -22,8 +24,8 @@ const blockSchema = `
 
     input SubTaskInput {
         customId: String
-        description: string;
-        completedBy?: string;
+        description: String
+        completedBy: String
     }
 
     type Status {
@@ -39,9 +41,9 @@ const blockSchema = `
 
     input StatusInput {
         customId: String
-        name: string;
-        color: string;
-        description?: string;
+        name: String
+        color: String
+        description: String
     }
 
     type Label {
@@ -57,9 +59,9 @@ const blockSchema = `
 
     input LabelInput {
         customId: String
-        name: string;
-        color: string;
-        description?: string;
+        name: String
+        color: String
+        description: String
     }
 
     type BlockAssignedLabel {
@@ -69,7 +71,7 @@ const blockSchema = `
     }
 
     input BlockAssignedLabelInput {
-        customId: string;
+        customId: String
     }
 
     type BoardStatusResolution {
@@ -84,8 +86,8 @@ const blockSchema = `
 
     input BoardStatusResolutionInput {
         customId: String
-        name: string;
-        description?: string;
+        name: String
+        description: String
     }
 
     type TaskSprint {
@@ -143,7 +145,7 @@ const blockSchema = `
     }
 
     input TaskSprintInput {
-        sprintId: string;
+        sprintId: String
     }
 
     input AddBlockInput {
@@ -166,21 +168,47 @@ const blockSchema = `
         taskSprint: TaskSprintInput
     }
 
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockSubTaskInput",
+        "SubTaskInput"
+    )}
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockAssigneeInput",
+        "AssigneeInput"
+    )}
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockStatusInput",
+        "StatusInput"
+    )}
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockBoardStatusResolutionInput",
+        "BoardStatusResolutionInput"
+    )}
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockBlockAssignedLabelInput",
+        "BlockAssignedLabelInput"
+    )}
+    ${getComplexTypeArrayInputGraphQLSchema(
+        "UpdateBlockLabelInput",
+        "LabelInput"
+    )}
+
     input UpdateBlockInput {
         name: String
         description: String
         color: String
         priority: String
         parent: String
-        subTasks: SubTaskInput
-        dueAt: number
-        assignees: AssigneeInput
-        boardStatuses: BlockStatusInput
-        boardLabels: BlockLabelInput
-        boardResolutions:BoardStatusResolutionInput
+        subTasks: UpdateBlockSubTaskInput
+        dueAt: Float
+        assignees: UpdateBlockAssigneeInput
+        boardStatuses: UpdateBlockStatusInput
+        boardLabels: UpdateBlockLabelInput
+        boardResolutions: UpdateBlockBoardStatusResolutionInput
         status: String
         taskResolution: String
-        labels: BlockAssignedLabelInput
+        labels: UpdateBlockBlockAssignedLabelInput
+        taskSprint: TaskSprintInput
     }
 
     type CollaborationRequestFrom {
@@ -254,10 +282,10 @@ const blockSchema = `
 
     type BlockQuery {
         addBlock (block: AddBlockInput!) : AddBlockResponse
-            updateBlock (
+        updateBlock (
             blockId: String!,
             data: UpdateBlockInput!
-        ) : ErrorOnlyResponse
+        ) : AddBlockResponse
 
         deleteBlock (blockId: String!) : ErrorOnlyResponse
         getUserRootBlocks: MultipleBlocksOpResponse

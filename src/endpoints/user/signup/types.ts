@@ -1,30 +1,27 @@
-import { IUser } from "../../../mongo/user";
 import {
-  CreateRootBlockEndpoint,
-  ICreateRootBlockContext,
+    CreateRootBlockEndpoint,
+    ICreateRootBlockContext,
 } from "../../block/createRootBlock/types";
 import { Endpoint } from "../../types";
 import { ILoginResult } from "../login/types";
-import { UserExistsEndpoint } from "../userExists/types";
 
 export interface INewUserInput {
-  name: string;
-  email: string;
-  password: string;
-  color: string;
+    name: string;
+    email: string;
+    password: string;
+    color: string;
 }
 
 export interface ISignupArgData {
-  user: INewUserInput;
+    user: INewUserInput;
 }
 
 export interface ISignupContext extends ICreateRootBlockContext {
-  userExists: UserExistsEndpoint;
-  createUserRootBlock: CreateRootBlockEndpoint;
+    createUserRootBlock: CreateRootBlockEndpoint;
 }
 
 export type SignupEndpoint = Endpoint<
-  ISignupContext,
-  ISignupArgData,
-  ILoginResult
+    ISignupContext,
+    ISignupArgData,
+    ILoginResult
 >;
