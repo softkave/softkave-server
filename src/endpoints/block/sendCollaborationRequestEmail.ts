@@ -4,9 +4,8 @@ import {
     collaborationRequestEmailTitle,
     ICollaborationRequestEmailProps,
 } from "../../html/collaborationRequestEmail";
-import appInfo from "../../res/appInfo";
-import aws from "../../res/aws";
-import logger from "../../utilities/logger";
+import appInfo from "../../resources/appInfo";
+import aws from "../../resources/aws";
 
 const ses = new aws.SES();
 

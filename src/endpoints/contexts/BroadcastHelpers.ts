@@ -37,7 +37,6 @@ import {
     OutgoingSocketEvents,
 } from "../socket/outgoingEventTypes";
 import { IPublicSprint } from "../sprints/types";
-import { getPublicSprintData } from "../sprints/utils";
 import { wrapFireAndDontThrow } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -161,10 +160,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         ) => {
             const { updateType, blockId, data, blockType } = args;
             let { block, parentId } = args;
-            const user = await context.session.getUser(context, instData);
 
             // TODO: should we do this here, for performance reasons?
-            //      or should we pass it in from the caller
+            // or should we pass it in from the caller
 
             const eventData: IOutgoingBlockUpdatePacket = {
                 customId: blockId,
@@ -185,9 +183,15 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             if (blockType === BlockType.Org) {
                 if (updateType.isNew) {
+                    const user = await context.session.getUser(
+                        context,
+                        instData
+                    );
+
                     const userRoomName = context.room.getUserRoomName(
                         user.customId
                     );
+
                     context.room.broadcast(
                         context,
                         userRoomName,

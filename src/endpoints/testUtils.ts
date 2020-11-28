@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import { noop } from "lodash";
 import { Server, Socket } from "socket.io";
 import { IUser } from "../mongo/user";
+import { appVariables } from "../resources/appVariables";
 import cast, { getDate } from "../utilities/fns";
 import getNewId from "../utilities/getNewId";
 import { getBaseContext, IBaseContext } from "./contexts/BaseContext";
@@ -107,12 +108,12 @@ export async function getTestSocketRequestData() {
 
 export function getTestBaseContext() {
     const ctx: IBaseContext = {
+        appVariables,
         block: {
             getBlockById: noop as any,
             getBlockByName: noop as any,
             bulkGetBlocksByIds: noop as any,
             updateBlockById: noop as any,
-            bulkUpdateBlocksById: noop as any,
             saveBlock: noop as any,
             markBlockDeleted: noop as any,
             getBlockChildren: noop as any,
@@ -139,7 +140,7 @@ export function getTestBaseContext() {
             deleteNotificationById: noop as any,
             getCollaborationRequestsByRecipientEmail: noop as any,
             bulkSaveNotifications: noop as any,
-            bulkUpdateNotificationsById: noop as any,
+            bulkAddToSentEmailHistory: noop as any,
             getNotificationsByBlockId: noop as any,
             saveNotification: noop as any,
         },

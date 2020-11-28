@@ -8,6 +8,7 @@ import { getNotificationModel } from "../../mongo/notification";
 import { getRoomModel } from "../../mongo/room";
 import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
+import { appVariables, IAppVariables } from "../../resources/appVariables";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
@@ -47,6 +48,8 @@ export interface IBaseContext {
     sprint: ISprintContext;
     chat: IChatContext;
     broadcastHelpers: IBroadcastHelpers;
+
+    appVariables: IAppVariables;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -75,6 +78,8 @@ export default class BaseContext implements IBaseContext {
     public comment = getCommentContext();
     public chat = getChatContext();
     public broadcastHelpers = getBroadcastHelpers();
+
+    public appVariables = appVariables;
 }
 
 export const getBaseContext = makeSingletonFunc(() => new BaseContext());

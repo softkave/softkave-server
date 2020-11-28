@@ -1,51 +1,51 @@
 import {
-  assignedTaskEmailNotificationHTML,
-  assignedTaskEmailNotificationText,
-  assignedTaskEmailNotificationTitle,
-  IAssignedTaskEmailNotificationProps,
+    assignedTaskEmailNotificationHTML,
+    assignedTaskEmailNotificationText,
+    assignedTaskEmailNotificationTitle,
+    IAssignedTaskEmailNotificationProps,
 } from "../../../html/assignedTaskEmailNotification";
-import appInfo from "../../../res/appInfo";
-import aws from "../../../res/aws";
+import appInfo from "../../../resources/appInfo";
+import aws from "../../../resources/aws";
 
 const ses = new aws.SES();
 
 export interface ISendAssignedTaskEmailNotificationProps
-  extends IAssignedTaskEmailNotificationProps {
-  email: string;
+    extends IAssignedTaskEmailNotificationProps {
+    email: string;
 }
 
 async function sendAssignedTaskEmailNotification(
-  props: ISendAssignedTaskEmailNotificationProps
+    props: ISendAssignedTaskEmailNotificationProps
 ) {
-  const htmlContent = assignedTaskEmailNotificationHTML(props);
-  const textContent = assignedTaskEmailNotificationText(props);
+    const htmlContent = assignedTaskEmailNotificationHTML(props);
+    const textContent = assignedTaskEmailNotificationText(props);
 
-  const result = await ses
-    .sendEmail({
-      Destination: {
-        ToAddresses: [props.email],
-      },
-      Source: appInfo.defaultEmailSender,
-      Message: {
-        Subject: {
-          Charset: appInfo.defaultEmailEncoding,
-          Data: assignedTaskEmailNotificationTitle,
-        },
-        Body: {
-          Html: {
-            Charset: appInfo.defaultEmailEncoding,
-            Data: htmlContent,
-          },
-          Text: {
-            Charset: appInfo.defaultEmailEncoding,
-            Data: textContent,
-          },
-        },
-      },
-    })
-    .promise();
+    const result = await ses
+        .sendEmail({
+            Destination: {
+                ToAddresses: [props.email],
+            },
+            Source: appInfo.defaultEmailSender,
+            Message: {
+                Subject: {
+                    Charset: appInfo.defaultEmailEncoding,
+                    Data: assignedTaskEmailNotificationTitle,
+                },
+                Body: {
+                    Html: {
+                        Charset: appInfo.defaultEmailEncoding,
+                        Data: htmlContent,
+                    },
+                    Text: {
+                        Charset: appInfo.defaultEmailEncoding,
+                        Data: textContent,
+                    },
+                },
+            },
+        })
+        .promise();
 
-  return result;
+    return result;
 }
 
 export default sendAssignedTaskEmailNotification;

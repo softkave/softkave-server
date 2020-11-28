@@ -3,7 +3,7 @@ import { CollaborationRequestStatusType } from "../../mongo/notification";
 import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { userConstants } from "./constants";
 
-const email = Joi.string().required().trim().lowercase().email();
+const email = Joi.string().trim().lowercase().email();
 
 const password = Joi.string()
     .required()

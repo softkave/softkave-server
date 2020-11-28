@@ -1,5 +1,5 @@
 import fs from "fs";
-import appInfo from "../../res/appInfo";
+import appInfo from "../../resources/appInfo";
 import {
     assignedTaskEmailNotificationHTML,
     assignedTaskEmailNotificationText,

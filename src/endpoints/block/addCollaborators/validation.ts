@@ -8,7 +8,7 @@ const newCollaboratorSchema = Joi.object().keys({
     email: Joi.string().required().trim().email().lowercase().required(),
     body: Joi.string()
         .max(notificationConstants.maxAddCollaboratorMessageLength)
-        .allow(null),
+        .allow([null, ""]),
     expiresAt: Joi.date().allow(null),
 });
 

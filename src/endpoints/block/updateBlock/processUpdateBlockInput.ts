@@ -42,23 +42,6 @@ const fields = getFields<
             "customId"
         );
 
-        // TODO: id conflict check
-        // problem is the field of the error
-        // this function is removed from the endpoint, and we don't have the full field path
-        // should we omit it, and let the client expect it, or find a way to add it?
-
-        // const subTaskIdsMap = indexArray(subTasks, { path: "customId" });
-
-        // const idExistsIndex = add.findIndex(
-        //     (item) => !!subTaskIdsMap[item.customId]
-        // );
-
-        // if (idExistsIndex !== -1) {
-        //     throw new IdExistsError({
-        //         value: add[idExistsIndex].customId,
-        //     });
-        // }
-
         return subTasks
             .filter((subTask) => !removeMap[subTask.customId])
             .map((subTask) => {

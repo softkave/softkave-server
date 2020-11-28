@@ -1,4 +1,7 @@
-import { INotification } from "../../mongo/notification";
+import {
+    INotification,
+    INotificationSentEmailHistoryItem,
+} from "../../mongo/notification";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
@@ -32,10 +35,6 @@ export interface INotificationContext {
         ctx: IBaseContext,
         notifications: INotification[]
     ) => Promise<INotification[]>;
-    bulkUpdateNotificationsById: (
-        ctx: IBaseContext,
-        notifications: Array<IUpdateItemById<INotification>>
-    ) => Promise<void>;
     getNotificationsByBlockId: (
         ctx: IBaseContext,
         blockId: string
@@ -44,6 +43,10 @@ export interface INotificationContext {
         ctx: IBaseContext,
         notification: Omit<INotification, "customId">
     ) => Promise<INotification>;
+    bulkAddToSentEmailHistory: (
+        ctx: IBaseContext,
+        data: Array<IUpdateItemById<INotificationSentEmailHistoryItem>>
+    ) => Promise<void>;
 }
 
 export default class NotificationContext implements INotificationContext {
@@ -114,15 +117,15 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public bulkUpdateNotificationsById = wrapFireAndThrowError(
+    public bulkAddToSentEmailHistory = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            notifications: Array<IUpdateItemById<INotification>>
+            data: Array<IUpdateItemById<INotificationSentEmailHistoryItem>>
         ) => {
-            const opts = notifications.map((notification) => ({
+            const opts = data.map((item) => ({
                 updateOne: {
-                    filter: { customId: notification.id },
-                    update: notification.data,
+                    filter: { customId: item.id },
+                    update: { $push: { sentEmailHistory: item.data } },
                 },
             }));
 

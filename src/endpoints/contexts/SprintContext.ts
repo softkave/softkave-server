@@ -23,6 +23,11 @@ export interface ISprintContext {
         customId: string,
         data: Partial<ISprint>
     ) => Promise<ISprint | undefined>;
+
+    /**
+     * Don't use to update array fields, cause it'll throw an error
+     * about using atomic fields
+     */
     bulkUpdateSprintsById: (
         ctx: IBaseContext,
         sprints: Array<IUpdateItemById<ISprint>>

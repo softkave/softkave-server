@@ -3,7 +3,7 @@ import blockValidationSchemas from "../../block/validation";
 import userValidationSchema from "../../user/validation";
 
 export const sendFeedbackJoiSchema = Joi.object().keys({
-    title: blockValidationSchemas.name.lowercase().required(),
-    message: blockValidationSchemas.description,
-    notifyEmail: userValidationSchema.email,
+    feedback: blockValidationSchemas.name.lowercase().required(),
+    description: blockValidationSchemas.description,
+    notifyEmail: userValidationSchema.email.allow([null]),
 });

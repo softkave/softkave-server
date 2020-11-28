@@ -26,10 +26,6 @@ export interface IBlockContext {
         customId: string,
         data: Partial<IBlock>
     ) => Promise<IBlock | undefined>;
-    bulkUpdateBlocksById: (
-        ctx: IBaseContext,
-        blocks: Array<IUpdateItemById<IBlock>>
-    ) => Promise<void>;
     saveBlock: (
         ctx: IBaseContext,
         block: Omit<IBlock, "customId">
@@ -93,20 +89,6 @@ export default class BlockContext implements IBlockContext {
                 })
                 .lean()
                 .exec();
-        }
-    );
-
-    public bulkUpdateBlocksById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<IBlock>>) => {
-            const opts = blocks.map((b) => ({
-                updateOne: {
-                    filter: { customId: b.id, isDeleted: false },
-                    update: b.data,
-                },
-            }));
-
-            // TODO: retry failed updates
-            await ctx.models.blockModel.model.bulkWrite(opts);
         }
     );
 

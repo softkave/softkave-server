@@ -16,20 +16,27 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
     const user = await context.session.tryGetUser(context, instData);
     const feedbackBoard = await context.block.getBlockById(
         context,
-        systemConstants.feedbackBoardId
+        context.appVariables.feedbackBoardId
     );
 
     const statuses = feedbackBoard.boardStatuses || [];
     const status0: IBlockStatus | undefined = statuses[0];
     const subTasks: ISubTask[] = [];
 
-    if (data.notifyEmail || user) {
-        const email = data.notifyEmail || user.email;
+    if (data.notifyEmail) {
+        const email = data.notifyEmail;
         subTasks.push({
             customId: getNewId(),
             description: `Reach out to ${email} on progress of feedback or anything else.`,
             createdAt: getDate(),
-            createdBy: systemConstants.yomi,
+            createdBy: context.appVariables.feedbackUserId,
+        });
+    } else if (user) {
+        subTasks.push({
+            customId: getNewId(),
+            description: `User "${user.email}" sent this feedback, but do not notify.`,
+            createdAt: getDate(),
+            createdBy: context.appVariables.feedbackUserId,
         });
     }
 
@@ -45,23 +52,19 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
                 rootBlockId: feedbackBoard.rootBlockId,
                 priority: BlockPriority.Important,
                 status: status0 ? status0.customId : undefined,
-                statusAssignedBy: systemConstants.yomi,
+                statusAssignedBy: systemConstants.feedbackUserId,
             },
         },
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(
-        context,
-        {
-            blockId: savedTaskResult.block.customId,
-            updateType: { isNew: true },
-            blockType: BlockType.Task,
-            data: savedTaskResult.block,
-            parentId: feedbackBoard.customId,
-            block: savedTaskResult.block,
-        },
-        instData
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, {
+        blockId: savedTaskResult.block.customId,
+        updateType: { isNew: true },
+        blockType: BlockType.Task,
+        data: savedTaskResult.block,
+        parentId: feedbackBoard.customId,
+        block: savedTaskResult.block,
+    });
 };
 
 export default sendFeedback;

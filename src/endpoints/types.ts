@@ -1,6 +1,4 @@
-import { noop } from "lodash";
 import OperationError from "../utilities/OperationError";
-import { IUpdateItemById } from "../utilities/types";
 import { IBaseContext } from "./contexts/BaseContext";
 import RequestData from "./RequestData";
 
@@ -41,13 +39,17 @@ export type ExtractFieldsFrom<
     [Key in keyof Required<T>]: T[Key] extends ScalarTypes
         ? boolean | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>
         : T[Key] extends any[]
-        ? T[Key][0] extends ScalarTypes
+        ? T[Key][number] extends ScalarTypes
             ? boolean | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>
-            : T[Key][0] extends object
-            ? ExtractFieldsFrom<T[Key][0]>
+            : T[Key][number] extends object
+            ? ExtractFieldsFrom<T[Key][number]>
             :
                   | boolean
-                  | ExtractFieldTransformer<T[Key][0], Result[Key], ExtraArgs>
+                  | ExtractFieldTransformer<
+                        T[Key][number],
+                        Result[Key],
+                        ExtraArgs
+                    >
         : T[Key] extends object
         ? ExtractFieldsFrom<T[Key]>
         : boolean | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>;

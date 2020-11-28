@@ -5,11 +5,13 @@ import {
     INotificationSentEmailHistoryItem,
 } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../res/appInfo";
+import appInfo from "../../../resources/appInfo";
 import { getDate } from "../../../utilities/fns";
+import { IUpdateItemById } from "../../../utilities/types";
 import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
+import { IPublicNotificationData } from "../../notifications/types";
 import { getPublicNotificationData } from "../../notifications/utils";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
@@ -31,6 +33,12 @@ export default async function sendEmails(
 
     const sendEmailPromises: IPromiseWithId[] = requests.map(
         (request, index) => {
+            const p = new Promise((resolve) => resolve());
+            return {
+                promise: p,
+                id: index,
+            };
+
             const promise = context.sendCollaborationRequestEmail({
                 email: request.to.email,
                 senderName: user.name,
@@ -64,25 +72,34 @@ export default async function sendEmails(
         date: getDate(),
     };
 
-    const updates = successfulRequests.map((req) => ({
-        id: req.customId,
-        data: {
-            sentEmailHistory: req.sentEmailHistory.concat(sentEmailItem),
-        },
-    }));
+    const mongoUpdates: Array<
+        IUpdateItemById<INotificationSentEmailHistoryItem>
+    > = [];
+    const socketUpdates: Array<IUpdateItemById<IPublicNotificationData>> = [];
+
+    successfulRequests.forEach((req) => {
+        socketUpdates.push({
+            id: req.customId,
+            data: getPublicNotificationData({
+                sentEmailHistory: req.sentEmailHistory.concat(sentEmailItem),
+            }),
+        });
+
+        mongoUpdates.push({
+            id: req.customId,
+            data: sentEmailItem,
+        });
+    });
 
     fireAndForgetPromise(
-        context.notification.bulkUpdateNotificationsById(context, updates)
+        context.notification.bulkAddToSentEmailHistory(context, mongoUpdates)
     );
 
     // TODO: public data vs internal
     context.broadcastHelpers.broadcastCollaborationRequestsUpdateToBlock(
         context,
         block,
-        updates.map((update) => ({
-            ...update,
-            data: getPublicNotificationData(update.data),
-        })),
+        socketUpdates,
         instData
     );
 }

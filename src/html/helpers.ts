@@ -1,5 +1,5 @@
 import { lastIndexOf } from "lodash";
-import appInfo from "../res/appInfo";
+import appInfo from "../resources/appInfo";
 
 export function getFooterHTML() {
     return `

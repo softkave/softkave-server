@@ -19,7 +19,7 @@ import { getBlockModel } from "./mongo/block";
 import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
-import appInfo from "./res/appInfo";
+import appInfo from "./resources/appInfo";
 import logger from "./utilities/logger";
 
 logger.info("server initialization");
