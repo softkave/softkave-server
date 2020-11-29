@@ -146,8 +146,6 @@ const statusAssignedBy = validationSchemas.uuid.allow("system").when("type", {
 const taskSprint = Joi.object()
     .keys({
         sprintId: validationSchemas.uuid.required(),
-        assignedAt: Joi.date().required(),
-        assignedBy: validationSchemas.uuid.required(),
     })
     .allow(null);
 
