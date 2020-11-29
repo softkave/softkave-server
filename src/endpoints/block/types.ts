@@ -51,7 +51,7 @@ export interface INewBlockInput {
     type: BlockType;
     name: string;
     description?: string;
-    dueAt?: number;
+    dueAt?: string;
     color?: string;
     parent?: string;
     rootBlockId?: string;

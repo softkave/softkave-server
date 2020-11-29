@@ -43,10 +43,6 @@ export interface INotificationContext {
         ctx: IBaseContext,
         notification: Omit<INotification, "customId">
     ) => Promise<INotification>;
-    bulkAddToSentEmailHistory: (
-        ctx: IBaseContext,
-        data: Array<IUpdateItemById<INotificationSentEmailHistoryItem>>
-    ) => Promise<void>;
 }
 
 export default class NotificationContext implements INotificationContext {
@@ -114,22 +110,6 @@ export default class NotificationContext implements INotificationContext {
                 })
                 .lean()
                 .exec();
-        }
-    );
-
-    public bulkAddToSentEmailHistory = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            data: Array<IUpdateItemById<INotificationSentEmailHistoryItem>>
-        ) => {
-            const opts = data.map((item) => ({
-                updateOne: {
-                    filter: { customId: item.id },
-                    update: { $push: { sentEmailHistory: item.data } },
-                },
-            }));
-
-            await ctx.models.blockModel.model.bulkWrite(opts);
         }
     );
 

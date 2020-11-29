@@ -152,7 +152,7 @@ const blockSchema = `
         type: String
         name: String
         description: String
-        dueAt: Float
+        dueAt: String
         color: String
         parent: String
         rootBlockId: String
@@ -200,7 +200,7 @@ const blockSchema = `
         priority: String
         parent: String
         subTasks: UpdateBlockSubTaskInput
-        dueAt: Float
+        dueAt: String
         assignees: UpdateBlockAssigneeInput
         boardStatuses: UpdateBlockStatusInput
         boardLabels: UpdateBlockLabelInput

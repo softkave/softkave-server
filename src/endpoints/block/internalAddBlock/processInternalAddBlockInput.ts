@@ -20,7 +20,7 @@ const fields = getFields<
     name: true,
     description: true,
     dueAt: (data) => {
-        return getDate(moment().add(data, "milliseconds").valueOf());
+        return getDate(data);
     },
     color: true,
     parent: true,

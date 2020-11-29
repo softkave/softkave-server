@@ -140,7 +140,6 @@ export function getTestBaseContext() {
             deleteNotificationById: noop as any,
             getCollaborationRequestsByRecipientEmail: noop as any,
             bulkSaveNotifications: noop as any,
-            bulkAddToSentEmailHistory: noop as any,
             getNotificationsByBlockId: noop as any,
             saveNotification: noop as any,
         },

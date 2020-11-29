@@ -84,7 +84,7 @@ const fields = getFields<
             );
     },
     dueAt: (data) => {
-        return getDate(moment().add(data, "milliseconds").valueOf());
+        return getDate(data);
     },
     assignees: (data, args) => {
         const assignees = args.block.assignees || [];

@@ -33,12 +33,6 @@ export default async function sendEmails(
 
     const sendEmailPromises: IPromiseWithId[] = requests.map(
         (request, index) => {
-            const p = new Promise((resolve) => resolve());
-            return {
-                promise: p,
-                id: index,
-            };
-
             const promise = context.sendCollaborationRequestEmail({
                 email: request.to.email,
                 senderName: user.name,
@@ -68,38 +62,36 @@ export default async function sendEmails(
             return requests[id];
         });
 
-    const sentEmailItem: INotificationSentEmailHistoryItem = {
-        date: getDate(),
-    };
-
-    const mongoUpdates: Array<
-        IUpdateItemById<INotificationSentEmailHistoryItem>
-    > = [];
     const socketUpdates: Array<IUpdateItemById<IPublicNotificationData>> = [];
 
     successfulRequests.forEach((req) => {
+        const sentEmailHistory = req.sentEmailHistory.concat({
+            date: getDate(),
+        });
+
         socketUpdates.push({
             id: req.customId,
             data: getPublicNotificationData({
-                sentEmailHistory: req.sentEmailHistory.concat(sentEmailItem),
+                sentEmailHistory,
             }),
         });
 
-        mongoUpdates.push({
-            id: req.customId,
-            data: sentEmailItem,
-        });
+        // TODO: we should preferrably bulk update, but bulk update is not
+        // working because of something about atomic operators not being present.
+        // Should look into this, and find solutions.
+        // I also noticed it mostly for arrays, cause sprint bulk updates work just
+        // fine for scalar values, though I haven't tested array updates in sprint bulk updates
+        fireAndForgetPromise(
+            context.notification.updateNotificationById(context, req.customId, {
+                sentEmailHistory,
+            })
+        );
     });
-
-    fireAndForgetPromise(
-        context.notification.bulkAddToSentEmailHistory(context, mongoUpdates)
-    );
 
     // TODO: public data vs internal
     context.broadcastHelpers.broadcastCollaborationRequestsUpdateToBlock(
         context,
         block,
-        socketUpdates,
-        instData
+        socketUpdates
     );
 }

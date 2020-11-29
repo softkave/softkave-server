@@ -1,4 +1,3 @@
-import moment from "moment";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
@@ -28,12 +27,7 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
         throw new Error();
     }
 
-    const currentReadCounter = moment(currentRoomMemberData.readCounter);
-    const readCounter = getDateString(
-        data.readCounter
-            ? currentReadCounter.add(data.readCounter, "milliseconds")
-            : Date.now()
-    );
+    const readCounter = getDateString(data.readCounter);
 
     await context.chat.updateMemberReadCounter(
         context,

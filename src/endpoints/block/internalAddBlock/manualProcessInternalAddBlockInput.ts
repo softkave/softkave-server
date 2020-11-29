@@ -17,9 +17,7 @@ export default function manualProcessInternalAddBlockInput(
                 ? inputBlock.name.toLowerCase()
                 : undefined,
         description: inputBlock.description,
-        dueAt: inputBlock.dueAt
-            ? getDate(moment().add(inputBlock.dueAt, "milliseconds").valueOf())
-            : undefined,
+        dueAt: inputBlock.dueAt ? getDate(inputBlock.dueAt) : undefined,
         createdAt: now,
         color: inputBlock.color,
         updatedAt: undefined,

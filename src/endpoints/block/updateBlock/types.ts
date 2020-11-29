@@ -21,7 +21,7 @@ export interface IUpdateBlockInput {
     priority?: string;
     parent?: string;
     subTasks?: IUpdateComplexTypeArrayInput<ISubTaskInput>;
-    dueAt?: number;
+    dueAt?: string;
     assignees?: IUpdateComplexTypeArrayInput<IAssigneeInput>;
     boardStatuses?: IUpdateComplexTypeArrayInput<IBlockStatusInput>;
     boardLabels?: IUpdateComplexTypeArrayInput<IBlockLabelInput>;
