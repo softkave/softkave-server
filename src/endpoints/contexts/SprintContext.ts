@@ -78,8 +78,8 @@ export default class SprintContext implements ISprintContext {
     );
 
     public bulkUpdateSprintsById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<ISprint>>) => {
-            const opts = blocks.map((b) => ({
+        async (ctx: IBaseContext, data: Array<IUpdateItemById<ISprint>>) => {
+            const opts = data.map((b) => ({
                 updateOne: {
                     filter: { customId: b.id },
                     update: b.data,

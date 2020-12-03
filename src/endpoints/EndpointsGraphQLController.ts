@@ -1,4 +1,7 @@
 import makeSingletonFunc from "../utilities/createSingletonFunc";
+import AccessControlEndpointsGraphQLController, {
+    getAccessControlEndpointsGraphQLController,
+} from "./access-control/AccessControlEndpointsGraphQLController";
 import BlockEndpointsGraphQLController, {
     getBlockEndpointsGraphQLController,
 } from "./block/BlockEndpointsGraphQLController";
@@ -25,6 +28,7 @@ export default class EndpointsGraphQLController {
     public comment: CommentsEndpointsGraphQLController = getCommentsEndpointsGraphQLController();
     public sprint: SprintsEndpointsGraphQLController = getSprintsEndpointsGraphQLController();
     public system: SystemEndpointsGraphQLController = getSystemEndpointsGraphQLController();
+    public accessControl: AccessControlEndpointsGraphQLController = getAccessControlEndpointsGraphQLController();
 }
 
 export const getEndpointsGraphQLController = makeSingletonFunc(

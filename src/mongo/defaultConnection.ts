@@ -14,5 +14,6 @@ export function getDefaultConnection() {
         useUnifiedTopology: true,
         useFindAndModify: false,
     });
+
     return conn;
 }

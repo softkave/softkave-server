@@ -4,7 +4,7 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { IUpdateItemById } from "../../utilities/types";
+import { BlockDoesNotExistError } from "../block/errors";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -13,6 +13,10 @@ export interface IBlockContext {
         ctx: IBaseContext,
         customId: string
     ) => Promise<IBlock | undefined>;
+    assertGetBlockById: (
+        ctx: IBaseContext,
+        customId: string
+    ) => Promise<IBlock>;
     getBlockByName: (
         ctx: IBaseContext,
         name: string
@@ -66,6 +70,18 @@ export default class BlockContext implements IBlockContext {
                 })
                 .lean()
                 .exec();
+        }
+    );
+
+    public assertGetBlockById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, customId: string) => {
+            const block = await ctx.block.getBlockById(ctx, customId);
+
+            if (!block) {
+                throw new BlockDoesNotExistError();
+            }
+
+            return block;
         }
     );
 

@@ -27,7 +27,7 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
         const email = data.notifyEmail;
         subTasks.push({
             customId: getNewId(),
-            description: `Reach out to ${email} on progress of feedback or anything else.`,
+            description: `Reach out to "${email}" on progress of feedback or anything else.`,
             createdAt: getDate(),
             createdBy: context.appVariables.feedbackUserId,
         });

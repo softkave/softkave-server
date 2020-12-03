@@ -1,9 +1,5 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-    IAuditLog,
-    IAuditLogChange,
-} from "../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../models/system";
+import { IAuditLog, IAuditLogChange } from "../../mongo/audit-log";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
@@ -12,9 +8,9 @@ import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IAuditLogInsertEntry {
-    action: AuditLogActionType;
-    resourceId: string;
-    resourceType: AuditLogResourceType;
+    action: SystemActionType;
+    resourceId?: string;
+    resourceType: SystemResourceType;
     userId?: string;
     organizationId?: string;
     change?: IAuditLogChange;

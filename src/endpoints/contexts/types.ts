@@ -1,4 +1,6 @@
 import { Request } from "express";
+import { IAccessControlPermissionModel } from "../../mongo/access-control/AccessControlActionsMapModel";
+import { IAccessControlRoleModel } from "../../mongo/access-control/AccessControlRoleModel";
 import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
 import { IChatModel } from "../../mongo/chat";
@@ -20,6 +22,8 @@ export interface IContextModels {
     sprintModel: ISprintModel;
     chatModel: IChatModel;
     roomModel: IRoomModel;
+    roles: IAccessControlRoleModel;
+    permissions: IAccessControlPermissionModel;
 }
 
 export interface IServerRequest extends Request {

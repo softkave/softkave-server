@@ -96,6 +96,7 @@ export default class NotificationContext implements INotificationContext {
                 .exec();
         }
     );
+
     public bulkSaveNotifications = wrapFireAndThrowError(
         (ctx: IBaseContext, notifications: INotification[]) => {
             return ctx.models.notificationModel.model.insertMany(notifications);

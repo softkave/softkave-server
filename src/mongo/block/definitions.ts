@@ -155,11 +155,13 @@ export interface IBlock {
     isDeleted?: boolean;
     deletedAt?: Date;
     deletedBy?: string;
+    permissionResourceId?: string;
 
-    // Org and boards
+    // Orgs and boards
     color?: string;
+    newPermissionsManagerId?: string;
 
-    // Task
+    // Tasks
     assignees?: IAssignee[];
     priority?: string;
     subTasks?: ISubTask[]; // should sub-tasks be their own blocks?
@@ -171,7 +173,7 @@ export interface IBlock {
     dueAt?: Date;
     taskSprint?: ITaskSprint;
 
-    // Board
+    // Boards
     boardStatuses?: IBlockStatus[];
     boardLabels?: IBlockLabel[];
     boardResolutions?: IBoardStatusResolution[];
@@ -196,11 +198,13 @@ const blockSchema = {
     isDeleted: { type: Boolean, default: false, index: true },
     deletedAt: { type: Date },
     deletedBy: { type: String },
+    permissionResourceId: { type: String },
 
-    // Org and board
+    // Orgs and boards
     color: { type: String },
+    newPermissionsManagerId: { type: String },
 
-    // Task
+    // Tasks
     assignees: { type: [blockAssigneeSchema] },
     priority: { type: String },
     subTasks: { type: [subTaskSchema] },
@@ -212,7 +216,7 @@ const blockSchema = {
     labels: { type: [blockAssignedLabelSchema] },
     taskSprint: { type: taskSprintSchema },
 
-    // Board
+    // Boards
     boardStatuses: { type: [blockStatusSchema] },
     boardLabels: { type: [blockLabelSchema] },
     boardResolutions: { type: boardStatusResolutionSchema },

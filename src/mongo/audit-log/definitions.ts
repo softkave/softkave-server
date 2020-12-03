@@ -1,10 +1,7 @@
 import { Document, Schema } from "mongoose";
+import { SystemActionType, SystemResourceType } from "../../models/system";
 
 export const auditLogSchemaVersion = 1; // increment when you make changes that are not backward compatible
-
-export enum System {
-    System = "system",
-}
 
 export interface IAuditLogChange {
     customId: string;
@@ -18,52 +15,11 @@ const auditLogChangeSchema = {
     oldValue: { type: Schema.Types.Mixed },
 };
 
-export enum AuditLogResourceType {
-    User = "user",
-    RootBlock = "root",
-    Org = "org",
-    Group = "group",
-    Board = "board",
-    Task = "task",
-    Status = "status",
-    Label = "label",
-    Resolution = "resolution",
-    CollaborationRequest = "collab-req",
-    CollaboratorRemoved = "remove-collaborator",
-    Note = "note",
-    Comment = "comment",
-    Room = "room",
-}
-
-export enum AuditLogActionType {
-    Create = "create",
-    Update = "update",
-    Delete = "delete",
-    Revoke = "revoke",
-    Remove = "remove",
-    Decline = "decline",
-    Signup = "signup",
-    Login = "login",
-    ForgotPassword = "forgot-password",
-    ChangePassword = "change-password",
-    ChangePasswordWithToken = "change-password-with-token",
-    Transfer = "transfer",
-}
-
-// export enum AuditLogSystemJustification {
-//   ParentDeleted = "parent-deleted",
-//   ParentRestored = "parent-restored",
-// }
-
-// export interface IAuditLogCollateralChangeMeta {
-//   initialResourceId: string;
-// }
-
 export interface IAuditLog {
     customId: string;
-    action: AuditLogActionType;
-    resourceId: string;
-    resourceType: AuditLogResourceType;
+    action: SystemActionType;
+    resourceId?: string;
+    resourceType: SystemResourceType;
     createdAt: Date;
     ips: string[]; // should we respect do not track?
     userAgent: string;
@@ -71,8 +27,6 @@ export interface IAuditLog {
     organizationId?: string;
     change?: IAuditLogChange;
     resourceOwnerId?: string; // for status and labels, and other "inside" resources
-
-    // TODO: add to context
     date: Date;
 
     // isSystemActioned?: boolean;

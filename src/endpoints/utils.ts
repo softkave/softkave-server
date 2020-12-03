@@ -7,7 +7,6 @@ import isObject from "lodash/isObject";
 import mongoConstants from "../mongo/constants";
 import { ServerError } from "../utilities/errors";
 import cast, { indexArray } from "../utilities/fns";
-import logger from "../utilities/logger";
 import {
     ExtractFieldsDefaultScalarTypes,
     ExtractFieldsFrom,
@@ -179,6 +178,8 @@ export function getComplexTypeArrayInput<T>(
 }
 
 // TODO: internal/nested docs with customId or unique indexes should be validated before call
+// TODO: It's possible that the unique error may be from another field, and not customId.
+// how do we handle that?
 export async function saveNewItemToDb<Fn extends (...args: any) => any>(
     saveFn: Fn
 ): Promise<ReturnType<Fn>> {
@@ -191,7 +192,7 @@ export async function saveNewItemToDb<Fn extends (...args: any) => any>(
         } catch (error) {
             console.error(error);
 
-            // Adding a block fails with code 11000 if unique fields like customId
+            // Adding a resource fails with code 11000 if unique fields like customId
             if (error.code === mongoConstants.indexNotUniqueErrorCode) {
                 // Retry once, and throw error if it occurs again
                 if (!tryAgain) {

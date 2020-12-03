@@ -94,3 +94,8 @@ export interface IUpdateComplexTypeArrayInput<T> {
 export interface IResourceWithId {
     customId: string;
 }
+
+export type GetMongoUpdateType<T> = Omit<
+    T,
+    "customId" | "createdAt" | "createdBy"
+>;

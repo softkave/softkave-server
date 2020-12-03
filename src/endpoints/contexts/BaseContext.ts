@@ -1,4 +1,6 @@
 import { Server } from "socket.io";
+import { getAccessControlPermissionModel } from "../../mongo/access-control/AccessControlActionsMapModel";
+import { getAccessControlRoleModel } from "../../mongo/access-control/AccessControlRoleModel";
 import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
@@ -11,6 +13,10 @@ import { getUserModel } from "../../mongo/user";
 import { appVariables, IAppVariables } from "../../resources/appVariables";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
+import {
+    getAccessControlContext,
+    IAccessControlContext,
+} from "./AccessControlContext";
 import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
 import { getBroadcastHelpers, IBroadcastHelpers } from "./BroadcastHelpers";
@@ -47,8 +53,8 @@ export interface IBaseContext {
     comment: ICommentContext;
     sprint: ISprintContext;
     chat: IChatContext;
+    accessControl: IAccessControlContext;
     broadcastHelpers: IBroadcastHelpers;
-
     appVariables: IAppVariables;
 }
 
@@ -73,12 +79,14 @@ export default class BaseContext implements IBaseContext {
         sprintModel: getSprintModel(),
         chatModel: getChatModel(),
         roomModel: getRoomModel(),
+        roles: getAccessControlRoleModel(),
+        permissions: getAccessControlPermissionModel(),
     };
     public socketServer: Server = getSocketServer();
     public comment = getCommentContext();
     public chat = getChatContext();
+    public accessControl = getAccessControlContext();
     public broadcastHelpers = getBroadcastHelpers();
-
     public appVariables = appVariables;
 }
 

@@ -23,6 +23,7 @@ const blockConstants = {
     maxStatuses: 20,
     maxResolutions: 20,
     maxAssignedLabels: 20,
+    maxCollaborators: 1000,
 };
 
 export { blockConstants };
