@@ -11,6 +11,8 @@ import CommentsEndpointsGraphQLController, {
 import NotesEndpointsGraphQLController, {
     getNotesEndpointsGraphQLController,
 } from "./notes/NotesEndpointsGraphQLController";
+import { getNotificationEndpointsGraphQLController } from "./notifications";
+import NotificationEndpointsGraphQLController from "./notifications/NotificationEndpointsGraphQLController";
 import SprintsEndpointsGraphQLController, {
     getSprintsEndpointsGraphQLController,
 } from "./sprints/SprintsEndpointsGraphQLController";
@@ -29,6 +31,7 @@ export default class EndpointsGraphQLController {
     public sprint: SprintsEndpointsGraphQLController = getSprintsEndpointsGraphQLController();
     public system: SystemEndpointsGraphQLController = getSystemEndpointsGraphQLController();
     public accessControl: AccessControlEndpointsGraphQLController = getAccessControlEndpointsGraphQLController();
+    public notifications: NotificationEndpointsGraphQLController = getNotificationEndpointsGraphQLController();
 }
 
 export const getEndpointsGraphQLController = makeSingletonFunc(

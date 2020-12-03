@@ -1,6 +1,6 @@
 import Joi from "joi";
-import userValidationSchema from "../validation";
+import userValidationSchemas from "../validation";
 
 export const userExistsJoiSchema = Joi.object().keys({
-    email: userValidationSchema.email.required(),
+    email: userValidationSchemas.email.required(),
 });

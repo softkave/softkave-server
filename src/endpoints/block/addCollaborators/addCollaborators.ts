@@ -65,7 +65,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         } as INotification;
     });
 
-    await context.notification.bulkSaveNotifications(
+    await context.notification.bulkSaveCollaborationRequests(
         context,
         collaborationRequests
     );

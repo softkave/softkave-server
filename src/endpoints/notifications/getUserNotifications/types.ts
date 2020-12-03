@@ -1,5 +1,5 @@
 import { IBaseContext } from "../../contexts/BaseContext";
-import { IPublicNotificationData } from "../../notifications/types";
+import { IPublicNotificationData } from "../types";
 import { Endpoint } from "../../types";
 
 export interface IGetCollaborationRequestsResult {

@@ -1,6 +1,10 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
 import { BlockType } from "../block";
+import {
+    INotificationSentEmailHistoryItem,
+    notificationSentEmailHistorySchema,
+} from "../notification";
 
 export const collaborationRequestSchemaVersion = 1; // increment when you make changes that are not backward compatible
 
@@ -49,24 +53,15 @@ const collaborationRequestStatusHistorySchema = {
     date: Date,
 };
 
-export interface ICollaborationRequestSentEmailHistoryItem {
-    date: Date;
-}
-
-const collaborationRequestSentEmailHistorySchema = {
-    date: Date,
-};
-
 export interface ICollaborationRequest {
     customId: string;
     to: ICollaborationRequestRecipient;
     body: string;
     from?: ICollaborationRequestFrom;
     createdAt: Date;
-    readAt?: Date;
     expiresAt?: Date;
     statusHistory?: ICollaborationRequestStatus[];
-    sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];
+    sentEmailHistory?: INotificationSentEmailHistoryItem[];
 }
 
 const collaborationRequestSchema = {
@@ -76,10 +71,9 @@ const collaborationRequestSchema = {
     from: { type: collaborationRequestFromSchema },
     createdAt: { type: Date, default: () => getDate() },
     type: { type: String },
-    readAt: { type: Date },
     expiresAt: { type: Date },
     statusHistory: { type: [collaborationRequestStatusHistorySchema] },
-    sentEmailHistory: { type: [collaborationRequestSentEmailHistorySchema] },
+    sentEmailHistory: { type: [notificationSentEmailHistorySchema] },
 };
 
 export default collaborationRequestSchema;

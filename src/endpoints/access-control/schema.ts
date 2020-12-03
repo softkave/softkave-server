@@ -109,6 +109,9 @@ const accessControlGraphQLSchema = `
     type AccessControlQuery {
         getPermissions (blockId: String!) : GetPermissionsResult
         getRoles (blockId: String!): GetRolesResult
+    }
+
+    type AccessControlMutation {
         setPermissions (
             blockId: String!,
             permissions: SetPermissionsInput!

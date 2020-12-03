@@ -1,5 +1,7 @@
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
+import getUserNotifications from "../notifications/getUserNotifications/getUserNotifications";
+import markNotificationRead from "../notifications/markNotificationRead/markNotificationRead";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import changePassword from "./changePassword/changePassword";
@@ -9,9 +11,7 @@ import ForgotPasswordContext from "./forgotPassword/context";
 import forgotPassword from "./forgotPassword/forgotPassword";
 import getChangePasswordTokenData from "./getChangePasswordTokenData/getChangePasswordTokenData";
 import getUserData from "./getUserData/getUserData";
-import getUserNotifications from "./getUserNotifications/getUserNotifications";
 import login from "./login/login";
-import markNotificationRead from "./markNotificationRead/markNotificationRead";
 import respondToCollaborationRequest from "./respondToCollaborationRequest/respondToCollaborationRequest";
 import { getSignupContext } from "./signup/context";
 import signup from "./signup/signup";
@@ -64,15 +64,6 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public getUserNotifications(data, req) {
-        return wrapEndpoint(data, req, () =>
-            getUserNotifications(
-                getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
-            )
-        );
-    }
-
     public getUserData(data, req) {
         return wrapEndpoint(data, req, () =>
             getUserData(
@@ -91,15 +82,6 @@ export default class UserEndpointsGraphQLController {
     public respondToCollaborationRequest(data, req) {
         return wrapEndpoint(data, req, () =>
             respondToCollaborationRequest(
-                getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
-            )
-        );
-    }
-
-    public markNotificationRead(data, req) {
-        return wrapEndpoint(data, req, () =>
-            markNotificationRead(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

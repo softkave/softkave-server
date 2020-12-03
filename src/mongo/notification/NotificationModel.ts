@@ -2,10 +2,10 @@ import { Connection } from "mongoose";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
-import notificationSchema, { INotificationDocument } from "./definitions";
+import { INotificationDocument, notificationSchema } from "./definitions";
 
-const modelName = "notification-v2";
-const collectionName = "notifications-v2";
+const modelName = "notification";
+const collectionName = "notifications";
 
 export const getNotificationModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {

@@ -23,7 +23,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         respondToCollaborationRequestJoiSchema
     );
     const user = await context.session.getUser(context, instData);
-    const req = await context.notification.getNotificationById(
+    const req = await context.notification.getCollaborationRequestById(
         context,
         data.requestId
     );
@@ -68,9 +68,13 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         date: respondedAt,
     });
 
-    await context.notification.updateNotificationById(context, data.requestId, {
-        statusHistory,
-    });
+    await context.notification.updateCollaborationRequestById(
+        context,
+        data.requestId,
+        {
+            statusHistory,
+        }
+    );
 
     const ownerBlock = await context.block.getBlockById(
         context,

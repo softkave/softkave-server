@@ -1,10 +1,10 @@
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicNotificationsArray } from "../../notifications/utils";
-import canReadBlock from "../canReadBlock";
+import canReadBlock from "../../block/canReadBlock";
+import { getPublicNotificationsArray } from "../utils";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";
 
-const getBlockNotifications: GetBlockNotificationsEndpoint = async (
+const getOrgNotifications: GetBlockNotificationsEndpoint = async (
     context,
     instData
 ) => {
@@ -17,7 +17,7 @@ const getBlockNotifications: GetBlockNotificationsEndpoint = async (
 
     await canReadBlock({ user, block });
 
-    const requests = await context.notification.getNotificationsByBlockId(
+    const requests = await context.notification.getCollaborationRequestsByBlockId(
         context,
         block.customId
     );
@@ -27,4 +27,4 @@ const getBlockNotifications: GetBlockNotificationsEndpoint = async (
     };
 };
 
-export default getBlockNotifications;
+export default getOrgNotifications;

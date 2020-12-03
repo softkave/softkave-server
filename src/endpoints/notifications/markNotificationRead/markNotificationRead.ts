@@ -1,8 +1,8 @@
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
-import { NotificationDoesNotExistError } from "../../notifications/errors";
 import { IOutgoingUpdateNotificationsPacket } from "../../socket/outgoingEventTypes";
+import { NotificationDoesNotExistError } from "../errors";
 import { MarkNotificationReadEndpoint } from "./types";
 import { updateCollaborationRequestSchema } from "./validation";
 
@@ -12,7 +12,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
 ) => {
     const data = validate(instData.data, updateCollaborationRequestSchema);
     const user = await context.session.getUser(context, instData);
-    const notification = await context.notification.getNotificationById(
+    const notification = await context.notification.getCollaborationRequestById(
         context,
         data.notificationId
     );
@@ -34,7 +34,7 @@ const markNotificationRead: MarkNotificationReadEndpoint = async (
         ],
     };
 
-    await context.notification.updateNotificationById(
+    await context.notification.updateCollaborationRequestById(
         context,
         data.notificationId,
         { readAt: getDate(data.readAt) }

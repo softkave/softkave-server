@@ -26,7 +26,7 @@ const collaborationRequestResponse = Joi.string()
         CollaborationRequestStatusType.Declined,
     ]);
 
-const userValidationSchema = {
+const userValidationSchemas = {
     name,
     email,
     password,
@@ -34,4 +34,4 @@ const userValidationSchema = {
     color: validationSchemas.color,
 };
 
-export default userValidationSchema;
+export default userValidationSchemas;

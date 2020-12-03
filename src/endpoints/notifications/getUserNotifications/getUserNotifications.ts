@@ -1,4 +1,4 @@
-import { getPublicNotificationsArray } from "../../notifications/utils";
+import { getPublicNotificationsArray } from "../utils";
 import { GetCollaborationRequestsEndpoint } from "./types";
 
 const getCollaborationRequests: GetCollaborationRequestsEndpoint = async (
@@ -6,7 +6,7 @@ const getCollaborationRequests: GetCollaborationRequestsEndpoint = async (
     instData
 ) => {
     const user = await context.session.getUser(context, instData);
-    const requests = await context.notification.getUserNotifications(
+    const requests = await context.notification.getUserCollaborationRequests(
         context,
         user.email
     );

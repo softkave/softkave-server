@@ -1,8 +1,8 @@
 import Joi from "joi";
-import userValidationSchema from "../validation";
+import userValidationSchemas from "../validation";
 
 export const updateUserJoiSchema = Joi.object().keys({
-    name: userValidationSchema.name.optional(),
-    color: userValidationSchema.color.optional(),
+    name: userValidationSchemas.name.optional(),
+    color: userValidationSchemas.color.optional(),
     notificationsLastCheckedAt: Joi.date().optional(),
 });

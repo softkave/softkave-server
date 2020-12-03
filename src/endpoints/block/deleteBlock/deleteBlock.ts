@@ -73,7 +73,7 @@ async function deleteOrgCleanup(
         .bulkUpdateUsersById(context, updates)
         .catch((error) => console.error(error));
     context.notification
-        .bulkSaveNotifications(context, notifications)
+        .bulkSaveCollaborationRequests(context, notifications)
         .catch((error) => console.error(error));
 }
 

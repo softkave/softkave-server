@@ -6,6 +6,7 @@ const endpointSchema = `
         sprint: SprintQuery
         system: SystemQuery
         accessControl: AccessControlQuery
+        notifications: NotificationsQuery
     }
 
     type Mutation {
@@ -15,6 +16,7 @@ const endpointSchema = `
         sprint: SprintQuery
         system: SystemQuery
         accessControl: AccessControlQuery
+        notifications: NotificationsMutation
     }
 `;
 

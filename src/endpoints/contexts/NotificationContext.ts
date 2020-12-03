@@ -1,21 +1,21 @@
 import {
     INotification,
-    INotificationSentEmailHistoryItem,
+    INotificationSubscription,
 } from "../../mongo/notification";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
-import { IUpdateItemById } from "../../utilities/types";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
-export interface INotificationContext {
+export interface ICollaborationRequestContext {
+    // Notifications
     getNotificationById: (
         ctx: IBaseContext,
         id: string
     ) => Promise<INotification | undefined>;
     getUserNotifications: (
         ctx: IBaseContext,
-        email: string
+        userId: string
     ) => Promise<INotification[] | undefined>;
     updateNotificationById: (
         ctx: IBaseContext,
@@ -26,26 +26,37 @@ export interface INotificationContext {
         ctx: IBaseContext,
         customId: string
     ) => Promise<void>;
-    getCollaborationRequestsByRecipientEmail: (
-        ctx: IBaseContext,
-        emails: string[],
-        blockId: string
-    ) => Promise<INotification[]>;
     bulkSaveNotifications: (
         ctx: IBaseContext,
         notifications: INotification[]
     ) => Promise<INotification[]>;
-    getNotificationsByBlockId: (
+    getNotificationsByOrgId: (
         ctx: IBaseContext,
-        blockId: string
+        orgId: string
     ) => Promise<INotification[]>;
-    saveNotification: (
+
+    // Notification subscriptions
+    getNotificationSubscriptionById: (
         ctx: IBaseContext,
-        notification: Omit<INotification, "customId">
-    ) => Promise<INotification>;
+        id: string
+    ) => Promise<INotificationSubscription | undefined>;
+    updateNotificationSubscriptionById: (
+        ctx: IBaseContext,
+        customId: string,
+        data: Partial<INotificationSubscription>
+    ) => Promise<INotificationSubscription | undefined>;
+    bulkSaveNotificationSubscriptions: (
+        ctx: IBaseContext,
+        notificationSubscriptions: INotificationSubscription[]
+    ) => Promise<INotificationSubscription[]>;
+    getNotificationSubscriptionsByResourceId: (
+        ctx: IBaseContext,
+        resourceId: string
+    ) => Promise<INotificationSubscription[]>;
 }
 
-export default class NotificationContext implements INotificationContext {
+export default class NotificationContext
+    implements ICollaborationRequestContext {
     public getNotificationById = wrapFireAndThrowError(
         (ctx: IBaseContext, id: string) => {
             return ctx.models.notificationModel.model
@@ -65,10 +76,10 @@ export default class NotificationContext implements INotificationContext {
     );
 
     public getUserNotifications = wrapFireAndThrowError(
-        (ctx: IBaseContext, email: string) => {
+        (ctx: IBaseContext, userId: string) => {
             return ctx.models.notificationModel.model
                 .find({
-                    "to.email": email,
+                    recipientIds: userId,
                 })
                 .lean()
                 .exec();
@@ -83,31 +94,69 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getCollaborationRequestsByRecipientEmail = wrapFireAndThrowError(
-        (ctx: IBaseContext, emails: string[], blockId: string) => {
-            return ctx.models.notificationModel.model
-                .find({
-                    "to.email": {
-                        $in: emails,
-                    },
-                    "from.blockId": blockId,
-                })
-                .lean()
-                .exec();
-        }
-    );
-
     public bulkSaveNotifications = wrapFireAndThrowError(
         (ctx: IBaseContext, notifications: INotification[]) => {
             return ctx.models.notificationModel.model.insertMany(notifications);
         }
     );
 
-    public getNotificationsByBlockId = wrapFireAndThrowError(
-        (ctx: IBaseContext, blockId: string) => {
+    public getNotificationsByOrgId = wrapFireAndThrowError(
+        (ctx: IBaseContext, orgId: string) => {
             return ctx.models.notificationModel.model
                 .find({
-                    "from.blockId": blockId,
+                    orgId,
+                })
+                .lean()
+                .exec();
+        }
+    );
+
+    public getNotificationSubscriptionById = wrapFireAndThrowError(
+        (ctx: IBaseContext, id: string) => {
+            return ctx.models.notificationSubscriptionModel.model
+                .findOne({
+                    customId: id,
+                })
+                .lean()
+                .exec();
+        }
+    );
+
+    public updateNotificationSubscriptionById = wrapFireAndThrowError(
+        (
+            ctx: IBaseContext,
+            customId: string,
+            data: Partial<INotificationSubscription>
+        ) => {
+            return ctx.models.notificationSubscriptionModel.model
+                .findOneAndUpdate(
+                    {
+                        customId,
+                    },
+                    data,
+                    { new: true }
+                )
+                .lean()
+                .exec();
+        }
+    );
+
+    public bulkSaveNotificationSubscriptions = wrapFireAndThrowError(
+        (
+            ctx: IBaseContext,
+            notificationSubscriptions: INotificationSubscription[]
+        ) => {
+            return ctx.models.notificationSubscriptionModel.model.insertMany(
+                notificationSubscriptions
+            );
+        }
+    );
+
+    public getNotificationSubscriptionsByResourceId = wrapFireAndThrowError(
+        (ctx: IBaseContext, resourceId: string) => {
+            return ctx.models.notificationSubscriptionModel.model
+                .find({
+                    resourceId,
                 })
                 .lean()
                 .exec();

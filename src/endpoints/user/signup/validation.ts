@@ -1,9 +1,9 @@
 import Joi from "joi";
-import userValidationSchema from "../validation";
+import userValidationSchemas from "../validation";
 
 export const newUserInputSchema = Joi.object().keys({
-    name: userValidationSchema.name,
-    password: userValidationSchema.password,
-    email: userValidationSchema.email.required(),
-    color: userValidationSchema.color.required(),
+    name: userValidationSchemas.name,
+    password: userValidationSchemas.password,
+    email: userValidationSchemas.email.required(),
+    color: userValidationSchemas.color.required(),
 });

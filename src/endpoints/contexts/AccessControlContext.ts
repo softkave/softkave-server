@@ -20,6 +20,7 @@ interface IPermissionQuery {
 }
 
 export interface IAccessControlContext {
+    // Roles
     getRolesById: (
         ctx: IBaseContext,
         roleIds: string[]
@@ -48,6 +49,13 @@ export interface IAccessControlContext {
         name: string,
         resourceId: string
     ) => Promise<boolean>;
+    bulkUpdateRolesById: (
+        ctx: IBaseContext,
+        data: Array<IUpdateItemById<IAccessControlRole>>,
+        session?: ClientSession
+    ) => Promise<void>;
+
+    // Permissions
     getResourcePermissions: (
         ctx: IBaseContext,
         resourceId: string
@@ -84,11 +92,6 @@ export interface IAccessControlContext {
     bulkUpdatePermissionsById: (
         ctx: IBaseContext,
         data: Array<IUpdateItemById<IAccessControlPermission>>
-    ) => Promise<void>;
-    bulkUpdateRolesById: (
-        ctx: IBaseContext,
-        data: Array<IUpdateItemById<IAccessControlRole>>,
-        session?: ClientSession
     ) => Promise<void>;
 }
 

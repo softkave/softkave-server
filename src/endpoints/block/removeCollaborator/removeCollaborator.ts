@@ -9,61 +9,61 @@ import { RemoveCollaboratorEndpoint } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";
 
 const removeCollaborator: RemoveCollaboratorEndpoint = async (
-  context,
-  instData
-) => {
-  const data = validate(instData.data, removeCollaboratorJoiSchema);
-  const user = await context.session.getUser(context, instData);
-  const block = await context.block.getBlockById(context, data.blockId);
-
-  canReadBlock({ user, block });
-
-  const fetchedCollaborator = await context.user.getUserById(
     context,
-    data.collaboratorId
-  );
+    instData
+) => {
+    const data = validate(instData.data, removeCollaboratorJoiSchema);
+    const user = await context.session.getUser(context, instData);
+    const block = await context.block.getBlockById(context, data.blockId);
 
-  if (!fetchedCollaborator) {
-    throw new UserDoesNotExistError();
-  }
+    canReadBlock({ user, block });
 
-  const collaboratorOrgs = [...fetchedCollaborator.orgs];
-  const blockIndexInCollaborator = collaboratorOrgs.findIndex(
-    (org) => org.customId === block.customId
-  );
+    const fetchedCollaborator = await context.user.getUserById(
+        context,
+        data.collaboratorId
+    );
 
-  if (blockIndexInCollaborator === -1) {
-    return;
-  }
+    if (!fetchedCollaborator) {
+        throw new UserDoesNotExistError();
+    }
 
-  collaboratorOrgs.splice(blockIndexInCollaborator, 1);
-  await context.user.updateUserById(context, fetchedCollaborator.customId, {
-    orgs: collaboratorOrgs,
-  });
+    const collaboratorOrgs = [...fetchedCollaborator.orgs];
+    const blockIndexInCollaborator = collaboratorOrgs.findIndex(
+        (org) => org.customId === block.customId
+    );
 
-  const message =
-    `Hi ${fetchedCollaborator.name}, ` +
-    `we're sorry to inform you that you have been removed from ${block.name}. Have a good day!`;
+    if (blockIndexInCollaborator === -1) {
+        return;
+    }
 
-  const notification: INotification = {
-    customId: uuid(),
-
-    // TODO: should we have a from field here?
-
-    createdAt: getDate(),
-    body: message,
-    to: {
-      email: fetchedCollaborator.email,
-    },
-    type: NotificationType.RemoveCollaborator,
-  };
-
-  context.notification
-    .saveNotification(context, notification)
-    .catch((error) => {
-      // TODO: should this be a fire and forget?
-      console.error(error);
+    collaboratorOrgs.splice(blockIndexInCollaborator, 1);
+    await context.user.updateUserById(context, fetchedCollaborator.customId, {
+        orgs: collaboratorOrgs,
     });
+
+    const message =
+        `Hi ${fetchedCollaborator.name}, ` +
+        `we're sorry to inform you that you have been removed from ${block.name}. Have a good day!`;
+
+    const notification: INotification = {
+        customId: uuid(),
+
+        // TODO: should we have a from field here?
+
+        createdAt: getDate(),
+        body: message,
+        to: {
+            email: fetchedCollaborator.email,
+        },
+        type: NotificationType.RemoveCollaborator,
+    };
+
+    context.notification
+        .saveCollaborationRequest(context, notification)
+        .catch((error) => {
+            // TODO: should this be a fire and forget?
+            console.error(error);
+        });
 };
 
 export default removeCollaborator;

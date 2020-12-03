@@ -82,9 +82,13 @@ export default async function sendEmails(
         // I also noticed it mostly for arrays, cause sprint bulk updates work just
         // fine for scalar values, though I haven't tested array updates in sprint bulk updates
         fireAndForgetPromise(
-            context.notification.updateNotificationById(context, req.customId, {
-                sentEmailHistory,
-            })
+            context.notification.updateCollaborationRequestById(
+                context,
+                req.customId,
+                {
+                    sentEmailHistory,
+                }
+            )
         );
     });
 

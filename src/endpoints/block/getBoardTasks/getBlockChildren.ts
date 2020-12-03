@@ -4,10 +4,7 @@ import { getPublicBlocksArray } from "../utils";
 import { GetBlockChildrenEndpoint } from "./types";
 import { getBlockChildrenJoiSchema } from "./validation";
 
-const getBlockChildren: GetBlockChildrenEndpoint = async (
-    context,
-    instData
-) => {
+const getBoardTasks: GetBlockChildrenEndpoint = async (context, instData) => {
     const data = validate(instData.data, getBlockChildrenJoiSchema);
     const user = await context.session.getUser(context, instData);
     const block = await context.block.getBlockById(context, data.blockId);
@@ -25,4 +22,4 @@ const getBlockChildren: GetBlockChildrenEndpoint = async (
     };
 };
 
-export default getBlockChildren;
+export default getBoardTasks;
