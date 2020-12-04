@@ -35,6 +35,14 @@ export interface INotificationContext {
         ctx: IBaseContext,
         orgId: string
     ) => Promise<INotification[]>;
+    markUserNotificationsRead: (
+        ctx: IBaseContext,
+        userId,
+        notifications: Array<{
+            customId: string;
+            readAt: string | number | Date;
+        }>
+    ) => Promise<void>;
 
     // Notification subscriptions
     getNotificationSubscriptionById: (
@@ -57,6 +65,31 @@ export interface INotificationContext {
 }
 
 export default class NotificationContext implements INotificationContext {
+    public markUserNotificationsRead = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            userId,
+            notifications: Array<{
+                customId: string;
+                readAt: string | number | Date;
+            }>
+        ) => {
+            await ctx.models.notificationModel.model.bulkWrite(
+                notifications.map((n) => {
+                    return {
+                        updateOne: {
+                            filter: {
+                                customId: n.customId,
+                                recipientId: userId,
+                            },
+                            update: { readAt: n.readAt },
+                        },
+                    };
+                })
+            );
+        }
+    );
+
     public getNotificationById = wrapFireAndThrowError(
         (ctx: IBaseContext, id: string, userId: string) => {
             return ctx.models.notificationModel.model

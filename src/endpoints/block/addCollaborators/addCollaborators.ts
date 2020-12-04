@@ -53,7 +53,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
             to: {
                 email: request.email,
             },
-            type: NotificationType.CollaborationRequest,
+            type: NotificationType.NewCollaborationRequest,
             expiresAt: request.expiresAt as any,
             statusHistory: [
                 {

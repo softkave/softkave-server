@@ -5,7 +5,7 @@ import { wrapEndpoint } from "../utils";
 import getOrgNotifications from "./getOrgNotifications/getOrgNotifications";
 import getResourceSubscriptions from "./getResourceSubscriptions/getResourceSubscriptions";
 import getUserNotifications from "./getUserNotifications/getUserNotifications";
-import markNotificationRead from "./markNotificationRead/markNotificationRead";
+import markNotificationsRead from "./markNotificationsRead/markNotificationsRead";
 import updateResourceSubscriptions from "./updateResourceSubscriptions/updateResourceSubscriptions";
 
 export default class NotificationEndpointsGraphQLController {
@@ -36,9 +36,9 @@ export default class NotificationEndpointsGraphQLController {
         );
     }
 
-    public markNotificationRead(data, req) {
+    public markNotificationsRead(data, req) {
         return wrapEndpoint(data, req, () =>
-            markNotificationRead(
+            markNotificationsRead(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

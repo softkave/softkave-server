@@ -37,7 +37,7 @@ export enum SystemActionType {
     // collaborator and collaboration request
     RevokeRequest = "revoke-request",
     RemoveCollaborator = "remove-user",
-    DeclineRequest = "decline-request",
+    RespondToRequest = "respondToRequest",
 
     // user
     Signup = "signup",

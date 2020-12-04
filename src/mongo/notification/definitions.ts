@@ -12,7 +12,7 @@ export const notificationSentEmailHistorySchema = {
 };
 
 export enum NotificationType {
-    CollaborationRequest = "collaborationRequest",
+    NewCollaborationRequest = "newCollaborationRequest",
     CollaborationRequestResponse = "collaborationRequestResponse",
 
     OrgUpdated = "orgUpdated",
@@ -24,9 +24,10 @@ export enum NotificationType {
 
     PermissionsUpdated = "permissionsUpdated",
 
-    RoleCreated = "roleCreated",
-    RoleUpdated = "roleUpdated",
-    RoleDeleted = "roleDeleted",
+    // RoleCreated = "roleCreated",
+    // RoleUpdated = "roleUpdated",
+    // RoleDeleted = "roleDeleted",
+    ResourceRolesUpdated = "resourceRolesUpdated",
 
     CollaborationRequestCreated = "collaborationRequestCreated",
     CollaborationRequestUpdated = "collaborationRequestUpdated",
@@ -40,17 +41,20 @@ export enum NotificationType {
     TaskUpdated = "taskUpdated",
     TaskDeleted = "taskDeleted",
 
-    StatusCreated = "statusCreated",
-    StatusUpdated = "statusUpdated",
-    StatusDeleted = "statusDeleted",
+    // StatusCreated = "statusCreated",
+    // StatusUpdated = "statusUpdated",
+    // StatusDeleted = "statusDeleted",
+    BoardStatusesUpdated = "boardStatusesUpdated",
 
-    LabelCreated = "labelCreated",
-    LabelUpdated = "labelUpdated",
-    LabelDeleted = "labelDeleted",
+    // LabelCreated = "labelCreated",
+    // LabelUpdated = "labelUpdated",
+    // LabelDeleted = "labelDeleted",
+    BoardLabelsUpdated = "boardLabelsUpdated",
 
-    ResolutionCreated = "resolutionCreated",
-    ResolutionUpdated = "resolutionUpdated",
-    ResolutionDeleted = "resolutionDeleted",
+    // ResolutionCreated = "resolutionCreated",
+    // ResolutionUpdated = "resolutionUpdated",
+    // ResolutionDeleted = "resolutionDeleted",
+    BoardResolutionsUpdated = "boardResolutionsUpdated",
 
     SprintCreated = "sprintCreated",
     SprintUpdated = "sprintUpdated",
@@ -67,12 +71,13 @@ export enum NotificationType {
 enum NotificationActions {
     Reload = "reload",
     SetNewPermissions = "setNewPermissions",
+    RespondToCollaboratonRequest = "respondToCollaborationRequest",
 }
 
 export interface INotificationAnnotations {
     resourceType: SystemResourceType;
     resourceId: string;
-    annotationText: string;
+    places: Array<{ start: number; end: number }>;
 }
 
 export const notificationAttachedResourceSchema = {
@@ -81,10 +86,20 @@ export const notificationAttachedResourceSchema = {
     annotationText: { type: String },
 };
 
+export enum NotificationReason {
+    AddedByUser = "",
+    UserCreatedResource = "",
+    WasAssignedTask = "",
+    WasAutoAssignedTask = "",
+    UserIsResourceRecipient = "",
+}
+
 export interface INotification {
     customId: string;
-    recipientIds: string[];
+    recipientId: string;
     body: string;
+    type: NotificationType;
+    title: string;
     orgId?: string;
     subscriptionResourceId?: string;
     subscriptionResourceType?: SystemResourceType;
@@ -92,16 +107,17 @@ export interface INotification {
     primaryResourceType?: SystemResourceType;
     primaryResourceId?: string;
     createdAt: Date;
-    type: NotificationType;
     readAt?: Date;
     sentEmailHistory?: INotificationSentEmailHistoryItem[];
     annotations?: INotificationAnnotations[];
     actions?: NotificationActions[];
+    meta?: any[];
+    reason: NotificationReason;
 }
 
 export const notificationSchema = {
     customId: { type: String, unique: true, index: true },
-    recipientIds: { type: [String] },
+    recipientId: { type: String },
     body: { type: String },
     orgId: { type: String },
     blockId: { type: String },
@@ -120,9 +136,16 @@ export const notificationSchema = {
 
 export interface INotificationDocument extends INotification, Document {}
 
+export interface INotificationSubscriptionRecipient {
+    userId: string;
+    reason: NotificationReason;
+    addedBy: string;
+    addedAt: Date;
+}
+
 export interface INotificationSubscription {
     customId: string;
-    recipientIds: string[];
+    recipients: INotificationSubscriptionRecipient[];
     resourceType: SystemResourceType;
     resourceId: string;
     type: NotificationType;

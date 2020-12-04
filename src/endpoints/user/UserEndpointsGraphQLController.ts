@@ -1,7 +1,7 @@
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import getUserNotifications from "../notifications/getUserNotifications/getUserNotifications";
-import markNotificationRead from "../notifications/markNotificationRead/markNotificationRead";
+import markNotificationsRead from "../notifications/markNotificationsRead/markNotificationsRead";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import changePassword from "./changePassword/changePassword";

@@ -19,7 +19,7 @@ const permissionActionTypes = [
     SystemActionType.Delete,
     SystemActionType.RevokeRequest,
     SystemActionType.RemoveCollaborator,
-    SystemActionType.DeclineRequest,
+    SystemActionType.RespondToRequest,
 ];
 
 export const accessControlConstants = {
