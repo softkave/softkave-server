@@ -1,33 +1,15 @@
-import { INotification } from "../../mongo/notification";
+import {
+    INotification,
+    INotificationSubscription,
+} from "../../mongo/notification";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
-import { IPublicNotificationData } from "./types";
+import {
+    IPublicNotificationData,
+    IPublicNotificationSubscription,
+} from "./types";
 
-const publicNotificationFields = getFields<IPublicNotificationData>({
-    customId: true,
-    to: {
-        email: true,
-    },
-    body: true,
-    from: {
-        userId: true,
-        name: true,
-        blockId: true,
-        blockName: true,
-        blockType: true,
-    },
-    createdAt: getDateString,
-    type: true,
-    readAt: getDateString,
-    expiresAt: getDateString,
-    statusHistory: {
-        status: true,
-        date: getDateString,
-    },
-    sentEmailHistory: {
-        date: getDateString,
-    },
-});
+const publicNotificationFields = getFields<IPublicNotificationData>({});
 
 export function getPublicNotificationData(
     notification: Partial<INotification>
@@ -40,5 +22,23 @@ export function getPublicNotificationsArray(
 ): IPublicNotificationData[] {
     return notifications.map((notification) =>
         extractFields(notification, publicNotificationFields)
+    );
+}
+
+const publicNotificationSubscriptionFields = getFields<IPublicNotificationSubscription>(
+    {}
+);
+
+export function getPublicNotificationSubscriptionData(
+    subscription: Partial<INotificationSubscription>
+): IPublicNotificationSubscription {
+    return extractFields(subscription, publicNotificationSubscriptionFields);
+}
+
+export function getPublicNotificationSubscriptionsArray(
+    subscriptions: Array<Partial<INotificationSubscription>>
+): IPublicNotificationSubscription[] {
+    return subscriptions.map((subscription) =>
+        extractFields(subscription, publicNotificationSubscriptionFields)
     );
 }

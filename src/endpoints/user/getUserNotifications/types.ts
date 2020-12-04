@@ -1,13 +1,13 @@
 import { IBaseContext } from "../../contexts/BaseContext";
-import { Endpoint } from "../../types";
 import { IPublicNotificationData } from "../types";
+import { Endpoint } from "../../types";
 
-export interface IGetUserNotificationsResult {
+export interface IGetCollaborationRequestsResult {
     notifications: IPublicNotificationData[];
 }
 
 export type GetCollaborationRequestsEndpoint = Endpoint<
     IBaseContext,
     undefined,
-    IGetUserNotificationsResult
+    IGetCollaborationRequestsResult
 >;

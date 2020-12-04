@@ -27,7 +27,13 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
         throw new Error();
     }
 
-    const readCounter = getDateString(data.readCounter);
+    const inputReadCounter = data.readCounter
+        ? data.readCounter > Date.now()
+            ? Date.now()
+            : data.readCounter
+        : Date.now();
+
+    const readCounter = getDateString(inputReadCounter);
 
     await context.chat.updateMemberReadCounter(
         context,

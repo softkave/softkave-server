@@ -1,28 +1,41 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../canReadBlock";
-import { BlockExistsEndpoint } from "./types";
-import { blockExistsJoiSchema } from "./validation";
+import {
+    getBlockRootBlockId,
+    getPublicNotificationsArray,
+} from "../../block/utils";
+import { GetResourceSubscriptionsEndpoint } from "./types";
+import { getResourceSubscriptionsJoiSchema } from "./validation";
 
-const getResourceSubscriptions: BlockExistsEndpoint = async (
+const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
     context,
     instData
 ) => {
-    const data = validate(instData.data, blockExistsJoiSchema);
+    const data = validate(instData.data, getResourceSubscriptionsJoiSchema);
     const user = await context.session.getUser(context, instData);
+    const block = await context.block.getBlockById(context, data.blockId);
 
-    if (data.parent) {
-        const parent = await context.block.getBlockById(context, data.parent);
-        canReadBlock({ user, block: parent });
-    }
-
-    const exists = await context.block.blockExists(
+    assertBlock(block);
+    await context.accessControl.assertPermission(
         context,
-        data.name,
-        data.type,
-        data.parent
+        getBlockRootBlockId(block),
+        {
+            resourceType: SystemResourceType.Notification,
+            action: SystemActionType.Read,
+            resourceId: block.customId,
+        },
+        user
     );
 
-    return { exists };
+    const subscriptions = await context.notification.getNotificationSubscriptionsByResourceId(
+        context,
+        block.customId
+    );
+
+    return {
+        subscriptions: getPublicNotificationsArray(subscriptions),
+    };
 };
 
 export default getResourceSubscriptions;

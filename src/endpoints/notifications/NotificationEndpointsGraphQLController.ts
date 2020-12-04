@@ -4,6 +4,7 @@ import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import getOrgNotifications from "./getOrgNotifications/getOrgNotifications";
 import getResourceSubscriptions from "./getResourceSubscriptions/getResourceSubscriptions";
+import getUserNotifications from "./getUserNotifications/getUserNotifications";
 import markNotificationRead from "./markNotificationRead/markNotificationRead";
 import updateResourceSubscriptions from "./updateResourceSubscriptions/updateResourceSubscriptions";
 

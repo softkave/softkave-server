@@ -3,7 +3,7 @@ import {
     IAccessControlRole,
 } from "../../mongo/access-control/definitions";
 import { getBlockAuditLogResourceType } from "../../mongo/audit-log/utils";
-import { IBlock } from "../../mongo/block";
+import { BlockType, IBlock } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
@@ -18,31 +18,17 @@ const collaboratorRoleDescription = "";
 const adminRoleName = AccessControlDefaultRoles.Admin.toLowerCase();
 const adminRoleDescription = "";
 
-export default async function initializeBlockRoles(
-    ctx: IBaseContext,
-    user: IUser,
-    block: IBlock
-): Promise<IAccessControlRole[]> {
-    const blockRoles = await ctx.accessControl.getRolesByResourceId(
-        ctx,
-        block.customId
-    );
-
-    if (blockRoles.length > 0) {
-        return [];
-    }
-
+export function getDefaultOrgRoles(userId: string, org: IBlock) {
     const newRoles: IAccessControlRole[] = [];
-
     const publicRole: IAccessControlRole = {
         customId: getNewId(),
         name: publicRoleName,
         lowerCasedName: publicRoleName,
         description: publicRoleDescription,
-        createdBy: user.customId,
+        createdBy: userId,
         createdAt: getDate(),
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
+        resourceId: org.customId,
+        resourceType: getBlockAuditLogResourceType(org),
     };
 
     const collaboratorRole: IAccessControlRole = {
@@ -50,10 +36,10 @@ export default async function initializeBlockRoles(
         name: collaboratorRoleName,
         lowerCasedName: collaboratorRoleName,
         description: collaboratorRoleDescription,
-        createdBy: user.customId,
+        createdBy: userId,
         createdAt: getDate(),
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
+        resourceId: org.customId,
+        resourceType: getBlockAuditLogResourceType(org),
         prevRoleId: publicRole.customId,
     };
 
@@ -62,10 +48,10 @@ export default async function initializeBlockRoles(
         name: adminRoleName,
         lowerCasedName: adminRoleName,
         description: adminRoleDescription,
-        createdBy: user.customId,
+        createdBy: userId,
         createdAt: getDate(),
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
+        resourceId: org.customId,
+        resourceType: getBlockAuditLogResourceType(org),
         prevRoleId: collaboratorRole.customId,
     };
 
@@ -75,6 +61,31 @@ export default async function initializeBlockRoles(
 
     publicRole.nextRoleId = collaboratorRole.customId;
     collaboratorRole.nextRoleId = adminRole.customId;
+
+    return newRoles;
+}
+
+export default async function initializeOrgRoles(
+    ctx: IBaseContext,
+    user: IUser,
+    org: IBlock
+): Promise<IAccessControlRole[]> {
+    if (org.type !== BlockType.Org) {
+        throw new Error(
+            "Roles can only be default initialized in organizations"
+        );
+    }
+
+    const blockRoles = await ctx.accessControl.getRolesByResourceId(
+        ctx,
+        org.customId
+    );
+
+    if (blockRoles.length > 0) {
+        return [];
+    }
+
+    const newRoles = getDefaultOrgRoles(user.customId, org);
 
     return ctx.accessControl.saveRoles(ctx, newRoles);
 }

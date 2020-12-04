@@ -1,15 +1,20 @@
-import { BlockType } from "../../../mongo/block";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
-export interface IBlockExistsParameters {
-    name: string;
-    type: BlockType;
-    parent?: string;
+export interface IUpdateResourceSubscriptionsParameters {
+    resourceId: string;
 }
 
-export type BlockExistsEndpoint = Endpoint<
+export interface IUpdateResourceSubscriptionsResult {
+    subscriptions: Array<{
+        customId: string;
+        updatedAt: string;
+        updatedBy: string;
+    }>;
+}
+
+export type UpdateResourceSubscriptionsEndpoint = Endpoint<
     IBaseContext,
-    IBlockExistsParameters,
-    { exists: boolean }
+    IUpdateResourceSubscriptionsParameters,
+    IUpdateResourceSubscriptionsResult
 >;

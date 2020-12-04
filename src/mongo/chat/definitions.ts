@@ -11,7 +11,7 @@ export interface IChat {
     updatedAt?: Date;
 }
 
-const chatsSchema = {
+const chatMongoSchema = {
     customId: { type: String, unique: true },
     orgId: { type: String },
     message: { type: String },
@@ -21,5 +21,6 @@ const chatsSchema = {
     updatedAt: { type: Date },
 };
 
-export default chatsSchema;
+export default chatMongoSchema;
+
 export interface IChatDocument extends IChat, Document {}

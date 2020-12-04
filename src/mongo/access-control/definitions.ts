@@ -83,20 +83,6 @@ export interface IAccessControlPermissionDocument
     extends IAccessControlPermission,
         Document {}
 
-export interface IFreezedPermission {
-    action: SystemActionType;
-    resourceType: SystemResourceType;
-}
-
-export const freezedPermissionMongoSchema = {
-    action: { type: String },
-    resourceType: { type: String },
-};
-
-export interface IFreezedPermissionDocument
-    extends IFreezedPermission,
-        Document {}
-
 export const orgResourceTypes: SystemResourceType[] = [
     SystemResourceType.Collaborator,
     SystemResourceType.Org,
@@ -113,6 +99,7 @@ export const orgResourceTypes: SystemResourceType[] = [
     SystemResourceType.SubTask,
     SystemResourceType.CollaborationRequest,
     SystemResourceType.Notification,
+    SystemResourceType.NotificationSubscription,
     SystemResourceType.Team,
     SystemResourceType.Role,
     SystemResourceType.Permission,
@@ -129,6 +116,7 @@ export const boardResourceTypes: SystemResourceType[] = [
     SystemResourceType.Sprint,
     SystemResourceType.SubTask,
     SystemResourceType.Notification,
+    SystemResourceType.NotificationSubscription,
     SystemResourceType.Team,
     SystemResourceType.Role,
     SystemResourceType.Permission,
@@ -156,7 +144,11 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
     ],
     [SystemResourceType.Collaborator]: [SystemActionType.RemoveCollaborator],
     [SystemResourceType.RootBlock]: [],
-    [SystemResourceType.Org]: baseActionTypes,
+    [SystemResourceType.Org]: [
+        SystemActionType.Read,
+        SystemActionType.Update,
+        SystemActionType.Delete,
+    ],
     [SystemResourceType.Board]: baseActionTypes,
     [SystemResourceType.Task]: baseActionTypes,
     [SystemResourceType.Status]: baseActionTypes,
@@ -174,7 +166,11 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
         SystemActionType.Update,
         SystemActionType.RevokeRequest,
     ],
-    [SystemResourceType.Notification]: baseActionTypes,
+    [SystemResourceType.Notification]: [SystemActionType.Read],
+    [SystemResourceType.NotificationSubscription]: [
+        SystemActionType.Read,
+        SystemActionType.Update,
+    ],
     [SystemResourceType.Team]: baseActionTypes,
     [SystemResourceType.Role]: baseActionTypes,
     [SystemResourceType.Permission]: [
@@ -203,3 +199,14 @@ export interface IPermissionLikeObject {
     resourceType: SystemResourceType;
     action: SystemActionType;
 }
+
+export type IFreezedPermission = IPermissionLikeObject;
+
+export const freezedPermissionMongoSchema = {
+    action: { type: String },
+    resourceType: { type: String },
+};
+
+export interface IFreezedPermissionDocument
+    extends IFreezedPermission,
+        Document {}

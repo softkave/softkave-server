@@ -2,19 +2,19 @@ import { Connection } from "mongoose";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
-import chatsSchema, { IChatDocument } from "./definitions";
+import { IJobDocument, jobMongoSchema } from "./definitions";
 
-export interface IChatModel extends MongoModel<IChatDocument> {}
+export interface IJobModel extends MongoModel<IJobDocument> {}
 
-const modelName = "chat";
-const collectionName = "chats";
+const modelName = "job";
+const collectionName = "jobs";
 
-export const getChatModel = makeSingletonFunc(
+export const getJobModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
-        return new MongoModel<IChatDocument>({
+        return new MongoModel<IJobDocument>({
             modelName,
             collectionName,
-            rawSchema: chatsSchema,
+            rawSchema: jobMongoSchema,
             connection: conn,
         });
     }

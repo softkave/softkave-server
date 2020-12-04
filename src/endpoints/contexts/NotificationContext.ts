@@ -7,11 +7,12 @@ import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
-export interface ICollaborationRequestContext {
+export interface INotificationContext {
     // Notifications
     getNotificationById: (
         ctx: IBaseContext,
-        id: string
+        id: string,
+        userId: string
     ) => Promise<INotification | undefined>;
     getUserNotifications: (
         ctx: IBaseContext,
@@ -55,12 +56,11 @@ export interface ICollaborationRequestContext {
     ) => Promise<INotificationSubscription[]>;
 }
 
-export default class NotificationContext
-    implements ICollaborationRequestContext {
+export default class NotificationContext implements INotificationContext {
     public getNotificationById = wrapFireAndThrowError(
-        (ctx: IBaseContext, id: string) => {
+        (ctx: IBaseContext, id: string, userId: string) => {
             return ctx.models.notificationModel.model
-                .findOne({ customId: id })
+                .findOne({ customId: id, recipientIds: userId })
                 .lean()
                 .exec();
         }

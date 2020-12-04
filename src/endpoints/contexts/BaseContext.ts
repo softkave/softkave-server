@@ -33,6 +33,10 @@ import {
 } from "./CollaborationRequestContext";
 import { getCommentContext, ICommentContext } from "./CommentContext";
 import { getNoteContext, INoteContext } from "./NoteContext";
+import {
+    getNotificationContext,
+    INotificationContext,
+} from "./NotificationContext";
 import { getRoomContext, IRoomContext } from "./RoomContext";
 import { getSessionContext, ISessionContext } from "./SessionContext";
 import { getSocketContext, ISocketContext } from "./SocketContext";
@@ -43,7 +47,8 @@ import { getUserContext, IUserContext } from "./UserContext";
 export interface IBaseContext {
     block: IBlockContext;
     user: IUserContext;
-    notification: ICollaborationRequestContext;
+    collaborationRequest: ICollaborationRequestContext;
+    notification: INotificationContext;
     auditLog: IAuditLogContext;
     session: ISessionContext;
     note: INoteContext;
@@ -64,6 +69,7 @@ export default class BaseContext implements IBaseContext {
     public block: IBlockContext = getBlockContext();
     public user: IUserContext = getUserContext();
     public collaborationRequest: ICollaborationRequestContext = getCollaborationRequestContext();
+    public notification: INotificationContext = getNotificationContext();
     public auditLog: IAuditLogContext = getAuditLogContext();
     public session: ISessionContext = getSessionContext();
     public note: INoteContext = getNoteContext();

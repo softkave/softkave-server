@@ -7,6 +7,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId } from "../../block/utils";
 import { InvalidRequestError } from "../../errors";
 import { fireAndForgetPromise } from "../../utils";
+import { initializeBoardPermissions } from "../initializeBlockPermissions";
 import { IPermissionInput, SetPermissionsEndpoint } from "./types";
 import { setPermissionsJoiSchema } from "./validation";
 
@@ -41,14 +42,21 @@ const setPermissions: SetPermissionsEndpoint = async (context, instData) => {
 
     await context.accessControl.queryPermission(
         context,
-        block.rootBlockId || block.customId,
+        getBlockRootBlockId(block),
         {
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
-            resourceId: block.customId,
+            resourceId: block.permissionResourceId,
         },
         user
     );
+
+    if (
+        block.type === BlockType.Board &&
+        block.permissionResourceId !== block.customId
+    ) {
+        await initializeBoardPermissions(context, user, block);
+    }
 
     const processArgs: IProcessPermissionsExtraArgs = { user, block };
     const processed = data.permissions.map((p) => {

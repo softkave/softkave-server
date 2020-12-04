@@ -8,6 +8,7 @@ import {
     ISubTask,
     ITaskSprint,
 } from "../../mongo/block";
+import { ICollaborationRequest } from "../../mongo/collaborationRequest";
 import { IBoardSprintOptions } from "../../mongo/sprint";
 import { ConvertDatesToStrings } from "../../utilities/types";
 import { IResourceWithId } from "../types";
@@ -96,3 +97,5 @@ export type IPublicBlock = ConvertDatesToStrings<{
     sprintOptions?: IBoardSprintOptions;
     lastSprintId?: string;
 }>;
+
+export type IPublicCollaborationRequest = ConvertDatesToStrings<ICollaborationRequest>;

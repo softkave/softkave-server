@@ -65,8 +65,20 @@ export interface IAccessControlContext {
         orgId: string,
         query: IPermissionQuery,
         user?: IUser
-    ) => Promise<boolean>;
+    ) => Promise<IAccessControlPermission | undefined>;
     queryPermissions: (
+        ctx: IBaseContext,
+        orgId: string,
+        queries: IPermissionQuery[],
+        user?: IUser
+    ) => Promise<IAccessControlPermission[]>;
+    assertPermission: (
+        ctx: IBaseContext,
+        orgId: string,
+        query: IPermissionQuery,
+        user?: IUser
+    ) => Promise<boolean>;
+    assertPermissions: (
         ctx: IBaseContext,
         orgId: string,
         queries: IPermissionQuery[],
@@ -217,19 +229,13 @@ export default class AccessControlContext implements IAccessControlContext {
             query: IPermissionQuery,
             user?: IUser
         ) => {
-            const exists = await ctx.models.permissions.model.exists(
+            return await ctx.models.permissions.model.findOne(
                 AccessControlContext.preparePermissionsQuery(
                     orgId,
                     [query],
                     user
                 )
             );
-
-            if (!exists) {
-                throw new PermissionDeniedError();
-            }
-
-            return exists;
         }
     );
 
@@ -240,19 +246,57 @@ export default class AccessControlContext implements IAccessControlContext {
             queries: IPermissionQuery[],
             user?: IUser
         ) => {
-            const exists = await ctx.models.permissions.model.exists(
+            return await ctx.models.permissions.model.find(
                 AccessControlContext.preparePermissionsQuery(
                     orgId,
                     queries,
                     user
                 )
             );
+        }
+    );
 
-            if (!exists) {
+    public assertPermission = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            orgId: string,
+            query: IPermissionQuery,
+            user?: IUser
+        ) => {
+            const permission = await ctx.accessControl.queryPermission(
+                ctx,
+                orgId,
+                query,
+                user
+            );
+
+            if (!permission) {
                 throw new PermissionDeniedError();
             }
 
-            return exists;
+            return true;
+        }
+    );
+
+    public assertPermissions = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            orgId: string,
+            queries: IPermissionQuery[],
+            user?: IUser
+        ) => {
+            const permission = await ctx.accessControl.queryPermissions(
+                ctx,
+                orgId,
+                queries,
+                user
+            );
+
+            if (!permission) {
+                throw new PermissionDeniedError();
+            }
+
+            return true;
         }
     );
 

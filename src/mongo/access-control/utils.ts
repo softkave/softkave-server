@@ -7,8 +7,8 @@ import {
 } from "./definitions";
 
 // Maps permissions array to by resource type and action type
-export function getPermissions2DimensionalMap(
-    permissions: IPermissionLikeObject[]
+export function getPermissions2DimensionalMap<T extends IPermissionLikeObject>(
+    permissions: T[]
 ) {
     const result = permissions.reduce((map, permission) => {
         const actions = map[permission.resourceType] || ({} as any);
@@ -17,7 +17,7 @@ export function getPermissions2DimensionalMap(
         map[permission.resourceType] = actions;
 
         return map;
-    }, {} as Record<SystemResourceType, Record<SystemActionType, SystemActionType>>);
+    }, {} as Record<SystemResourceType, Record<SystemActionType, T>>);
 
     return result;
 }
@@ -55,7 +55,6 @@ export function findPermissionsInBNotInA<
     Type2 extends IPermissionLikeObject
 >(pA: Type1[], pB: Type2[]): Type2[] {
     const paMap = getPermissions2DimensionalMap(pA);
-
     const permissionsNotFound = pB.filter((p) => {
         const actionsMap = paMap[p.resourceType];
 

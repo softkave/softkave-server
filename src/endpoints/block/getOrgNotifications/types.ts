@@ -3,15 +3,15 @@ import { Endpoint } from "../../types";
 import { IPublicNotificationData } from "../types";
 
 export interface IGetOrgNotificationsParameters {
-    orgId: string;
+    blockId: string;
 }
 
-export interface IGetOrgNotificationsResult {
+export interface IGetBlockNotificationsResult {
     notifications: IPublicNotificationData[];
 }
 
-export type GetOrgNotificationsEndpoint = Endpoint<
+export type GetBlockNotificationsEndpoint = Endpoint<
     IBaseContext,
     IGetOrgNotificationsParameters,
-    IGetOrgNotificationsResult
+    IGetBlockNotificationsResult
 >;

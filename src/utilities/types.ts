@@ -23,4 +23,4 @@ export type ConvertDatesToStrings<T extends object> = ConvertTypeOneToTypeTwo<
     string
 >;
 
-export type AnyFn = (arg: any) => any;
+export type AnyFn = (...args: any) => any;

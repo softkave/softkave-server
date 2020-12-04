@@ -130,3 +130,43 @@ export function isRequestAccepted(request: INotification) {
 
     return false;
 }
+
+const publicCollaborationRequestFields = getFields<IPublicNotificationData>({
+    customId: true,
+    to: {
+        email: true,
+    },
+    body: true,
+    from: {
+        userId: true,
+        name: true,
+        blockId: true,
+        blockName: true,
+        blockType: true,
+    },
+    createdAt: getDateString,
+    type: true,
+    readAt: getDateString,
+    expiresAt: getDateString,
+    statusHistory: {
+        status: true,
+        date: getDateString,
+    },
+    sentEmailHistory: {
+        date: getDateString,
+    },
+});
+
+export function getPublicNotificationData(
+    notification: Partial<INotification>
+): IPublicNotificationData {
+    return extractFields(notification, publicCollaborationRequestFields);
+}
+
+export function getPublicNotificationsArray(
+    notifications: Array<Partial<INotification>>
+): IPublicNotificationData[] {
+    return notifications.map((notification) =>
+        extractFields(notification, publicCollaborationRequestFields)
+    );
+}

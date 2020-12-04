@@ -1,29 +1,40 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { BlockType } from "../../../mongo/block";
+import { assertBlock, assertBlockType } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
 import { getPublicNotificationsArray } from "../utils";
-import { GetBlockNotificationsEndpoint } from "./types";
-import { getBlockCollaborationRequestsJoiSchema } from "./validation";
+import { GetOrgNotificationsEndpoint } from "./types";
+import { getOrgNotificationsJoiSchema } from "./validation";
 
-const getOrgNotifications: GetBlockNotificationsEndpoint = async (
+const getOrgNotifications: GetOrgNotificationsEndpoint = async (
     context,
     instData
 ) => {
-    const data = validate(
-        instData.data,
-        getBlockCollaborationRequestsJoiSchema
-    );
+    const data = validate(instData.data, getOrgNotificationsJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
+    const org = await context.block.getBlockById(context, data.orgId);
 
-    await canReadBlock({ user, block });
+    assertBlock(org);
+    assertBlockType(org, BlockType.Org);
 
-    const requests = await context.notification.getCollaborationRequestsByBlockId(
+    await context.accessControl.assertPermission(
         context,
-        block.customId
+        org.customId,
+        {
+            resourceType: SystemResourceType.Notification,
+            action: SystemActionType.Read,
+            resourceId: org.customId,
+        },
+        user
+    );
+
+    const notifications = await context.notification.getNotificationsByOrgId(
+        context,
+        org.customId
     );
 
     return {
-        notifications: getPublicNotificationsArray(requests),
+        notifications: getPublicNotificationsArray(notifications),
     };
 };
 

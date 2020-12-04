@@ -16,6 +16,7 @@ export enum SystemResourceType {
     SubTask = "subtask",
     CollaborationRequest = "collaborationRequest",
     Notification = "notification",
+    NotificationSubscription = "notificationSubscription",
     Team = "team",
     Role = "role",
     Permission = "permission",

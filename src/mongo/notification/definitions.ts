@@ -20,6 +20,7 @@ export enum NotificationType {
 
     CollaboratorRemoved = "collaboratorRemoved",
     CollaboratorPermissionsUpdated = "collaboratorPermissionsUpdated",
+    CollaboratorRolesUpdated = "collaboratorRolesUpdated",
 
     PermissionsUpdated = "permissionsUpdated",
 
