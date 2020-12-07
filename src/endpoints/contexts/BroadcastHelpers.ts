@@ -3,8 +3,9 @@ import { IChat } from "../../mongo/chat";
 import {
     CollaborationRequestResponse,
     CollaborationRequestStatusType,
-    INotification,
-} from "../../mongo/notification";
+    ICollaborationRequest,
+} from "../../mongo/collaborationRequest";
+import { INotification } from "../../mongo/notification";
 import { IRoom } from "../../mongo/room";
 import { ISprint } from "../../mongo/sprint";
 import { IUser } from "../../mongo/user";
@@ -58,13 +59,13 @@ export interface IBroadcastHelpers {
     broadcastNewOrgCollaborationRequests: (
         context: IBaseContext,
         block: IBlock,
-        collaborationRequests: INotification[],
+        collaborationRequests: ICollaborationRequest[],
         instData?: RequestData
     ) => void;
     broadcastNewUserCollaborationRequest: (
         context: IBaseContext,
         existingUser: IUser,
-        request: INotification,
+        request: ICollaborationRequest,
         instData?: RequestData
     ) => void;
     broadcastUserUpdate: (
@@ -273,7 +274,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         (
             context: IBaseContext,
             block: IBlock,
-            collaborationRequests: INotification[],
+            collaborationRequests: ICollaborationRequest[],
             instData?: RequestData
         ) => {
             const orgBroadcastPacket: IOutgoingNewNotificationsPacket = {
@@ -301,7 +302,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         (
             context: IBaseContext,
             existingUser: IUser,
-            request: INotification,
+            request: ICollaborationRequest,
             instData?: RequestData
         ) => {
             const userRoomName = context.room.getUserRoomName(

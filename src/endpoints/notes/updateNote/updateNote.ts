@@ -1,8 +1,5 @@
 import pick from "lodash/pick";
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
@@ -33,9 +30,9 @@ const updateNote: UpdateNoteEndpoint = async (context, instData) => {
     );
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Update,
+        action: SystemActionType.Update,
         resourceId: note.customId,
-        resourceType: AuditLogResourceType.Note,
+        resourceType: SystemResourceType.Note,
         change: {
             oldValue: pick(note, Object.keys(data.data)),
             newValue: data.data,

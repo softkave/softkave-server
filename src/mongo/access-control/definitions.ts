@@ -13,6 +13,11 @@ export enum AccessControlDefaultRoles {
     Admin = "admin",
 }
 
+export enum AccessControlRoleSystemType {
+    Hierarchical = "hierarchical",
+    Flat = "flat",
+}
+
 export interface IAccessControlRole {
     customId: string;
     name: string;

@@ -1,18 +1,12 @@
-import { SystemActionType, SystemResourceType } from "../../models/system";
 import {
     boardResourceTypeToActionList,
     IAccessControlPermission,
-    orgResourceTypeToActionList,
 } from "../../mongo/access-control/definitions";
-import {
-    findPermissionsInBNotInA,
-    getPermissions2DimensionalMap,
-} from "../../mongo/access-control/utils";
-import { BlockType, IBlock } from "../../mongo/block";
+import { getPermissions2DimensionalMap } from "../../mongo/access-control/utils";
+import { IBlock } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import OperationError from "../../utilities/OperationError";
 import { IBaseContext } from "../contexts/BaseContext";
 
 // export default async function initializeBlockPermissions(

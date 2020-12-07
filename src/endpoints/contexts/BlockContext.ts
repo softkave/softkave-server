@@ -34,11 +34,7 @@ export interface IBlockContext {
         ctx: IBaseContext,
         block: Omit<IBlock, "customId">
     ) => Promise<IBlock>;
-    markBlockDeleted: (
-        ctx: IBaseContext,
-        customId: string,
-        user: IUser
-    ) => Promise<void>;
+    deleteBlock: (ctx: IBaseContext, customId: string) => Promise<void>;
     getBlockChildren: (
         ctx: IBaseContext,
         customId: string,
@@ -119,19 +115,10 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public markBlockDeleted = wrapFireAndThrowError(
-        async (ctx: IBaseContext, customId: string, user: IUser) => {
-            const update: Partial<IBlock> = {
-                isDeleted: true,
-                deletedBy: user.customId,
-                deletedAt: getDate(),
-            };
-
+    public deleteBlock = wrapFireAndThrowError(
+        async (ctx: IBaseContext, customId: string) => {
             await ctx.models.blockModel.model
-                .updateMany(
-                    { $or: [{ customId }, { parent: customId }] },
-                    update
-                )
+                .deleteMany({ $or: [{ customId }, { parent: customId }] })
                 .exec();
         }
     );

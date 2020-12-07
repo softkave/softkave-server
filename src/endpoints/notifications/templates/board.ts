@@ -21,7 +21,7 @@ export function boardUpdatedNotification() {
         createdAt: getDate(),
         readAt: "",
         sentEmailHistory: [],
-        annotations: [],
+        attachments: [],
         actions: [],
         meta: [],
         reason: "",

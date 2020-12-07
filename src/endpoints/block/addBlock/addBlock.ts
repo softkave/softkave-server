@@ -1,11 +1,7 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import { AddBlockEndpoint } from "./types";
 import { addBlockJoiSchema } from "./validation";
@@ -33,9 +29,9 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         });
 
         context.auditLog.insert(context, instData, {
-            action: AuditLogActionType.Create,
+            action: SystemActionType.Create,
             resourceId: org.customId,
-            resourceType: AuditLogResourceType.Org,
+            resourceType: SystemResourceType.Org,
             organizationId: org.customId,
         });
 
@@ -56,12 +52,19 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         };
     }
 
-    const rootParent = await context.block.getBlockById(
+    await context.accessControl.assertPermission(
         context,
-        newBlock.rootBlockId
+        newBlock.rootBlockId!,
+        {
+            resourceType:
+                newBlock.type === BlockType.Board
+                    ? SystemResourceType.Board
+                    : SystemResourceType.Task,
+            action: SystemActionType.Create,
+            permissionResourceId: newBlock.permissionResourceId,
+        },
+        user
     );
-
-    await canReadBlock({ user, block: rootParent });
 
     const result = await context.addBlock(context, {
         ...instData,
@@ -71,7 +74,7 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     const block = result.block;
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Create,
+        action: SystemActionType.Create,
         resourceId: block.customId,
         resourceType: getBlockAuditLogResourceType(block),
         organizationId: getBlockRootBlockId(block),

@@ -1,5 +1,5 @@
-import { INotification } from "../../../mongo/notification";
 import { IBaseContext } from "../../contexts/BaseContext";
+import { IPublicCollaborationRequest } from "../../notifications/types";
 import { Endpoint } from "../../types";
 import sendCollabReqEmail from "../sendCollaborationRequestEmail";
 
@@ -16,7 +16,7 @@ export interface IAddCollaboratorsParameters {
 }
 
 export interface IAddCollaboratorsResult {
-    requests: INotification[];
+    requests: IPublicCollaborationRequest[];
 }
 
 export interface IAddCollaboratorsContext extends IBaseContext {

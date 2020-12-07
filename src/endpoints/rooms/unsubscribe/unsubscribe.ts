@@ -1,4 +1,4 @@
-import { AuditLogResourceType } from "../../../mongo/audit-log";
+import { SystemResourceType } from "../../../mongo/audit-log";
 import { validate } from "../../../utilities/joiUtils";
 import { SubscribeEndpoint } from "../subscribe/types";
 import { subscribeJoiSchema } from "../subscribe/validation";
@@ -10,8 +10,8 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
 
     const prs = data.items.map(async (dt) => {
         switch (dt.type) {
-            case AuditLogResourceType.Org:
-            case AuditLogResourceType.Board: {
+            case SystemResourceType.Org:
+            case SystemResourceType.Board: {
                 const block = await context.block.getBlockById(
                     context,
                     dt.customId
@@ -25,7 +25,7 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
                 break;
             }
 
-            case AuditLogResourceType.Note: {
+            case SystemResourceType.Note: {
                 const note = await context.note.getNoteById(
                     context,
                     dt.customId
@@ -35,7 +35,7 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
                 break;
             }
 
-            case AuditLogResourceType.Room: {
+            case SystemResourceType.Room: {
                 const room = await context.chat.getRoomById(
                     context,
                     dt.customId

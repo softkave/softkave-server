@@ -53,25 +53,39 @@ const collaborationRequestStatusHistorySchema = {
     date: Date,
 };
 
+export enum CollaborationRequestEmailReason {
+    RequestNotification = "requestNotification",
+    RequestRevoked = "requestRevoked",
+    RequestUpdated = "requestUpdated",
+}
+
+export interface ICollaborationRequestSentEmailHistoryItem
+    extends INotificationSentEmailHistoryItem {
+    reason: CollaborationRequestEmailReason;
+}
+
 export interface ICollaborationRequest {
     customId: string;
     to: ICollaborationRequestRecipient;
+    title: string;
     body: string;
     from?: ICollaborationRequestFrom;
     createdAt: Date;
     expiresAt?: Date;
+    readAt?: Date;
     statusHistory?: ICollaborationRequestStatus[];
-    sentEmailHistory?: INotificationSentEmailHistoryItem[];
+    sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];
 }
 
 const collaborationRequestSchema = {
     customId: { type: String, unique: true, index: true },
     to: { type: collaborationRequestRecipientSchema },
+    title: { type: String },
     body: { type: String },
     from: { type: collaborationRequestFromSchema },
     createdAt: { type: Date, default: () => getDate() },
-    type: { type: String },
     expiresAt: { type: Date },
+    readAt: { type: Date },
     statusHistory: { type: [collaborationRequestStatusHistorySchema] },
     sentEmailHistory: { type: [notificationSentEmailHistorySchema] },
 };

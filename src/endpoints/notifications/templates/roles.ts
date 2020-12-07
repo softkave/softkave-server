@@ -25,7 +25,7 @@ export function rolesUpdatedNotification() {
         createdAt: getDate(),
         readAt: "",
         sentEmailHistory: [],
-        annotations: [],
+        attachments: [],
         actions: [],
         meta: [],
         reason: "",

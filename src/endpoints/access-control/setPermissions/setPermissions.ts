@@ -40,13 +40,13 @@ const setPermissions: SetPermissionsEndpoint = async (context, instData) => {
         throw new InvalidRequestError();
     }
 
-    await context.accessControl.queryPermission(
+    await context.accessControl.assertPermission(
         context,
         getBlockRootBlockId(block),
         {
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
-            resourceId: block.permissionResourceId,
+            permissionResourceId: block.permissionResourceId,
         },
         user
     );

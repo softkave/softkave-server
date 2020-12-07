@@ -1,7 +1,4 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { INote } from "../../../mongo/note";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
@@ -43,9 +40,9 @@ const addNote: AddNoteEndpoint = async (context, instData) => {
     const savedNote = await context.note.saveNote(context, note);
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Create,
+        action: SystemActionType.Create,
         resourceId: note.customId,
-        resourceType: AuditLogResourceType.Note,
+        resourceType: SystemResourceType.Note,
         organizationId: getBlockRootBlockId(block),
         resourceOwnerId: block.customId,
     });

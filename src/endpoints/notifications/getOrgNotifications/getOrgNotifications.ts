@@ -23,7 +23,7 @@ const getOrgNotifications: GetOrgNotificationsEndpoint = async (
         {
             resourceType: SystemResourceType.Notification,
             action: SystemActionType.Read,
-            resourceId: org.customId,
+            permissionResourceId: org.customId,
         },
         user
     );

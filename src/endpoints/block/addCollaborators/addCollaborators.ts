@@ -1,14 +1,16 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
+import { assertBlock } from "../../../mongo/block/utils";
 import {
     CollaborationRequestStatusType,
-    INotification,
-    NotificationType,
-} from "../../../mongo/notification";
+    ICollaborationRequest,
+} from "../../../mongo/collaborationRequest";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
+import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import { fireAndForgetPromise } from "../../utils";
-import canReadBlock from "../canReadBlock";
+import { getBlockRootBlockId } from "../utils";
 import { broadcastToOrgsAndExistingUsers } from "./broadcastToOrgAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
 import sendEmails from "./sendEmails";
@@ -19,41 +21,51 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     const result = validate(instData.data, addCollaboratorsJoiSchema);
     const collaborators = result.collaborators;
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, result.blockId);
+    const org = await context.block.getBlockById(context, result.blockId);
 
-    await canReadBlock({ user, block });
+    assertBlock(org);
 
-    if (block.type !== BlockType.Org) {
+    if (org.type !== BlockType.Org) {
         throw new InvalidRequestError();
     }
 
+    await context.accessControl.assertPermission(
+        context,
+        getBlockRootBlockId(org),
+        {
+            resourceType: SystemResourceType.CollaborationRequest,
+            action: SystemActionType.Create,
+            permissionResourceId: org.permissionResourceId,
+        },
+        user
+    );
+
     const { indexedExistingUsers } = await filterNewCollaborators(context, {
-        block,
+        block: org,
         collaborators,
     });
 
     const now = getDate();
-
     const collaborationRequests = collaborators.map((request) => {
         const notificationBody =
             request.body ||
-            `You have been invited by ${user.name} to collaborate in ${block.name}.`;
+            `You have been invited by ${user.name} to collaborate in ${org.name}.`;
 
-        return {
+        const newRequest: ICollaborationRequest = {
             customId: request.customId,
             from: {
                 userId: user.customId,
                 name: user.name,
-                blockId: block.customId,
-                blockName: block.name,
-                blockType: block.type,
+                blockId: org.customId,
+                blockName: org.name,
+                blockType: org.type,
             },
             createdAt: now,
+            title: `Collaboration request from ${org.name}`,
             body: notificationBody,
             to: {
                 email: request.email,
             },
-            type: NotificationType.NewCollaborationRequest,
             expiresAt: request.expiresAt as any,
             statusHistory: [
                 {
@@ -62,16 +74,18 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
                 },
             ],
             sentEmailHistory: [],
-        } as INotification;
+        };
+
+        return newRequest;
     });
 
-    await context.notification.bulkSaveCollaborationRequests(
+    await context.collaborationRequest.bulkSaveCollaborationRequests(
         context,
         collaborationRequests
     );
 
     broadcastToOrgsAndExistingUsers(context, instData, {
-        block,
+        block: org,
         collaborationRequests,
         indexedExistingUsers,
     });
@@ -80,13 +94,15 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     fireAndForgetPromise(
         sendEmails(context, instData, {
             user,
-            block,
+            block: org,
             indexedExistingUsers,
             requests: collaborationRequests,
         })
     );
 
-    return { requests: collaborationRequests };
+    return {
+        requests: getPublicCollaborationRequestArray(collaborationRequests),
+    };
 };
 
 export default addCollaborators;

@@ -14,6 +14,11 @@ export interface INotificationContext {
         id: string,
         userId: string
     ) => Promise<INotification | undefined>;
+    getUserNotificationsById: (
+        ctx: IBaseContext,
+        ids: string[],
+        userId: string
+    ) => Promise<INotification[]>;
     getUserNotifications: (
         ctx: IBaseContext,
         userId: string
@@ -93,7 +98,16 @@ export default class NotificationContext implements INotificationContext {
     public getNotificationById = wrapFireAndThrowError(
         (ctx: IBaseContext, id: string, userId: string) => {
             return ctx.models.notificationModel.model
-                .findOne({ customId: id, recipientIds: userId })
+                .findOne({ customId: id, recipientId: userId })
+                .lean()
+                .exec();
+        }
+    );
+
+    public getUserNotificationsById = wrapFireAndThrowError(
+        (ctx: IBaseContext, ids: string[], userId: string) => {
+            return ctx.models.notificationModel.model
+                .find({ customId: { $in: ids }, recipientId: userId })
                 .lean()
                 .exec();
         }
@@ -112,7 +126,7 @@ export default class NotificationContext implements INotificationContext {
         (ctx: IBaseContext, userId: string) => {
             return ctx.models.notificationModel.model
                 .find({
-                    recipientIds: userId,
+                    recipientId: userId,
                 })
                 .lean()
                 .exec();

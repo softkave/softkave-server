@@ -1,20 +1,20 @@
+import { SystemResourceType } from "../../models/system";
 import { BlockType, IBlock } from "../block";
-import { AuditLogResourceType } from "./definitions";
 
 export function getBlockAuditLogResourceType(
-  block: IBlock
-): AuditLogResourceType {
-  switch (block.type) {
-    case BlockType.Board:
-      return AuditLogResourceType.Board;
+    block: IBlock
+): SystemResourceType {
+    switch (block.type) {
+        case BlockType.Board:
+            return SystemResourceType.Board;
 
-    case BlockType.Org:
-      return AuditLogResourceType.Org;
+        case BlockType.Org:
+            return SystemResourceType.Org;
 
-    case BlockType.Root:
-      return AuditLogResourceType.RootBlock;
+        case BlockType.Root:
+            return SystemResourceType.RootBlock;
 
-    case BlockType.Task:
-      return AuditLogResourceType.Task;
-  }
+        case BlockType.Task:
+            return SystemResourceType.Task;
+    }
 }

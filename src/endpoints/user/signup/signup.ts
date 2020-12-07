@@ -1,9 +1,6 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -43,9 +40,9 @@ const signup: SignupEndpoint = async (context, instData) => {
     await context.createUserRootBlock(context, { ...instData, data: { user } });
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Signup,
+        action: SystemActionType.Signup,
         resourceId: user.customId,
-        resourceType: AuditLogResourceType.User,
+        resourceType: SystemResourceType.User,
     });
 
     return {

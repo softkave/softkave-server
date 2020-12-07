@@ -1,5 +1,5 @@
 import pick from "lodash/pick";
-import { AuditLogActionType } from "../../../mongo/audit-log";
+import { SystemActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
@@ -64,7 +64,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     );
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Update,
+        action: SystemActionType.Update,
         resourceId: block.customId,
         resourceType: getBlockAuditLogResourceType(block),
         change: {

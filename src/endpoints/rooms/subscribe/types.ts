@@ -1,9 +1,9 @@
-import { AuditLogResourceType } from "../../../mongo/audit-log";
+import { SystemResourceType } from "../../../mongo/audit-log";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 interface ISubscriptionableResource {
-    type: AuditLogResourceType;
+    type: SystemResourceType;
     customId: string;
 }
 

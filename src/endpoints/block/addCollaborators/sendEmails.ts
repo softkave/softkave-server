@@ -1,9 +1,9 @@
 import moment from "moment";
 import { IBlock } from "../../../mongo/block/definitions";
 import {
-    INotification,
-    INotificationSentEmailHistoryItem,
-} from "../../../mongo/notification";
+    CollaborationRequestEmailReason,
+    ICollaborationRequest,
+} from "../../../mongo/collaborationRequest";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../resources/appInfo";
 import { getDate } from "../../../utilities/fns";
@@ -21,7 +21,7 @@ export interface IAddCollaboratorsSendEmailsFnProps {
     user: IUser;
     block: IBlock;
     indexedExistingUsers: { [key: string]: IUser };
-    requests: INotification[];
+    requests: ICollaborationRequest[];
 }
 
 export default async function sendEmails(
@@ -31,12 +31,14 @@ export default async function sendEmails(
 ) {
     const { user, block, indexedExistingUsers, requests } = data;
 
+    // TODO: should we send emails only to people who aren't users?
     const sendEmailPromises: IPromiseWithId[] = requests.map(
         (request, index) => {
             const promise = context.sendCollaborationRequestEmail({
                 email: request.to.email,
                 senderName: user.name,
                 senderOrg: block.name,
+                title: request.title,
                 message: request.body,
                 expiration: request.expiresAt
                     ? moment(request.expiresAt)
@@ -56,7 +58,7 @@ export default async function sendEmails(
     // TODO: Resend collaboration requests that have not been sent or that failed
 
     const settledPromises = await waitOnPromises(sendEmailPromises);
-    const successfulRequests: INotification[] = settledPromises
+    const successfulRequests: ICollaborationRequest[] = settledPromises
         .filter(({ fulfilled }) => fulfilled)
         .map(({ id }) => {
             return requests[id];
@@ -67,6 +69,7 @@ export default async function sendEmails(
     successfulRequests.forEach((req) => {
         const sentEmailHistory = req.sentEmailHistory.concat({
             date: getDate(),
+            reason: CollaborationRequestEmailReason.RequestNotification,
         });
 
         socketUpdates.push({
@@ -82,7 +85,7 @@ export default async function sendEmails(
         // I also noticed it mostly for arrays, cause sprint bulk updates work just
         // fine for scalar values, though I haven't tested array updates in sprint bulk updates
         fireAndForgetPromise(
-            context.notification.updateCollaborationRequestById(
+            context.collaborationRequest.updateCollaborationRequestById(
                 context,
                 req.customId,
                 {

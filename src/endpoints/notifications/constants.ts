@@ -1,25 +1,16 @@
 import { SystemResourceType } from "../../models/system";
+import { SubscriptionResourceTypes } from "./updateResourceSubscriptions/types";
 
-const subscriptionResourceTypes = [
-    (Org = "org"),
-    (Board = "board"),
-    (Task = "task"),
-    (Status = "status"),
-    (Label = "label"),
-    (Resolution = "resolution"),
-    (Note = "note"),
-    (Comment = "comment"),
-    (Room = "room"),
-    (Sprint = "sprint"),
-    (Chat = "chat"),
-    (SubTask = "subtask"),
-    (CollaborationRequest = "collaborationRequest"),
-    (Team = "team"),
-    (Role = "role"),
-    (Permission = "permission"),
+const subscriptionResourceTypes: SubscriptionResourceTypes[] = [
+    SystemResourceType.Org,
+    SystemResourceType.Board,
+    SystemResourceType.Task,
+    SystemResourceType.CollaborationRequest,
 ];
 
 export const notificationConstants = {
+    subscriptionResourceTypes,
     maxAddCollaboratorMessageLength: 500,
     maxMarkNotificationsReadNum: 200,
+    maxUpdateResourceSubscriptionsNum: 10,
 };

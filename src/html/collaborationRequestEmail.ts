@@ -8,14 +8,13 @@ import {
     getTemplateStylesHTML,
 } from "./helpers";
 
-export const collaborationRequestEmailTitle = "Collaboration Request";
-
 export interface ICollaborationRequestEmailProps {
     signupLink: string;
     loginLink: string;
     senderName: string;
     senderOrg: string;
     recipientIsUser: boolean;
+    title: string;
     message?: string;
     expiration?: Moment;
 }
@@ -43,13 +42,13 @@ export function collaborationRequestEmailHTML(
     <html>
     <head>
         <meta charset="utf-8" />
-        <title>${getHeaderText(collaborationRequestEmailTitle)}</title>
+        <title>${getHeaderText(props.title)}</title>
         <style>
         ${getTemplateStylesHTML()}
         </style>
     </head>
     <body>
-        ${getHeaderHTML(collaborationRequestEmailTitle)}
+        ${getHeaderHTML(props.title)}
         <div class="email-body">
             <div class="email-content-center">
                 <p>
@@ -106,7 +105,7 @@ export function collaborationRequestEmailText(
     const message = getMessage();
 
     const textBlocks = [
-        getHeaderText(collaborationRequestEmailTitle),
+        getHeaderText(props.title),
         getNewlines(2),
         `You have a new collaboration request from ${props.senderName} of ${props.senderOrg}`,
         `${message.length > 0 ? `${getNewlines(2)}${message}` : ""}`,

@@ -23,7 +23,7 @@ const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
         {
             resourceType: SystemResourceType.Notification,
             action: SystemActionType.Read,
-            resourceId: block.customId,
+            permissionResourceId: block.customId,
         },
         user
     );

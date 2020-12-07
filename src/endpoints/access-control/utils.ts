@@ -17,6 +17,8 @@ const publicRoleFields = getFields<IPublicRoleData>({
     resourceId: true,
     resourceType: true,
     lowerCasedName: true,
+    nextRoleId: true,
+    prevRoleId: true,
 });
 
 const publicPermissionFields = getFields<IPublicPermissionData>({
@@ -30,6 +32,7 @@ const publicPermissionFields = getFields<IPublicPermissionData>({
     createdAt: getDateString,
     updatedBy: true,
     updatedAt: getDateString,
+    available: true,
 });
 
 export const getPublicRoleData = (

@@ -1,7 +1,4 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { IComment } from "../../../mongo/comment";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
@@ -28,9 +25,9 @@ const addComment: AddCommentEndpoint = async (context, instData) => {
     });
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Create,
+        action: SystemActionType.Create,
         resourceId: savedComment.customId,
-        resourceType: AuditLogResourceType.Comment,
+        resourceType: SystemResourceType.Comment,
         organizationId: getBlockRootBlockId(task),
         resourceOwnerId: task.customId,
     });

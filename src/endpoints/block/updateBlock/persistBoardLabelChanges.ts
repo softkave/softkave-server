@@ -1,7 +1,4 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { IBlock } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -39,9 +36,9 @@ async function persistBoardLabelChanges(
     oldBoardLabels.forEach((label) => {
         if (!indexedNewBoardLabels[label.customId]) {
             logEntries.push({
-                action: AuditLogActionType.Delete,
+                action: SystemActionType.Delete,
                 resourceId: label.customId,
-                resourceType: AuditLogResourceType.Label,
+                resourceType: SystemResourceType.Label,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -55,9 +52,9 @@ async function persistBoardLabelChanges(
 
         if (!existingLabel) {
             logEntries.push({
-                action: AuditLogActionType.Create,
+                action: SystemActionType.Create,
                 resourceId: label.customId,
-                resourceType: AuditLogResourceType.Label,
+                resourceType: SystemResourceType.Label,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -80,9 +77,9 @@ async function persistBoardLabelChanges(
             });
 
             logEntries.push({
-                action: AuditLogActionType.Update,
+                action: SystemActionType.Update,
                 resourceId: label.customId,
-                resourceType: AuditLogResourceType.Label,
+                resourceType: SystemResourceType.Label,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
                 change: {

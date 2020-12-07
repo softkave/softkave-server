@@ -1,7 +1,4 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { indexArray } from "../../../utilities/fns";
@@ -44,9 +41,9 @@ async function persistBoardStatusChanges(
     oldBoardStatuses.forEach((status, index) => {
         if (!indexedNewBoardStatuses[status.customId]) {
             logEntries.push({
-                action: AuditLogActionType.Delete,
+                action: SystemActionType.Delete,
                 resourceId: status.customId,
-                resourceType: AuditLogResourceType.Status,
+                resourceType: SystemResourceType.Status,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -66,9 +63,9 @@ async function persistBoardStatusChanges(
 
         if (!existingStatus) {
             logEntries.push({
-                action: AuditLogActionType.Create,
+                action: SystemActionType.Create,
                 resourceId: status.customId,
-                resourceType: AuditLogResourceType.Status,
+                resourceType: SystemResourceType.Status,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -94,9 +91,9 @@ async function persistBoardStatusChanges(
             });
 
             logEntries.push({
-                action: AuditLogActionType.Update,
+                action: SystemActionType.Update,
                 resourceId: status.customId,
-                resourceType: AuditLogResourceType.Status,
+                resourceType: SystemResourceType.Status,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
                 change: {

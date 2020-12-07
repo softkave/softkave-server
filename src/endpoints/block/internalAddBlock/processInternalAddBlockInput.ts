@@ -78,6 +78,7 @@ const fields = getFields<
             assignedBy: args.user.customId,
         };
     },
+    permissionResourceId: true,
 });
 
 export default function processInternalAddBlockInput(

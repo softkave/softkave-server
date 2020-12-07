@@ -40,6 +40,8 @@ export enum NotificationType {
     TaskCreated = "taskCreated",
     TaskUpdated = "taskUpdated",
     TaskDeleted = "taskDeleted",
+    TaskAssigned = "taskAssigned",
+    TaskUnassigned = "taskUnassigned",
 
     // StatusCreated = "statusCreated",
     // StatusUpdated = "statusUpdated",
@@ -74,10 +76,11 @@ enum NotificationActions {
     RespondToCollaboratonRequest = "respondToCollaborationRequest",
 }
 
-export interface INotificationAnnotations {
+export interface INotificationAttachment {
     resourceType: SystemResourceType;
     resourceId: string;
-    places: Array<{ start: number; end: number }>;
+    places?: Array<{ start: number; end: number }>;
+    text?: string[];
 }
 
 export const notificationAttachedResourceSchema = {
@@ -109,10 +112,10 @@ export interface INotification {
     createdAt: Date;
     readAt?: Date;
     sentEmailHistory?: INotificationSentEmailHistoryItem[];
-    annotations?: INotificationAnnotations[];
+    attachments?: INotificationAttachment[];
     actions?: NotificationActions[];
     meta?: any[];
-    reason: NotificationReason;
+    reason?: NotificationReason;
 }
 
 export const notificationSchema = {

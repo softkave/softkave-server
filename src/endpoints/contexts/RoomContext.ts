@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { AuditLogResourceType } from "../../mongo/audit-log";
+import { SystemResourceType } from "../../mongo/audit-log";
 import { BlockType } from "../../mongo/block";
 import { INote } from "../../mongo/note";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
@@ -187,7 +187,7 @@ export default class RoomContext implements IRoomContext {
     );
 
     public getUserRoomName(userId: string) {
-        return `${AuditLogResourceType.User}-${userId}`;
+        return `${SystemResourceType.User}-${userId}`;
     }
 
     public getBlockRoomName(type: BlockType, id: string) {
@@ -195,11 +195,11 @@ export default class RoomContext implements IRoomContext {
     }
 
     public getNoteRoomName(note: INote) {
-        return `${AuditLogResourceType.Note}-${note.customId}`;
+        return `${SystemResourceType.Note}-${note.customId}`;
     }
 
     public getChatRoomName(roomId: string) {
-        return `${AuditLogResourceType.Room}-${roomId}`;
+        return `${SystemResourceType.Room}-${roomId}`;
     }
 }
 

@@ -1,4 +1,4 @@
-import { AuditLogActionType } from "../../../mongo/audit-log";
+import { SystemActionType } from "../../../mongo/audit-log";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
@@ -89,7 +89,7 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
     );
 
     context.auditLog.insert(context, instData, {
-        action: AuditLogActionType.Transfer,
+        action: SystemActionType.Transfer,
         resourceId: draggedBlock.customId,
         resourceType: getBlockAuditLogResourceType(draggedBlock),
         change: {

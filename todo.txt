@@ -22,9 +22,15 @@ just make special accomodations for them
 - pagination & new counts
 
 - 2 types of subscriptions, on resource, and on authoritative parent
+- prevent too many notifications, like if I created a board
+- delete all mark deleted blocks
+- delete for now, don't mark deleted
 
 - Text search & indexing, elastic search
 - File upload
 - How many dynos do I have with our subscription on Heroku
 - Payment
 - dueAt - your date, and dueAt duration + or -
+
+Subscription edge cases
+- when comments in a task are updated, let user know

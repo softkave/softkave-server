@@ -1,10 +1,15 @@
 import {
+    CollaborationRequestStatusType,
+    ICollaborationRequest,
+} from "../../mongo/collaborationRequest";
+import {
     INotification,
     INotificationSubscription,
 } from "../../mongo/notification";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import {
+    IPublicCollaborationRequest,
     IPublicNotificationData,
     IPublicNotificationSubscription,
 } from "./types";
@@ -41,4 +46,55 @@ export function getPublicNotificationSubscriptionsArray(
     return subscriptions.map((subscription) =>
         extractFields(subscription, publicNotificationSubscriptionFields)
     );
+}
+
+const publicCollaborationRequestFields = getFields<IPublicCollaborationRequest>(
+    {
+        customId: true,
+        to: {
+            email: true,
+        },
+        body: true,
+        from: {
+            userId: true,
+            name: true,
+            blockId: true,
+            blockName: true,
+            blockType: true,
+        },
+        createdAt: getDateString,
+        readAt: getDateString,
+        expiresAt: getDateString,
+        statusHistory: {
+            status: true,
+            date: getDateString,
+        },
+        sentEmailHistory: {
+            date: getDateString,
+        },
+    }
+);
+
+export function getPublicCollaborationRequest(
+    notification: Partial<ICollaborationRequest>
+): IPublicCollaborationRequest {
+    return extractFields(notification, publicCollaborationRequestFields);
+}
+
+export function getPublicCollaborationRequestArray(
+    notifications: Array<Partial<ICollaborationRequest>>
+): IPublicCollaborationRequest[] {
+    return notifications.map((notification) =>
+        extractFields(notification, publicCollaborationRequestFields)
+    );
+}
+
+export function isCollaborationRequestAccepted(request: ICollaborationRequest) {
+    if (Array.isArray(request.statusHistory)) {
+        return !!request.statusHistory.find((status) => {
+            return status.status === CollaborationRequestStatusType.Accepted;
+        });
+    }
+
+    return false;
 }

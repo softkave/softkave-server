@@ -1,7 +1,4 @@
-import {
-    AuditLogActionType,
-    AuditLogResourceType,
-} from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
 import { IBlock, IBoardStatusResolution } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -51,9 +48,9 @@ async function persistBoardResolutionsChanges(
     oldBoardResolutions.forEach((resolution) => {
         if (!indexedNewBoardResolutions[resolution.customId]) {
             logEntries.push({
-                action: AuditLogActionType.Delete,
+                action: SystemActionType.Delete,
                 resourceId: resolution.customId,
-                resourceType: AuditLogResourceType.Resolution,
+                resourceType: SystemResourceType.Resolution,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -68,9 +65,9 @@ async function persistBoardResolutionsChanges(
 
         if (!existingResolution) {
             logEntries.push({
-                action: AuditLogActionType.Create,
+                action: SystemActionType.Create,
                 resourceId: resolution.customId,
-                resourceType: AuditLogResourceType.Resolution,
+                resourceType: SystemResourceType.Resolution,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
             });
@@ -96,9 +93,9 @@ async function persistBoardResolutionsChanges(
             });
 
             logEntries.push({
-                action: AuditLogActionType.Update,
+                action: SystemActionType.Update,
                 resourceId: resolution.customId,
-                resourceType: AuditLogResourceType.Resolution,
+                resourceType: SystemResourceType.Resolution,
                 organizationId: getBlockRootBlockId(block),
                 resourceOwnerId: block.customId,
                 change: {

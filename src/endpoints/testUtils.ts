@@ -115,7 +115,7 @@ export function getTestBaseContext() {
             bulkGetBlocksByIds: noop as any,
             updateBlockById: noop as any,
             saveBlock: noop as any,
-            markBlockDeleted: noop as any,
+            deleteBlock: noop as any,
             getBlockChildren: noop as any,
             getUserRootBlocks: noop as any,
             bulkUpdateTaskSprints: noop as any,

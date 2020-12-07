@@ -1,8 +1,4 @@
 import { BlockType, IBlock } from "../../mongo/block";
-import {
-    CollaborationRequestStatusType,
-    INotification,
-} from "../../mongo/notification";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicBlock } from "./types";
@@ -100,7 +96,10 @@ export function getPublicBlocksArray(
     return blocks.map((block) => extractFields(block, blockFields));
 }
 
-export function getBlockRootBlockId(block: IBlock) {
+export function getBlockRootBlockId(block: {
+    rootBlockId?: string;
+    customId: string;
+}) {
     return block.rootBlockId || block.customId;
 }
 
@@ -119,54 +118,4 @@ export function getBlockTypeName(blockType: BlockType) {
         default:
             return "Block";
     }
-}
-
-export function isRequestAccepted(request: INotification) {
-    if (Array.isArray(request.statusHistory)) {
-        return !!request.statusHistory.find((status) => {
-            return status.status === CollaborationRequestStatusType.Accepted;
-        });
-    }
-
-    return false;
-}
-
-const publicCollaborationRequestFields = getFields<IPublicNotificationData>({
-    customId: true,
-    to: {
-        email: true,
-    },
-    body: true,
-    from: {
-        userId: true,
-        name: true,
-        blockId: true,
-        blockName: true,
-        blockType: true,
-    },
-    createdAt: getDateString,
-    type: true,
-    readAt: getDateString,
-    expiresAt: getDateString,
-    statusHistory: {
-        status: true,
-        date: getDateString,
-    },
-    sentEmailHistory: {
-        date: getDateString,
-    },
-});
-
-export function getPublicNotificationData(
-    notification: Partial<INotification>
-): IPublicNotificationData {
-    return extractFields(notification, publicCollaborationRequestFields);
-}
-
-export function getPublicNotificationsArray(
-    notifications: Array<Partial<INotification>>
-): IPublicNotificationData[] {
-    return notifications.map((notification) =>
-        extractFields(notification, publicCollaborationRequestFields)
-    );
 }

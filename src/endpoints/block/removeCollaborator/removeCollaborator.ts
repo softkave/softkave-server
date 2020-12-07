@@ -1,10 +1,10 @@
-import uuid = require("uuid");
-import { INotification, NotificationType } from "../../../mongo/notification";
-import { getDate } from "../../../utilities/fns";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import logger from "../../../utilities/logger";
+import { getCollaboratorRemovedNotification } from "../../notifications/templates/collaborator";
 import { UserDoesNotExistError } from "../../user/errors";
-import canReadBlock from "../canReadBlock";
+import { fireAndForgetPromise } from "../../utils";
+import { getBlockRootBlockId } from "../utils";
 import { RemoveCollaboratorEndpoint } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";
 
@@ -14,56 +14,50 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
 ) => {
     const data = validate(instData.data, removeCollaboratorJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
+    const org = await context.block.getBlockById(context, data.blockId);
 
-    canReadBlock({ user, block });
+    assertBlock(org);
+    await context.accessControl.assertPermission(
+        context,
+        getBlockRootBlockId(org),
+        {
+            resourceType: SystemResourceType.Collaborator,
+            action: SystemActionType.Delete,
+            permissionResourceId: org.permissionResourceId,
+        },
+        user
+    );
 
-    const fetchedCollaborator = await context.user.getUserById(
+    const collaborator = await context.user.getUserById(
         context,
         data.collaboratorId
     );
 
-    if (!fetchedCollaborator) {
+    if (!collaborator) {
         throw new UserDoesNotExistError();
     }
 
-    const collaboratorOrgs = [...fetchedCollaborator.orgs];
-    const blockIndexInCollaborator = collaboratorOrgs.findIndex(
-        (org) => org.customId === block.customId
-    );
+    const collaboratorOrgs = [...collaborator.orgs];
+    const index = collaboratorOrgs.findIndex((o) => o.customId === o.customId);
 
-    if (blockIndexInCollaborator === -1) {
+    if (index === -1) {
         return;
     }
 
-    collaboratorOrgs.splice(blockIndexInCollaborator, 1);
-    await context.user.updateUserById(context, fetchedCollaborator.customId, {
+    collaboratorOrgs.splice(index, 1);
+    await context.user.updateUserById(context, collaborator.customId, {
         orgs: collaboratorOrgs,
     });
 
-    const message =
-        `Hi ${fetchedCollaborator.name}, ` +
-        `we're sorry to inform you that you have been removed from ${block.name}. Have a good day!`;
+    const notification = getCollaboratorRemovedNotification(
+        org,
+        collaborator,
+        user
+    );
 
-    const notification: INotification = {
-        customId: uuid(),
-
-        // TODO: should we have a from field here?
-
-        createdAt: getDate(),
-        body: message,
-        to: {
-            email: fetchedCollaborator.email,
-        },
-        type: NotificationType.RemoveCollaborator,
-    };
-
-    context.notification
-        .saveCollaborationRequest(context, notification)
-        .catch((error) => {
-            // TODO: should this be a fire and forget?
-            console.error(error);
-        });
+    fireAndForgetPromise(
+        context.notification.bulkSaveNotifications(context, [notification])
+    );
 };
 
 export default removeCollaborator;

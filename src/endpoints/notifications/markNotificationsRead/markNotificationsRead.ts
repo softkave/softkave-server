@@ -1,4 +1,4 @@
-import { getDateString } from "../../../utilities/fns";
+import { getDateString, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { MarkNotificationReadEndpoint } from "./types";
 import { markNotificationsReadJoiSchema } from "./validation";
@@ -9,13 +9,22 @@ const markNotificationsRead: MarkNotificationReadEndpoint = async (
 ) => {
     const data = validate(instData.data, markNotificationsReadJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const processedNotifications = data.notifications.map((n) => {
+
+    const notifications = await context.notification.getUserNotificationsById(
+        context,
+        data.notifications.map((n) => n.customId),
+        user.customId
+    );
+
+    const inputMap = indexArray(data.notifications, { path: "customId" });
+    const processedNotifications = notifications.map((n) => {
+        const inputReadAt = inputMap[n.customId].readAt;
         return {
             customId: n.customId,
-            readAt: n.readAt
-                ? n.readAt > Date.now()
+            readAt: inputReadAt
+                ? inputReadAt > Date.now()
                     ? getDateString()
-                    : n.readAt
+                    : inputReadAt
                 : getDateString(),
         };
     });

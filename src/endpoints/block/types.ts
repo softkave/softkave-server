@@ -66,6 +66,7 @@ export interface INewBlockInput {
     taskResolution?: string;
     labels?: IBlockAssignedLabelInput[];
     taskSprint?: ITaskSprintInput;
+    permissionResourceId: string;
 }
 
 export type IPublicBlock = ConvertDatesToStrings<{
@@ -97,5 +98,3 @@ export type IPublicBlock = ConvertDatesToStrings<{
     sprintOptions?: IBoardSprintOptions;
     lastSprintId?: string;
 }>;
-
-export type IPublicCollaborationRequest = ConvertDatesToStrings<ICollaborationRequest>;

@@ -1,22 +1,24 @@
 import {
-    collaborationRequestEmailHTML,
-    collaborationRequestEmailText,
-    ICollaborationRequestEmailProps,
-} from "../../html/collaborationRequestEmail";
+    collaborationRequestRevokedEmailHTML,
+    collaborationRequestRevokedEmailText,
+    ICollaborationRequestRevokedEmailProps,
+} from "../../html/collaborationRequestRevokedEmail";
 import appInfo from "../../resources/appInfo";
 import aws from "../../resources/aws";
 
 const ses = new aws.SES();
 
-export interface ISendCollaborationRequestEmailProps
-    extends ICollaborationRequestEmailProps {
+export interface ISendCollaborationRequestRevokedEmailProps
+    extends ICollaborationRequestRevokedEmailProps {
     email: string;
 }
 
-async function sendCollabReqEmail(props: ISendCollaborationRequestEmailProps) {
+async function sendCollaborationRequestRevokedEmail(
+    props: ISendCollaborationRequestRevokedEmailProps
+) {
     try {
-        const htmlContent = collaborationRequestEmailHTML(props);
-        const textContent = collaborationRequestEmailText(props);
+        const htmlContent = collaborationRequestRevokedEmailHTML(props);
+        const textContent = collaborationRequestRevokedEmailText(props);
 
         const result = await ses
             .sendEmail({
@@ -50,4 +52,4 @@ async function sendCollabReqEmail(props: ISendCollaborationRequestEmailProps) {
     }
 }
 
-export default sendCollabReqEmail;
+export default sendCollaborationRequestRevokedEmail;

@@ -11,6 +11,7 @@ import OperationError from "../../../utilities/OperationError";
 import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
+import { getBlockRootBlockId } from "../../block/utils";
 import { InvalidRequestError } from "../../errors";
 import { getPublicRoleData } from "../utils";
 import {
@@ -101,13 +102,13 @@ const setRoles: SetRolesEndpoint = async (context, instData) => {
         throw new InvalidRequestError();
     }
 
-    await context.accessControl.queryPermission(
+    await context.accessControl.assertPermission(
         context,
-        block.rootBlockId || block.customId,
+        getBlockRootBlockId(block),
         {
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
-            resourceId: block.customId,
+            permissionResourceId: block.permissionResourceId,
         },
         user
     );
@@ -126,6 +127,7 @@ const setRoles: SetRolesEndpoint = async (context, instData) => {
 
     // TODO: all mongodb session operations should be abstracted away
     const session = await getDefaultConnection().getConnection().startSession();
+    session.startTransaction();
 
     if (add.length > 0) {
         promises.push({
@@ -180,6 +182,7 @@ const setRoles: SetRolesEndpoint = async (context, instData) => {
         }
     });
 
+    // await session.commitTransaction()
     session.endSession();
 
     return {

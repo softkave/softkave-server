@@ -1,3 +1,4 @@
+import { ICollaborationRequest } from "../../mongo/collaborationRequest";
 import {
     INotification,
     INotificationSubscription,
@@ -6,3 +7,4 @@ import { ConvertDatesToStrings } from "../../utilities/types";
 
 export type IPublicNotificationData = ConvertDatesToStrings<INotification>;
 export type IPublicNotificationSubscription = ConvertDatesToStrings<INotificationSubscription>;
+export type IPublicCollaborationRequest = ConvertDatesToStrings<ICollaborationRequest>;

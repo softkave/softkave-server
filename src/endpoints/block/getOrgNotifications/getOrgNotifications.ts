@@ -1,6 +1,12 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
+import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
-import { getPublicNotificationsArray } from "../utils";
+import {
+    getPublicCollaborationRequestArray,
+    getPublicNotificationsArray,
+} from "../../notifications/utils";
+import { getBlockRootBlockId } from "../utils";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";
 
@@ -13,17 +19,54 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
         getBlockCollaborationRequestsJoiSchema
     );
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
+    const org = await context.block.getBlockById(context, data.orgId);
 
-    await canReadBlock({ user, block });
+    assertBlock(org);
 
-    const requests = await context.notification.getCollaborationRequestsByBlockId(
+    const permissions = await context.accessControl.queryPermissions(
         context,
-        block.customId
+        getBlockRootBlockId(org),
+        [
+            {
+                resourceType: SystemResourceType.Notification,
+                action: SystemActionType.Read,
+                permissionResourceId: org.permissionResourceId,
+            },
+            {
+                resourceType: SystemResourceType.CollaborationRequest,
+                action: SystemActionType.Read,
+                permissionResourceId: org.permissionResourceId,
+            },
+        ],
+        user
     );
 
+    const permissionsMap = indexArray(permissions, { path: "resourceType" });
+    const shouldLoadNotifications =
+        permissionsMap[SystemResourceType.Notification];
+    const shouldLoadRequests =
+        permissionsMap[SystemResourceType.CollaborationRequest];
+
+    let requests = [];
+    let notifications = [];
+
+    if (shouldLoadRequests) {
+        requests = await context.collaborationRequest.getCollaborationRequestsByBlockId(
+            context,
+            org.customId
+        );
+    }
+
+    if (shouldLoadNotifications) {
+        notifications = await context.notification.getNotificationsByOrgId(
+            context,
+            org.customId
+        );
+    }
+
     return {
-        notifications: getPublicNotificationsArray(requests),
+        notifications: getPublicNotificationsArray(notifications),
+        requests: getPublicCollaborationRequestArray(requests),
     };
 };
 

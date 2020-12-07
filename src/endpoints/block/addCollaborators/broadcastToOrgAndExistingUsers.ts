@@ -1,11 +1,11 @@
 import { IBlock } from "../../../mongo/block";
-import { INotification } from "../../../mongo/notification/definitions";
+import { ICollaborationRequest } from "../../../mongo/collaborationRequest";
 import { IUser } from "../../../mongo/user/definitions";
 import RequestData from "../../RequestData";
 import { IAddCollaboratorsContext } from "./types";
 
 export interface IAddCollaboratorsBroadcastFnData {
-    collaborationRequests: INotification[];
+    collaborationRequests: ICollaborationRequest[];
     block: IBlock;
     indexedExistingUsers: { [key: string]: IUser };
 }

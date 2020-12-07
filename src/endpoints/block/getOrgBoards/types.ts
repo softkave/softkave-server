@@ -1,19 +1,17 @@
-import { BlockType } from "../../../mongo/block";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicBlock } from "../types";
 
-export interface IGetBlockChildrenParameters {
-    blockId: string;
-    typeList?: BlockType[];
+export interface IGetOrgBoardsParameters {
+    orgId: string;
 }
 
-export interface IGetBlockChildrenResult {
-    blocks: IPublicBlock[];
+export interface IGetOrgBoardsResult {
+    boards: IPublicBlock[];
 }
 
-export type GetBlockChildrenEndpoint = Endpoint<
+export type GetOrgBoardsEndpoint = Endpoint<
     IBaseContext,
-    IGetBlockChildrenParameters,
-    IGetBlockChildrenResult
+    IGetOrgBoardsParameters,
+    IGetOrgBoardsResult
 >;

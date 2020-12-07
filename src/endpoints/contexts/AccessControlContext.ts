@@ -14,7 +14,7 @@ import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 interface IPermissionQuery {
-    resourceId: string;
+    permissionResourceId: string;
     resourceType: SystemResourceType;
     action: SystemActionType;
 }
@@ -115,7 +115,7 @@ export default class AccessControlContext implements IAccessControlContext {
     ) {
         const queries = qs.reduce((accumulator, q) => {
             const baseQuery: FilterQuery<IAccessControlPermission> = {
-                permissionOwnerId: q.resourceId,
+                permissionOwnerId: q.permissionResourceId,
                 resourceType: q.resourceType,
                 action: q.action,
                 available: true,
@@ -285,16 +285,36 @@ export default class AccessControlContext implements IAccessControlContext {
             queries: IPermissionQuery[],
             user?: IUser
         ) => {
-            const permission = await ctx.accessControl.queryPermissions(
+            const permissions = await ctx.accessControl.queryPermissions(
                 ctx,
                 orgId,
                 queries,
                 user
             );
 
-            if (!permission) {
-                throw new PermissionDeniedError();
-            }
+            const permissionsMap = permissions.reduce((map, permission) => {
+                const m1 =
+                    map[permission.resourceType] ||
+                    ({} as Record<SystemActionType, Record<string, true>>);
+
+                const m2 =
+                    m1[permission.action] || ({} as Record<string, true>);
+
+                m2[permission.permissionOwnerId] = true;
+                map[permission.resourceType] = m1;
+
+                return map;
+            }, {} as Record<SystemResourceType, Record<SystemActionType, Record<string, true>>>);
+
+            queries.map((q) => {
+                if (
+                    !((permissionsMap[q.resourceType] || {})[q.action] || {})[
+                        q.permissionResourceId
+                    ]
+                ) {
+                    throw new PermissionDeniedError();
+                }
+            });
 
             return true;
         }

@@ -70,6 +70,7 @@ export default function manualProcessInternalAddBlockInput(
                   assignedBy: user.customId,
               }
             : undefined,
+        permissionResourceId: inputBlock.permissionResourceId,
     };
 
     return block;
