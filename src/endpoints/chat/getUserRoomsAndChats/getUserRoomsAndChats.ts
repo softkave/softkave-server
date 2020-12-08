@@ -1,3 +1,4 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { getPublicChatsArray, getPublicRoomsArray } from "../utils";
 import { GetUserRoomsAndChatsEndpoint } from "./type";
 
@@ -6,9 +7,28 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
     instaData
 ) => {
     const user = await context.session.getUser(context, instaData);
+
     context.socket.assertSocket(instaData);
 
-    const rooms = await context.chat.getRooms(context, user.customId);
+    const permissions = await context.accessControl.queryPermissions(
+        context,
+        user.orgs.map((o) => {
+            return {
+                orgId: o.customId,
+                resourceType: SystemResourceType.Chat,
+                action: SystemActionType.Read,
+                permissionResourceId: o.customId,
+            };
+        }),
+        user
+    );
+
+    const rooms = await context.chat.getRooms(
+        context,
+        user.customId,
+        permissions.map((p) => p.orgId)
+    );
+
     const chats = await context.chat.getMessages(
         context,
         rooms.map((rm) => rm.customId)

@@ -15,8 +15,13 @@ import { IUpdateItemById } from "../../utilities/types";
 import { IPublicBlock } from "../block/types";
 import { getPublicBlockData } from "../block/utils";
 import { getPublicChatData, getPublicRoomData } from "../chat/utils";
-import { IPublicNotificationData } from "../notifications/types";
 import {
+    IPublicCollaborationRequest,
+    IPublicNotificationData,
+} from "../notifications/types";
+import {
+    getPublicCollaborationRequest,
+    getPublicCollaborationRequestArray,
     getPublicNotificationData,
     getPublicNotificationsArray,
 } from "../notifications/utils";
@@ -26,12 +31,12 @@ import {
     IOutgoingCollaborationRequestResponsePacket,
     IOutgoingDeleteSprintPacket,
     IOutgoingEndSprintPacket,
-    IOutgoingNewNotificationsPacket,
+    IOutgoingNewCollaborationRequestsPacket,
     IOutgoingNewRoomPacket,
     IOutgoingNewSprintPacket,
     IOutgoingSendMessagePacket,
     IOutgoingStartSprintPacket,
-    IOutgoingUpdateNotificationsPacket,
+    IOutgoingUpdateCollaborationRequestsPacket,
     IOutgoingUpdateRoomReadCounterPacket,
     IOutgoingUpdateSprintPacket,
     IOutgoingUserUpdatePacket,
@@ -77,19 +82,19 @@ export interface IBroadcastHelpers {
     broadcastCollaborationRequestsUpdateToBlock: (
         context: IBaseContext,
         block: IBlock,
-        updates: Array<IUpdateItemById<IPublicNotificationData>>,
+        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
         instData?: RequestData
     ) => void;
     broadcastCollaborationRequestsUpdateToUser: (
         context: IBaseContext,
         user: IUser,
-        updates: Array<IUpdateItemById<IPublicNotificationData>>,
+        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
         instData?: RequestData
     ) => void;
     broadcastCollaborationRequestResponse: (
         context: IBaseContext,
         user: IUser,
-        request: INotification,
+        request: ICollaborationRequest,
         response: CollaborationRequestResponse,
         respondedAt: string,
         org: IPublicBlock,
@@ -277,8 +282,8 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             collaborationRequests: ICollaborationRequest[],
             instData?: RequestData
         ) => {
-            const orgBroadcastPacket: IOutgoingNewNotificationsPacket = {
-                notifications: getPublicNotificationsArray(
+            const orgBroadcastPacket: IOutgoingNewCollaborationRequestsPacket = {
+                requests: getPublicCollaborationRequestArray(
                     collaborationRequests
                 ),
             };
@@ -309,8 +314,8 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                 existingUser.customId
             );
 
-            const newRequestPacket: IOutgoingNewNotificationsPacket = {
-                notifications: [getPublicNotificationData(request)],
+            const newRequestPacket: IOutgoingNewCollaborationRequestsPacket = {
+                requests: [getPublicCollaborationRequest(request)],
             };
 
             context.room.broadcast(
@@ -524,11 +529,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         (
             context: IBaseContext,
             block: IBlock,
-            updates: Array<IUpdateItemById<IPublicNotificationData>>,
+            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
             instData?: RequestData
         ) => {
-            const updateNotificationsPacket: IOutgoingUpdateNotificationsPacket = {
-                notifications: updates,
+            const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket = {
+                requests: updates,
             };
 
             const blockRoomName = context.room.getBlockRoomName(
@@ -550,11 +555,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         (
             context: IBaseContext,
             user: IUser,
-            updates: Array<IUpdateItemById<IPublicNotificationData>>,
+            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
             instData?: RequestData
         ) => {
-            const updateNotificationsPacket: IOutgoingUpdateNotificationsPacket = {
-                notifications: updates,
+            const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket = {
+                requests: updates,
             };
 
             const userRoomName = context.room.getUserRoomName(user.customId);
@@ -573,7 +578,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         (
             context: IBaseContext,
             user: IUser,
-            request: INotification,
+            request: ICollaborationRequest,
             response: CollaborationRequestResponse,
             respondedAt: string,
             org: IPublicBlock,

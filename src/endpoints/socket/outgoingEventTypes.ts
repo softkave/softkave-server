@@ -1,10 +1,8 @@
-import { IChat } from "../../mongo/chat";
-import { CollaborationRequestResponse } from "../../mongo/notification/definitions";
-import { IRoom } from "../../mongo/room";
+import { CollaborationRequestResponse } from "../../mongo/collaborationRequest/definitions";
 import { SprintDuration } from "../../mongo/sprint";
 import { IPublicBlock } from "../block/types";
 import { IPublicChatData, IPublicRoomData } from "../chat/types";
-import { IPublicNotificationData } from "../notifications/types";
+import { IPublicCollaborationRequest } from "../notifications/types";
 import { IPublicSprint } from "../sprints/types";
 
 export enum OutgoingSocketEvents {
@@ -22,6 +20,8 @@ export enum OutgoingSocketEvents {
     EndSprint = "endSprint",
     StartSprint = "startSprint",
     DeleteSprint = "deleteSprint",
+
+    MarkNotificationsRead = "markNotificationsRead",
 }
 
 export interface IOutgoingBlockUpdatePacket {
@@ -32,19 +32,23 @@ export interface IOutgoingBlockUpdatePacket {
     block?: Partial<IPublicBlock>;
 }
 
-export interface IOutgoingNewNotificationsPacket {
-    notifications: IPublicNotificationData[];
+export interface IOutgoingNewCollaborationRequestsPacket {
+    requests: IPublicCollaborationRequest[];
 }
 
 export interface IOutgoingUserUpdatePacket {
     notificationsLastCheckedAt: string;
 }
 
-export interface IOutgoingUpdateNotificationsPacket {
-    notifications: Array<{
+export interface IOutgoingUpdateCollaborationRequestsPacket {
+    requests: Array<{
         id: string;
-        data: Partial<IPublicNotificationData>;
+        data: Partial<IPublicCollaborationRequest>;
     }>;
+}
+
+export interface IOutgoingMarkNotificationsReadPacket {
+    notifications: Array<{ customId: string; readAt: string }>;
 }
 
 export interface IOutgoingCollaborationRequestResponsePacket {

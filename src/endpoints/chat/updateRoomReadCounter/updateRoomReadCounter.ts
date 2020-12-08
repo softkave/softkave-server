@@ -1,6 +1,8 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import { UpdateRoomReadCounterEndpoint } from "./type";
 import { updateRoomReadCounterJoiSchema } from "./validation";
 
@@ -15,7 +17,17 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
     const data = validate(instaData.data, updateRoomReadCounterJoiSchema);
     const org = await context.block.getBlockById(context, data.orgId);
 
-    canReadBlock({ user, block: org });
+    assertBlock(org);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(org),
+            resourceType: SystemResourceType.Chat,
+            action: SystemActionType.Read,
+            permissionResourceId: org.permissionResourceId,
+        },
+        user
+    );
 
     const currentRoomMemberData = await context.chat.getUserRoomReadCounter(
         context,

@@ -1,38 +1,14 @@
 import { SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
-import { ICollaborationRequest } from "../../../mongo/collaborationRequest";
+import {
+    CollaborationRequestResponse,
+    CollaborationRequestStatusType,
+    ICollaborationRequest,
+} from "../../../mongo/collaborationRequest";
 import { INotification, NotificationType } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
-
-export function collaborationRequestUpdatedNotification() {
-    const title = ``;
-    const type = NotificationType.CollaborationRequestUpdated;
-    const body = "";
-    const notification: INotification = {
-        title,
-        body,
-        type,
-        customId: getNewId(),
-        recipientId: "",
-        orgId: "",
-        subscriptionResourceId: "",
-        subscriptionResourceType: "",
-        subscriptionId: "",
-        primaryResourceType: "",
-        primaryResourceId: "",
-        createdAt: getDate(),
-        readAt: "",
-        sentEmailHistory: [],
-        attachments: [],
-        actions: [],
-        meta: [],
-        reason: "",
-    };
-
-    return notification;
-}
 
 export function getCollaborationRequestRevokedNotification(
     org: IBlock,
@@ -63,29 +39,33 @@ export function getCollaborationRequestRevokedNotification(
     return notification;
 }
 
-export function getCollaborationRequestResponseNotification() {
-    const title = ``;
+export function getCollaborationRequestResponseNotification(
+    req: ICollaborationRequest,
+    response: CollaborationRequestResponse,
+    collaborator: IUser,
+    senderId: string
+) {
+    const responseTxt =
+        response === CollaborationRequestStatusType.Accepted
+            ? "accepted"
+            : "declined";
+    const title = `Collaboration request ${responseTxt}`;
     const type = NotificationType.CollaborationRequestResponse;
-    const body = "";
+    const body = `This is to notify you that ${collaborator.name} ${responseTxt} the request you sent.`;
     const notification: INotification = {
         title,
         body,
         type,
         customId: getNewId(),
-        recipientId: "",
-        orgId: "",
-        subscriptionResourceId: "",
-        subscriptionResourceType: "",
-        subscriptionId: "",
-        primaryResourceType: "",
-        primaryResourceId: "",
+        recipientId: senderId,
+        orgId: req.from.blockId,
         createdAt: getDate(),
-        readAt: "",
-        sentEmailHistory: [],
-        attachments: [],
-        actions: [],
-        meta: [],
-        reason: "",
+        attachments: [
+            {
+                resourceId: req.customId,
+                resourceType: SystemResourceType.CollaborationRequest,
+            },
+        ],
     };
 
     return notification;

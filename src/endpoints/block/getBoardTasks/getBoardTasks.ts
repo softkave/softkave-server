@@ -14,8 +14,8 @@ const getBoardTasks: GetBoardTasksEndpoint = async (context, instData) => {
     assertBlock(board);
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(board),
         {
+            orgId: getBlockRootBlockId(board),
             resourceType: SystemResourceType.Task,
             action: SystemActionType.Read,
             permissionResourceId: board.permissionResourceId,

@@ -3,13 +3,16 @@ import { IRoom, IRoomMemberReadCounter } from "../../mongo/room";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import UserToken from "../user/UserToken";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IChatContext {
     getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;
-    getRooms: (ctx: IBaseContext, userId: string) => Promise<IRoom[]>;
+    getRooms: (
+        ctx: IBaseContext,
+        userId: string,
+        orgIds: string[]
+    ) => Promise<IRoom[]>;
     getRoomById: (
         ctx: IBaseContext,
         roomId: string
@@ -59,9 +62,10 @@ export default class ChatContext implements IChatContext {
     );
 
     public getRooms = wrapFireAndThrowError(
-        async (ctx: IBaseContext, userId: string) => {
+        async (ctx: IBaseContext, userId: string, orgIds: string[]) => {
             return ctx.models.roomModel.model
                 .find({
+                    orgId: { $in: orgIds },
                     members: { $elemMatch: { userId } },
                 })
                 .lean()

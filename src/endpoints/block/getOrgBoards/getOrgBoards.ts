@@ -20,9 +20,9 @@ const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
 
     const permissions = await context.accessControl.queryPermissions(
         context,
-        getBlockRootBlockId(org),
         boards.map((b) => {
             return {
+                orgId: getBlockRootBlockId(org),
                 permissionResourceId: b.permissionResourceId,
                 action: SystemActionType.Read,
                 resourceType: SystemResourceType.Board,

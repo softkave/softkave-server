@@ -18,8 +18,8 @@ const getRoles: GetRolesEndpoint = async (context, instData) => {
 
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(block),
         {
+            orgId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Role,
             action: SystemActionType.Read,
             permissionResourceId: block.permissionResourceId,

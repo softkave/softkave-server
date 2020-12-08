@@ -1,5 +1,9 @@
 import { getDateString, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import {
+    IOutgoingMarkNotificationsReadPacket,
+    OutgoingSocketEvents,
+} from "../../socket/outgoingEventTypes";
 import { MarkNotificationReadEndpoint } from "./types";
 import { markNotificationsReadJoiSchema } from "./validation";
 
@@ -24,7 +28,7 @@ const markNotificationsRead: MarkNotificationReadEndpoint = async (
             readAt: inputReadAt
                 ? inputReadAt > Date.now()
                     ? getDateString()
-                    : inputReadAt
+                    : getDateString(inputReadAt)
                 : getDateString(),
         };
     });
@@ -33,6 +37,19 @@ const markNotificationsRead: MarkNotificationReadEndpoint = async (
         context,
         user.customId,
         processedNotifications
+    );
+
+    const userRoomName = context.room.getUserRoomName(user.customId);
+    const updatePacket: IOutgoingMarkNotificationsReadPacket = {
+        notifications: processedNotifications,
+    };
+
+    context.room.broadcast(
+        context,
+        userRoomName,
+        OutgoingSocketEvents.MarkNotificationsRead,
+        updatePacket,
+        instData
     );
 
     return { notifications: processedNotifications };

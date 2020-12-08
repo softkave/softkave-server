@@ -104,8 +104,8 @@ const setRoles: SetRolesEndpoint = async (context, instData) => {
 
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(block),
         {
+            orgId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
             permissionResourceId: block.permissionResourceId,

@@ -14,6 +14,7 @@ import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 interface IPermissionQuery {
+    orgId: string;
     permissionResourceId: string;
     resourceType: SystemResourceType;
     action: SystemActionType;
@@ -62,25 +63,21 @@ export interface IAccessControlContext {
     ) => Promise<IAccessControlPermission[]>;
     queryPermission: (
         ctx: IBaseContext,
-        orgId: string,
         query: IPermissionQuery,
         user?: IUser
     ) => Promise<IAccessControlPermission | undefined>;
     queryPermissions: (
         ctx: IBaseContext,
-        orgId: string,
         queries: IPermissionQuery[],
         user?: IUser
     ) => Promise<IAccessControlPermission[]>;
     assertPermission: (
         ctx: IBaseContext,
-        orgId: string,
         query: IPermissionQuery,
         user?: IUser
     ) => Promise<boolean>;
     assertPermissions: (
         ctx: IBaseContext,
-        orgId: string,
         queries: IPermissionQuery[],
         user?: IUser
     ) => Promise<boolean>;
@@ -109,7 +106,6 @@ export interface IAccessControlContext {
 
 export default class AccessControlContext implements IAccessControlContext {
     public static preparePermissionsQuery(
-        orgId: string,
         qs: IPermissionQuery[],
         user?: IUser
     ) {
@@ -130,7 +126,7 @@ export default class AccessControlContext implements IAccessControlContext {
                 });
 
                 const userOrgData = user.orgs.find(
-                    (org) => org.customId === orgId
+                    (org) => org.customId === q.orgId
                 );
 
                 if (userOrgData && userOrgData.roles?.length > 0) {
@@ -223,18 +219,9 @@ export default class AccessControlContext implements IAccessControlContext {
     );
 
     public queryPermission = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            orgId: string,
-            query: IPermissionQuery,
-            user?: IUser
-        ) => {
+        async (ctx: IBaseContext, query: IPermissionQuery, user?: IUser) => {
             return await ctx.models.permissions.model.findOne(
-                AccessControlContext.preparePermissionsQuery(
-                    orgId,
-                    [query],
-                    user
-                )
+                AccessControlContext.preparePermissionsQuery([query], user)
             );
         }
     );
@@ -242,30 +229,19 @@ export default class AccessControlContext implements IAccessControlContext {
     public queryPermissions = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            orgId: string,
             queries: IPermissionQuery[],
             user?: IUser
         ) => {
             return await ctx.models.permissions.model.find(
-                AccessControlContext.preparePermissionsQuery(
-                    orgId,
-                    queries,
-                    user
-                )
+                AccessControlContext.preparePermissionsQuery(queries, user)
             );
         }
     );
 
     public assertPermission = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            orgId: string,
-            query: IPermissionQuery,
-            user?: IUser
-        ) => {
+        async (ctx: IBaseContext, query: IPermissionQuery, user?: IUser) => {
             const permission = await ctx.accessControl.queryPermission(
                 ctx,
-                orgId,
                 query,
                 user
             );
@@ -281,13 +257,11 @@ export default class AccessControlContext implements IAccessControlContext {
     public assertPermissions = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            orgId: string,
             queries: IPermissionQuery[],
             user?: IUser
         ) => {
             const permissions = await ctx.accessControl.queryPermissions(
                 ctx,
-                orgId,
                 queries,
                 user
             );

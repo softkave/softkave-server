@@ -25,14 +25,15 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
 
     const permissions = await context.accessControl.queryPermissions(
         context,
-        getBlockRootBlockId(org),
         [
             {
+                orgId: getBlockRootBlockId(org),
                 resourceType: SystemResourceType.Notification,
                 action: SystemActionType.Read,
                 permissionResourceId: org.permissionResourceId,
             },
             {
+                orgId: getBlockRootBlockId(org),
                 resourceType: SystemResourceType.CollaborationRequest,
                 action: SystemActionType.Read,
                 permissionResourceId: org.permissionResourceId,

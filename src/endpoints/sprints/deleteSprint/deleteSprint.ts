@@ -1,8 +1,10 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
+import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,
@@ -21,7 +23,17 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
 
     const board = await context.block.getBlockById(context, sprint.boardId);
 
-    canReadBlock({ user, block: board });
+    assertBlock(board);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(board),
+            resourceType: SystemResourceType.Sprint,
+            action: SystemActionType.Delete,
+            permissionResourceId: board.permissionResourceId,
+        },
+        user
+    );
 
     if (!!sprint.startDate) {
         throw new CannotDeleteCurrentOrPastSprintError();

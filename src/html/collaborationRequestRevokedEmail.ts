@@ -30,7 +30,7 @@ export function collaborationRequestRevokedEmailHTML(
         <div class="email-body">
             <div class="email-content-center">
                 <p>
-                    The collaboration request sent from ${
+                    This is to notify you that the collaboration request sent from ${
                         props.senderName
                     } has been revoked.
                 </p>
@@ -52,7 +52,7 @@ export function collaborationRequestRevokedEmailText(
     const textBlocks = [
         getHeaderText(props.title),
         getNewlines(2),
-        `The collaboration request sent from ${props.senderName} has been revoked.`,
+        `This is to notify you that the collaboration request sent from ${props.senderName} has been revoked.`,
         getNewlines(2),
         `${getEndGreeting()}`,
     ];

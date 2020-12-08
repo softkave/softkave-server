@@ -43,10 +43,14 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         IncomingSocketEvents.Unsubscribe,
         makeSocketHandler(ctx, socket, unsubscribe)
     );
-    socket.on(
-        IncomingSocketEvents.FetchMissingBroadcasts,
-        makeSocketHandler(ctx, socket, fetchBroadcasts)
-    );
+
+    // TODO: waiting to implement access control
+
+    // socket.on(
+    //     IncomingSocketEvents.FetchMissingBroadcasts,
+    //     makeSocketHandler(ctx, socket, fetchBroadcasts)
+    // );
+
     socket.on(
         IncomingSocketEvents.GetUserRoomsAndChats,
         makeSocketHandler(ctx, socket, getUserRoomsAndChats)

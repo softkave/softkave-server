@@ -1,8 +1,10 @@
-import { CollaborationRequestStatusType } from "../../../mongo/notification";
+import { CollaborationRequestStatusType } from "../../../mongo/collaborationRequest";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getPublicBlockData } from "../../block/utils";
 import { PermissionDeniedError } from "../../errors";
+import { getCollaborationRequestResponseNotification } from "../../notifications/templates/collaborationRequest";
+import { fireAndForgetPromise } from "../../utils";
 import {
     CollaborationRequestAcceptedError,
     CollaborationRequestDeclinedError,
@@ -23,7 +25,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         respondToCollaborationRequestJoiSchema
     );
     const user = await context.session.getUser(context, instData);
-    const req = await context.notification.getCollaborationRequestById(
+    const req = await context.collaborationRequest.getCollaborationRequestById(
         context,
         data.requestId
     );
@@ -68,7 +70,7 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         date: respondedAt,
     });
 
-    await context.notification.updateCollaborationRequestById(
+    await context.collaborationRequest.updateCollaborationRequestById(
         context,
         data.requestId,
         {
@@ -93,8 +95,19 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         instData
     );
 
+    const notification = getCollaborationRequestResponseNotification(
+        req,
+        data.response,
+        user,
+        req.from.userId
+    );
+
+    fireAndForgetPromise(
+        context.notification.bulkSaveNotifications(context, [notification])
+    );
+
     if (!ownerBlock) {
-        // if the org does not exist or has been deleted
+        // If the org does not exist or has been deleted
         // TODO: should we log something here?
         // TODO: figure our log points, i.e, what are the things we should be logging?
         // TODO: what should we do if the org does not exist?

@@ -1,6 +1,8 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import {
     CannotRestartCurrentOrPastSprintsError,
     CannotStartSprintCauseCurrentSprintExistsError,
@@ -20,7 +22,17 @@ const startSprint: StartSprintEndpoint = async (context, instData) => {
 
     const board = await context.block.getBlockById(context, sprint.boardId);
 
-    canReadBlock({ user, block: board });
+    assertBlock(board);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(board),
+            resourceType: SystemResourceType.Sprint,
+            action: SystemActionType.Update,
+            permissionResourceId: board.permissionResourceId,
+        },
+        user
+    );
 
     if (board.currentSprintId) {
         throw new CannotStartSprintCauseCurrentSprintExistsError();

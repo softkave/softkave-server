@@ -1,5 +1,7 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import { getPublicSprintArray } from "../utils";
 import { GetSprintsEndpoint } from "./types";
 import { getSprintsJoiSchema } from "./validation";
@@ -9,7 +11,17 @@ const getSprints: GetSprintsEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const board = await context.block.getBlockById(context, data.boardId);
 
-    canReadBlock({ user, block: board });
+    assertBlock(board);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(board),
+            resourceType: SystemResourceType.Board,
+            action: SystemActionType.Read,
+            permissionResourceId: board.permissionResourceId,
+        },
+        user
+    );
 
     const sprints = await context.sprint.getSprintsByBoardId(
         context,

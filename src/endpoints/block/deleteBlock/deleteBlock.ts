@@ -102,8 +102,8 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     assertBlock(block);
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(block),
         {
+            orgId: getBlockRootBlockId(block),
             resourceType: getBlockAuditLogResourceType(block),
             action: SystemActionType.Delete,
             permissionResourceId: block.permissionResourceId,

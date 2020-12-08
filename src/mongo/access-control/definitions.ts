@@ -62,6 +62,7 @@ export interface IAccessControlPermission {
     action: SystemActionType;
     roles: string[];
     users: string[];
+    orgId: string;
     permissionOwnerId: string;
     createdBy: string;
     createdAt: Date;
@@ -162,7 +163,11 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
     [SystemResourceType.Note]: baseActionTypes,
     [SystemResourceType.Comment]: baseActionTypes,
     [SystemResourceType.Room]: baseActionTypes,
-    [SystemResourceType.Sprint]: baseActionTypes,
+    [SystemResourceType.Sprint]: [
+        SystemActionType.Create,
+        SystemActionType.Update,
+        SystemActionType.Delete,
+    ],
     [SystemResourceType.Chat]: baseActionTypes,
     [SystemResourceType.SubTask]: baseActionTypes,
     [SystemResourceType.CollaborationRequest]: [

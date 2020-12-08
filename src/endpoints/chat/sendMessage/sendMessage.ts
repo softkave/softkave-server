@@ -1,7 +1,9 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { IRoom } from "../../../mongo/room";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
@@ -16,7 +18,17 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     const data = validate(instaData.data, sendMessageJoiSchema);
     const org = await context.block.getBlockById(context, data.orgId);
 
-    canReadBlock({ user, block: org });
+    assertBlock(org);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(org),
+            resourceType: SystemResourceType.Chat,
+            action: SystemActionType.Create,
+            permissionResourceId: org.permissionResourceId,
+        },
+        user
+    );
 
     // TODO: how can we eliminate OR make the room fetching faster?
     let room: IRoom;

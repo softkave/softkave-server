@@ -1,9 +1,11 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
+import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";
@@ -14,7 +16,17 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const board = await context.block.getBlockById(context, data.boardId);
 
-    await canReadBlock({ user, block: board });
+    assertBlock(board);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(board),
+            resourceType: SystemResourceType.Sprint,
+            action: SystemActionType.Create,
+            permissionResourceId: board.permissionResourceId,
+        },
+        user
+    );
 
     if (!board.sprintOptions) {
         throw new SprintsNotSetupYetError();

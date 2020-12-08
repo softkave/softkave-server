@@ -1,9 +1,9 @@
-import { SystemResourceType } from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
+import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
-import { BlockDoesNotExistError } from "../../block/errors";
+import { getBlockRootBlockId } from "../../block/utils";
 import { RoomDoesNotExistError } from "../../chat/errors";
-import { NoteDoesNotExistError } from "../../notes/errors";
 import { SubscribeEndpoint } from "./types";
 import { subscribeJoiSchema } from "./validation";
 
@@ -24,38 +24,23 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                     dt.customId
                 );
 
-                if (!block) {
-                    throw new BlockDoesNotExistError();
-                }
-
-                canReadBlock({ user, block });
+                assertBlock(block);
+                await context.accessControl.assertPermission(
+                    context,
+                    {
+                        orgId: getBlockRootBlockId(block),
+                        resourceType: getBlockAuditLogResourceType(block),
+                        action: SystemActionType.Read,
+                        permissionResourceId: block.permissionResourceId,
+                    },
+                    user
+                );
 
                 const roomName = context.room.getBlockRoomName(
                     block.type,
                     block.customId
                 );
 
-                context.room.subscribe(instData, roomName);
-                break;
-            }
-
-            case SystemResourceType.Note: {
-                const note = await context.note.getNoteById(
-                    context,
-                    dt.customId
-                );
-
-                if (!note) {
-                    throw new NoteDoesNotExistError();
-                }
-
-                const parentBlock = await context.block.getBlockById(
-                    context,
-                    note.blockId
-                );
-                canReadBlock({ user, block: parentBlock });
-
-                const roomName = context.room.getNoteRoomName(note);
                 context.room.subscribe(instData, roomName);
                 break;
             }
@@ -75,7 +60,17 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                     room.orgId
                 );
 
-                canReadBlock({ user, block: org });
+                assertBlock(org);
+                await context.accessControl.assertPermission(
+                    context,
+                    {
+                        orgId: getBlockRootBlockId(org),
+                        resourceType: SystemResourceType.Chat,
+                        action: SystemActionType.Read,
+                        permissionResourceId: org.permissionResourceId,
+                    },
+                    user
+                );
 
                 const isUserInRoom = !!room.members.find(
                     (member) => member.userId === user.customId

@@ -2,11 +2,12 @@ import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import {
+    CollaborationRequestEmailReason,
     CollaborationRequestStatusType,
     ICollaborationRequest,
 } from "../../../mongo/collaborationRequest/definitions";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { IBaseContext } from "../../contexts/BaseContext";
 import { getCollaborationRequestRevokedNotification } from "../../notifications/templates/collaborationRequest";
 import {
     CollaborationRequestAcceptedError,
@@ -42,13 +43,26 @@ async function notifyRecipient(
             context.notification.bulkSaveNotifications(context, [notification])
         );
     } else {
-        fireAndForgetPromise(
-            context.sendCollaborationRequestRevokedEmail({
+        try {
+            await context.sendCollaborationRequestRevokedEmail({
                 email: request.to.email,
                 senderName: org.name,
                 title: `Collaboration request from ${org.name} revoked`,
-            })
-        );
+            });
+
+            context.collaborationRequest.updateCollaborationRequestById(
+                context,
+                request.customId,
+                {
+                    sentEmailHistory: request.sentEmailHistory.concat({
+                        date: getDate(),
+                        reason: CollaborationRequestEmailReason.RequestRevoked,
+                    }),
+                }
+            );
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 
@@ -63,8 +77,8 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
     assertBlock(org);
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(org),
         {
+            orgId: getBlockRootBlockId(org),
             resourceType: SystemResourceType.CollaborationRequest,
             action: SystemActionType.RevokeRequest,
             permissionResourceId: org.permissionResourceId,
@@ -72,7 +86,7 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
         user
     );
 
-    const request = await context.collaborationRequest.getCollaborationRequestById(
+    let request = await context.collaborationRequest.getCollaborationRequestById(
         context,
         data.requestId
     );
@@ -96,13 +110,15 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
         date: new Date(),
     });
 
-    await context.collaborationRequest.updateCollaborationRequestById(
+    request = await context.collaborationRequest.updateCollaborationRequestById(
         context,
         request.customId,
         {
             statusHistory,
         }
     );
+
+    fireAndForgetPromise(notifyRecipient(context, org, request));
 };
 
 export default revokeCollaborationRequest;

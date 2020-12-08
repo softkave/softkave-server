@@ -54,8 +54,8 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
 
     await context.accessControl.assertPermission(
         context,
-        newBlock.rootBlockId!,
         {
+            orgId: newBlock.rootBlockId!,
             resourceType:
                 newBlock.type === BlockType.Board
                     ? SystemResourceType.Board

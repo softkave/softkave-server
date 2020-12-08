@@ -4,6 +4,9 @@ import { fetchBroadcastsJoiSchema } from "./validation";
 
 const fetchBroadcasts: FetchBroadcastsEndpoint = async (context, instData) => {
     const data = validate(instData.data, fetchBroadcastsJoiSchema);
+
+    // TODO: implement access control
+
     await context.session.assertUser(context, instData);
     context.socket.assertSocket(instData);
 

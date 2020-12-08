@@ -1,6 +1,8 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { assertBlock } from "../../../mongo/block/utils";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadBlock from "../../block/canReadBlock";
+import { getBlockRootBlockId } from "../../block/utils";
 import { SprintDoesNotExistError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { UpdateSprintEndpoint } from "./types";
@@ -17,7 +19,17 @@ const updateSprint: UpdateSprintEndpoint = async (context, instData) => {
 
     const board = await context.block.getBlockById(context, sprint.boardId);
 
-    await canReadBlock({ user, block: board });
+    assertBlock(board);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(board),
+            resourceType: SystemResourceType.Sprint,
+            action: SystemActionType.Update,
+            permissionResourceId: board.permissionResourceId,
+        },
+        user
+    );
 
     const updatedAt = getDate();
     const updatedAtStr = getDateString(updatedAt);

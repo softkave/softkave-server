@@ -1,60 +1,44 @@
 import { IBlock } from "../../../mongo/block";
-import { IUser } from "../../../mongo/user";
-import { indexArray } from "../../../utilities/fns";
+import { INotification } from "../../../mongo/notification";
+import { getTaskAssignedNotification } from "../../notifications/templates/task";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import diffAssignedUsers from "./diffAssignedUsers";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
 
-// TODO: should we send notifications too?
-
 async function sendNewlyAssignedTaskEmail(
     context: IUpdateBlockContext,
     instData: RequestData<IUpdateBlockParameters>,
     block: IBlock,
-    data: Partial<IBlock>
+    data: Partial<IBlock>,
+    task: IBlock
 ) {
-    const user = await context.session.getUser(context, instData);
-
     // TODO: should we send an email if you're the one who assigned it to yourself?
     // TODO: how should we respect the user and not spam them? -- user settings
 
-    const assignedUsersDiffResult = diffAssignedUsers(block, data);
-    const newlyAssignedUsers = assignedUsersDiffResult.newAssignees;
+    const diff = diffAssignedUsers(block, data);
+    const newAssignees = diff.newAssignees;
 
-    if (newlyAssignedUsers.length === 0) {
+    if (newAssignees.length === 0) {
         return;
     }
 
-    const newAssignees = await context.user.bulkGetUsersById(
-        context,
-        newlyAssignedUsers.map((assignedUser) => assignedUser.userId)
-    );
-
-    const org = await context.block.getBlockById(context, block.rootBlockId);
-    const assigneesMap = indexArray(newAssignees, { path: "customId" });
+    const notifications: INotification[] = [];
 
     // TODO: what should we do if any of the above calls fail?
 
-    assignedUsersDiffResult.newAssignees.forEach((assignedUser) => {
-        const assignee: IUser = assigneesMap[assignedUser.userId];
-
-        // TODO: what else should we do if the user does not exist?
-
-        if (assignee && assignee.customId === user.customId) {
-            return;
-        }
-
-        fireAndForgetPromise(
-            context.sendAssignedTaskEmailNotification(
-                org,
-                data.name || block.name,
-                data.description || block.description,
-                user,
-                assignee
-            )
+    diff.newAssignees.forEach((assignedUser) => {
+        const notification = getTaskAssignedNotification(
+            task,
+            assignedUser.userId
         );
+
+        notifications.push(notification);
     });
+
+    fireAndForgetPromise(
+        context.notification.bulkSaveNotifications(context, notifications)
+    );
 }
 
 export default sendNewlyAssignedTaskEmail;

@@ -69,7 +69,7 @@ export interface ICollaborationRequest {
     to: ICollaborationRequestRecipient;
     title: string;
     body: string;
-    from?: ICollaborationRequestFrom;
+    from: ICollaborationRequestFrom;
     createdAt: Date;
     expiresAt?: Date;
     readAt?: Date;

@@ -1,11 +1,10 @@
-import { SystemActionType } from "../../../mongo/audit-log";
+import { SystemActionType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
-import canReadBlock from "../canReadBlock";
 import { BlockDoesNotExistError } from "../errors";
 import { getBlockRootBlockId } from "../utils";
 import { TransferBlockEndpoint } from "./types";
@@ -32,7 +31,21 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
         }
     });
 
-    canReadBlock({ user, block: draggedBlock });
+    // TODO: currently, all transferBlock calls are from updateBlock
+    // to prevent double access check, we are commenting out the access check
+    // but if transferBlock is ever made public by any of the APIs,
+    // uncomment it out.
+
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(draggedBlock),
+    //         resourceType: getBlockAuditLogResourceType(draggedBlock),
+    //         action: SystemActionType.Update,
+    //         permissionResourceId: draggedBlock.permissionResourceId,
+    //     },
+    //     user
+    // );
 
     if (!destinationBlock) {
         throw new BlockDoesNotExistError({
@@ -89,7 +102,7 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
     );
 
     context.auditLog.insert(context, instData, {
-        action: SystemActionType.Transfer,
+        action: SystemActionType.Update,
         resourceId: draggedBlock.customId,
         resourceType: getBlockAuditLogResourceType(draggedBlock),
         change: {

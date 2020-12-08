@@ -19,8 +19,8 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
     assertBlock(org);
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(org),
         {
+            orgId: getBlockRootBlockId(org),
             resourceType: SystemResourceType.Collaborator,
             action: SystemActionType.Delete,
             permissionResourceId: org.permissionResourceId,

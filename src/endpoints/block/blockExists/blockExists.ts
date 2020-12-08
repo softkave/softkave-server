@@ -24,8 +24,8 @@ const blockExists: BlockExistsEndpoint = async (context, instData) => {
         assertBlock(parent);
         await context.accessControl.assertPermission(
             context,
-            getBlockRootBlockId(parent),
             {
+                orgId: getBlockRootBlockId(parent),
                 resourceType: getBlockAuditLogResourceType(parent),
                 action: SystemActionType.Read,
                 permissionResourceId: parent.permissionResourceId,

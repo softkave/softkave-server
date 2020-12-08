@@ -31,8 +31,8 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(org),
         {
+            orgId: getBlockRootBlockId(org),
             resourceType: SystemResourceType.CollaborationRequest,
             action: SystemActionType.Create,
             permissionResourceId: org.permissionResourceId,

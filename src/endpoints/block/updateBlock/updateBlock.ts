@@ -1,10 +1,11 @@
 import pick from "lodash/pick";
-import { SystemActionType } from "../../../mongo/audit-log";
+import { SystemActionType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
+import { assertBlock } from "../../../mongo/block/utils";
+import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
-import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
@@ -20,14 +21,46 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const block = await context.block.getBlockById(context, data.blockId);
 
-    canReadBlock({ user, block });
+    assertBlock(block);
+    await context.accessControl.assertPermission(
+        context,
+        {
+            orgId: getBlockRootBlockId(block),
+            resourceType: getBlockAuditLogResourceType(block),
+            action: SystemActionType.Update,
+            permissionResourceId: block.permissionResourceId,
+        },
+        user
+    );
 
-    const parent = updateData.parent;
+    const parentInput = updateData.parent;
 
     // Parent update ( tranferring block ) is handled separately by transferBlock
     delete updateData.parent;
 
     const update = processUpdateBlockInput(block, updateData, user);
+
+    if (update.assignees?.length > 0) {
+        const users = await context.user.bulkGetUsersById(
+            context,
+            update.assignees.map((a) => a.userId)
+        );
+
+        const usersMap = indexArray(users, { path: "customId" });
+        update.assignees = update.assignees.filter((a) => {
+            const assigneeUserData = usersMap[a.userId];
+
+            if (!assigneeUserData) {
+                return false;
+            }
+
+            const isUserInOrg = !!assigneeUserData.orgs.find(
+                (o) => o.customId === block.rootBlockId
+            );
+
+            return isUserInOrg;
+        });
+    }
 
     let updatedBlock = await context.block.updateBlockById(
         context,
@@ -60,7 +93,13 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
         persistBoardLabelChanges(context, instData, block, update)
     );
     fireAndForgetPromise(
-        sendNewlyAssignedTaskEmail(context, instData, block, update)
+        sendNewlyAssignedTaskEmail(
+            context,
+            instData,
+            block,
+            update,
+            updatedBlock
+        )
     );
 
     context.auditLog.insert(context, instData, {
@@ -78,11 +117,11 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
         organizationId: getBlockRootBlockId(block),
     });
 
-    if (parent && block.parent !== parent) {
+    if (parentInput && block.parent !== parentInput) {
         const result = await context.transferBlock(context, {
             ...instData,
             data: {
-                destinationBlockId: parent,
+                destinationBlockId: parentInput,
                 draggedBlockId: block.customId,
             },
         });

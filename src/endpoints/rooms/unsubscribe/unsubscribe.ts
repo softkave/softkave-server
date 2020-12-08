@@ -1,4 +1,4 @@
-import { SystemResourceType } from "../../../mongo/audit-log";
+import { SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
 import { SubscribeEndpoint } from "../subscribe/types";
 import { subscribeJoiSchema } from "../subscribe/validation";
@@ -6,9 +6,10 @@ import { subscribeJoiSchema } from "../subscribe/validation";
 const unsubscribe: SubscribeEndpoint = async (context, instData) => {
     const data = validate(instData.data, subscribeJoiSchema);
     const user = await context.session.getUser(context, instData);
+
     context.socket.assertSocket(instData);
 
-    const prs = data.items.map(async (dt) => {
+    const promises = data.items.map(async (dt) => {
         switch (dt.type) {
             case SystemResourceType.Org:
             case SystemResourceType.Board: {
@@ -25,16 +26,6 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
                 break;
             }
 
-            case SystemResourceType.Note: {
-                const note = await context.note.getNoteById(
-                    context,
-                    dt.customId
-                );
-                const roomName = context.room.getNoteRoomName(note);
-                context.room.leave(instData, roomName);
-                break;
-            }
-
             case SystemResourceType.Room: {
                 const room = await context.chat.getRoomById(
                     context,
@@ -47,7 +38,7 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
         }
     });
 
-    await Promise.all(prs);
+    await Promise.all(promises);
 };
 
 export default unsubscribe;

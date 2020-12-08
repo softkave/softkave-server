@@ -1,10 +1,8 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import {
-    getBlockRootBlockId,
-    getPublicNotificationsArray,
-} from "../../block/utils";
+import { getBlockRootBlockId } from "../../block/utils";
+import { getPublicNotificationSubscriptionsArray } from "../utils";
 import { GetResourceSubscriptionsEndpoint } from "./types";
 import { getResourceSubscriptionsJoiSchema } from "./validation";
 
@@ -19,8 +17,8 @@ const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
     assertBlock(block);
     await context.accessControl.assertPermission(
         context,
-        getBlockRootBlockId(block),
         {
+            orgId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Notification,
             action: SystemActionType.Read,
             permissionResourceId: block.customId,
@@ -34,7 +32,7 @@ const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
     );
 
     return {
-        subscriptions: getPublicNotificationsArray(subscriptions),
+        subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),
     };
 };
 
