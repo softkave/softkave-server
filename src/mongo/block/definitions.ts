@@ -160,6 +160,7 @@ export interface IBlock {
 
     // Orgs and boards
     color?: string;
+    publicRoleId?: string;
     // newPermissionsManagerId?: string;
     // rolesSystemType?: AccessControlRoleSystemType;
 
@@ -204,7 +205,7 @@ const blockSchema = {
 
     // Orgs and boards
     color: { type: String },
-    newPermissionsManagerId: { type: String },
+    publicRoleId: { type: String },
 
     // Tasks
     assignees: { type: [blockAssigneeSchema] },

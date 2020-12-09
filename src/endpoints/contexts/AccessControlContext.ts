@@ -30,6 +30,11 @@ export interface IAccessControlContext {
         ctx: IBaseContext,
         resourceId: string
     ) => Promise<IAccessControlRole[]>;
+    getRolesByLowerCasedNames: (
+        ctx: IBaseContext,
+        resourceIds: string[],
+        lowerCasedNames: string[]
+    ) => Promise<IAccessControlRole[]>;
     saveRoles: (
         ctx: IBaseContext,
         roles: IAccessControlRole[],
@@ -162,6 +167,22 @@ export default class AccessControlContext implements IAccessControlContext {
     public getRolesByResourceId = wrapFireAndThrowError(
         (ctx: IBaseContext, resourceId: string) => {
             return ctx.models.roles.model.find({ resourceId }).lean().exec();
+        }
+    );
+
+    public getRolesByLowerCasedNames = wrapFireAndThrowError(
+        (
+            ctx: IBaseContext,
+            resourceIds: string[],
+            lowerCasedNames: string[]
+        ) => {
+            return ctx.models.roles.model
+                .find({
+                    resourceId: { $in: resourceIds },
+                    lowerCasedName: { $in: lowerCasedNames },
+                })
+                .lean()
+                .exec();
         }
     );
 

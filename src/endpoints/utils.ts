@@ -221,3 +221,5 @@ export function getComplexTypeArrayInputGraphQLSchema(
         }
     `;
 }
+
+export function assertField(data: any, field: string) {}

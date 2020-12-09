@@ -2,7 +2,9 @@ import {
     IAccessControlPermission,
     IAccessControlRole,
 } from "../../mongo/access-control/definitions";
+import { BlockType, IBlock } from "../../mongo/block";
 import { getDateString } from "../../utilities/fns";
+import { InvalidRequestError } from "../errors";
 import { extractFields, getFields } from "../utils";
 import { IPublicPermissionData, IPublicRoleData } from "./types";
 
@@ -59,4 +61,13 @@ export function getPublicRolesArray(
     roles: IAccessControlRole[]
 ): IPublicRoleData[] {
     return roles.map((user) => extractFields(user, publicRoleFields));
+}
+
+export function assertIsPermissionBlock(block: IBlock) {
+    if (
+        (block.type !== BlockType.Org && block.type !== BlockType.Board) ||
+        block.permissionResourceId !== block.customId
+    ) {
+        throw new InvalidRequestError();
+    }
 }

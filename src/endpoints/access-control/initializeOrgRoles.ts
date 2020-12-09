@@ -5,7 +5,7 @@ import {
 import { getBlockAuditLogResourceType } from "../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
-import { getDate } from "../../utilities/fns";
+import { getDate, getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IBaseContext } from "../contexts/BaseContext";
 
@@ -26,7 +26,7 @@ export function getDefaultOrgRoles(userId: string, org: IBlock) {
         lowerCasedName: publicRoleName,
         description: publicRoleDescription,
         createdBy: userId,
-        createdAt: getDate(),
+        createdAt: getDateString(),
         resourceId: org.customId,
         resourceType: getBlockAuditLogResourceType(org),
     };
@@ -37,7 +37,7 @@ export function getDefaultOrgRoles(userId: string, org: IBlock) {
         lowerCasedName: collaboratorRoleName,
         description: collaboratorRoleDescription,
         createdBy: userId,
-        createdAt: getDate(),
+        createdAt: getDateString(),
         resourceId: org.customId,
         resourceType: getBlockAuditLogResourceType(org),
         prevRoleId: publicRole.customId,
@@ -49,7 +49,7 @@ export function getDefaultOrgRoles(userId: string, org: IBlock) {
         lowerCasedName: adminRoleName,
         description: adminRoleDescription,
         createdBy: userId,
-        createdAt: getDate(),
+        createdAt: getDateString(),
         resourceId: org.customId,
         resourceType: getBlockAuditLogResourceType(org),
         prevRoleId: collaboratorRole.customId,
@@ -62,7 +62,12 @@ export function getDefaultOrgRoles(userId: string, org: IBlock) {
     publicRole.nextRoleId = collaboratorRole.customId;
     collaboratorRole.nextRoleId = adminRole.customId;
 
-    return newRoles;
+    return {
+        publicRole,
+        collaboratorRole,
+        adminRole,
+        roles: newRoles,
+    };
 }
 
 export default async function initializeOrgRoles(
@@ -85,7 +90,7 @@ export default async function initializeOrgRoles(
         return [];
     }
 
-    const newRoles = getDefaultOrgRoles(user.customId, org);
+    const { roles } = getDefaultOrgRoles(user.customId, org);
 
-    return ctx.accessControl.saveRoles(ctx, newRoles);
+    return ctx.accessControl.saveRoles(ctx, roles);
 }

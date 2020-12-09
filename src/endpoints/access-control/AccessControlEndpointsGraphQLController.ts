@@ -2,10 +2,12 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
+import addRoles from "./addRoles/addRoles";
+import deleteRoles from "./deleteRoles/deleteRoles";
 import getPermissions from "./getPermissions/getPermissions";
 import getRoles from "./getRoles/getRoles";
 import setPermissions from "./setPermissions/setPermissions";
-import setRoles from "./setRoles/setRoles";
+import updateRoles from "./updateRoles/updateRoles";
 
 export default class AccessControlEndpointsGraphQLController {
     public getPermissions(data, req) {
@@ -35,9 +37,27 @@ export default class AccessControlEndpointsGraphQLController {
         );
     }
 
-    public setRoles(data, req) {
+    public updateRoles(data, req) {
         return wrapEndpoint(data, req, () =>
-            setRoles(
+            updateRoles(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public addRoles(data, req) {
+        return wrapEndpoint(data, req, () =>
+            addRoles(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public deleteRoles(data, req) {
+        return wrapEndpoint(data, req, () =>
+            deleteRoles(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

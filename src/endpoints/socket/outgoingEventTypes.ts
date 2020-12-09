@@ -1,5 +1,6 @@
 import { CollaborationRequestResponse } from "../../mongo/collaborationRequest/definitions";
 import { SprintDuration } from "../../mongo/sprint";
+import { IPublicRoleData } from "../access-control/types";
 import { IPublicBlock } from "../block/types";
 import { IPublicChatData, IPublicRoomData } from "../chat/types";
 import { IPublicCollaborationRequest } from "../notifications/types";
@@ -22,6 +23,8 @@ export enum OutgoingSocketEvents {
     DeleteSprint = "deleteSprint",
 
     MarkNotificationsRead = "markNotificationsRead",
+    UpdateBlockRoles = "updateBlockRoles",
+    UpdateUserRoles = "updateUserRoles",
 }
 
 export interface IOutgoingBlockUpdatePacket {
@@ -102,4 +105,14 @@ export interface IOutgoingStartSprintPacket {
 
 export interface IOutgoingDeleteSprintPacket {
     sprintId: string;
+}
+
+export interface IOutgoingUpdateBlockRolesPacket {
+    blockId: string;
+    add?: IPublicRoleData[];
+    update?: Array<{
+        id: string;
+        data: Partial<IPublicRoleData>;
+    }>;
+    remove?: string[];
 }

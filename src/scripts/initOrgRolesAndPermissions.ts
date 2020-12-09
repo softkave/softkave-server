@@ -15,8 +15,7 @@ import {
     IBlock,
     IBlockDocument,
 } from "../mongo/block";
-import { getDefaultConnection } from "../mongo/defaultConnection";
-import { getDate, indexArray } from "../utilities/fns";
+import { getDate } from "../utilities/fns";
 import getNewId from "../utilities/getNewId";
 import {
     logScriptFailed,
@@ -56,38 +55,6 @@ function getP(
         };
     });
 }
-
-// [SystemResourceType.Collaborator]: [
-//    SystemActionType.RemoveCollaborator],
-//     [SystemResourceType.Org]: [
-//         SystemActionType.Read,
-//         SystemActionType.Update,
-//         SystemActionType.Delete,
-//     ],
-//     [SystemResourceType.Board]: baseActionTypes,
-//     [SystemResourceType.Task]: baseActionTypes,
-//     [SystemResourceType.Status]: baseActionTypes,
-//     [SystemResourceType.Label]: baseActionTypes,
-//     [SystemResourceType.Resolution]: baseActionTypes,
-//     [SystemResourceType.Note]: baseActionTypes,
-//     [SystemResourceType.Comment]: baseActionTypes,
-//     [SystemResourceType.Room]: baseActionTypes,
-//     [SystemResourceType.Sprint]: baseActionTypes,
-//     [SystemResourceType.Chat]: baseActionTypes,
-//     [SystemResourceType.SubTask]: baseActionTypes,
-//     [SystemResourceType.CollaborationRequest]: [
-//         SystemActionType.Create,
-//         SystemActionType.Read,
-//         SystemActionType.Update,
-//         SystemActionType.RevokeRequest,
-//     ],
-//     [SystemResourceType.Notification]: baseActionTypes,
-//     [SystemResourceType.Team]: baseActionTypes,
-//     [SystemResourceType.Role]: baseActionTypes,
-//     [SystemResourceType.Permission]: [
-//         SystemActionType.Read,
-//         SystemActionType.Update,
-//     ],
 
 const defaultRolesToPermissionsList = [
     // Collaborator
@@ -228,6 +195,7 @@ function makeDefaultPermissions(
             createdBy: userId,
             createdAt: getDate(),
             available: true,
+            orgId: org.customId,
         };
 
         return permission;
@@ -254,40 +222,42 @@ export async function initOrgRolesAndPermissions() {
             doc !== null;
             doc = await cursor.next()
         ) {
-            const roles = getDefaultOrgRoles(doc.createdBy, doc);
-            const rolesMap = indexArray(roles, { path: "lowerCasedName" });
+            if (doc.permissionResourceId) {
+                continue;
+            }
+
+            const {
+                roles,
+                adminRole,
+                publicRole,
+                collaboratorRole,
+            } = getDefaultOrgRoles(doc.createdBy, doc);
+
             const permissions = makeDefaultPermissions(doc.createdBy, doc, {
-                [AccessControlDefaultRoles.Admin]:
-                    rolesMap[AccessControlDefaultRoles.Admin],
-                [AccessControlDefaultRoles.Collaborator]:
-                    rolesMap[AccessControlDefaultRoles.Collaborator],
-                [AccessControlDefaultRoles.Public]:
-                    rolesMap[AccessControlDefaultRoles.Public],
+                [AccessControlDefaultRoles.Admin]: adminRole,
+                [AccessControlDefaultRoles.Collaborator]: collaboratorRole,
+                [AccessControlDefaultRoles.Public]: publicRole,
             });
 
             await roleModel.model.insertMany(roles);
             await permissionModel.model.insertMany(permissions);
-            await await blockModel.model
+            await blockModel.model
                 .updateMany(
-                    {
-                        $or: [
-                            {
-                                customId: doc.customId,
-                            },
-                            {
-                                rootBlockId: doc.customId,
-                            },
-                        ],
-                    },
+                    { rootBlockId: doc.customId },
                     { permissionResourceId: doc.customId }
                 )
                 .exec();
+
+            doc.permissionResourceId = doc.customId;
+            doc.publicRoleId = publicRole.customId;
+            await doc.save();
 
             docsCount++;
         }
 
         cursor.close();
-        console.log(`block(s) count = ${docsCount}`);
+
+        console.log(`org(s) count = ${docsCount}`);
         logScriptSuccessful(initOrgRolesAndPermissions);
     } catch (error) {
         logScriptFailed(initOrgRolesAndPermissions, error);

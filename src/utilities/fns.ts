@@ -7,7 +7,11 @@ function defaultIndexer(data: any, path: any) {
         return get(data, path);
     }
 
-    return JSON.stringify(data);
+    if (data && data.toString) {
+        return data.toString();
+    }
+
+    return String(data);
 }
 
 function defaultReducer(data: any) {

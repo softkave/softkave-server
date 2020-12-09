@@ -25,9 +25,9 @@ export interface IAccessControlRole {
     description?: string;
     // permissions: IAccessControlPermission[];
     createdBy: string;
-    createdAt: Date;
+    createdAt: string;
     updatedBy?: string;
-    updatedAt?: Date;
+    updatedAt?: string;
     // updateJustification?: IAccessControlActionJustification;
     resourceId: string;
     resourceType: SystemResourceType;
@@ -182,7 +182,7 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
         SystemActionType.Update,
     ],
     [SystemResourceType.Team]: baseActionTypes,
-    [SystemResourceType.Role]: baseActionTypes,
+    [SystemResourceType.Role]: [SystemActionType.Update],
     [SystemResourceType.Permission]: [
         SystemActionType.Read,
         SystemActionType.Update,
