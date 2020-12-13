@@ -1,14 +1,19 @@
 import {
-    IAccessControlPermission,
-    IAccessControlRole,
+    IPermission,
+    IPermissionGroup,
+    IUserAssignedPermissionGroup,
 } from "../../mongo/access-control/definitions";
 import { BlockType, IBlock } from "../../mongo/block";
 import { getDateString } from "../../utilities/fns";
 import { InvalidRequestError } from "../errors";
 import { extractFields, getFields } from "../utils";
-import { IPublicPermissionData, IPublicRoleData } from "./types";
+import {
+    IPublicPermission,
+    IPublicPermissionGroup,
+    IPublicUserAssignedPermissionGroup,
+} from "./types";
 
-const publicRoleFields = getFields<IPublicRoleData>({
+const publicPermissionGroupFields = getFields<IPublicPermissionGroup>({
     customId: true,
     name: true,
     description: true,
@@ -19,14 +24,14 @@ const publicRoleFields = getFields<IPublicRoleData>({
     resourceId: true,
     resourceType: true,
     lowerCasedName: true,
-    nextRoleId: true,
-    prevRoleId: true,
+    nextId: true,
+    prevId: true,
 });
 
-const publicPermissionFields = getFields<IPublicPermissionData>({
+const publicPermissionFields = getFields<IPublicPermission>({
     customId: true,
     action: true,
-    roles: true,
+    permissionGroups: true,
     users: true,
     permissionOwnerId: true,
     resourceType: true,
@@ -35,32 +40,47 @@ const publicPermissionFields = getFields<IPublicPermissionData>({
     updatedBy: true,
     updatedAt: getDateString,
     available: true,
+    orgId: true,
 });
 
-export const getPublicRoleData = (
-    role: IAccessControlRole
-): IPublicRoleData => {
-    return extractFields(role, publicRoleFields);
+const publicUserPermissionGroupMapFields = getFields<IPublicUserAssignedPermissionGroup>(
+    {
+        userId: true,
+        orgId: true,
+        resourceId: true,
+        resourceType: true,
+        permissionGroupId: true,
+        addedAt: true,
+        addedBy: true,
+    }
+);
+
+export const getPublicPermissionGroups = (
+    permissionGroup: IPermissionGroup
+): IPublicPermissionGroup => {
+    return extractFields(permissionGroup, publicPermissionGroupFields);
 };
 
 export function getPublicPermissionData(
-    permission: IAccessControlPermission
-): IPublicPermissionData {
+    permission: IPermission
+): IPublicPermission {
     return extractFields(permission, publicPermissionFields);
 }
 
 export function getPublicPermissionsArray(
-    permissions: IAccessControlPermission[]
-): IPublicPermissionData[] {
+    permissions: IPermission[]
+): IPublicPermission[] {
     return permissions.map((user) =>
         extractFields(user, publicPermissionFields)
     );
 }
 
-export function getPublicRolesArray(
-    roles: IAccessControlRole[]
-): IPublicRoleData[] {
-    return roles.map((user) => extractFields(user, publicRoleFields));
+export function getPublicPermissionGroupsArray(
+    permissionGroups: IPermissionGroup[]
+): IPublicPermissionGroup[] {
+    return permissionGroups.map((user) =>
+        extractFields(user, publicPermissionGroupFields)
+    );
 }
 
 export function assertIsPermissionBlock(block: IBlock) {
@@ -70,4 +90,18 @@ export function assertIsPermissionBlock(block: IBlock) {
     ) {
         throw new InvalidRequestError();
     }
+}
+
+export function getPublicUserAssignedPermissionGroupArray(
+    data: IUserAssignedPermissionGroup[]
+): IPublicUserAssignedPermissionGroup[] {
+    return data.map((item) =>
+        extractFields(item, publicUserPermissionGroupMapFields)
+    );
+}
+
+export function getPublicUserAssignedPermissionGroup(
+    data: IUserAssignedPermissionGroup
+): IPublicUserAssignedPermissionGroup {
+    return extractFields(data, publicUserPermissionGroupMapFields);
 }

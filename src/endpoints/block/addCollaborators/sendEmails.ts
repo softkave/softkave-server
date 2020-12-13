@@ -3,7 +3,7 @@ import { IBlock } from "../../../mongo/block/definitions";
 import {
     CollaborationRequestEmailReason,
     ICollaborationRequest,
-} from "../../../mongo/collaborationRequest";
+} from "../../../mongo/collaboration-request";
 import { IUser } from "../../../mongo/user";
 import appInfo from "../../../resources/appInfo";
 import { getDate } from "../../../utilities/fns";

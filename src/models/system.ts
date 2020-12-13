@@ -18,7 +18,7 @@ export enum SystemResourceType {
     Notification = "notification",
     NotificationSubscription = "notificationSubscription",
     Team = "team",
-    Role = "role",
+    PermissionGroup = "permissionGroup",
     Permission = "permission",
 }
 

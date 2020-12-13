@@ -29,7 +29,19 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
     }
 
     const block = manualProcessInternalAddBlockInput(inputBlock, user);
-    const savedBlock = await context.block.saveBlock(context, block);
+    let savedBlock = await context.block.saveBlock(context, block);
+
+    if (inputBlock.type === BlockType.Org) {
+        const { org } = await context.initializeOrgAccessControl(
+            context,
+            user,
+            savedBlock
+        );
+
+        savedBlock = org;
+    } else if (inputBlock.type === BlockType.Board) {
+        await context.initializeBoardPermissions(context, user, savedBlock);
+    }
 
     return {
         block: savedBlock,

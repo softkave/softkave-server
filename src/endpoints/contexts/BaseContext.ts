@@ -1,12 +1,12 @@
 import { Server } from "socket.io";
-import { getAccessControlPermissionModel } from "../../mongo/access-control/AccessControlActionsMapModel";
-import { getAccessControlRoleModel } from "../../mongo/access-control/AccessControlRoleModel";
+import { getPermissionModel } from "../../mongo/access-control/PermissionModel";
+import { getPermissionGroupsModel } from "../../mongo/access-control/PermissionGroupsModel";
+import { getUserAssignedPermissionGroupsModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
 import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
-import { getCollaborationRequestModel } from "../../mongo/collaborationRequest";
+import { getCollaborationRequestModel } from "../../mongo/collaboration-request";
 import { getCommentModel } from "../../mongo/comment";
-import { getNoteModel } from "../../mongo/note";
 import { getNotificationModel } from "../../mongo/notification";
 import { getNotificationSubscriptionModel } from "../../mongo/notification/NotificationSubscriptionModel";
 import { getRoomModel } from "../../mongo/room";
@@ -32,7 +32,6 @@ import {
     ICollaborationRequestContext,
 } from "./CollaborationRequestContext";
 import { getCommentContext, ICommentContext } from "./CommentContext";
-import { getNoteContext, INoteContext } from "./NoteContext";
 import {
     getNotificationContext,
     INotificationContext,
@@ -51,7 +50,6 @@ export interface IBaseContext {
     notification: INotificationContext;
     auditLog: IAuditLogContext;
     session: ISessionContext;
-    note: INoteContext;
     socket: ISocketContext;
     room: IRoomContext;
     broadcastHistory: IBroadcastHistoryContext;
@@ -72,7 +70,6 @@ export default class BaseContext implements IBaseContext {
     public notification: INotificationContext = getNotificationContext();
     public auditLog: IAuditLogContext = getAuditLogContext();
     public session: ISessionContext = getSessionContext();
-    public note: INoteContext = getNoteContext();
     public socket: ISocketContext = getSocketContext();
     public room: IRoomContext = getRoomContext();
     public broadcastHistory = getBroadcastHistoryContext();
@@ -82,15 +79,15 @@ export default class BaseContext implements IBaseContext {
         blockModel: getBlockModel(),
         notificationModel: getNotificationModel(),
         auditLogModel: getAuditLogModel(),
-        noteModel: getNoteModel(),
         commentModel: getCommentModel(),
         sprintModel: getSprintModel(),
         chatModel: getChatModel(),
         roomModel: getRoomModel(),
-        roles: getAccessControlRoleModel(),
-        permissions: getAccessControlPermissionModel(),
+        permissionGroup: getPermissionGroupsModel(),
+        permissions: getPermissionModel(),
         collaborationRequestModel: getCollaborationRequestModel(),
         notificationSubscriptionModel: getNotificationSubscriptionModel(),
+        userAssignedPermissionGroup: getUserAssignedPermissionGroupsModel(),
     };
     public socketServer: Server = getSocketServer();
     public comment = getCommentContext();

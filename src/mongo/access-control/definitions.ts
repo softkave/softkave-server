@@ -5,62 +5,49 @@ import {
     getResourceTypeToActionsMapByResourceTypeList,
 } from "./utils";
 
-// TODO: we should implement a justification system
-
-export enum AccessControlDefaultRoles {
+export enum DefaultPermissionGroupNames {
     Public = "public",
     Collaborator = "collaborator",
     Admin = "admin",
 }
 
-export enum AccessControlRoleSystemType {
-    Hierarchical = "hierarchical",
-    Flat = "flat",
-}
-
-export interface IAccessControlRole {
+export interface IPermissionGroup {
     customId: string;
     name: string;
     lowerCasedName: string;
     description?: string;
-    // permissions: IAccessControlPermission[];
     createdBy: string;
     createdAt: string;
     updatedBy?: string;
     updatedAt?: string;
-    // updateJustification?: IAccessControlActionJustification;
     resourceId: string;
     resourceType: SystemResourceType;
-    prevRoleId?: string;
-    nextRoleId?: string;
+    prevId?: string;
+    nextId?: string;
 }
 
-export const accessControlRoleMongoSchema = {
+export const permissionGroupMongoSchema = {
     customId: { type: String, unique: true },
     name: { type: String },
     lowerCasedName: { type: String },
     description: { type: String },
-    // permissions: { type: [accessControlPermisionMongoSchema] },
     createdBy: { type: String },
     createdAt: { type: Date },
     updatedBy: { type: String },
     updatedAt: { type: Date },
-    // updateJustification: { type: [accessControlActionJustificationSchema] },
     resourceId: { type: String },
     resourceType: { type: String },
-    prevRoleId: { type: String },
-    nextRoleId: { type: String },
+    prevId: { type: String },
+    nextId: { type: String },
 };
 
-export interface IAccessControlRoleDocument
-    extends IAccessControlRole,
-        Document {}
+export interface IPermissionGroupDocument extends IPermissionGroup, Document {}
 
-export interface IAccessControlPermission {
+export interface IPermission {
     customId: string;
     resourceType: SystemResourceType;
     action: SystemActionType;
-    roles: string[];
+    permissionGroups: string[];
     users: string[];
     orgId: string;
     permissionOwnerId: string;
@@ -71,23 +58,22 @@ export interface IAccessControlPermission {
     available: boolean;
 }
 
-export const accessControlPermissionMongoSchema = {
+export const permissionMongoSchema = {
     customId: { type: String, unique: true },
     action: { type: String },
-    roles: { type: [String] },
+    permissionGroups: { type: [String] },
     users: { type: [String] },
-    resourceId: { type: String },
+    permissionOwnerId: { type: String },
     resourceType: { type: String },
     createdBy: { type: String },
     createdAt: { type: Date },
     updatedBy: { type: String },
     updatedAt: { type: Date },
     available: { type: Boolean },
+    orgId: { type: String },
 };
 
-export interface IAccessControlPermissionDocument
-    extends IAccessControlPermission,
-        Document {}
+export interface IPermissionDocument extends IPermission, Document {}
 
 export const orgResourceTypes: SystemResourceType[] = [
     SystemResourceType.Collaborator,
@@ -107,7 +93,7 @@ export const orgResourceTypes: SystemResourceType[] = [
     SystemResourceType.Notification,
     SystemResourceType.NotificationSubscription,
     SystemResourceType.Team,
-    SystemResourceType.Role,
+    SystemResourceType.PermissionGroup,
     SystemResourceType.Permission,
 ];
 
@@ -124,7 +110,7 @@ export const boardResourceTypes: SystemResourceType[] = [
     SystemResourceType.Notification,
     SystemResourceType.NotificationSubscription,
     SystemResourceType.Team,
-    SystemResourceType.Role,
+    SystemResourceType.PermissionGroup,
     SystemResourceType.Permission,
 ];
 
@@ -182,27 +168,27 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
         SystemActionType.Update,
     ],
     [SystemResourceType.Team]: baseActionTypes,
-    [SystemResourceType.Role]: [SystemActionType.Update],
+    [SystemResourceType.PermissionGroup]: [],
     [SystemResourceType.Permission]: [
         SystemActionType.Read,
         SystemActionType.Update,
     ],
 };
 
-export const orgResourceTypeToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
+export const orgResourceTypesToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
     orgResourceTypes
 );
 
-export const boardResourceTypeToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
+export const boardResourceTypesToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
     boardResourceTypes
 );
 
-export const orgResourceTypeToActionList = getPermissionsListFromResourceTypeToActionsMap(
-    orgResourceTypeToActionsMap
+export const orgResourceTypesToActionList = getPermissionsListFromResourceTypeToActionsMap(
+    orgResourceTypesToActionsMap
 );
 
-export const boardResourceTypeToActionList = getPermissionsListFromResourceTypeToActionsMap(
-    boardResourceTypeToActionsMap
+export const boardResourceTypesToActionList = getPermissionsListFromResourceTypeToActionsMap(
+    boardResourceTypesToActionsMap
 );
 
 export interface IPermissionLikeObject {
@@ -219,4 +205,28 @@ export const freezedPermissionMongoSchema = {
 
 export interface IFreezedPermissionDocument
     extends IFreezedPermission,
+        Document {}
+
+export interface IUserAssignedPermissionGroup {
+    userId: string;
+    orgId: string;
+    resourceId: string;
+    resourceType: SystemResourceType;
+    permissionGroupId: string;
+    addedAt: string;
+    addedBy: string;
+}
+
+export const userAssignedPermissionGroupMongoSchema = {
+    userId: { type: String },
+    orgId: { type: String },
+    resourceId: { type: String },
+    resourceType: { type: String },
+    permissionGroupId: { type: String },
+    addedAt: { type: String },
+    addedBy: { type: String },
+};
+
+export interface IUserAssignedPermissionGroupDocument
+    extends IUserAssignedPermissionGroup,
         Document {}

@@ -1,4 +1,4 @@
-import { CollaborationRequestStatusType } from "../../../mongo/collaborationRequest";
+import { CollaborationRequestStatusType } from "../../../mongo/collaboration-request";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getPublicBlockData } from "../../block/utils";

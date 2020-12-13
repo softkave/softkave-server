@@ -1,4 +1,4 @@
-import { ICollaborationRequest } from "../../mongo/collaborationRequest";
+import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import {
     INotification,
     INotificationSubscription,

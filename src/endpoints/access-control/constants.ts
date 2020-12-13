@@ -1,12 +1,15 @@
 import { SystemActionType, SystemResourceType } from "../../models/system";
 
-const roleResourceTypes = [SystemResourceType.Org, SystemResourceType.Board];
+const permissionGroupResourceTypes = [
+    SystemResourceType.Org,
+    SystemResourceType.Board,
+];
 
 const permissionResourceTypes = [
     SystemResourceType.Org,
     SystemResourceType.Board,
     SystemResourceType.CollaborationRequest,
-    SystemResourceType.Role,
+    SystemResourceType.PermissionGroup,
     SystemResourceType.Permission,
     SystemResourceType.Task,
     SystemResourceType.Chat,
@@ -23,12 +26,12 @@ const permissionActionTypes = [
 ];
 
 export const accessControlConstants = {
-    roleResourceTypes,
+    permissionGroupResourceTypes,
     permissionActionTypes,
     permissionResourceTypes,
-    maxRoleNameLength: 50,
-    maxRoleDescriptionLength: 200,
-    maxRoles: 20,
+    maxPermissionGroupNameLength: 50,
+    maxPermissionGroupDescriptionLength: 200,
+    maxPermissionGroups: 20,
     maxPermissions:
         permissionResourceTypes.length * permissionActionTypes.length,
 };

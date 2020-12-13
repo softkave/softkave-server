@@ -1,6 +1,5 @@
 import { Document } from "mongoose";
 import { getDate } from "../../utilities/fns";
-import { AccessControlRoleSystemType } from "../access-control/definitions";
 import { boardSprintOptionsSchema, IBoardSprintOptions } from "../sprint";
 
 export const blockSchemaVersion = 3; // increment when you make changes that are not backward compatible
@@ -160,9 +159,9 @@ export interface IBlock {
 
     // Orgs and boards
     color?: string;
-    publicRoleId?: string;
+    publicPermissionGroupId?: string;
     // newPermissionsManagerId?: string;
-    // rolesSystemType?: AccessControlRoleSystemType;
+    // permissionGroupsSystemType?: AccessControlPermissionGroupSystemType;
 
     // Tasks
     assignees?: IAssignee[];
@@ -205,7 +204,7 @@ const blockSchema = {
 
     // Orgs and boards
     color: { type: String },
-    publicRoleId: { type: String },
+    publicPermissionGroupId: { type: String },
 
     // Tasks
     assignees: { type: [blockAssigneeSchema] },

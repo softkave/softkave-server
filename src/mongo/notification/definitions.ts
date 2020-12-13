@@ -20,14 +20,14 @@ export enum NotificationType {
 
     CollaboratorRemoved = "collaboratorRemoved",
     CollaboratorPermissionsUpdated = "collaboratorPermissionsUpdated",
-    CollaboratorRolesUpdated = "collaboratorRolesUpdated",
+    CollaboratorPermissionGroupsUpdated = "collaboratorPermissionGroupsUpdated",
 
     PermissionsUpdated = "permissionsUpdated",
 
-    // RoleCreated = "roleCreated",
-    // RoleUpdated = "roleUpdated",
-    // RoleDeleted = "roleDeleted",
-    ResourceRolesUpdated = "resourceRolesUpdated",
+    // PermissionGroupCreated = "permissionGroupCreated",
+    // PermissionGroupUpdated = "permissionGroupUpdated",
+    // PermissionGroupDeleted = "permissionGroupDeleted",
+    ResourcePermissionGroupsUpdated = "resourcePermissionGroupsUpdated",
 
     CollaborationRequestCreated = "collaborationRequestCreated",
     CollaborationRequestUpdated = "collaborationRequestUpdated",

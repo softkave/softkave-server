@@ -4,7 +4,7 @@ import {
     CollaborationRequestResponse,
     CollaborationRequestStatusType,
     ICollaborationRequest,
-} from "../../../mongo/collaborationRequest";
+} from "../../../mongo/collaboration-request";
 import { INotification, NotificationType } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";

@@ -21,7 +21,7 @@ const publicUserFields = getFields<IPublicUserData>({
     rootBlockId: true,
     orgs: {
         customId: true,
-        roles: true,
+        permissionGroups: true,
     },
     color: true,
     notificationsLastCheckedAt: getDateString,

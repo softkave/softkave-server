@@ -1,5 +1,5 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { IAccessControlPermission } from "../../../mongo/access-control/definitions";
+import { IPermission } from "../../../mongo/access-control/definitions";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate, getDateString } from "../../../utilities/fns";
@@ -20,7 +20,7 @@ function processUpdatePermissionInput(
     permission: Partial<IPermissionInput>,
     args: IProcessPermissionsExtraArgs
 ) {
-    const p: Partial<IAccessControlPermission> = {
+    const p: Partial<IPermission> = {
         ...permission,
         updatedAt: getDate(),
         updatedBy: args.user.customId,

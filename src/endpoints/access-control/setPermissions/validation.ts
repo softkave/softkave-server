@@ -4,10 +4,10 @@ import { blockConstants } from "../../block/constants";
 import { accessControlConstants } from "../constants";
 import accessControlValidationSchemas from "../validation";
 
-const roles = Joi.array()
-    .items(accessControlValidationSchemas.roleId)
+const permissionGroups = Joi.array()
+    .items(accessControlValidationSchemas.permissionGroupId)
     .unique()
-    .max(accessControlConstants.maxRoles);
+    .max(accessControlConstants.maxPermissionGroups);
 
 const users = Joi.array()
     .items(validationSchemas.uuid)
@@ -15,7 +15,7 @@ const users = Joi.array()
     .max(blockConstants.maxCollaborators);
 
 export const updatePermissionInputJoiSchema = Joi.object().keys({
-    roles,
+    permissionGroups,
     users,
 });
 

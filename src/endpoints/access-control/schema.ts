@@ -1,20 +1,23 @@
 const accessControlGraphQLSchema = `
     type Permission {
         customId: String
-        action: String
-        roles: [String]
-        users: [String]
-        resourceId: String
         resourceType: String
+        action: String
+        permissionGroups: [String]
+        users: [String]
+        orgId: String
+        permissionOwnerId: String
         createdBy: String
         createdAt: String
         updatedBy: String
         updatedAt: String
+        available: Boolean
     }
 
-    type Role {
+    type PermissionGroup {
         customId: String
         name: String
+        lowerCasedName: String
         description: String
         createdBy: String
         createdAt: String
@@ -22,105 +25,147 @@ const accessControlGraphQLSchema = `
         updatedAt: String
         resourceId: String
         resourceType: String
+        prevId: String
+        nextId: String
     }
 
-    input NewPermissionInput {
-        action: String!
-        roles: [String]!
-        users: [String]!
-        resourceType: String!
-    }
-
-    input UpdatePermissionInput {
-        action: String
-        roles: [String]
-        users: [String]
-        resourceType: String
-    }
-
-    input NewRoleInput {
-        name: String!
-        description: String
-        resourceId: String!
-        resourceType: String!
-    }
-
-    input UpdateRoleInput {
-        name: String
-        description: String
+    type UserAssignedPermissionGroup {
+        userId: String
+        orgId: String
         resourceId: String
         resourceType: String
+        permissionGroupId: String
+        addedAt: String
+        addedBy: String
     }
 
-    input SetPermissionsAddPermissionInput {
-        tempId: String!
-        data: NewPermissionInput!
+    # setPermissions
+    input PermissionInput {
+        permissionGroups: [String]
+        users: [String]
     }
 
-    input SetPermissionsUpdatePermissionInput {
-        permissionId: String!
-        data: UpdatePermissionInput!
+    input SetPermissionsPermissionInput {
+        customId: String
+        data: PermissionInput
     }
 
-    input SetPermissionsInput {
-        add: [SetPermissionsAddPermissionInput]
-        update: [SetPermissionsUpdatePermissionInput]
+    type SetPermissionsResultPermissionItem {
+        customId: String
+        updatedAt: String
+        updatedBy: String
+    }
+
+    type SetPermissionsResult {
+        permissions: [SetPermissionsResultPermissionItem]
+        errors: [Error]
+    }
+
+    # addPermissionGroups
+    input NewPermissionGroupInput {
+        name: String!
+        description: String
+        prevId: String
+        nextId: String
+        users: [String]
+    }
+
+    input AddPermissionGroupsPermissionGroupInput {
+        tempId: String! 
+        data: NewPermissionGroupInput!
+    }
+
+    type AddPermissionGroupsResultPermissionGroup {
+        tempId: String
+        permissionGroup: PermissionGroup
+    }
+
+    type AddPermissionGroupsResult {
+        permissionGroups: [AddPermissionGroupsResultPermissionGroup]
+        errors: [Error]
+    }
+
+    # updatePermissionGroups
+    input UpdatePermissionGroupUsersInput {
+        add: [String]
         remove: [String]
     }
 
-    input SetRolesAddRoleInput {
-        tempId: String!
-        data: NewRoleInput!
+    input UpdatePermissionGroupInput {
+        name: String
+        description: String
+        prevId: String
+        nextId: String
+        users: UpdatePermissionGroupUsersInput
     }
 
-    input SetRolesUpdateRoleInput {
-        roleId: String!
-        data: UpdateRoleInput!
+    input UpdatePermissionGroupsPermissionGroupInput {
+        customId: String!
+        data: UpdatePermissionGroupInput!
     }
 
-    input SetRolesInput {
-        add: [SetRolesAddRoleInput]
-        update: [SetRolesUpdateRoleInput]
-        remove: [String]
+    type UpdatePermissionGroupsResultPermissionGroup {
+        customId: String
+        updatedAt: String
+        updatedBy: String
     }
 
-    type GetPermissionsResult {
-        permissions: IPublicPermissionData[];
+    type UpdatePermissionGroupsResult {
+        permissionGroups: [UpdatePermissionGroupsResultPermissionGroup]
         errors: [Error]
     }
 
-    type GetRolesResult {
-        permissions: IPublicRoleData[];
+    # getResourcePermissions
+    type GetResourcePermissionsResult {
+        permissions: [Permission]
         errors: [Error]
     }
 
-    type setPermissionsResult {
-        added: IPublicPermissionData[];
-        updated: IPublicPermissionData[];
+    # getResourcePermissonGroups
+    type GetResourcePermissionGroupsResult {
+        permissionGroups: [PermissionGroup]
         errors: [Error]
     }
 
-    type SetRolesResult {
-        added: IPublicPermissionData[];
-        updated: IPublicPermissionData[];
+    # permissionGroupExists
+    type PermissionGroupExistsResult {
+        exists: Boolean
+        errors: [Error]
+    }
+
+    # getUserPermissions
+    type GetUserPermissionsResult {
+        permissionGroups: [UserAssignedPermissionGroup]
         errors: [Error]
     }
 
     type AccessControlQuery {
-        getPermissions (blockId: String!) : GetPermissionsResult
-        getRoles (blockId: String!): GetRolesResult
+        getResourcePermissions (
+            blockId: String!
+        ) : GetResourcePermissionsResult
+        getPermissionGroups (
+            blockId: String!
+        ): GetResourcePermissionGroupsResult
+        permissionGroupExists (
+            blockId: String!,
+            name: String!
+        ): PermissionGroupExistsResult
+        getUserPermissions: GetUserPermissionsResult
     }
 
     type AccessControlMutation {
         setPermissions (
             blockId: String!,
-            permissions: SetPermissionsInput!
+            permissions: [SetPermissionsPermissionInput!]!
         ): SetPermissionsResult
-
-        setRoles (
+        addPermissionGroups (
             blockId: String!,
-            roles: SetRolesInput!
-        ): SetRolesResult
+            permissionGroups: [AddPermissionGroupsPermissionGroupInput!]!
+        ): AddPermissionGroupsResult
+        updatePermissionGroups (
+            blockId: String!,
+            permissionGroups: [UpdatePermissionGroupsPermissionGroupInput!]!
+        ): UpdatePermissionGroupsResult
     }
 `;
 

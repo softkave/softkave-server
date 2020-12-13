@@ -21,10 +21,10 @@ const typeArr: NotificationType[] = [
 
     NotificationType.CollaboratorRemoved,
     NotificationType.CollaboratorPermissionsUpdated,
-    NotificationType.CollaboratorRolesUpdated,
+    NotificationType.CollaboratorPermissionGroupsUpdated,
 
     NotificationType.PermissionsUpdated,
-    NotificationType.ResourceRolesUpdated,
+    NotificationType.ResourcePermissionGroupsUpdated,
 
     NotificationType.NewCollaborationRequest,
     NotificationType.CollaborationRequestResponse,

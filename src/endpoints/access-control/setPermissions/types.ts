@@ -2,7 +2,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
 export interface IPermissionInput {
-    roles: string[];
+    permissionGroups: string[];
     users: string[];
 }
 

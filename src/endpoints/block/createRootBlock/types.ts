@@ -1,7 +1,9 @@
 import { IUser } from "../../../mongo/user";
-import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-import { InternalAddBlockEndpoint } from "../internalAddBlock/types";
+import {
+    IInternalAddBlockContext,
+    InternalAddBlockEndpoint,
+} from "../internalAddBlock/types";
 import { IPublicBlock } from "../types";
 
 export interface ICreateRootBlockParameters {
@@ -12,7 +14,7 @@ export interface ICreateRootBlockResult {
     block: IPublicBlock;
 }
 
-export interface ICreateRootBlockContext extends IBaseContext {
+export interface ICreateRootBlockContext extends IInternalAddBlockContext {
     addBlock: InternalAddBlockEndpoint;
 }
 

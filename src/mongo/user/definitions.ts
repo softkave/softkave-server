@@ -5,12 +5,10 @@ export const userSchemaVersion = 2; // increment when you make changes that are 
 
 export interface IUserOrg {
     customId: string;
-    roles?: string[];
 }
 
 export const userOrgSchema = {
     customId: { type: String, index: true },
-    roles: { type: [String] },
 };
 
 export interface IUser {

@@ -1,9 +1,10 @@
-import { ClientSession, FilterQuery } from "mongoose";
+import { FilterQuery } from "mongoose";
 import { SystemActionType, SystemResourceType } from "../../models/system";
 import {
-    AccessControlDefaultRoles,
-    IAccessControlPermission,
-    IAccessControlRole,
+    DefaultPermissionGroupNames,
+    IPermission,
+    IPermissionGroup,
+    IUserAssignedPermissionGroup,
 } from "../../mongo/access-control/definitions";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
@@ -21,61 +22,58 @@ interface IPermissionQuery {
 }
 
 export interface IAccessControlContext {
-    // Roles
-    getRolesById: (
+    // Permission groups
+    getPermissionGroupsById: (
         ctx: IBaseContext,
-        roleIds: string[]
-    ) => Promise<IAccessControlRole[]>;
-    getRolesByResourceId: (
+        permissionGroupIds: string[]
+    ) => Promise<IPermissionGroup[]>;
+    getPermissionGroupsByResourceId: (
         ctx: IBaseContext,
         resourceId: string
-    ) => Promise<IAccessControlRole[]>;
-    getRolesByLowerCasedNames: (
+    ) => Promise<IPermissionGroup[]>;
+    getPermissionGroupsByLowerCasedNames: (
         ctx: IBaseContext,
         resourceIds: string[],
         lowerCasedNames: string[]
-    ) => Promise<IAccessControlRole[]>;
-    saveRoles: (
+    ) => Promise<IPermissionGroup[]>;
+    savePermissionGroups: (
         ctx: IBaseContext,
-        roles: IAccessControlRole[],
-        session?: ClientSession
-    ) => Promise<IAccessControlRole[]>;
-    updateRole: (
+        permissionGroups: IPermissionGroup[]
+    ) => Promise<IPermissionGroup[]>;
+    updatePermissionGroup: (
         ctx: IBaseContext,
-        roleId: string,
-        update: Partial<GetMongoUpdateType<IAccessControlRole>>
-    ) => Promise<IAccessControlRole | undefined>;
-    deleteRoles: (
+        permissionGroupId: string,
+        update: Partial<GetMongoUpdateType<IPermissionGroup>>
+    ) => Promise<IPermissionGroup | undefined>;
+    deletePermissionGroups: (
         ctx: IBaseContext,
-        roleIds: string[],
-        session?: ClientSession
+        permissionGroupIds: string[]
     ) => Promise<void>;
-    roleExists: (
+    permissionGroupExists: (
         ctx: IBaseContext,
         name: string,
         resourceId: string
     ) => Promise<boolean>;
-    bulkUpdateRolesById: (
+    bulkUpdatePermissionGroupsById: (
         ctx: IBaseContext,
-        data: Array<IUpdateItemById<IAccessControlRole>>,
-        session?: ClientSession
+        data: Array<IUpdateItemById<IPermissionGroup>>
     ) => Promise<void>;
 
     // Permissions
     getResourcePermissions: (
         ctx: IBaseContext,
         resourceId: string
-    ) => Promise<IAccessControlPermission[]>;
+    ) => Promise<IPermission[]>;
     queryPermission: (
         ctx: IBaseContext,
         query: IPermissionQuery,
         user?: IUser
-    ) => Promise<IAccessControlPermission | undefined>;
+    ) => Promise<IPermission | undefined>;
     queryPermissions: (
         ctx: IBaseContext,
         queries: IPermissionQuery[],
         user?: IUser
-    ) => Promise<IAccessControlPermission[]>;
+    ) => Promise<IPermission[]>;
     assertPermission: (
         ctx: IBaseContext,
         query: IPermissionQuery,
@@ -88,95 +86,121 @@ export interface IAccessControlContext {
     ) => Promise<boolean>;
     savePermissions: (
         ctx: IBaseContext,
-        permissions: IAccessControlPermission[]
-    ) => Promise<IAccessControlPermission[]>;
+        permissions: IPermission[]
+    ) => Promise<IPermission[]>;
     updatePermission: (
         ctx: IBaseContext,
         permissionId: string,
-        data: Partial<GetMongoUpdateType<IAccessControlPermission>>
-    ) => Promise<IAccessControlPermission | undefined>;
+        data: Partial<GetMongoUpdateType<IPermission>>
+    ) => Promise<IPermission | undefined>;
     deletePermissions: (
         ctx: IBaseContext,
         permissionIds: string[]
     ) => Promise<void>;
     getPermissionsByResourceId: (
         ctx: IBaseContext,
-        resourceId: string
-    ) => Promise<IAccessControlPermission[]>;
+        resourceId: string,
+        fullAccess: boolean
+    ) => Promise<IPermission[]>;
     bulkUpdatePermissionsById: (
         ctx: IBaseContext,
-        data: Array<IUpdateItemById<IAccessControlPermission>>
+        data: Array<IUpdateItemById<IPermission>>
     ) => Promise<void>;
+
+    // User-assigned permission groups
+    saveUserAssignedPermissionGroup: (
+        ctx: IBaseContext,
+        userAssignedPermissionGroups: IUserAssignedPermissionGroup[]
+    ) => Promise<IUserAssignedPermissionGroup[]>;
+    deleteUserAssignedPermissionGroupsByPermissionGroupId: (
+        ctx: IBaseContext,
+        permissionGroupIds: string[]
+    ) => Promise<void>;
+    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds: (
+        ctx: IBaseContext,
+        qs: Array<{ userIds: string[]; permissionGroupId: string }>
+    ) => Promise<void>;
+    getUserAssignedPermissionGroups: (
+        ctx: IBaseContext,
+        userId: string,
+        resourceId?: string
+    ) => Promise<IUserAssignedPermissionGroup[]>;
 }
 
 export default class AccessControlContext implements IAccessControlContext {
-    public static preparePermissionsQuery(
-        qs: IPermissionQuery[],
-        user?: IUser
-    ) {
-        const queries = qs.reduce((accumulator, q) => {
-            const baseQuery: FilterQuery<IAccessControlPermission> = {
-                permissionOwnerId: q.permissionResourceId,
-                resourceType: q.resourceType,
-                action: q.action,
-                available: true,
-            };
+    public static preparePermissionsQuery = wrapFireAndThrowError(
+        async (ctx: IBaseContext, qs: IPermissionQuery[], user?: IUser) => {
+            const userAssignedPermissionGroups: Record<string, string[]> = {};
+            const queries: Array<FilterQuery<IPermission>> = [];
 
-            let roles: string[] = [AccessControlDefaultRoles.Public];
+            for (const q of qs) {
+                const baseQuery: FilterQuery<IPermission> = {
+                    permissionOwnerId: q.permissionResourceId,
+                    resourceType: q.resourceType,
+                    action: q.action,
+                    available: true,
+                };
 
-            if (user) {
-                accumulator.push({
-                    ...baseQuery,
-                    users: user.customId,
-                });
+                let permissionGroupIds: string[] = [];
 
-                const userOrgData = user.orgs.find(
-                    (org) => org.customId === q.orgId
-                );
+                if (user) {
+                    permissionGroupIds =
+                        userAssignedPermissionGroups[q.permissionResourceId] ||
+                        (
+                            await ctx.accessControl.getUserAssignedPermissionGroups(
+                                ctx,
+                                user.customId,
+                                q.permissionResourceId
+                            )
+                        ).map((d) => d.permissionGroupId);
 
-                if (userOrgData && userOrgData.roles?.length > 0) {
-                    roles = roles.concat(userOrgData.roles);
+                    userAssignedPermissionGroups[
+                        q.permissionResourceId
+                    ] = permissionGroupIds;
                 }
+
+                permissionGroupIds.push(DefaultPermissionGroupNames.Public);
+                queries.push({
+                    ...baseQuery,
+                    permissionGroups: { $in: permissionGroupIds },
+                });
             }
 
-            accumulator.push({
-                ...baseQuery,
-                roles: { $in: roles },
-            });
+            const query: FilterQuery<IPermission> = {
+                $or: queries,
+            };
 
-            return accumulator;
-        }, [] as Array<FilterQuery<IAccessControlPermission>>);
+            return query;
+        }
+    );
 
-        const query: FilterQuery<IAccessControlPermission> = {
-            $or: queries,
-        };
-
-        return query;
-    }
-    public getRolesById = wrapFireAndThrowError(
-        (ctx: IBaseContext, roleIds: string[]) => {
-            return ctx.models.roles.model
+    public getPermissionGroupsById = wrapFireAndThrowError(
+        (ctx: IBaseContext, permissionGroupIds: string[]) => {
+            return ctx.models.permissionGroup.model
                 .find({
-                    customId: { $in: roleIds },
+                    customId: { $in: permissionGroupIds },
                 })
                 .lean()
                 .exec();
         }
     );
 
-    public getRolesByResourceId = wrapFireAndThrowError(
+    public getPermissionGroupsByResourceId = wrapFireAndThrowError(
         (ctx: IBaseContext, resourceId: string) => {
-            return ctx.models.roles.model.find({ resourceId }).lean().exec();
+            return ctx.models.permissionGroup.model
+                .find({ resourceId })
+                .lean()
+                .exec();
         }
     );
 
-    public getRolesByLowerCasedNames = wrapFireAndThrowError(
+    public getPermissionGroupsByLowerCasedNames = wrapFireAndThrowError(
         (
             ctx: IBaseContext,
             resourceIds: string[],
             lowerCasedNames: string[]
         ) => {
-            return ctx.models.roles.model
+            return ctx.models.permissionGroup.model
                 .find({
                     resourceId: { $in: resourceIds },
                     lowerCasedName: { $in: lowerCasedNames },
@@ -186,44 +210,40 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public saveRoles = wrapFireAndThrowError(
-        (
-            ctx: IBaseContext,
-            roles: IAccessControlRole[],
-            session?: ClientSession
-        ) => {
-            return ctx.models.roles.model.insertMany(roles, { session });
+    public savePermissionGroups = wrapFireAndThrowError(
+        (ctx: IBaseContext, permissionGroups: IPermissionGroup[]) => {
+            return ctx.models.permissionGroup.model.insertMany(
+                permissionGroups
+            );
         }
     );
 
-    public updateRole = wrapFireAndThrowError(
+    public updatePermissionGroup = wrapFireAndThrowError(
         (
             ctx: IBaseContext,
-            roleId: string,
-            update: Partial<GetMongoUpdateType<IAccessControlRole>>
+            permissionGroupId: string,
+            update: Partial<GetMongoUpdateType<IPermissionGroup>>
         ) => {
-            return ctx.models.roles.model
-                .findOneAndUpdate({ customId: roleId }, update, { new: true })
+            return ctx.models.permissionGroup.model
+                .findOneAndUpdate({ customId: permissionGroupId }, update, {
+                    new: true,
+                })
                 .lean()
                 .exec();
         }
     );
 
-    public deleteRoles = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            roleIds: string[],
-            session?: ClientSession
-        ) => {
-            await ctx.models.roles.model
-                .deleteMany({ customId: { $in: roleIds } }, { session })
+    public deletePermissionGroups = wrapFireAndThrowError(
+        async (ctx: IBaseContext, permissionGroupIds: string[]) => {
+            await ctx.models.permissionGroup.model
+                .deleteMany({ customId: { $in: permissionGroupIds } })
                 .exec();
         }
     );
 
-    public roleExists = wrapFireAndThrowError(
+    public permissionGroupExists = wrapFireAndThrowError(
         (ctx: IBaseContext, name: string, resourceId: string) => {
-            return ctx.models.roles.model.exists({
+            return ctx.models.permissionGroup.model.exists({
                 name,
                 resourceId,
             });
@@ -242,7 +262,7 @@ export default class AccessControlContext implements IAccessControlContext {
     public queryPermission = wrapFireAndThrowError(
         async (ctx: IBaseContext, query: IPermissionQuery, user?: IUser) => {
             return await ctx.models.permissions.model.findOne(
-                AccessControlContext.preparePermissionsQuery([query], user)
+                AccessControlContext.preparePermissionsQuery(ctx, [query], user)
             );
         }
     );
@@ -254,7 +274,7 @@ export default class AccessControlContext implements IAccessControlContext {
             user?: IUser
         ) => {
             return await ctx.models.permissions.model.find(
-                AccessControlContext.preparePermissionsQuery(queries, user)
+                AccessControlContext.preparePermissionsQuery(ctx, queries, user)
             );
         }
     );
@@ -316,7 +336,7 @@ export default class AccessControlContext implements IAccessControlContext {
     );
 
     public savePermissions = wrapFireAndThrowError(
-        (ctx: IBaseContext, permissions: IAccessControlPermission[]) => {
+        (ctx: IBaseContext, permissions: IPermission[]) => {
             return ctx.models.permissions.model.insertMany(permissions);
         }
     );
@@ -325,7 +345,7 @@ export default class AccessControlContext implements IAccessControlContext {
         (
             ctx: IBaseContext,
             permissionId: string,
-            data: Partial<GetMongoUpdateType<IAccessControlPermission>>
+            data: Partial<GetMongoUpdateType<IPermission>>
         ) => {
             return ctx.models.permissions.model
                 .findOneAndUpdate({ customId: permissionId }, data, {
@@ -345,18 +365,26 @@ export default class AccessControlContext implements IAccessControlContext {
     );
 
     public getPermissionsByResourceId = wrapFireAndThrowError(
-        (ctx: IBaseContext, resourceId: string) => {
-            return ctx.models.permissions.model
-                .find({ permissionOwnerId: resourceId })
-                .lean()
-                .exec();
+        async (ctx: IBaseContext, resourceId: string, fullAccess: boolean) => {
+            if (fullAccess) {
+                return ctx.models.permissions.model
+                    .find({ permissionOwnerId: resourceId })
+                    .lean()
+                    .exec();
+            } else {
+                // TODO
+                return ctx.models.permissions.model
+                    .find({ permissionOwnerId: resourceId })
+                    .lean()
+                    .exec();
+            }
         }
     );
 
     public bulkUpdatePermissionsById = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            data: Array<IUpdateItemById<IAccessControlPermission>>
+            data: Array<IUpdateItemById<IPermission>>
         ) => {
             const opts = data.map((b) => ({
                 updateOne: {
@@ -369,11 +397,10 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public bulkUpdateRolesById = wrapFireAndThrowError(
+    public bulkUpdatePermissionGroupsById = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            data: Array<IUpdateItemById<IAccessControlRole>>,
-            session?: ClientSession
+            data: Array<IUpdateItemById<IPermissionGroup>>
         ) => {
             const opts = data.map((b) => ({
                 updateOne: {
@@ -382,7 +409,55 @@ export default class AccessControlContext implements IAccessControlContext {
                 },
             }));
 
-            await ctx.models.sprintModel.model.bulkWrite(opts, { session });
+            await ctx.models.sprintModel.model.bulkWrite(opts);
+        }
+    );
+
+    saveUserAssignedPermissionGroup = wrapFireAndThrowError(
+        (
+            ctx: IBaseContext,
+            userAssignedPermissionGroups: IUserAssignedPermissionGroup[]
+        ) => {
+            return ctx.models.userAssignedPermissionGroup.model.insertMany(
+                userAssignedPermissionGroups
+            );
+        }
+    );
+
+    deleteUserAssignedPermissionGroupsByPermissionGroupId = wrapFireAndThrowError(
+        async (ctx: IBaseContext, permissionGroupIds: string[]) => {
+            await ctx.models.userAssignedPermissionGroup.model
+                .deleteMany({ permissionGroupId: { $in: permissionGroupIds } })
+                .exec();
+        }
+    );
+
+    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            qs: Array<{ userIds: string[]; permissionGroupId: string }>
+        ) => {
+            await ctx.models.userAssignedPermissionGroup.model.bulkWrite(
+                qs.map((q) => {
+                    return {
+                        deleteMany: {
+                            filter: {
+                                permissionGroupId: q.permissionGroupId,
+                                userId: { $in: q.userIds },
+                            },
+                        },
+                    };
+                })
+            );
+        }
+    );
+
+    getUserAssignedPermissionGroups = wrapFireAndThrowError(
+        (ctx: IBaseContext, userId: string, resourceId?: string) => {
+            return ctx.models.userAssignedPermissionGroup.model
+                .find({ userId, resourceId })
+                .lean()
+                .exec();
         }
     );
 }

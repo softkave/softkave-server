@@ -1,7 +1,7 @@
 import {
     CollaborationRequestStatusType,
     ICollaborationRequest,
-} from "../../mongo/collaborationRequest";
+} from "../../mongo/collaboration-request";
 import {
     INotification,
     INotificationSubscription,

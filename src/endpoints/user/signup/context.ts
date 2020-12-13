@@ -1,6 +1,6 @@
+import makeSingletonFunc from "../../../utilities/createSingletonFunc";
 import CreateRootBlockContext from "../../block/createRootBlock/context";
 import createRootBlock from "../../block/createRootBlock/createRootBlock";
-import userExists from "../userExists/userExists";
 import { ISignupContext } from "./types";
 
 export default class SignupContext
@@ -11,14 +11,4 @@ export default class SignupContext
     }
 }
 
-let cxt: ISignupContext = null;
-
-export function getSignupContext() {
-    if (cxt) {
-        return cxt;
-    }
-
-    cxt = new SignupContext();
-
-    return cxt;
-}
+export const getSignupContext = makeSingletonFunc(() => new SignupContext());

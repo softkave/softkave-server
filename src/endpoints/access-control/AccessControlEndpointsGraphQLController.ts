@@ -2,17 +2,19 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
-import addRoles from "./addRoles/addRoles";
-import deleteRoles from "./deleteRoles/deleteRoles";
-import getPermissions from "./getPermissions/getPermissions";
-import getRoles from "./getRoles/getRoles";
+import addPermissionGroups from "./addPermissionGroups/addPermissionGroups";
+import deletePermissionGroups from "./deletePermissionGroups/deletePermissionGroups";
+import getResourcePermissions from "./getResourcePermissions/getResourcePermissions";
+import getResourcePermissionGroups from "./getResourcePermissionGroups/getResourcePermissionGroups";
+import getUserPermissions from "./getUserPermissions/getUserPermissions";
+import permissionGroupExists from "./permissonGroupExists/permissionGroupExists";
 import setPermissions from "./setPermissions/setPermissions";
-import updateRoles from "./updateRoles/updateRoles";
+import updatePermissionGroups from "./updatePermissionGroups/updatePermissionGroups";
 
 export default class AccessControlEndpointsGraphQLController {
-    public getPermissions(data, req) {
+    public getResourcePermissions(data, req) {
         return wrapEndpoint(data, req, () =>
-            getPermissions(
+            getResourcePermissions(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )
@@ -28,36 +30,54 @@ export default class AccessControlEndpointsGraphQLController {
         );
     }
 
-    public getRoles(data, req) {
+    public getResourcePermissionGroups(data, req) {
         return wrapEndpoint(data, req, () =>
-            getRoles(
+            getResourcePermissionGroups(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );
     }
 
-    public updateRoles(data, req) {
+    public updatePermissionGroups(data, req) {
         return wrapEndpoint(data, req, () =>
-            updateRoles(
+            updatePermissionGroups(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );
     }
 
-    public addRoles(data, req) {
+    public addPermissionGroups(data, req) {
         return wrapEndpoint(data, req, () =>
-            addRoles(
+            addPermissionGroups(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );
     }
 
-    public deleteRoles(data, req) {
+    public deletePermissionGroups(data, req) {
         return wrapEndpoint(data, req, () =>
-            deleteRoles(
+            deletePermissionGroups(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public permissionGroupExists(data, req) {
+        return wrapEndpoint(data, req, () =>
+            permissionGroupExists(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public getUserPermissions(data, req) {
+        return wrapEndpoint(data, req, () =>
+            getUserPermissions(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

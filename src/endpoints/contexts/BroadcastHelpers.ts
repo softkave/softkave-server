@@ -4,7 +4,7 @@ import {
     CollaborationRequestResponse,
     CollaborationRequestStatusType,
     ICollaborationRequest,
-} from "../../mongo/collaborationRequest";
+} from "../../mongo/collaboration-request";
 import { INotification } from "../../mongo/notification";
 import { IRoom } from "../../mongo/room";
 import { ISprint } from "../../mongo/sprint";

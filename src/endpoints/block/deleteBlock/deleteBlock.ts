@@ -60,7 +60,7 @@ async function deleteOrgCleanup(
     );
 
     // TODO: delete permissions
-    // TODO: delete roles
+    // TODO: delete permissionGroups
     // TODO: delete notifications
     // TODO: delete notes
     // TODO: delete sprints
@@ -77,7 +77,7 @@ async function deleteBoardCleanup(
     block: IBlock
 ) {
     // TODO: delete permissions
-    // TODO: delete roles
+    // TODO: delete permissionGroups
     // TODO: delete notes
     // TODO: delete sprints
     // TODO: delete comments

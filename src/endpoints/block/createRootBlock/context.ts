@@ -1,14 +1,17 @@
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../RequestData";
+import InternalAddBlockContext from "../internalAddBlock/context";
 import internalAddBlock from "../internalAddBlock/internalAddBlock";
-import { IInternalAddBlockParameters } from "../internalAddBlock/types";
+import {
+    IInternalAddBlockContext,
+    IInternalAddBlockParameters,
+} from "../internalAddBlock/types";
 import { ICreateRootBlockContext } from "./types";
 
 export default class CreateRootBlockContext
-    extends BaseContext
+    extends InternalAddBlockContext
     implements ICreateRootBlockContext {
     public async addBlock(
-        context: IBaseContext,
+        context: IInternalAddBlockContext,
         instData: RequestData<IInternalAddBlockParameters>
     ) {
         const result = await internalAddBlock(context, instData);

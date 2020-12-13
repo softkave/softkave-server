@@ -5,7 +5,7 @@ import {
     CollaborationRequestEmailReason,
     CollaborationRequestStatusType,
     ICollaborationRequest,
-} from "../../../mongo/collaborationRequest/definitions";
+} from "../../../mongo/collaboration-request/definitions";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getCollaborationRequestRevokedNotification } from "../../notifications/templates/collaborationRequest";

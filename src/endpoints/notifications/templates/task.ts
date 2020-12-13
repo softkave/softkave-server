@@ -26,31 +26,3 @@ export function getTaskAssignedNotification(task: IBlock, assigneeId: string) {
 
     return notification;
 }
-
-export function taskDeletedNotification() {
-    const title = ``;
-    const type = NotificationType.TaskDeleted;
-    const body = "";
-    const notification: INotification = {
-        title,
-        body,
-        type,
-        customId: getNewId(),
-        recipientId: "",
-        orgId: "",
-        subscriptionResourceId: "",
-        subscriptionResourceType: "",
-        subscriptionId: "",
-        primaryResourceType: "",
-        primaryResourceId: "",
-        createdAt: getDate(),
-        readAt: "",
-        sentEmailHistory: [],
-        attachments: [],
-        actions: [],
-        meta: [],
-        reason: "",
-    };
-
-    return notification;
-}

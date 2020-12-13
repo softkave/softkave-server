@@ -4,7 +4,7 @@ import { assertBlock } from "../../../mongo/block/utils";
 import {
     CollaborationRequestStatusType,
     ICollaborationRequest,
-} from "../../../mongo/collaborationRequest";
+} from "../../../mongo/collaboration-request";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";

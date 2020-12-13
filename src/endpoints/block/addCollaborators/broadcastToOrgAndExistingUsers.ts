@@ -1,5 +1,5 @@
 import { IBlock } from "../../../mongo/block";
-import { ICollaborationRequest } from "../../../mongo/collaborationRequest";
+import { ICollaborationRequest } from "../../../mongo/collaboration-request";
 import { IUser } from "../../../mongo/user/definitions";
 import RequestData from "../../RequestData";
 import { IAddCollaboratorsContext } from "./types";

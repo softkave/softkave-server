@@ -8,7 +8,7 @@ import {
     ISubTask,
     ITaskSprint,
 } from "../../mongo/block";
-import { ICollaborationRequest } from "../../mongo/collaborationRequest";
+import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import { IBoardSprintOptions } from "../../mongo/sprint";
 import { ConvertDatesToStrings } from "../../utilities/types";
 import { IResourceWithId } from "../types";

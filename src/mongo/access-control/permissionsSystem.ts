@@ -26,19 +26,3 @@ export async function getNewPermissions(model: IFreezedPermissionsModel) {
 
     return newPermissions;
 }
-
-export async function freezeCurrentPermissions(
-    model: IFreezedPermissionsModel
-) {
-    const freezedPermissions = await model.model.find({}).lean().exec();
-
-    if (freezedPermissions.length > 0) {
-        return;
-    }
-
-    const resourceTypeToActionList = getPermissionsListFromResourceTypeToActionsMap(
-        resourceTypesToActionsMap
-    );
-
-    await model.model.insertMany(resourceTypeToActionList);
-}

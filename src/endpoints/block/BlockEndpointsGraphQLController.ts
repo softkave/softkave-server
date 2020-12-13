@@ -3,7 +3,7 @@ import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import addBlock from "./addBlock/addBlock";
-import AddBlockContext from "./addBlock/context";
+import { getAddBlockContext } from "./addBlock/context";
 import addCollaborators from "./addCollaborators/addCollaborators";
 import AddCollaboratorsContext from "./addCollaborators/context";
 import blockExists from "./blockExists/blockExists";
@@ -13,6 +13,7 @@ import getBoardTasks from "./getBoardTasks/getBoardTasks";
 import getOrgBoards from "./getOrgBoards/getOrgBoards";
 import getUserRootBlocks from "./getUserRootBlocks/getUserRootBlocks";
 import removeCollaborator from "./removeCollaborator/removeCollaborator";
+import { getRevokeCollaborationRequestContext } from "./revokeCollaborationRequest/context";
 import revokeCollaborationRequest from "./revokeCollaborationRequest/revokeCollaborationRequest";
 import transferBlock from "./transferBlock/transferBlock";
 import UpdateBlockContext from "./updateBlock/context";
@@ -22,7 +23,7 @@ export default class BlockEndpointsGraphQLController {
     public addBlock(data, req) {
         return wrapEndpoint(data, req, () =>
             addBlock(
-                new AddBlockContext(),
+                getAddBlockContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );
@@ -103,7 +104,7 @@ export default class BlockEndpointsGraphQLController {
     public revokeCollaborationRequest(data, req) {
         return wrapEndpoint(data, req, () =>
             revokeCollaborationRequest(
-                getBaseContext(),
+                getRevokeCollaborationRequestContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );

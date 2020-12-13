@@ -1,12 +1,12 @@
 import { Request } from "express";
-import { IAccessControlPermissionModel } from "../../mongo/access-control/AccessControlActionsMapModel";
-import { IAccessControlRoleModel } from "../../mongo/access-control/AccessControlRoleModel";
+import { IPermissionModel } from "../../mongo/access-control/PermissionModel";
+import { IPermissionGroupModel } from "../../mongo/access-control/PermissionGroupsModel";
+import { IUserAssignedPermissionGroupModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
 import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
 import { IChatModel } from "../../mongo/chat";
-import { ICollaborationRequestModel } from "../../mongo/collaborationRequest";
+import { ICollaborationRequestModel } from "../../mongo/collaboration-request";
 import { ICommentModel } from "../../mongo/comment";
-import { INoteModel } from "../../mongo/note";
 import { INotificationModel } from "../../mongo/notification";
 import { INotificationSubscriptionModel } from "../../mongo/notification/NotificationSubscriptionModel";
 import { IRoomModel } from "../../mongo/room";
@@ -19,15 +19,15 @@ export interface IContextModels {
     blockModel: IBlockModel;
     notificationModel: INotificationModel;
     auditLogModel: IAuditLogModel;
-    noteModel: INoteModel;
     commentModel: ICommentModel;
     sprintModel: ISprintModel;
     chatModel: IChatModel;
     roomModel: IRoomModel;
-    roles: IAccessControlRoleModel;
-    permissions: IAccessControlPermissionModel;
+    permissionGroup: IPermissionGroupModel;
+    permissions: IPermissionModel;
     collaborationRequestModel: ICollaborationRequestModel;
     notificationSubscriptionModel: INotificationSubscriptionModel;
+    userAssignedPermissionGroup: IUserAssignedPermissionGroupModel;
 }
 
 export interface IServerRequest extends Request {

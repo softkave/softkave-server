@@ -1,4 +1,8 @@
 import { IBlock } from "../../../mongo/block";
+import {
+    initializeBoardPermissions,
+    initializeOrgAccessControl,
+} from "../../access-control/initializeBlockPermissions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { INewBlockInput } from "../types";
@@ -15,8 +19,13 @@ export interface IInternalAddBlockResult {
     block: IBlock;
 }
 
+export interface IInternalAddBlockContext extends IBaseContext {
+    initializeBoardPermissions: typeof initializeBoardPermissions;
+    initializeOrgAccessControl: typeof initializeOrgAccessControl;
+}
+
 export type InternalAddBlockEndpoint = Endpoint<
-    IBaseContext,
+    IInternalAddBlockContext,
     IInternalAddBlockParameters,
     IInternalAddBlockResult
 >;
