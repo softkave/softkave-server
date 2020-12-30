@@ -1,4 +1,3 @@
-import { lastIndexOf } from "lodash";
 import appInfo from "../resources/appInfo";
 
 export function getFooterHTML() {
@@ -70,18 +69,3 @@ export function getNewlines(count = 1) {
 
     return newlines;
 }
-
-// export function breakText(text: string) {
-//     const lineLength = Math.floor(maxWidth / fontSize);
-//     const lines: string[] = [];
-
-//     for (
-//         let sliceIndex = 0;
-//         sliceIndex < text.length;
-//         sliceIndex += lineLength
-//     ) {
-//         lines.push(text.slice(sliceIndex, sliceIndex + lineLength));
-//     }
-
-//     return lines.join(getNewlines());
-// }

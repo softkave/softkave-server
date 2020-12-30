@@ -143,7 +143,7 @@ const accessControlGraphQLSchema = `
         getResourcePermissions (
             blockId: String!
         ) : GetResourcePermissionsResult
-        getPermissionGroups (
+        getResourcePermissionGroups (
             blockId: String!
         ): GetResourcePermissionGroupsResult
         permissionGroupExists (
@@ -166,6 +166,10 @@ const accessControlGraphQLSchema = `
             blockId: String!,
             permissionGroups: [UpdatePermissionGroupsPermissionGroupInput!]!
         ): UpdatePermissionGroupsResult
+        deletePermissionGroups (
+            blockId: String!,
+            permissionGroups: [String!]!
+        ): ErrorOnlyResponse
     }
 `;
 

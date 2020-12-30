@@ -1,0 +1,4 @@
+1. org, board, and task in their own models
+2. reorganize TODOs in the other files
+3. should task become entry?
+4. templates

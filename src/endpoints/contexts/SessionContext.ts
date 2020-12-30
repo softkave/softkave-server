@@ -3,7 +3,6 @@ import moment from "moment";
 import { resolveJWTError } from "../../middlewares/handleErrors";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
 import { PermissionDeniedError } from "../errors";
 import RequestData from "../RequestData";
 import { JWTEndpoints } from "../types";

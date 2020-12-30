@@ -24,7 +24,8 @@ export async function initializeBoardPermissions(
 
     const orgPermissions = await ctx.accessControl.getPermissionsByResourceId(
         ctx,
-        board.rootBlockId!
+        board.rootBlockId!,
+        true
     );
 
     const orgPermissionsMap = getPermissions2DimensionalMap(orgPermissions);

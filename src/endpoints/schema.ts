@@ -15,7 +15,7 @@ const endpointSchema = `
         note: NoteQuery
         sprint: SprintQuery
         system: SystemQuery
-        accessControl: AccessControlQuery
+        accessControl: AccessControlMutation
         notifications: NotificationsMutation
     }
 `;

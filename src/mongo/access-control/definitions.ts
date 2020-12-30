@@ -208,6 +208,7 @@ export interface IFreezedPermissionDocument
         Document {}
 
 export interface IUserAssignedPermissionGroup {
+    customId: string;
     userId: string;
     orgId: string;
     resourceId: string;
@@ -218,6 +219,7 @@ export interface IUserAssignedPermissionGroup {
 }
 
 export const userAssignedPermissionGroupMongoSchema = {
+    customId: { type: String },
     userId: { type: String },
     orgId: { type: String },
     resourceId: { type: String },

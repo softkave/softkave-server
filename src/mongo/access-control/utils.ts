@@ -13,7 +13,7 @@ export function getPermissions2DimensionalMap<T extends IPermissionLikeObject>(
     const result = permissions.reduce((map, permission) => {
         const actions = map[permission.resourceType] || ({} as any);
 
-        actions[permission.action] = permission.action;
+        actions[permission.action] = permission;
         map[permission.resourceType] = actions;
 
         return map;
