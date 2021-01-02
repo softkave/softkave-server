@@ -1,7 +1,6 @@
 import { buildSchema } from "graphql";
 import blockSchema from "./block/schema";
 import EndpointsGraphQLController from "./EndpointsGraphQLController";
-import noteSchema from "./notes/schema";
 import endpointSchema from "./schema";
 import sprintSchema from "./sprints/schema";
 import systemSchema from "./system/schema";
@@ -22,7 +21,6 @@ const rootSchema = `
 
     ${userSchema}
     ${blockSchema}
-    ${noteSchema}
     ${sprintSchema}
     ${systemSchema}
     ${endpointSchema}

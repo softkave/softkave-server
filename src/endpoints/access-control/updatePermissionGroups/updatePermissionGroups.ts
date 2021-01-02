@@ -9,6 +9,7 @@ import { IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId } from "../../block/utils";
 import { IBaseContext } from "../../contexts/BaseContext";
@@ -90,6 +91,7 @@ async function updateUserPermissionGroupMaps(
                         permissionGroupId: permissionGroup.customId,
                         addedAt: nowStr,
                         addedBy: user.customId,
+                        customId: getNewId(),
                     };
 
                     return userPermissionGroupMap;

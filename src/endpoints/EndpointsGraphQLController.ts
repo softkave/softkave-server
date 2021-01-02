@@ -8,9 +8,6 @@ import BlockEndpointsGraphQLController, {
 import CommentsEndpointsGraphQLController, {
     getCommentsEndpointsGraphQLController,
 } from "./comments/CommentsEndpointsGraphQLController";
-import NotesEndpointsGraphQLController, {
-    getNotesEndpointsGraphQLController,
-} from "./notes/NotesEndpointsGraphQLController";
 import { getNotificationEndpointsGraphQLController } from "./notifications";
 import NotificationEndpointsGraphQLController from "./notifications/NotificationEndpointsGraphQLController";
 import SprintsEndpointsGraphQLController, {
@@ -26,7 +23,6 @@ import UserEndpointsGraphQLController, {
 export default class EndpointsGraphQLController {
     public block: BlockEndpointsGraphQLController = getBlockEndpointsGraphQLController();
     public user: UserEndpointsGraphQLController = getUserEndpointsGraphQLController();
-    public note: NotesEndpointsGraphQLController = getNotesEndpointsGraphQLController();
     public comment: CommentsEndpointsGraphQLController = getCommentsEndpointsGraphQLController();
     public sprint: SprintsEndpointsGraphQLController = getSprintsEndpointsGraphQLController();
     public system: SystemEndpointsGraphQLController = getSystemEndpointsGraphQLController();

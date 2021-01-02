@@ -11,8 +11,8 @@ import { IUpdateItemById } from "../../../utilities/types";
 import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
-import { IPublicNotificationData } from "../../notifications/types";
-import { getPublicNotificationData } from "../../notifications/utils";
+import { IPublicCollaborationRequest } from "../../notifications/types";
+import { getPublicCollaborationRequest } from "../../notifications/utils";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IAddCollaboratorsContext } from "./types";
@@ -64,7 +64,9 @@ export default async function sendEmails(
             return requests[id];
         });
 
-    const socketUpdates: Array<IUpdateItemById<IPublicNotificationData>> = [];
+    const socketUpdates: Array<
+        IUpdateItemById<IPublicCollaborationRequest>
+    > = [];
 
     successfulRequests.forEach((req) => {
         const sentEmailHistory = req.sentEmailHistory.concat({
@@ -74,7 +76,7 @@ export default async function sendEmails(
 
         socketUpdates.push({
             id: req.customId,
-            data: getPublicNotificationData({
+            data: getPublicCollaborationRequest({
                 sentEmailHistory,
             }),
         });

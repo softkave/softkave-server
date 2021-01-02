@@ -8,7 +8,9 @@ import addCollaborators from "./addCollaborators/addCollaborators";
 import AddCollaboratorsContext from "./addCollaborators/context";
 import blockExists from "./blockExists/blockExists";
 import deleteBlock from "./deleteBlock/deleteBlock";
+import getBlockChildren from "./getBlockChildren/getBlockChildren";
 import getBlockCollaborators from "./getBlockCollaborators/getBlockCollaborators";
+import getBlockNotifications from "./getBlockNotifications/getBlockNotifications";
 import getBoardTasks from "./getBoardTasks/getBoardTasks";
 import getOrgBoards from "./getOrgBoards/getOrgBoards";
 import getUserRootBlocks from "./getUserRootBlocks/getUserRootBlocks";
@@ -123,6 +125,24 @@ export default class BlockEndpointsGraphQLController {
         return wrapEndpoint(data, req, () =>
             updateBlock(
                 new UpdateBlockContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public getBlockChildren(data, req) {
+        return wrapEndpoint(data, req, () =>
+            getBlockChildren(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public getBlockNotifications(data, req) {
+        return wrapEndpoint(data, req, () =>
+            getBlockNotifications(
+                getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )
         );

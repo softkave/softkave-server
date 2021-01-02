@@ -19,7 +19,7 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
         getBlockCollaborationRequestsJoiSchema
     );
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.orgId);
+    const org = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(org);
 

@@ -9,6 +9,7 @@ import ForgotPasswordContext from "./forgotPassword/context";
 import forgotPassword from "./forgotPassword/forgotPassword";
 import getChangePasswordTokenData from "./getChangePasswordTokenData/getChangePasswordTokenData";
 import getUserData from "./getUserData/getUserData";
+import getUserNotifications from "../notifications/getUserNotifications/getUserNotifications";
 import login from "./login/login";
 import respondToCollaborationRequest from "./respondToCollaborationRequest/respondToCollaborationRequest";
 import { getSignupContext } from "./signup/context";
@@ -98,6 +99,15 @@ export default class UserEndpointsGraphQLController {
     public userExists(data, req) {
         return wrapEndpoint(data, req, () =>
             userExists(
+                getBaseContext(),
+                RequestData.fromExpressRequest(req, data)
+            )
+        );
+    }
+
+    public getUserNotifications(data, req) {
+        return wrapEndpoint(data, req, () =>
+            getUserNotifications(
                 getBaseContext(),
                 RequestData.fromExpressRequest(req, data)
             )

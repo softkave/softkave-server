@@ -10,6 +10,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { getOrgDeletedNotification } from "../../notifications/templates/org";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
 import { deleteBlockJoiSchema } from "./validation";
@@ -39,7 +40,7 @@ async function deleteOrgCleanup(
     });
 
     const orgUsers = await context.user.getOrgUsers(context, block.customId);
-    const notifications: INotification[] = [];
+    // const notifications: INotification[] = [];
     const updates: Array<IUpdateItemById<IUser>> = [];
 
     orgUsers.forEach((orgUser) => {
@@ -51,13 +52,13 @@ async function deleteOrgCleanup(
             });
         }
 
-        notifications.push(getOrgDeletedNotification(block, user, orgUser));
+        // notifications.push(getOrgDeletedNotification(block, user, orgUser));
     });
 
     fireAndForgetPromise(context.user.bulkUpdateUsersById(context, updates));
-    fireAndForgetPromise(
-        context.notification.bulkSaveNotifications(context, notifications)
-    );
+    // fireAndForgetPromise(
+    //     context.notification.bulkSaveNotifications(context, notifications)
+    // );
 
     // TODO: delete permissions
     // TODO: delete permissionGroups
@@ -100,16 +101,18 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
     const block = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(block);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(block),
-            resourceType: getBlockAuditLogResourceType(block),
-            action: SystemActionType.Delete,
-            permissionResourceId: block.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(block),
+    //         resourceType: getBlockAuditLogResourceType(block),
+    //         action: SystemActionType.Delete,
+    //         permissionResourceId: block.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block });
 
     await context.block.deleteBlock(context, block.customId);
 

@@ -1,6 +1,6 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
-import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";

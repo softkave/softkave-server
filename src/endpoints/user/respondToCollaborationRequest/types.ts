@@ -1,5 +1,4 @@
-import { IBlock } from "../../../mongo/block";
-import { CollaborationRequestResponse } from "../../../mongo/notification";
+import { CollaborationRequestResponse } from "../../../mongo/collaboration-request";
 import { IPublicBlock } from "../../block/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";

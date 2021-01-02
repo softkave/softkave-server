@@ -99,7 +99,7 @@ const notificationSchema = {
 
 interface INotificationDocument extends INotification, Document {}
 
-async function migrateCollaborationRequests() {
+export async function migrateCollaborationRequests() {
     logScriptStarted(migrateCollaborationRequests);
 
     const collaborationRequestModel = getCollaborationRequestModel();
@@ -112,6 +112,11 @@ async function migrateCollaborationRequests() {
 
     await collaborationRequestModel.waitTillReady();
     await notificationModel.waitTillReady();
+
+    if ((await collaborationRequestModel.model.countDocuments()) > 0) {
+        console.log("Collaboration requests migrated already");
+        return;
+    }
 
     let docsCount = 0;
 
@@ -132,6 +137,9 @@ async function migrateCollaborationRequests() {
                 from: {
                     blockId: req.from.blockId,
                     userId: req.from.userId,
+                    blockName: req.from.blockName,
+                    blockType: req.from.blockType,
+                    name: req.from.name,
                 },
                 createdAt: req.createdAt,
                 expiresAt: req.expiresAt,

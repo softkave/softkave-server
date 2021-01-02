@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { SystemResourceType } from "../../mongo/audit-log";
+import { SystemResourceType } from "../../models/system";
 
 const resourceType = Joi.string()
     .lowercase()

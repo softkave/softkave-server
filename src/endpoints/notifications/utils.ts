@@ -14,7 +14,33 @@ import {
     IPublicNotificationSubscription,
 } from "./types";
 
-const publicNotificationFields = getFields<IPublicNotificationData>({});
+const publicNotificationFields = getFields<IPublicNotificationData>({
+    customId: true,
+    recipientId: true,
+    body: true,
+    type: true,
+    title: true,
+    orgId: true,
+    subscriptionResourceId: true,
+    subscriptionResourceType: true,
+    subscriptionId: true,
+    primaryResourceType: true,
+    primaryResourceId: true,
+    createdAt: getDateString,
+    readAt: getDateString,
+    sentEmailHistory: {
+        date: getDateString,
+    },
+    attachments: {
+        resourceType: true,
+        resourceId: true,
+        places: { start: true, end: true },
+        text: true,
+    },
+    actions: true,
+    meta: true,
+    reason: true,
+});
 
 export function getPublicNotificationData(
     notification: Partial<INotification>
@@ -31,7 +57,19 @@ export function getPublicNotificationsArray(
 }
 
 const publicNotificationSubscriptionFields = getFields<IPublicNotificationSubscription>(
-    {}
+    {
+        customId: true,
+        recipients: {
+            userId: true,
+            reason: true,
+            addedBy: true,
+            addedAt: getDateString,
+        },
+        resourceType: true,
+        resourceId: true,
+        type: true,
+        orgId: true,
+    }
 );
 
 export function getPublicNotificationSubscriptionData(
@@ -54,7 +92,6 @@ const publicCollaborationRequestFields = getFields<IPublicCollaborationRequest>(
         to: {
             email: true,
         },
-        body: true,
         from: {
             userId: true,
             name: true,
@@ -64,14 +101,15 @@ const publicCollaborationRequestFields = getFields<IPublicCollaborationRequest>(
         },
         createdAt: getDateString,
         readAt: getDateString,
-        expiresAt: getDateString,
         statusHistory: {
             status: true,
             date: getDateString,
         },
         sentEmailHistory: {
+            reason: true,
             date: getDateString,
         },
+        title: true,
     }
 );
 

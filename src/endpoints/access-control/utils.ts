@@ -52,6 +52,7 @@ const publicUserPermissionGroupMapFields = getFields<IPublicUserAssignedPermissi
         permissionGroupId: true,
         addedAt: true,
         addedBy: true,
+        customId: true,
     }
 );
 

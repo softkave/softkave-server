@@ -10,6 +10,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
 import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import { fireAndForgetPromise } from "../../utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { broadcastToOrgsAndExistingUsers } from "./broadcastToOrgAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
@@ -29,16 +30,18 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         throw new InvalidRequestError();
     }
 
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(org),
-            resourceType: SystemResourceType.CollaborationRequest,
-            action: SystemActionType.Create,
-            permissionResourceId: org.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(org),
+    //         resourceType: SystemResourceType.CollaborationRequest,
+    //         action: SystemActionType.Create,
+    //         permissionResourceId: org.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block: org });
 
     const { indexedExistingUsers } = await filterNewCollaborators(context, {
         block: org,
@@ -47,10 +50,6 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
 
     const now = getDate();
     const collaborationRequests = collaborators.map((request) => {
-        const notificationBody =
-            request.body ||
-            `You have been invited by ${user.name} to collaborate in ${org.name}.`;
-
         const newRequest: ICollaborationRequest = {
             customId: request.customId,
             from: {
@@ -62,11 +61,9 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
             },
             createdAt: now,
             title: `Collaboration request from ${org.name}`,
-            body: notificationBody,
             to: {
                 email: request.email,
             },
-            expiresAt: request.expiresAt as any,
             statusHistory: [
                 {
                     status: CollaborationRequestStatusType.Pending,

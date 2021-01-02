@@ -155,7 +155,7 @@ export interface IBlock {
     isDeleted?: boolean;
     deletedAt?: Date;
     deletedBy?: string;
-    permissionResourceId: string;
+    permissionResourceId?: string;
 
     // Orgs and boards
     color?: string;

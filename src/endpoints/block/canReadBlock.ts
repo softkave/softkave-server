@@ -6,7 +6,11 @@ import { BlockDoesNotExistError } from "./errors";
 
 export interface ICanReadBlockParameters {
     user: IUser;
-    block: IBlock;
+    block: {
+        customId?: string;
+        type?: BlockType;
+        rootBlockId?: string;
+    };
 }
 
 async function canReadBlock({ block, user }: ICanReadBlockParameters) {

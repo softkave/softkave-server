@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
-import { SystemResourceType } from "../../mongo/audit-log";
+import { SystemResourceType } from "../../models/system";
 import { BlockType } from "../../mongo/block";
-import { INote } from "../../mongo/note";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
@@ -46,7 +45,6 @@ export interface IRoomContext {
         userId: string
     ) => boolean;
     getBlockRoomName: (type: BlockType, id: string) => string;
-    getNoteRoomName: (note: INote) => string;
     getUserRoomName: (userId: string) => string;
     getChatRoomName: (roomId: string) => string;
 }
@@ -192,10 +190,6 @@ export default class RoomContext implements IRoomContext {
 
     public getBlockRoomName(type: BlockType, id: string) {
         return `${type}-${id}`;
-    }
-
-    public getNoteRoomName(note: INote) {
-        return `${SystemResourceType.Note}-${note.customId}`;
     }
 
     public getChatRoomName(roomId: string) {

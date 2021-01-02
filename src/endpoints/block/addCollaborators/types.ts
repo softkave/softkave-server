@@ -5,8 +5,6 @@ import sendCollabReqEmail from "../sendCollaborationRequestEmail";
 
 export interface INewCollaboratorInput {
     email: string;
-    body: string;
-    expiresAt: string;
     customId: string;
 }
 

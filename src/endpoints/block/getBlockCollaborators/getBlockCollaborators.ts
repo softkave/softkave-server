@@ -2,6 +2,7 @@ import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import { getCollaboratorsArray } from "../../user/utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { GetBlockCollaboratorsEndpoint } from "./types";
 import { getBlockCollaboratorsJoiSchema } from "./validation";
@@ -15,16 +16,18 @@ const getBlockCollaborators: GetBlockCollaboratorsEndpoint = async (
     const block = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(block);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(block),
-            resourceType: SystemResourceType.Collaborator,
-            action: SystemActionType.Read,
-            permissionResourceId: block.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(block),
+    //         resourceType: SystemResourceType.Collaborator,
+    //         action: SystemActionType.Read,
+    //         permissionResourceId: block.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block });
 
     const collaborators = await context.user.getBlockCollaborators(
         context,

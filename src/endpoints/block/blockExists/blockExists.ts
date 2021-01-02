@@ -4,6 +4,7 @@ import { BlockType } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { BlockExistsEndpoint } from "./types";
 import { blockExistsJoiSchema } from "./validation";
@@ -22,16 +23,18 @@ const blockExists: BlockExistsEndpoint = async (context, instData) => {
         const parent = await context.block.getBlockById(context, data.parent);
 
         assertBlock(parent);
-        await context.accessControl.assertPermission(
-            context,
-            {
-                orgId: getBlockRootBlockId(parent),
-                resourceType: getBlockAuditLogResourceType(parent),
-                action: SystemActionType.Read,
-                permissionResourceId: parent.permissionResourceId,
-            },
-            user
-        );
+        // await context.accessControl.assertPermission(
+        //     context,
+        //     {
+        //         orgId: getBlockRootBlockId(parent),
+        //         resourceType: getBlockAuditLogResourceType(parent),
+        //         action: SystemActionType.Read,
+        //         permissionResourceId: parent.permissionResourceId,
+        //     },
+        //     user
+        // );
+
+        canReadBlock({ user, block: data });
     }
 
     const exists = await context.block.blockExists(

@@ -67,7 +67,7 @@ export default async function filterNewCollaborators(
         throw errors;
     }
 
-    const existingCollaborationRequests = await context.notification.getCollaborationRequestsByRecipientEmail(
+    const existingCollaborationRequests = await context.collaborationRequest.getCollaborationRequestsByRecipientEmail(
         context,
         newCollaboratorsEmails,
         block.customId

@@ -95,16 +95,16 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         instData
     );
 
-    const notification = getCollaborationRequestResponseNotification(
-        req,
-        data.response,
-        user,
-        req.from.userId
-    );
+    // const notification = getCollaborationRequestResponseNotification(
+    //     req,
+    //     data.response,
+    //     user,
+    //     req.from.userId
+    // );
 
-    fireAndForgetPromise(
-        context.notification.bulkSaveNotifications(context, [notification])
-    );
+    // fireAndForgetPromise(
+    //     context.notification.bulkSaveNotifications(context, [notification])
+    // );
 
     if (!ownerBlock) {
         // If the org does not exist or has been deleted

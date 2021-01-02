@@ -9,10 +9,10 @@ const getUserNotifications: GetCollaborationRequestsEndpoint = async (
     instData
 ) => {
     const user = await context.session.getUser(context, instData);
-    const notifications = await context.notification.getUserNotifications(
-        context,
-        user.customId
-    );
+    // const notifications = await context.notification.getUserNotifications(
+    //     context,
+    //     user.customId
+    // );
 
     const requests = await context.collaborationRequest.getUserCollaborationRequests(
         context,
@@ -20,7 +20,7 @@ const getUserNotifications: GetCollaborationRequestsEndpoint = async (
     );
 
     return {
-        notifications: getPublicNotificationsArray(notifications),
+        // notifications: getPublicNotificationsArray(notifications),
         requests: getPublicCollaborationRequestArray(requests),
     };
 };

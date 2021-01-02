@@ -1,4 +1,4 @@
-import { SystemResourceType } from "../../../mongo/audit-log";
+import { SystemResourceType } from "../../../models/system";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 

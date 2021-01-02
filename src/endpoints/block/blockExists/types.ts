@@ -6,6 +6,7 @@ export interface IBlockExistsParameters {
     name: string;
     type: BlockType;
     parent?: string;
+    rootBlockId?: string;
 }
 
 export type BlockExistsEndpoint = Endpoint<
