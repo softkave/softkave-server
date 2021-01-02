@@ -39,10 +39,6 @@ export default async function sendEmails(
                 senderName: user.name,
                 senderOrg: block.name,
                 title: request.title,
-                message: request.body,
-                expiration: request.expiresAt
-                    ? moment(request.expiresAt)
-                    : null,
                 loginLink: `${appInfo.clientDomain}/login`,
                 recipientIsUser: !!indexedExistingUsers[request.to.email],
                 signupLink: `${appInfo.clientDomain}/signup`,

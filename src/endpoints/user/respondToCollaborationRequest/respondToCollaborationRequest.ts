@@ -53,10 +53,6 @@ const respondToCollaborationRequest: RespondToCollaborationRequestEndpoint = asy
         }
     }
 
-    if (req.expiresAt && new Date(req.expiresAt) < new Date()) {
-        throw new CollaborationRequestHasExpiredError();
-    }
-
     const statusHistory = req.statusHistory || [];
     const userAccepted =
         data.response === CollaborationRequestStatusType.Accepted;
