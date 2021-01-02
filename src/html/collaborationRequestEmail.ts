@@ -1,4 +1,3 @@
-import { Moment } from "moment";
 import {
     getEndGreeting,
     getFooterHTML,
@@ -15,23 +14,6 @@ export interface ICollaborationRequestEmailProps {
     senderOrg: string;
     recipientIsUser: boolean;
     title: string;
-    message?: string;
-    expiration?: Moment;
-}
-
-function getExpiration(
-    props: ICollaborationRequestEmailProps,
-    isHTML?: boolean
-) {
-    const expirationRelativeStr =
-        props.expiration && props.expiration.fromNow();
-    const expirationDateStr =
-        props.expiration && props.expiration.format("MM/DD/YYYY hh:mmA");
-    const expirationStr = props.expiration
-        ? `This request is set to expire ${expirationRelativeStr}, on ${expirationDateStr}.`
-        : `This request has no expiration date.`;
-
-    return isHTML ? `<span>${expirationStr}</span>` : expirationStr;
 }
 
 export function collaborationRequestEmailHTML(
@@ -54,20 +36,6 @@ export function collaborationRequestEmailHTML(
                 <p>
                     You have a new collaboration request from
                     <b>${props.senderName}</b> of <b>${props.senderOrg}</b>.
-                </p>
-                ${
-                    props.message
-                        ? `
-                            <p>
-                                <b>Message:</b><br />
-                                ${props.message}
-                            </p>
-                        `
-                        : ""
-                }
-                <p>
-                    <b>Expiration:</b><br />
-                    ${getExpiration(props, true)}
                 </p>
                 <p>
                     To respond to this request,
@@ -92,25 +60,16 @@ export function collaborationRequestEmailHTML(
 export function collaborationRequestEmailText(
     props: ICollaborationRequestEmailProps
 ) {
-    function getMessage() {
-        return props.message ? `Message: ${getNewlines()}${props.message}` : "";
-    }
-
     function getLink() {
         return props.recipientIsUser
             ? `login to your account here - ${getNewlines()}${props.loginLink}`
             : `create an account here - ${getNewlines()}${props.signupLink}`;
     }
 
-    const message = getMessage();
-
     const textBlocks = [
         getHeaderText(props.title),
         getNewlines(2),
         `You have a new collaboration request from ${props.senderName} of ${props.senderOrg}`,
-        `${message.length > 0 ? `${getNewlines(2)}${message}` : ""}`,
-        getNewlines(2),
-        `Expiration: ${getNewlines()}${getExpiration(props)}`,
         getNewlines(2),
         `To respond to this request, ${getLink()}`,
         getNewlines(2),

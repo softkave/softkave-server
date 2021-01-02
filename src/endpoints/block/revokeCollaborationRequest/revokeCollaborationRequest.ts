@@ -15,6 +15,7 @@ import {
     CollaborationRequestDoesNotExistError,
 } from "../../user/errors";
 import { fireAndForgetPromise } from "../../utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import {
     IRevokeCollaborationRequestContext,
@@ -75,16 +76,18 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
     const org = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(org);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(org),
-            resourceType: SystemResourceType.CollaborationRequest,
-            action: SystemActionType.RevokeRequest,
-            permissionResourceId: org.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(org),
+    //         resourceType: SystemResourceType.CollaborationRequest,
+    //         action: SystemActionType.RevokeRequest,
+    //         permissionResourceId: org.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block: org });
 
     let request = await context.collaborationRequest.getCollaborationRequestById(
         context,

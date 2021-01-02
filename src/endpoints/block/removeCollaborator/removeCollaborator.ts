@@ -4,6 +4,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { getCollaboratorRemovedNotification } from "../../notifications/templates/collaborator";
 import { UserDoesNotExistError } from "../../user/errors";
 import { fireAndForgetPromise } from "../../utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { RemoveCollaboratorEndpoint } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";
@@ -17,16 +18,18 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
     const org = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(org);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(org),
-            resourceType: SystemResourceType.Collaborator,
-            action: SystemActionType.Delete,
-            permissionResourceId: org.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(org),
+    //         resourceType: SystemResourceType.Collaborator,
+    //         action: SystemActionType.Delete,
+    //         permissionResourceId: org.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block: org });
 
     const collaborator = await context.user.getUserById(
         context,
@@ -49,15 +52,15 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
         orgs: collaboratorOrgs,
     });
 
-    const notification = getCollaboratorRemovedNotification(
-        org,
-        collaborator,
-        user
-    );
+    // const notification = getCollaboratorRemovedNotification(
+    //     org,
+    //     collaborator,
+    //     user
+    // );
 
-    fireAndForgetPromise(
-        context.notification.bulkSaveNotifications(context, [notification])
-    );
+    // fireAndForgetPromise(
+    //     context.notification.bulkSaveNotifications(context, [notification])
+    // );
 };
 
 export default removeCollaborator;

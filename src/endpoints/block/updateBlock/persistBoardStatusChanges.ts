@@ -1,4 +1,4 @@
-import { SystemActionType, SystemResourceType } from "../../../mongo/audit-log";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { indexArray } from "../../../utilities/fns";

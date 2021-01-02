@@ -23,22 +23,22 @@ async function sendNewlyAssignedTaskEmail(
         return;
     }
 
-    const notifications: INotification[] = [];
+    // const notifications: INotification[] = [];
 
     // TODO: what should we do if any of the above calls fail?
 
-    diff.newAssignees.forEach((assignedUser) => {
-        const notification = getTaskAssignedNotification(
-            task,
-            assignedUser.userId
-        );
+    // diff.newAssignees.forEach((assignedUser) => {
+    //     const notification = getTaskAssignedNotification(
+    //         task,
+    //         assignedUser.userId
+    //     );
 
-        notifications.push(notification);
-    });
+    //     notifications.push(notification);
+    // });
 
-    fireAndForgetPromise(
-        context.notification.bulkSaveNotifications(context, notifications)
-    );
+    // fireAndForgetPromise(
+    //     context.notification.bulkSaveNotifications(context, notifications)
+    // );
 }
 
 export default sendNewlyAssignedTaskEmail;

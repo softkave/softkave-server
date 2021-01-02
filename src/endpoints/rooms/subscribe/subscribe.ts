@@ -2,6 +2,7 @@ import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
+import canReadBlock from "../../block/canReadBlock";
 import { getBlockRootBlockId } from "../../block/utils";
 import { RoomDoesNotExistError } from "../../chat/errors";
 import { SubscribeEndpoint } from "./types";
@@ -25,16 +26,18 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                 );
 
                 assertBlock(block);
-                await context.accessControl.assertPermission(
-                    context,
-                    {
-                        orgId: getBlockRootBlockId(block),
-                        resourceType: getBlockAuditLogResourceType(block),
-                        action: SystemActionType.Read,
-                        permissionResourceId: block.permissionResourceId,
-                    },
-                    user
-                );
+                // await context.accessControl.assertPermission(
+                //     context,
+                //     {
+                //         orgId: getBlockRootBlockId(block),
+                //         resourceType: getBlockAuditLogResourceType(block),
+                //         action: SystemActionType.Read,
+                //         permissionResourceId: block.permissionResourceId,
+                //     },
+                //     user
+                // );
+
+                canReadBlock({ user, block });
 
                 const roomName = context.room.getBlockRoomName(
                     block.type,
@@ -61,16 +64,18 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                 );
 
                 assertBlock(org);
-                await context.accessControl.assertPermission(
-                    context,
-                    {
-                        orgId: getBlockRootBlockId(org),
-                        resourceType: SystemResourceType.Chat,
-                        action: SystemActionType.Read,
-                        permissionResourceId: org.permissionResourceId,
-                    },
-                    user
-                );
+                // await context.accessControl.assertPermission(
+                //     context,
+                //     {
+                //         orgId: getBlockRootBlockId(org),
+                //         resourceType: SystemResourceType.Chat,
+                //         action: SystemActionType.Read,
+                //         permissionResourceId: org.permissionResourceId,
+                //     },
+                //     user
+                // );
+
+                canReadBlock({ user, block: org });
 
                 const isUserInRoom = !!room.members.find(
                     (member) => member.userId === user.customId

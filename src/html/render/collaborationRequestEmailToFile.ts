@@ -18,24 +18,21 @@ const newUserTextTemplateFile =
 
 export default function renderCollaborationRequestEmailToFile() {
     const existingUserProps: ICollaborationRequestEmailProps = {
-        expiration: moment().add(1, "month"),
         loginLink: `${appInfo.clientDomain}/login`,
-        message:
-            "How are you Isaac, we had a talk yesterday, this is our official offer.",
         recipientIsUser: true,
         senderName: "Abayomi Isaac",
         senderOrg: "Softkave",
         signupLink: `${appInfo.clientDomain}/signup`,
+        title: "Collaboration request from Yomi",
     };
 
     const newUserProps: ICollaborationRequestEmailProps = {
         loginLink: `${appInfo.clientDomain}/login`,
-        message:
-            "How are you Isaac, we had a talk yesterday, this is our official offer.",
         senderName: "Abayomi Isaac",
         senderOrg: "Softkave",
         signupLink: `${appInfo.clientDomain}/signup`,
         recipientIsUser: false,
+        title: "Collaboration request from Isaac",
     };
 
     const existingUserHTML = collaborationRequestEmailHTML(existingUserProps);

@@ -1,7 +1,6 @@
 import { SystemResourceType } from "../../models/system";
-import { SubscriptionResourceTypes } from "./updateResourceSubscriptions/types";
 
-const subscriptionResourceTypes: SubscriptionResourceTypes[] = [
+const subscriptionResourceTypes: SystemResourceType[] = [
     SystemResourceType.Org,
     SystemResourceType.Board,
     SystemResourceType.Task,

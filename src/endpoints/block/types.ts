@@ -66,7 +66,7 @@ export interface INewBlockInput {
     taskResolution?: string;
     labels?: IBlockAssignedLabelInput[];
     taskSprint?: ITaskSprintInput;
-    permissionResourceId: string;
+    permissionResourceId?: string;
 }
 
 export type IPublicBlock = ConvertDatesToStrings<{

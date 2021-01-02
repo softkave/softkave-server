@@ -1,22 +1,17 @@
-import { ICollaborationRequest } from "../../../mongo/collaboration-request";
 import { IBaseContext } from "../../contexts/BaseContext";
-import {
-    IPublicCollaborationRequest,
-    IPublicNotificationData,
-} from "../../notifications/types";
+import { IPublicCollaborationRequest } from "../../notifications/types";
 import { Endpoint } from "../../types";
 
-export interface IGetOrgNotificationsParameters {
+export interface IGetBlockNotificationsParameters {
     blockId: string;
 }
 
 export interface IGetBlockNotificationsResult {
-    notifications: IPublicNotificationData[];
     requests: IPublicCollaborationRequest[];
 }
 
 export type GetBlockNotificationsEndpoint = Endpoint<
     IBaseContext,
-    IGetOrgNotificationsParameters,
+    IGetBlockNotificationsParameters,
     IGetBlockNotificationsResult
 >;

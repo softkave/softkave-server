@@ -3,6 +3,7 @@ import { assertBlock } from "../../../mongo/block/utils";
 import { IBoardSprintOptions } from "../../../mongo/sprint";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import canReadBlock from "../../block/canReadBlock";
 import { getBlockRootBlockId } from "../../block/utils";
 import { SprintsSetupAldreadyError } from "../errors";
 import { getPublicSprintOptions } from "../utils";
@@ -15,16 +16,18 @@ const setupSprints: SetupSprintsEndpoint = async (context, instData) => {
     const board = await context.block.getBlockById(context, data.boardId);
 
     assertBlock(board);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(board),
-            resourceType: SystemResourceType.Board,
-            action: SystemActionType.Update,
-            permissionResourceId: board.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(board),
+    //         resourceType: SystemResourceType.Board,
+    //         action: SystemActionType.Update,
+    //         permissionResourceId: board.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block: board });
 
     if (!!board.sprintOptions) {
         throw new SprintsSetupAldreadyError();

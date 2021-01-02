@@ -6,6 +6,7 @@ import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
+import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
@@ -22,16 +23,18 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     const block = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(block);
-    await context.accessControl.assertPermission(
-        context,
-        {
-            orgId: getBlockRootBlockId(block),
-            resourceType: getBlockAuditLogResourceType(block),
-            action: SystemActionType.Update,
-            permissionResourceId: block.permissionResourceId,
-        },
-        user
-    );
+    // await context.accessControl.assertPermission(
+    //     context,
+    //     {
+    //         orgId: getBlockRootBlockId(block),
+    //         resourceType: getBlockAuditLogResourceType(block),
+    //         action: SystemActionType.Update,
+    //         permissionResourceId: block.permissionResourceId,
+    //     },
+    //     user
+    // );
+
+    canReadBlock({ user, block });
 
     const parentInput = updateData.parent;
 

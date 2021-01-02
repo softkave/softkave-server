@@ -236,19 +236,16 @@ const blockSchema = `
         customId: String
         from: CollaborationRequestFrom
         createdAt: String
-        body: String
         readAt: String
         to: NotificationTo
-        expiresAt: String
         statusHistory: [NotificationStatusHistory]
         sentEmailHistory: [NotificationSentEmailHistory]
         type: String
-        root: String
     }
 
     type GetNotificationsResponse {
         errors: [Error]
-        notifications: [Notification]
+        requests: [Notification]
     }
 
     type Collaborator {
@@ -266,8 +263,6 @@ const blockSchema = `
     input AddCollaboratorInput {
         email: String!
         customId: String!
-        body: String
-        expiresAt: String
     }
 
     type AddCollaboratorResult {

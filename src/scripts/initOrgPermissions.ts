@@ -18,6 +18,7 @@ import {
     logScriptStarted,
     logScriptSuccessful,
 } from "./utils";
+import getNewId from "../utilities/getNewId";
 
 export async function initOrgPermissions() {
     logScriptStarted(initOrgPermissions);
@@ -98,6 +99,7 @@ export async function initOrgPermissions() {
                     permissionGroupId: collaboratorPermissionGroup.customId,
                     addedAt: nowStr,
                     addedBy: doc.createdBy,
+                    customId: getNewId(),
                 };
 
                 return userPermissionGroupMap;
@@ -111,6 +113,7 @@ export async function initOrgPermissions() {
                 permissionGroupId: adminPermissionGroup.customId,
                 addedAt: nowStr,
                 addedBy: doc.createdBy,
+                customId: getNewId(),
             });
 
             await userAssignedPermissionGroupModel.model.insertMany(

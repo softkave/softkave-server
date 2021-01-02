@@ -10,7 +10,10 @@ export const collaborationRequestSchemaVersion = 1; // increment when you make c
 
 export interface ICollaborationRequestFrom {
     userId: string;
+    name: string;
     blockId: string;
+    blockName: string;
+    blockType: BlockType;
 }
 
 const collaborationRequestFromSchema = {
@@ -65,10 +68,8 @@ export interface ICollaborationRequest {
     customId: string;
     to: ICollaborationRequestRecipient;
     title: string;
-    body: string;
     from: ICollaborationRequestFrom;
     createdAt: Date;
-    expiresAt?: Date;
     readAt?: Date;
     statusHistory?: ICollaborationRequestStatus[];
     sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];

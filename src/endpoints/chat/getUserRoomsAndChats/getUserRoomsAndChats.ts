@@ -10,23 +10,24 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
 
     context.socket.assertSocket(instaData);
 
-    const permissions = await context.accessControl.queryPermissions(
-        context,
-        user.orgs.map((o) => {
-            return {
-                orgId: o.customId,
-                resourceType: SystemResourceType.Chat,
-                action: SystemActionType.Read,
-                permissionResourceId: o.customId,
-            };
-        }),
-        user
-    );
+    // const permissions = await context.accessControl.queryPermissions(
+    //     context,
+    //     user.orgs.map((o) => {
+    //         return {
+    //             orgId: o.customId,
+    //             resourceType: SystemResourceType.Chat,
+    //             action: SystemActionType.Read,
+    //             permissionResourceId: o.customId,
+    //         };
+    //     }),
+    //     user
+    // );
 
     const rooms = await context.chat.getRooms(
         context,
         user.customId,
-        permissions.map((p) => p.orgId)
+        // permissions.map((p) => p.orgId)
+        user.orgs.map((org) => org.customId)
     );
 
     const chats = await context.chat.getMessages(

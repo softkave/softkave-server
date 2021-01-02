@@ -9,4 +9,8 @@ export const blockExistsJoiSchema = Joi.object().keys({
         is: Joi.string().not([BlockType.Org, BlockType.Root]),
         then: Joi.required(),
     }),
+    rootBlockId: blockValidationSchemas.parent.when("type", {
+        is: Joi.string().not([BlockType.Org, BlockType.Root]),
+        then: Joi.required(),
+    }),
 });

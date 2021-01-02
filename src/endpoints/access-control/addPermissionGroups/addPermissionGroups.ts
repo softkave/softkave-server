@@ -131,6 +131,7 @@ async function addPermissionGroupsToUsers(
                         permissionGroupId: permissionGroup.customId,
                         addedAt: nowStr,
                         addedBy: user.customId,
+                        customId: getNewId(),
                     };
 
                     return userPermissionGroupMap;

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { CollaborationRequestStatusType } from "../../mongo/notification";
+import { CollaborationRequestStatusType } from "../../mongo/collaboration-request";
 import { regEx, validationSchemas } from "../../utilities/validationUtils";
 import { userConstants } from "./constants";
 

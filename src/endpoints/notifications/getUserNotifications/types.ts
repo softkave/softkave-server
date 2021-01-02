@@ -3,7 +3,7 @@ import { Endpoint } from "../../types";
 import { IPublicCollaborationRequest, IPublicNotificationData } from "../types";
 
 export interface IGetUserNotificationsResult {
-    notifications: IPublicNotificationData[];
+    // notifications: IPublicNotificationData[];
     requests: IPublicCollaborationRequest[];
 }
 
