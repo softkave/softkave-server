@@ -14,6 +14,7 @@ export interface ISprintContext {
         ctx: IBaseContext,
         customId: string
     ) => Promise<ISprint | undefined>;
+    getMany: (ctx: IBaseContext, ids: string[]) => Promise<ISprint[]>;
     getSprintsByBoardId: (
         ctx: IBaseContext,
         boardId: string
@@ -51,6 +52,17 @@ export default class SprintContext implements ISprintContext {
             return ctx.models.sprintModel.model
                 .findOne({
                     customId,
+                })
+                .lean()
+                .exec();
+        }
+    );
+
+    public getMany = wrapFireAndThrowError(
+        (ctx: IBaseContext, ids: string[]) => {
+            return ctx.models.sprintModel.model
+                .find({
+                    customId: { $in: ids },
                 })
                 .lean()
                 .exec();

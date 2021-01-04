@@ -1,10 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
-import { ISprint } from "../../../mongo/sprint";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { SprintDoesNotExistError } from "../errors";
 import { EndSprintEndpoint } from "./types";
 import { endSprintJoiSchema } from "./validation";
@@ -38,29 +35,23 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
     const endDateStr = getDateString(endDate);
     const statusList = board.boardStatuses || [];
 
-    if (statusList.length > 1) {
-        let nextSprint: ISprint;
+    // move incomplete tasks to the next sprint
+    await context.block.bulkUpdateTaskSprints(
+        context,
+        sprint.customId,
+        sprint.nextSprintId
+            ? {
+                  sprintId: sprint.nextSprintId,
+                  assignedAt: endDate,
+                  assignedBy: user.customId,
+              }
+            : null,
+        user.customId,
+        getDate(),
 
-        if (sprint.nextSprintId) {
-            nextSprint = await context.sprint.getSprintById(
-                context,
-                sprint.nextSprintId
-            );
-        }
-
-        await context.block.bulkUpdateTaskSprints(
-            context,
-            sprint.customId,
-            nextSprint
-                ? {
-                      sprintId: nextSprint.customId,
-                      assignedAt: endDate,
-                      assignedBy: user.customId,
-                  }
-                : null,
-            user.customId
-        );
-    }
+        // exclude completed tasks
+        statusList.slice(-1).map((s) => s.customId)
+    );
 
     await context.block.updateBlockById(context, board.customId, {
         currentSprintId: null,

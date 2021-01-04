@@ -1,5 +1,6 @@
 import moment from "moment";
 import { BlockType, IBlock, ISubTask } from "../../../mongo/block";
+import { ISprint } from "../../../mongo/sprint";
 import { IUser } from "../../../mongo/user";
 import { IdExistsError } from "../../../utilities/errors";
 import { getDate, indexArray } from "../../../utilities/fns";
@@ -262,6 +263,10 @@ const fields = getFields<
             );
     },
     taskSprint: (data, args) => {
+        if (!data) {
+            return null;
+        }
+
         return {
             sprintId: data.sprintId,
             assignedAt: getDate(),
@@ -273,7 +278,10 @@ const fields = getFields<
 export default function processUpdateBlockInput(
     block: IBlock,
     data: IUpdateBlockInput,
-    user: IUser
+    user: IUser,
+    board: IBlock,
+    oldSprint: ISprint | null,
+    newSprint: ISprint | null
 ): Partial<IBlock> {
     const update = extractFields(data, fields, {
         block,
@@ -295,6 +303,23 @@ export default function processUpdateBlockInput(
             });
 
             update.assignees = assignees;
+        }
+    }
+
+    const statusList = board.boardStatuses || [];
+    const taskCompleteStatus = statusList[statusList.length - 1];
+
+    // move task to backlog if status is updated from completed,
+    // and it's sprint is completed
+    if (
+        oldSprint &&
+        oldSprint.endDate &&
+        update.status &&
+        taskCompleteStatus &&
+        update.status !== taskCompleteStatus.customId
+    ) {
+        if (newSprint && newSprint.endDate) {
+            update.taskSprint = null;
         }
     }
 

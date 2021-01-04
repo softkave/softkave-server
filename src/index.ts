@@ -20,8 +20,7 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
-import { migrateCollaborationRequests } from "./scripts/migrateCollaborationRequests";
-import { removeDeletedBlocks } from "./scripts/removeDeletedBlocks";
+import { script_updateTaskSprints } from "./scripts/updateTaskSprints";
 import logger from "./utilities/logger";
 
 logger.info("server initialization");
@@ -143,8 +142,7 @@ connection.wait().then(async () => {
     await auditLogModel.waitTillReady();
 
     // scripts
-    migrateCollaborationRequests();
-    removeDeletedBlocks();
+    await script_updateTaskSprints();
 
     httpServer.listen(port, () => {
         logger.info(appInfo.appName);

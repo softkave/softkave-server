@@ -33,7 +33,7 @@ async function persistBoardResolutionsChanges(
         return;
     }
 
-    const oldBoardResolutions = block.boardResolutions;
+    const oldBoardResolutions = block.boardResolutions || [];
     const indexedOldBoardResolutions = indexArray(oldBoardResolutions, {
         path: "customId",
     });

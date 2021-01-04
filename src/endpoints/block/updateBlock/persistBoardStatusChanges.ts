@@ -23,7 +23,7 @@ async function persistBoardStatusChanges(
         return;
     }
 
-    const oldBoardStatuses = block.boardStatuses;
+    const oldBoardStatuses = block.boardStatuses || [];
     const indexedOldBoardStatuses = indexArray(oldBoardStatuses, {
         path: "customId",
     });

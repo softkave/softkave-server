@@ -99,8 +99,8 @@ const notificationSchema = {
 
 interface INotificationDocument extends INotification, Document {}
 
-export async function migrateCollaborationRequests() {
-    logScriptStarted(migrateCollaborationRequests);
+export async function script_migrateCollaborationRequests() {
+    logScriptStarted(script_migrateCollaborationRequests);
 
     const collaborationRequestModel = getCollaborationRequestModel();
     const notificationModel = new MongoModel<INotificationDocument>({
@@ -159,8 +159,8 @@ export async function migrateCollaborationRequests() {
         docsCount = requests.length;
 
         console.log(`collaboration request(s) count = ${docsCount}`);
-        logScriptSuccessful(migrateCollaborationRequests);
+        logScriptSuccessful(script_migrateCollaborationRequests);
     } catch (error) {
-        logScriptFailed(migrateCollaborationRequests, error);
+        logScriptFailed(script_migrateCollaborationRequests, error);
     }
 }

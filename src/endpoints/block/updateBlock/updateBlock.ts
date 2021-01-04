@@ -2,6 +2,7 @@ import pick from "lodash/pick";
 import { SystemActionType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { assertBlock } from "../../../mongo/block/utils";
+import { ISprint } from "../../../mongo/sprint";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
@@ -36,12 +37,52 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
     canReadBlock({ user, block });
 
-    const parentInput = updateData.parent;
-
     // Parent update ( tranferring block ) is handled separately by transferBlock
+    const parentInput = updateData.parent;
     delete updateData.parent;
 
-    const update = processUpdateBlockInput(block, updateData, user);
+    let oldSprint: ISprint | null = null;
+    let newSprint: ISprint | null = null;
+    let oldSprintId = "";
+    let newSprintId = "";
+    const board = await context.block.getBlockById(context, block.parent!);
+    const sprintIds: string[] = [];
+    let sprintsResult: ISprint[] = [];
+
+    if (block.taskSprint?.sprintId) {
+        sprintIds.push(block.taskSprint.sprintId);
+        oldSprintId = block.taskSprint.sprintId;
+    }
+
+    if (data.data.taskSprint?.sprintId) {
+        sprintIds.push(data.data.taskSprint.sprintId);
+        newSprintId = data.data.taskSprint.sprintId;
+    }
+
+    if (sprintIds.length > 0) {
+        sprintsResult = await context.sprint.getMany(context, sprintIds);
+    }
+
+    sprintsResult.forEach((sprint) => {
+        switch (sprint.customId) {
+            case oldSprintId:
+                oldSprint = sprint;
+                break;
+
+            case newSprintId:
+                newSprint = sprint;
+                break;
+        }
+    });
+
+    const update = processUpdateBlockInput(
+        block,
+        updateData,
+        user,
+        board,
+        oldSprint,
+        newSprint
+    );
 
     if (update.assignees?.length > 0) {
         const users = await context.user.bulkGetUsersById(
@@ -57,11 +98,9 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
                 return false;
             }
 
-            const isUserInOrg = !!assigneeUserData.orgs.find(
+            return !!assigneeUserData.orgs.find(
                 (o) => o.customId === block.rootBlockId
             );
-
-            return isUserInOrg;
         });
     }
 

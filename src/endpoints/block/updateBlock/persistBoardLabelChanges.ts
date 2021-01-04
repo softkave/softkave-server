@@ -21,7 +21,7 @@ async function persistBoardLabelChanges(
         return;
     }
 
-    const oldBoardLabels = block.boardLabels;
+    const oldBoardLabels = block.boardLabels || [];
     const indexedOldBoardLabels = indexArray(oldBoardLabels, {
         path: "customId",
     });

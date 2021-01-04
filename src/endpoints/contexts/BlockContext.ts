@@ -1,5 +1,10 @@
 import { FilterQuery } from "mongoose";
-import { BlockType, IBlock, ITaskSprint } from "../../mongo/block";
+import {
+    BlockType,
+    IBlock,
+    IBlockDocument,
+    ITaskSprint,
+} from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
@@ -46,7 +51,8 @@ export interface IBlockContext {
         sprintId: string,
         taskSprint: ITaskSprint | null,
         userId: string,
-        updatedAt?: Date
+        updatedAt?: Date,
+        excludeStatusIds?: string[]
     ) => Promise<void>;
     blockExists: (
         ctx: IBaseContext,
@@ -167,20 +173,24 @@ export default class BlockContext implements IBlockContext {
             sprintId: string,
             taskSprint: ITaskSprint | null,
             userId: string,
-            updatedAt: Date = getDate()
+            updatedAt: Date = getDate(),
+            excludeStatusIds: string[] = []
         ) => {
+            const query: FilterQuery<IBlockDocument> = {
+                "taskSprint.sprintId": sprintId,
+                isDeleted: false,
+            };
+
+            if (excludeStatusIds.length > 0) {
+                query.status = { $nin: excludeStatusIds };
+            }
+
             await ctx.models.blockModel.model
-                .updateMany(
-                    {
-                        "taskSprint.sprintId": sprintId,
-                        isDeleted: false,
-                    },
-                    {
-                        taskSprint,
-                        updatedAt,
-                        updatedBy: userId,
-                    }
-                )
+                .updateMany(query, {
+                    taskSprint,
+                    updatedAt,
+                    updatedBy: userId,
+                })
                 .exec();
         }
     );

@@ -1,8 +1,11 @@
-import moment from "moment";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import { IInternalAddBlockNewBlockInput } from "./types";
+
+// TODO: check if resources used exist and are valid
+// for example, check if assignees or sprint exists,
+// check if assignees exist in the org, etc.
 
 export default function manualProcessInternalAddBlockInput(
     inputBlock: IInternalAddBlockNewBlockInput,

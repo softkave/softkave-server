@@ -5,8 +5,8 @@ import {
     logScriptSuccessful,
 } from "./utils";
 
-export async function removeDeletedBlocks() {
-    logScriptStarted(removeDeletedBlocks);
+export async function script_removeDeletedBlocks() {
+    logScriptStarted(script_removeDeletedBlocks);
 
     const blockModel = getBlockModel();
 
@@ -17,8 +17,8 @@ export async function removeDeletedBlocks() {
                 isDeleted: true,
             })
             .exec();
-        logScriptSuccessful(removeDeletedBlocks);
+        logScriptSuccessful(script_removeDeletedBlocks);
     } catch (error) {
-        logScriptFailed(removeDeletedBlocks, error);
+        logScriptFailed(script_removeDeletedBlocks, error);
     }
 }

@@ -260,6 +260,7 @@ export function getTestBaseContext() {
             sprintExists: noop as any,
             deleteSprint: noop as any,
             updateUnstartedSprints: noop as any,
+            getMany: noop as any,
         },
         chat: {
             getMessages: noop as any,

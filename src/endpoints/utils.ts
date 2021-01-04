@@ -127,26 +127,25 @@ export function extractFields<
     paths.scalarFieldsWithTransformers.forEach(({ property, transformer }) => {
         const propValue = data[property];
 
-        // TODO: if you ever update this to allow null,
-        // make sure to strip those fields in the Joi schema
-        if (!propValue) {
+        if (propValue === undefined) {
             return;
         }
 
-        result[property] = transformer(propValue, extraArgs);
+        result[property] =
+            propValue === null ? null : transformer(propValue, extraArgs);
     });
 
     paths.objectFields.forEach(({ property, fields }) => {
         const propValue = data[property];
 
-        // TODO: if you ever update this to allow null,
-        // make sure to strip those fields in the Joi schema
-        if (!propValue) {
+        if (propValue === undefined) {
             return;
         }
 
         result[property] = isArray(propValue)
             ? propValue.map((value) => extractFields(value, fields, extraArgs))
+            : propValue === null
+            ? null
             : extractFields(propValue, fields, extraArgs);
     });
 

@@ -20,8 +20,8 @@ import {
 } from "./utils";
 import getNewId from "../utilities/getNewId";
 
-export async function initOrgPermissions() {
-    logScriptStarted(initOrgPermissions);
+export async function script_initOrgPermissions() {
+    logScriptStarted(script_initOrgPermissions);
 
     const blockModel = getBlockModel();
     const permissionGroupModel = getPermissionGroupsModel();
@@ -126,8 +126,8 @@ export async function initOrgPermissions() {
         cursor.close();
 
         console.log(`org(s) count = ${docsCount}`);
-        logScriptSuccessful(initOrgPermissions);
+        logScriptSuccessful(script_initOrgPermissions);
     } catch (error) {
-        logScriptFailed(initOrgPermissions, error);
+        logScriptFailed(script_initOrgPermissions, error);
     }
 }
