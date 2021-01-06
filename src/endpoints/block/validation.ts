@@ -83,19 +83,22 @@ const statusListSchema = Joi.array()
     .max(blockConstants.maxStatuses)
     .items(statusSchema)
     .unique("customId")
-    .unique("name");
+    .unique("name")
+    .allow(null);
 
 const boardLabelList = Joi.array()
     .max(blockConstants.maxLabels)
     .items(labelSchema)
     .unique("customId")
-    .unique("name");
+    .unique("name")
+    .allow(null);
 
 const resolutionListSchema = Joi.array()
     .max(blockConstants.maxResolutions)
     .items(resolutionSchema)
     .unique("customId")
-    .unique("name");
+    .unique("name")
+    .allow(null);
 
 const blockTypesSchema = Joi.array()
     .max(blockConstants.blockTypesCount)
@@ -170,7 +173,6 @@ const blockValidationSchemas = {
     blockAssignedLabelsList,
     statusAssignedBy,
     resolutionSchema,
-    resolutionListSchema,
     taskSprint,
     taskCollaboratorSchema,
     taskAssignees,
