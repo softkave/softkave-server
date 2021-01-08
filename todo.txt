@@ -1,3 +1,9 @@
+- bots.
+  - should be tied to particular users (should perform operations on behalf of)
+  - check if org or group or project allows bots (set bot scope in it's token)
+  - org level bots require permission from stakeholders (owners or collection of admins)
+- add restrictions to getting a block's notifications
+
 Automatic subscriptions:
 - when you are assigned to a task
 - if you created an org or a board

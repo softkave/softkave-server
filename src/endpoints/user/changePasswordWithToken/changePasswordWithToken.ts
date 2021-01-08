@@ -1,3 +1,4 @@
+import moment from "moment";
 import { JWTEndpoints } from "../../types";
 import {
     CredentialsExpiredError,
@@ -34,6 +35,13 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
 
     if (!user) {
         throw new UserDoesNotExistError();
+    }
+
+    if (
+        user.passwordLastChangedAt &&
+        moment(user.passwordLastChangedAt).isAfter(moment(tokenData.iat * 1000))
+    ) {
+        throw new CredentialsExpiredError();
     }
 
     context.session.addUserToSession(context, instData, user);
