@@ -24,33 +24,29 @@ export function getHeaderText(title) {
 }
 
 const maxWidth = 500;
-// const fontSize = 16;
 
 export function getTemplateStylesHTML() {
     return `
-    .email-header {
-        text-align: left;
-    }
-
-    .email-header h1 {
-        font-size: 16px;
-    }
-
-    .email-body {
+    body {
         margin-top: 32px;
         margin-bottom: 32px;
-    }
-
-    .email-content-center {
         max-width: ${maxWidth}px;
         padding-left: 16px;
         padding-right: 16px;
         margin: auto;
     }
 
+    .email-header {
+        text-align: left;
+        margin-bottom: 32px;
+    }
+
+    .email-header h1 {
+        font-size: 24px;
+    }
+
     .email-footer {
-        max-width: ${maxWidth}px;
-        margin: auto
+        margin-top: 32px;
     }
     `;
 }

@@ -8,11 +8,15 @@ export const appVariables = {
     feedbackBoardId: process.env.FEEDBACK_BOARD_ID,
     feedbackUserId: process.env.FEEDBACK_USER_ID,
     port: process.env.PORT,
+
     appName: "Softkave",
     emailSendFrom: "hello@softkave.com",
     emailEncoding: "UTF-8",
     dateFormat: "MMM DD, YYYY",
-    loginLink: `${clientDomain}/login`,
+    signupPath: `${clientDomain}/signup`,
+    loginPath: `${clientDomain}/login`,
+    changePasswordPath: `${clientDomain}/change-password`,
+    confirmEmailAddressPath: `${clientDomain}/confirm-email-address`,
 };
 
 export type IAppVariables = typeof appVariables;

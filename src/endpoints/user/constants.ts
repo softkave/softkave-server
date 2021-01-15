@@ -3,4 +3,6 @@ export const userConstants = {
     maxNameLength: 300,
     minPasswordLength: 7,
     maxPasswordLength: 20,
+
+    maxEmailConfirmationCount: 3,
 };

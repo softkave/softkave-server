@@ -45,7 +45,7 @@ export interface IUpdateBlockParameters {
 export interface IUpdateBlockContext extends IBaseContext {
     transferBlock: TransferBlockEndpoint;
     sendAssignedTaskEmailNotification: (
-        org: IBlock,
+        board: IBlock,
         taskName: string,
         taskDescription: string,
         assigner: IUser,

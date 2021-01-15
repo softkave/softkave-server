@@ -3,7 +3,6 @@ import {
     getFooterHTML,
     getHeaderHTML,
     getHeaderText,
-    getNewlines,
     getTemplateStylesHTML,
 } from "./helpers";
 
@@ -27,21 +26,16 @@ export function collaborationRequestRevokedEmailHTML(
     </head>
     <body>
         ${getHeaderHTML(props.title)}
-        <div class="email-body">
-            <div class="email-content-center">
-                <p>
-                    This is to notify you that the collaboration request sent from ${
-                        props.senderName
-                    } has been revoked.
-                </p>
-                <p>
-                ${getEndGreeting()}
-                </p>
-            </div>
-        </div>
+        <p>
+            This is to notify you that the collaboration request sent from ${
+                props.senderName
+            } has been revoked.
+        </p>
+        <p>
+        ${getEndGreeting()}
+        </p>
         ${getFooterHTML()}
     </body>
-
     </html>
     `;
 }
@@ -49,13 +43,15 @@ export function collaborationRequestRevokedEmailHTML(
 export function collaborationRequestRevokedEmailText(
     props: ICollaborationRequestRevokedEmailProps
 ) {
-    const textBlocks = [
-        getHeaderText(props.title),
-        getNewlines(2),
-        `This is to notify you that the collaboration request sent from ${props.senderName} has been revoked.`,
-        getNewlines(2),
-        `${getEndGreeting()}`,
-    ];
+    const txt = `
+    ${getHeaderText(props.title)}
 
-    return textBlocks.join("");
+    This is to notify you that the collaboration request sent from ${
+        props.senderName
+    } has been revoked.
+
+    ${getEndGreeting()}
+    `;
+
+    return txt;
 }

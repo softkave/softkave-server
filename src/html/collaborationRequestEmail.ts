@@ -31,25 +31,21 @@ export function collaborationRequestEmailHTML(
     </head>
     <body>
         ${getHeaderHTML(props.title)}
-        <div class="email-body">
-            <div class="email-content-center">
-                <p>
-                    You have a new collaboration request from
-                    <b>${props.senderName}</b> of <b>${props.senderOrg}</b>.
-                </p>
-                <p>
-                    To respond to this request,
-                    ${
-                        props.recipientIsUser
-                            ? `<a href="${props.loginLink}">Login to your account here</a>`
-                            : `<a href="${props.signupLink}">Signup here</a>`
-                    }
-                </p>
-                <p>
-                ${getEndGreeting()}
-                </p>
-            </div>
-        </div>
+        <p>
+            You have a new collaboration request from
+            <b>${props.senderName}</b> of <b>${props.senderOrg}</b>.
+        </p>
+        <p>
+            To respond to this request,
+            ${
+                props.recipientIsUser
+                    ? `<a href="${props.loginLink}">Login to your account here</a>`
+                    : `<a href="${props.signupLink}">Signup here</a>`
+            }
+        </p>
+        <p>
+        ${getEndGreeting()}
+        </p>
         ${getFooterHTML()}
     </body>
 
@@ -66,15 +62,17 @@ export function collaborationRequestEmailText(
             : `create an account here - ${getNewlines()}${props.signupLink}`;
     }
 
-    const textBlocks = [
-        getHeaderText(props.title),
-        getNewlines(2),
-        `You have a new collaboration request from ${props.senderName} of ${props.senderOrg}`,
-        getNewlines(2),
-        `To respond to this request, ${getLink()}`,
-        getNewlines(2),
-        `${getEndGreeting()}`,
-    ];
+    const txt = `
+    ${getHeaderText(props.title)}
 
-    return textBlocks.join("");
+    You have a new collaboration request from ${props.senderName} of ${
+        props.senderOrg
+    }
+
+    To respond to this request, ${getLink()}
+
+    ${getEndGreeting()}
+    `;
+
+    return txt;
 }

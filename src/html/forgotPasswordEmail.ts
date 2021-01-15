@@ -27,35 +27,33 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
     </head>
     <body>
         ${getHeaderHTML(forgotPasswordEmailTitle)}
-        <div class="email-body">
-            <div class="email-content-center">
-                <p>
-                    To change your password,
-                    <a href="${props.link}">Click here</a>
-                </p>
-                <p>- OR -</p>
-                <p>
-                    Copy the following link, and visit in your browser :-<br />
-                    <a href="${props.link}">${props.link}</a>
-                </p>
-                <p>
-                    <strong>
-                        This link expires in ${props.expiration.fromNow(
-                            true
-                        )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}
-                    </strong>
-                </p>
-                <p>
-                    If you did not request a change of password, please ignore this
-                    mail.
-                    <br />
-                    Also, do not share this link with anybody, as they'll be able to
-                    change your password with it.
-                    <br /><br />
-                    ${getEndGreeting()}
-                </p>
-            </div>
-        </div>
+        <p>
+            To change your password,
+            <a href="${props.link}">click here</a>
+        </p>
+        <p>
+            <b>- OR -</b>
+        </p>
+        <p>
+            Copy the following link, and visit in your browser :-<br />
+            <a href="${props.link}">${props.link}</a>
+        </p>
+        <p>
+            <strong>
+                This link expires in ${props.expiration.fromNow(
+                    true
+                )}, on ${props.expiration.format("MM/DD/YYYY hh:mmA")}
+            </strong>
+        </p>
+        <p>
+            If you did not request a change of password, please ignore this
+            mail.
+            <br />
+            Also, do not share this link with anybody, as they'll be able to
+            change your password with it.
+            <br /><br />
+            ${getEndGreeting()}
+        </p>
         ${getFooterHTML()}
     </body>
     </html>
@@ -63,18 +61,23 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
 }
 
 export function forgotPasswordEmailText(props: IForgotPasswordEmailProps) {
-    const textBlocks = [
-        `${getHeaderText(forgotPasswordEmailTitle)}`,
-        `\n\nTo change your password, copy the following link, and visit in your browser - \n${props.link}`,
-        `\n\nThis link expires:\n`,
-        `- Immediately after you change your password -OR-\n`,
-        `- In ${props.expiration.fromNow(true)}, on ${props.expiration.format(
-            "MM/DD/YYYY hh:mmA"
-        )}`,
-        `\n\nIf you did not request a change of password, please ignore this mail.`,
-        `\nAlso, do not share this link with anybody, as they'll be able to change your password with it.`,
-        `\n\n${getEndGreeting()}`,
-    ];
+    const txt = `
+    ${getHeaderText(forgotPasswordEmailTitle)}
 
-    return textBlocks.join("");
+    To change your password, copy the following link, and visit in your browser - 
+    ${props.link}
+
+    This link expires:
+    - Immediately after you change your password, or
+    - In ${props.expiration.fromNow(true)}, on ${props.expiration.format(
+        "MM/DD/YYYY hh:mmA"
+    )}
+
+    If you did not request a change of password, please ignore this mail.
+    Also, do not share this link with anybody, as they'll be able to change your password with it.
+
+    ${getEndGreeting()}
+    `;
+
+    return txt;
 }

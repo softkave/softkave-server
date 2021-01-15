@@ -7,10 +7,9 @@
     "moduleResolution": "node",
     "outDir": "code",
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "allowJs": true
+    "experimentalDecorators": true
   },
   "lib": ["es2015"],
   "exclude": ["node_modules", "dist"],
-  "files": ["index.js"]
+  "files": ["index.ts"]
 }

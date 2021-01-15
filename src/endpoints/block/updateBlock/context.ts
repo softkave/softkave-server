@@ -16,7 +16,7 @@ export default class UpdateBlockContext
     }
 
     public async sendAssignedTaskEmailNotification(
-        org: IBlock,
+        board: IBlock,
         taskName: string,
         taskDescription: string,
         assigner: IUser,
@@ -26,7 +26,7 @@ export default class UpdateBlockContext
             taskName,
             taskDescription,
             email: assignee.email,
-            senderOrg: org.name,
+            board: board.name,
             assignee: assignee.name,
             assigner: assigner.name,
             loginLink: appInfo.loginLink,
