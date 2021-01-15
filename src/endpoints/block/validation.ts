@@ -41,7 +41,7 @@ const labelSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow("")
+        .allow(["", null])
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -57,7 +57,7 @@ const statusSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow("")
+        .allow(["", null])
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -73,7 +73,7 @@ const resolutionSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow("")
+        .allow(["", null])
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -108,7 +108,7 @@ const blockTypesSchema = Joi.array()
 const name = Joi.string().trim().max(blockConstants.maxNameLength);
 
 const description = Joi.string()
-    .allow(null)
+    .allow([null, ""])
     .max(blockConstants.maxDescriptionLength)
     .trim();
 

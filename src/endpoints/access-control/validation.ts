@@ -9,7 +9,7 @@ const name = Joi.string()
     .max(accessControlConstants.maxPermissionGroupNameLength);
 
 const description = Joi.string()
-    .allow(null)
+    .allow([null, ""])
     .max(accessControlConstants.maxPermissionGroupDescriptionLength)
     .trim();
 

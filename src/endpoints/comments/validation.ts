@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const comment = Joi.string().allow("").max(1000).trim();
+const comment = Joi.string().max(1000).trim();
 
 const commentValidationSchemas = {
     comment,
