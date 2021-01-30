@@ -26,11 +26,7 @@ export const newBlockJoiSchema = Joi.object().keys({
     }),
     taskSprint: blockValidationSchemas.taskSprint,
     subTasks: blockValidationSchemas.subTasks,
-    status: validationSchemas.uuid.when("type", {
-        is: BlockType.Task,
-        then: Joi.required(),
-        otherwise: Joi.allow(null),
-    }),
+    status: validationSchemas.uuid.allow(null),
     assignees: blockValidationSchemas.taskAssignees,
     type: blockValidationSchemas.type.required(),
     boardStatuses: blockValidationSchemas.statusListSchema,

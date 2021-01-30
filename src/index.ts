@@ -20,7 +20,6 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
-import { script_cleanupDeletedLabelsAndStatusInTasks } from "./scripts/cleanupDeletedLabelsAndStatusInTasks";
 import logger from "./utilities/logger";
 
 logger.info("server initialization");
@@ -140,9 +139,6 @@ connection.wait().then(async () => {
     await blockModel.waitTillReady();
     await notificationModel.waitTillReady();
     await auditLogModel.waitTillReady();
-
-    // scripts
-    await script_cleanupDeletedLabelsAndStatusInTasks();
 
     httpServer.listen(port, () => {
         logger.info(appInfo.appName);
