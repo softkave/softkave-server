@@ -50,6 +50,7 @@ const labelSchema = Joi.object().keys({
 const statusSchema = Joi.object().keys({
     customId: validationSchemas.uuid,
     color: color.required(),
+    position: Joi.number().positive().required(),
     name: Joi.string()
         .trim()
         .lowercase()
@@ -61,7 +62,6 @@ const statusSchema = Joi.object().keys({
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
-    position: Joi.number().min(0),
 });
 
 const resolutionSchema = Joi.object().keys({

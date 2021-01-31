@@ -66,6 +66,7 @@ export interface IBlockStatus {
     color: string;
     createdBy: string;
     createdAt: Date;
+    position: number;
     description?: string;
     updatedBy?: string;
     updatedAt?: Date;
@@ -78,6 +79,7 @@ export const blockStatusSchema = {
     color: { type: String },
     createdBy: { type: String },
     createdAt: { type: Date },
+    postion: { type: Number },
     updatedBy: { type: String },
     updatedAt: { type: Date },
 };

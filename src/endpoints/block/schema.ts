@@ -33,6 +33,7 @@ const blockSchema = `
         name: String
         description: String
         color: String
+        postion: Float;
         createdBy: String
         createdAt: String
         updatedBy: String
@@ -44,6 +45,7 @@ const blockSchema = `
         name: String
         color: String
         description: String
+        positon: Float;
     }
 
     type Label {
