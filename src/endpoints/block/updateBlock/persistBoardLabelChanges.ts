@@ -1,13 +1,25 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { IBlock } from "../../../mongo/block";
+import { IBlock, IBlockLabel } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { getBlockRootBlockId } from "../utils";
-import getStatusChangedFields from "./getStatusChangedFields";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
+
+function getLabelChangedFields(
+    s1: IBlockLabel,
+    s2: IBlockLabel
+): Array<keyof IBlockLabel> {
+    return ["color", "description", "name"].reduce((accumulator, field) => {
+        if (s1[field] !== s2[field]) {
+            accumulator.push(field);
+        }
+
+        return accumulator;
+    }, []);
+}
 
 async function persistBoardLabelChanges(
     context: IUpdateBlockContext,
@@ -63,7 +75,7 @@ async function persistBoardLabelChanges(
         }
 
         if (existingLabel.updatedAt !== label.updatedAt) {
-            const changedFields = getStatusChangedFields(existingLabel, label);
+            const changedFields = getLabelChangedFields(existingLabel, label);
             const newValue: any = {};
             const oldValue: any = {};
 

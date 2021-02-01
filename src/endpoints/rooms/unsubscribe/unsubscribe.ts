@@ -11,6 +11,8 @@ const unsubscribe: SubscribeEndpoint = async (context, instData) => {
 
     const promises = data.items.map(async (dt) => {
         switch (dt.type) {
+            // TODO: when the block is deleted, the block will not exist
+            // causing an error and memory leak
             case SystemResourceType.Org:
             case SystemResourceType.Board: {
                 const block = await context.block.getBlockById(

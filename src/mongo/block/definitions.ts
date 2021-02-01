@@ -79,7 +79,7 @@ export const blockStatusSchema = {
     color: { type: String },
     createdBy: { type: String },
     createdAt: { type: Date },
-    postion: { type: Number },
+    position: { type: Number },
     updatedBy: { type: String },
     updatedAt: { type: Date },
 };

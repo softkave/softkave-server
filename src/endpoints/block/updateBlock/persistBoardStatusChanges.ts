@@ -1,5 +1,5 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { IBlock } from "../../../mongo/block";
+import { IBlock, IBlockStatus } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -7,8 +7,23 @@ import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { getBlockRootBlockId } from "../utils";
-import getStatusChangedFields from "./getStatusChangedFields";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
+
+function getStatusChangedFields(
+    s1: IBlockStatus,
+    s2: IBlockStatus
+): Array<keyof IBlockStatus> {
+    return ["color", "description", "name", "position"].reduce(
+        (accumulator, field) => {
+            if (s1[field] !== s2[field]) {
+                accumulator.push(field);
+            }
+
+            return accumulator;
+        },
+        []
+    );
+}
 
 async function persistBoardStatusChanges(
     context: IUpdateBlockContext,

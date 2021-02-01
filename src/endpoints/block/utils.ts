@@ -45,6 +45,7 @@ const blockFields = getFields<IPublicBlock>({
         updatedBy: true,
         color: true,
         name: true,
+        position: true,
     },
     boardLabels: {
         createdAt: getDateString,
