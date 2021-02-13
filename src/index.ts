@@ -20,7 +20,7 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
-import { script_addPositionToBoardStatuses } from "./scripts/addPositionToBoardStatuses";
+import { script_moveFutureProjects } from "./scripts/moveFutureProjects";
 import logger from "./utilities/logger";
 
 logger.info("server initialization");
@@ -142,7 +142,7 @@ connection.wait().then(async () => {
     await auditLogModel.waitTillReady();
 
     // scripts
-    await script_addPositionToBoardStatuses();
+    await script_moveFutureProjects();
 
     httpServer.listen(port, () => {
         logger.info(appInfo.appName);
