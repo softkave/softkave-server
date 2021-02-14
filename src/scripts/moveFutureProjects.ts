@@ -18,10 +18,19 @@ export async function script_moveFutureProjects() {
         await blockModel.model
             .updateMany(
                 {
-                    $or: [
-                        { customId: futureProjectsBoardId },
-                        { parent: futureProjectsBoardId },
-                    ],
+                    customId: futureProjectsBoardId,
+                },
+                {
+                    parent: solomonAndSonsOrgId,
+                    rootBlockId: solomonAndSonsOrgId,
+                }
+            )
+            .exec();
+
+        await blockModel.model
+            .updateMany(
+                {
+                    parent: futureProjectsBoardId,
                 },
                 {
                     rootBlockId: solomonAndSonsOrgId,
