@@ -1,0 +1,36 @@
+What are we retooling?
+- Separating org, board, and task into different models.
+- Define all data entry and updates in Quill.js deltas.
+New entries will be 'insert' operations,
+Updates will be 'retain' operations,
+Deletions will be 'delete' operations.
+More info can be found here:
+https://github.com/quilljs/delta
+https://quilljs.com/docs/delta/
+- Keep audit logs as deltas
+- GraphQL APIs for getting resources will be provided 
+- Theres going to be one mutation API for all inserts, updates, 
+and deletes
+- Delta attribute will contain resource type, and client timestamp 
+- Solve timestamp relative to server time approach
+- Solve notes
+- Use Redis for socket rooms and other socket mappings
+- Use Redis to keep socket/room broadcast history
+- Connected sockets will be the only stateful data on the server runtime
+- Move and implement supporting data like status, labels, sprints, etc
+using custom data
+- Open an API to allow users to define and add custom data
+- Better logging...
+- Implement and complete access control (top-level for now, not fine-grained)
+- customId to persistentId and localId
+or should we just leave customId?
+
+
+File and architectural changes not mentioned above
+- Mongo models from folders to files
+- Mongo models should use the simple format, and should be 
+available in Context
+
+
+=> Idea
+- Organization state is supposed to be a single state.
