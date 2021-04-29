@@ -6,19 +6,29 @@ import getComments from "./getComments/getComments";
 
 export default class CommentsEndpointsGraphQLController {
     public addComment(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             addComment(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getComments(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getComments(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }

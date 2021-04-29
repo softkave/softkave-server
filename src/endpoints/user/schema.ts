@@ -45,11 +45,17 @@ const userSchema = `
         respondedAt: String
     }
 
-    type GetChangePasswordTokenDataResult {
-        errors: [Error]
-        email: String
-        issuedAt: String
-        expires: String
+    type Client {
+        customId: String
+        userId: String
+        createdAt: String
+        hasNotificationsAPI: Boolean
+        grantedNotificationsPermission: Boolean
+    }
+
+    input UpdateClientDataInput {
+        hasNotificationsAPI: Boolean
+        grantedNotificationsPermission: Boolean
     }
 
     type UserQuery {
@@ -71,7 +77,7 @@ const userSchema = `
         ): ErrorOnlyResponse
 
         getUserData: UserQueryResult
-        getChangePasswordTokenData (token: String!) : GetChangePasswordTokenDataResult
+        updateClient (customId: String!, data: UpdateClientDataInput!) : ErrorOnlyResponse
     }
 `;
 

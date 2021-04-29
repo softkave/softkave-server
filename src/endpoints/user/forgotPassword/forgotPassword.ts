@@ -2,7 +2,6 @@ import moment from "moment";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoints } from "../../types";
 import { UserDoesNotExistError } from "../errors";
-import UserToken from "../UserToken";
 import { addEntryToPasswordDateLog } from "../utils";
 import { ForgotPasswordEndpoint } from "./types";
 import { forgotPasswordJoiSchema } from "./validation";
@@ -25,7 +24,7 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
 
     // TODO: the expiration duration should be defined in a config file, not here
     const expiration = moment(initTime).add(2, "days");
-    const token = UserToken.newToken({
+    const token = context.userToken.newToken(context, {
         user,
         audience: [JWTEndpoints.ChangePassword],
         expires: expiration.valueOf(),

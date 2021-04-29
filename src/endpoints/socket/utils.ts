@@ -24,14 +24,14 @@ export function makeSocketHandler(
 ) {
     return async (data, fn) => {
         try {
-            const requestData = RequestData.fromSocketRequest(
+            const requestData = await RequestData.fromSocketRequest(
                 ctx,
                 socket,
                 data,
                 handler.skipTokenHandling
             );
-            const result = await handler(ctx, requestData, fn);
 
+            const result = await handler(ctx, requestData, fn);
             sendAck(fn, result);
         } catch (error) {
             console.error(error);

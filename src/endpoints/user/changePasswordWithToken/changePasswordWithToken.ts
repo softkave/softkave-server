@@ -5,7 +5,6 @@ import {
     InvalidCredentialsError,
     UserDoesNotExistError,
 } from "../errors";
-import UserToken from "../UserToken";
 import { ChangePasswordWithTokenEndpoint } from "./types";
 
 const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
@@ -15,10 +14,10 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
     const tokenData = context.session.getRequestToken(context, instData);
 
     if (
-        !UserToken.containsAudience(
+        !context.userToken.containsAudience(
+            context,
             tokenData,
-            JWTEndpoints.ChangePassword,
-            false
+            JWTEndpoints.ChangePassword
         )
     ) {
         throw new InvalidCredentialsError();
@@ -28,10 +27,12 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
         throw new CredentialsExpiredError();
     }
 
-    const user = await context.user.getUserByEmail(
-        context,
-        tokenData.sub.email
-    );
+    // TODO: centralize token checks
+    if (!tokenData.userId) {
+        throw new InvalidCredentialsError();
+    }
+
+    const user = await context.user.getUserByEmail(context, tokenData.userId);
 
     if (!user) {
         throw new UserDoesNotExistError();

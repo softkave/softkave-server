@@ -23,127 +23,197 @@ import updateBlock from "./updateBlock/updateBlock";
 
 export default class BlockEndpointsGraphQLController {
     public addBlock(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             addBlock(
                 getAddBlockContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public addCollaborators(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             addCollaborators(
                 new AddCollaboratorsContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public blockExists(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             blockExists(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public deleteBlock(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             deleteBlock(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getUserRootBlocks(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getUserRootBlocks(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getBoardTasks(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getBoardTasks(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getOrgBoards(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getOrgBoards(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getBlockCollaborators(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getBlockCollaborators(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public removeCollaborator(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             removeCollaborator(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public revokeCollaborationRequest(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             revokeCollaborationRequest(
                 getRevokeCollaborationRequestContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public transferBlock(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             transferBlock(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public updateBlock(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             updateBlock(
                 new UpdateBlockContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getBlockChildren(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getBlockChildren(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public getBlockNotifications(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getBlockNotifications(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }

@@ -42,6 +42,11 @@ import { getSocketContext, ISocketContext } from "./SocketContext";
 import { getSprintContext, ISprintContext } from "./SprintContext";
 import { IContextModels } from "./types";
 import { getUserContext, IUserContext } from "./UserContext";
+import { getClientContext, IClientContext } from "./ClientContext";
+import { getTokenContext, ITokenContext } from "./TokenContext";
+import { getClientModel } from "../../mongo/client";
+import { getTokenModel } from "../../mongo/token";
+import { getUserTokenContext, IUserTokenContext } from "./UserTokenContext";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -59,6 +64,9 @@ export interface IBaseContext {
     sprint: ISprintContext;
     chat: IChatContext;
     accessControl: IAccessControlContext;
+    client: IClientContext;
+    token: ITokenContext;
+    userToken: IUserTokenContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
 }
@@ -74,6 +82,12 @@ export default class BaseContext implements IBaseContext {
     public room: IRoomContext = getRoomContext();
     public broadcastHistory = getBroadcastHistoryContext();
     public sprint = getSprintContext();
+    public comment = getCommentContext();
+    public chat = getChatContext();
+    public accessControl = getAccessControlContext();
+    public client = getClientContext();
+    public token = getTokenContext();
+    public userToken = getUserTokenContext();
     public models: IContextModels = {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
@@ -88,11 +102,10 @@ export default class BaseContext implements IBaseContext {
         collaborationRequestModel: getCollaborationRequestModel(),
         notificationSubscriptionModel: getNotificationSubscriptionModel(),
         userAssignedPermissionGroup: getUserAssignedPermissionGroupsModel(),
+        clientModel: getClientModel(),
+        tokenModel: getTokenModel(),
     };
     public socketServer: Server = getSocketServer();
-    public comment = getCommentContext();
-    public chat = getChatContext();
-    public accessControl = getAccessControlContext();
     public broadcastHelpers = getBroadcastHelpers();
     public appVariables = appVariables;
 }

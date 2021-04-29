@@ -16,13 +16,13 @@ export interface IUser {
     name: string;
     email: string;
     hash: string;
-    createdAt: Date;
-    forgotPasswordHistory: Date[];
-    passwordLastChangedAt: Date;
+    createdAt: string;
+    forgotPasswordHistory: string[];
+    passwordLastChangedAt: string;
     rootBlockId: string;
     orgs: IUserOrg[];
     color: string;
-    notificationsLastCheckedAt?: Date;
+    notificationsLastCheckedAt?: string;
 }
 
 export interface IUserDocument extends Document, IUser {}

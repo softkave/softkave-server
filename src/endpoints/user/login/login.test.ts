@@ -5,7 +5,7 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../RequestData";
 import { JWTEndpoints } from "../../types";
 import { InvalidEmailOrPasswordError } from "../errors";
-import UserToken from "../UserToken";
+import UserToken from "../../contexts/UserTokenContext";
 import { getPublicUserData } from "../utils";
 import login from "./login";
 import { ILoginParameters } from "./types";

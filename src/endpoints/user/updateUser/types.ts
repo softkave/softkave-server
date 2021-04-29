@@ -4,7 +4,7 @@ import { Endpoint } from "../../types";
 export interface IUpdateUserParameters {
     name?: string;
     // email?: string; // TODO: handle when the email already exists
-    notificationsLastCheckedAt?: Date;
+    notificationsLastCheckedAt?: string;
     color?: string;
 }
 

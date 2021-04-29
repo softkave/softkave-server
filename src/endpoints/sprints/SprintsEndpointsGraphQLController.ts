@@ -14,82 +14,145 @@ import updateSprintOptions from "./updateSprintOptions/updateSprintOptions";
 
 export default class SprintsEndpointsGraphQLController {
     public addSprint(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             addSprint(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public deleteSprint(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             deleteSprint(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public sprintExists(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             sprintExists(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public getSprints(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getSprints(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public setupSprints(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             setupSprints(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public startSprint(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             startSprint(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public endSprint(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             endSprint(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public updateSprintOptions(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             updateSprintOptions(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }
 
     public updateSprint(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             updateSprint(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    {
+                        checkUserToken: true,
+                    }
+                )
             )
         );
     }

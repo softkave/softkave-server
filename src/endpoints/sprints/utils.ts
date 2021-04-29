@@ -1,4 +1,3 @@
-import { string } from "joi";
 import { IBoardSprintOptions, ISprint } from "../../mongo/sprint";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";

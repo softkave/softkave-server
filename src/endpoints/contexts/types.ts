@@ -12,7 +12,9 @@ import { INotificationSubscriptionModel } from "../../mongo/notification/Notific
 import { IRoomModel } from "../../mongo/room";
 import { ISprintModel } from "../../mongo/sprint";
 import { IUser, IUserModel } from "../../mongo/user";
-import { IBaseUserTokenData } from "../user/UserToken";
+import { IBaseUserTokenData } from "./UserTokenContext";
+import { IClientModel } from "../../mongo/client";
+import { ITokenModel } from "../../mongo/token";
 
 export interface IContextModels {
     userModel: IUserModel;
@@ -28,6 +30,8 @@ export interface IContextModels {
     collaborationRequestModel: ICollaborationRequestModel;
     notificationSubscriptionModel: INotificationSubscriptionModel;
     userAssignedPermissionGroup: IUserAssignedPermissionGroupModel;
+    clientModel: IClientModel;
+    tokenModel: ITokenModel;
 }
 
 export interface IServerRequest extends Request {

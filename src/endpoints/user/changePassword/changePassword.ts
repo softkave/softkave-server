@@ -1,9 +1,8 @@
 import argon2 from "argon2";
-import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
+import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { getPublicClientData } from "../../client/utils";
 import { JWTEndpoints } from "../../types";
-import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
 import { ChangePasswordEndpoint } from "./types";
 import { changePasswordJoiSchema } from "./validation";
@@ -16,21 +15,24 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
 
     await context.session.updateUser(context, instData, {
         hash,
-        passwordLastChangedAt: getDate(),
+        passwordLastChangedAt: getDateString(),
     });
 
     context.socket.disconnectUser(user.customId);
     context.session.clearCachedUserData(context, instData);
 
-    const clientId = getNewId();
+    const client = await context.client.getClientByUserId(
+        context,
+        user.customId
+    );
 
     return {
         user: getPublicUserData(user),
-        token: UserToken.newToken({
-            user,
-            clientId,
+        token: await context.userToken.getUserToken(context, instData, {
+            user: user,
             audience: [JWTEndpoints.Login],
         }),
+        client: getPublicClientData(client),
     };
 };
 

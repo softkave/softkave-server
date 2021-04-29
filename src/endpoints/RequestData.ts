@@ -1,13 +1,17 @@
 import { Socket } from "socket.io";
 import { IBaseContext } from "./contexts/BaseContext";
 import { IServerRequest } from "./contexts/types";
+import {
+    IDecodedTokenData,
+    IDecodedUserTokenData,
+    IGeneralTokenSubject,
+} from "./contexts/UserTokenContext";
 import { InvalidRequestError } from "./errors";
 import { IIncomingSocketEventPacket } from "./socket/types";
-import UserToken, { IBaseUserTokenData } from "./user/UserToken";
 
 export interface IRequestContructorParams<
     T = any,
-    TokenData = IBaseUserTokenData
+    TokenData = IDecodedTokenData<IGeneralTokenSubject>
 > {
     req?: IServerRequest;
     socket?: Socket;
@@ -18,36 +22,50 @@ export interface IRequestContructorParams<
     clientId?: string;
 }
 
+export interface IRequestDataOptions {
+    checkUserToken?: boolean;
+}
+
 export default class RequestData<
     T = any,
-    TokenData extends IBaseUserTokenData = IBaseUserTokenData
+    TokenData extends IDecodedTokenData = IDecodedTokenData
 > {
-    public static fromExpressRequest<DataType>(
+    public static async fromExpressRequest<DataType>(
+        ctx: IBaseContext,
         req: IServerRequest,
-        data?: DataType
-    ): RequestData {
+        data?: DataType,
+        options: IRequestDataOptions = {}
+    ): Promise<RequestData> {
         const requestData = new RequestData();
 
         requestData.req = req;
         requestData.data = data;
-        requestData.tokenData = req.user;
         requestData.ips =
             Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
         requestData.userAgent = req.headers["user-agent"];
 
         if (req.user) {
-            requestData.clientId = UserToken.getClientId(req.user);
+            requestData.tokenData = req.user;
+        }
+
+        if (options.checkUserToken) {
+            // assigns tokenData to requestData in there somewhere
+            await ctx.session.getUser(ctx, requestData);
+
+            // TODO: maybe a bad idea to rely on getUser to set tokenData
+            //       find a better way
+            requestData.clientId = ((requestData.tokenData as unknown) as IDecodedUserTokenData).sub.clientId;
         }
 
         return requestData;
     }
 
-    public static fromSocketRequest<DataType>(
+    public static async fromSocketRequest<DataType>(
         ctx: IBaseContext,
         socket: Socket,
         data: IIncomingSocketEventPacket<DataType>,
         skipTokenHandling?: boolean
-    ): RequestData {
+    ): Promise<RequestData> {
         const requestData = new RequestData();
 
         requestData.socket = socket;
@@ -62,10 +80,13 @@ export default class RequestData<
                 throw new InvalidRequestError();
             }
 
-            const tokenData = ctx.session.validateUserToken(ctx, data.token);
+            const tokenData = await ctx.session.validateUserToken(
+                ctx,
+                data.token
+            );
 
             requestData.tokenData = tokenData;
-            requestData.clientId = UserToken.getClientId(tokenData);
+            requestData.clientId = tokenData.sub.clientId;
         }
 
         return requestData;

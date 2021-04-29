@@ -7,19 +7,29 @@ import markNotificationsRead from "./markNotificationsRead/markNotificationsRead
 
 export default class NotificationEndpointsGraphQLController {
     public getResourceSubscriptions(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getResourceSubscriptions(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public markNotificationsRead(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             markNotificationsRead(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }

@@ -1,10 +1,10 @@
 import { IUser } from "../../mongo/user";
-import { getDate, getDateString } from "../../utilities/fns";
+import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { ICollaborator, IPublicUserData } from "./types";
 
-export function addEntryToPasswordDateLog(arr: Date[]) {
-    arr.push(getDate());
+export function addEntryToPasswordDateLog(arr: string[]) {
+    arr.push(getDateString());
 
     if (arr.length > 5) {
         arr.shift();

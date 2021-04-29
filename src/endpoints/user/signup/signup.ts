@@ -2,12 +2,11 @@ import argon2 from "argon2";
 import uuid from "uuid/v4";
 import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IUser } from "../../../mongo/user";
-import { getDate } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
+import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { getPublicClientData } from "../../client/utils";
 import { JWTEndpoints } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
-import UserToken from "../UserToken";
 import { getPublicUserData } from "../utils";
 import { SignupEndpoint } from "./types";
 import { newUserInputSchema } from "./validation";
@@ -21,7 +20,7 @@ const signup: SignupEndpoint = async (context, instData) => {
     }
 
     const hash = await argon2.hash(data.password);
-    const now = getDate();
+    const now = getDateString();
     const value: IUser = {
         hash,
         customId: uuid(),
@@ -45,13 +44,18 @@ const signup: SignupEndpoint = async (context, instData) => {
         resourceType: SystemResourceType.User,
     });
 
+    const client = await context.client.getClientByUserId(
+        context,
+        user.customId
+    );
+
     return {
         user: getPublicUserData(user),
-        token: UserToken.newToken({
-            user,
+        token: await context.userToken.getUserToken(context, instData, {
+            user: user,
             audience: [JWTEndpoints.Login],
-            clientId: getNewId(),
         }),
+        client: getPublicClientData(client),
     };
 };
 

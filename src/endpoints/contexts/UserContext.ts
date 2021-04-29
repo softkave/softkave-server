@@ -2,28 +2,24 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
+import { UserDoesNotExistError } from "../user/errors";
 import { ICollaborator } from "../user/types";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IUserContext {
-    getUserByEmail: (
-        ctx: IBaseContext,
-        email: string
-    ) => Promise<IUser | undefined>;
+    getUserByEmail: (ctx: IBaseContext, email: string) => Promise<IUser | null>;
     bulkGetUsersByEmail: (
         ctx: IBaseContext,
         email: string[]
     ) => Promise<IUser[]>;
-    getUserById: (
-        ctx: IBaseContext,
-        customId: string
-    ) => Promise<IUser | undefined>;
+    getUserById: (ctx: IBaseContext, customId: string) => Promise<IUser | null>;
+    assertGetUserById: (ctx: IBaseContext, customId: string) => Promise<IUser>;
     updateUserById: (
         ctx: IBaseContext,
         customId: string,
         data: Partial<IUser>
-    ) => Promise<IUser | undefined>;
+    ) => Promise<IUser | null>;
     bulkGetUsersById: (ctx: IBaseContext, ids: string[]) => Promise<IUser[]>;
     saveUser: (
         ctx: IBaseContext,
@@ -61,6 +57,18 @@ export default class UserContext implements IUserContext {
                 })
                 .lean()
                 .exec();
+        }
+    );
+
+    public assertGetUserById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, customId: string) => {
+            const user = await ctx.user.getUserById(ctx, customId);
+
+            if (!user) {
+                throw new UserDoesNotExistError();
+            }
+
+            return user;
         }
     );
 

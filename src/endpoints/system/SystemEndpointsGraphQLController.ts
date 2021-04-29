@@ -6,10 +6,10 @@ import sendFeedback from "./sendFeedback/sendFeedback";
 
 export default class SystemEndpointsGraphQLController {
     public sendFeedback(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             sendFeedback(
                 getSendFeedbackContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(req, data)
             )
         );
     }

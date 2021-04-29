@@ -11,9 +11,13 @@ import {
     LoginAgainError,
     UserDoesNotExistError,
 } from "../user/errors";
-import UserToken, { IBaseUserTokenData } from "../user/UserToken";
 import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
+import {
+    IDecodedTokenData,
+    IDecodedUserTokenData,
+    IUserTokenData,
+} from "./UserTokenContext";
 
 // TODO: how can we validate user signin before getting to the endpoints that require user signin
 // for security purposes, in case someone forgets to check
@@ -28,7 +32,7 @@ export interface ISessionContext {
     getRequestToken: (
         ctx: IBaseContext,
         data: RequestData
-    ) => IBaseUserTokenData;
+    ) => IDecodedTokenData;
     updateUser: (
         ctx: IBaseContext,
         data: RequestData,
@@ -37,11 +41,15 @@ export interface ISessionContext {
     assertUser: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
     validateUserTokenData: (
         ctx: IBaseContext,
-        tokenData: IBaseUserTokenData,
+        data: RequestData,
+        tokenData: IUserTokenData,
         required?: boolean,
         audience?: JWTEndpoints
     ) => Promise<IUser | undefined>;
-    validateUserToken: (ctx: IBaseContext, token: string) => IBaseUserTokenData;
+    validateUserToken: (
+        ctx: IBaseContext,
+        token: string
+    ) => Promise<IDecodedUserTokenData>;
     tryGetUser: (
         ctx: IBaseContext,
         data: RequestData
@@ -63,6 +71,7 @@ export default class SessionContext implements ISessionContext {
 
             const user = await ctx.session.validateUserTokenData(
                 ctx,
+                data,
                 data.req.user,
                 required,
                 JWTEndpoints.Login
@@ -84,11 +93,7 @@ export default class SessionContext implements ISessionContext {
                 }
             }
 
-            const user = await ctx.models.userModel.model
-                .findOne({
-                    customId: userId,
-                })
-                .exec();
+            const user = await ctx.user.getUserById(ctx, userId);
 
             if (!user) {
                 ctx.socket.disconnectUser(userId);
@@ -127,9 +132,9 @@ export default class SessionContext implements ISessionContext {
         }
     }
 
-    public validateUserToken(ctx: IBaseContext, token: string) {
+    public async validateUserToken(ctx: IBaseContext, token: string) {
         try {
-            const tokenData = UserToken.decodeToken(token);
+            const tokenData = await ctx.userToken.decodeUserToken(ctx, token);
             return tokenData;
         } catch (error) {
             console.error(error);
@@ -145,11 +150,15 @@ export default class SessionContext implements ISessionContext {
 
     public async validateUserTokenData(
         ctx: IBaseContext,
-        tokenData: IBaseUserTokenData,
+        data: RequestData,
+        tokenData: IUserTokenData,
         required: boolean = true,
         audience = JWTEndpoints.Login
     ) {
-        if (!tokenData || !UserToken.containsAudience(tokenData, audience)) {
+        if (
+            !tokenData ||
+            !ctx.userToken.containsAudience(ctx, tokenData, audience)
+        ) {
             if (required) {
                 throw new InvalidCredentialsError();
             } else {
@@ -157,32 +166,13 @@ export default class SessionContext implements ISessionContext {
             }
         }
 
-        let user: IUser = null;
-        const query = {
-            customId: tokenData.sub.id,
-        };
-
-        user = await ctx.models.userModel.model.findOne(query).exec();
-
-        if (!user) {
-            throw new UserDoesNotExistError();
-        }
-
-        const userPasswordLastChangedAt = user.passwordLastChangedAt;
-        const tokenPasswordLastChangedAt = UserToken.getPasswordLastChangedAt(
+        const decodedData = await ctx.userToken.completeDecodeUserToken(
+            ctx,
             tokenData
         );
 
-        // validate password changes to logout user if using old password or old token format
-        if (
-            !userPasswordLastChangedAt ||
-            !tokenPasswordLastChangedAt ||
-            moment(userPasswordLastChangedAt) >
-                moment(tokenPasswordLastChangedAt)
-        ) {
-            throw new LoginAgainError();
-        }
-
+        const user = await ctx.user.assertGetUserById(ctx, decodedData.userId);
+        data.tokenData = decodedData;
         return user;
     }
 

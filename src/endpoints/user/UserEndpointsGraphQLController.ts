@@ -7,7 +7,6 @@ import changePasswordWithToken from "./changePasswordWithToken/changePasswordWit
 import { getChangePasswordWithTokenContext } from "./changePasswordWithToken/context";
 import ForgotPasswordContext from "./forgotPassword/context";
 import forgotPassword from "./forgotPassword/forgotPassword";
-import getChangePasswordTokenData from "./getChangePasswordTokenData/getChangePasswordTokenData";
 import getUserData from "./getUserData/getUserData";
 import getUserNotifications from "../notifications/getUserNotifications/getUserNotifications";
 import login from "./login/login";
@@ -19,97 +18,136 @@ import userExists from "./userExists/userExists";
 
 export default class UserEndpointsGraphQLController {
     public signup(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             signup(
                 getSignupContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
             )
         );
     }
 
     public changePassword(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             changePassword(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public changePasswordWithToken(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             changePasswordWithToken(
                 getChangePasswordWithTokenContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
             )
         );
     }
 
     public forgotPassword(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             forgotPassword(
                 new ForgotPasswordContext(),
-                RequestData.fromExpressRequest(req, data)
-            )
-        );
-    }
-
-    public getChangePasswordTokenData(data, req) {
-        return wrapEndpoint(data, req, () =>
-            getChangePasswordTokenData(
-                getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
             )
         );
     }
 
     public getUserData(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getUserData(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public login(data, req) {
-        return wrapEndpoint(data, req, () =>
-            login(getBaseContext(), RequestData.fromExpressRequest(req, data))
+        return wrapEndpoint(data, req, async () =>
+            login(
+                getBaseContext(),
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
+            )
         );
     }
 
     public respondToCollaborationRequest(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             respondToCollaborationRequest(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public updateUser(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             updateUser(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
 
     public userExists(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             userExists(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
             )
         );
     }
 
     public getUserNotifications(data, req) {
-        return wrapEndpoint(data, req, () =>
+        return wrapEndpoint(data, req, async () =>
             getUserNotifications(
                 getBaseContext(),
-                RequestData.fromExpressRequest(req, data)
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data,
+                    { checkUserToken: true }
+                )
             )
         );
     }
