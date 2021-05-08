@@ -47,6 +47,11 @@ import { getTokenContext, ITokenContext } from "./TokenContext";
 import { getClientModel } from "../../mongo/client";
 import { getTokenModel } from "../../mongo/token";
 import { getUserTokenContext, IUserTokenContext } from "./UserTokenContext";
+import {
+    getPushSubscriptionContext,
+    IPushSubscriptionContext,
+} from "./PushSubscriptionContext";
+import { getPushSubscriptionModel } from "../../mongo/pushSubscriptions";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -67,6 +72,7 @@ export interface IBaseContext {
     client: IClientContext;
     token: ITokenContext;
     userToken: IUserTokenContext;
+    pushSubscription: IPushSubscriptionContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
 }
@@ -88,6 +94,7 @@ export default class BaseContext implements IBaseContext {
     public client = getClientContext();
     public token = getTokenContext();
     public userToken = getUserTokenContext();
+    public pushSubscription = getPushSubscriptionContext();
     public models: IContextModels = {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
@@ -104,6 +111,7 @@ export default class BaseContext implements IBaseContext {
         userAssignedPermissionGroup: getUserAssignedPermissionGroupsModel(),
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
+        pushSubscriptionModel: getPushSubscriptionModel(),
     };
     public socketServer: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();

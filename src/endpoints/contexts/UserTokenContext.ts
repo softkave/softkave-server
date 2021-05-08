@@ -122,6 +122,7 @@ class UserTokenContext implements IUserTokenContext {
             ]);
 
             reqData.client = client;
+            reqData.clientId = clientId;
             reqData.tokenData = token;
 
             return jwt.sign(payload, ctx.appVariables.jwtSecret);

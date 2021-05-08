@@ -23,7 +23,7 @@ export function makeSocketHandler(
     socket: Socket,
     handler: SocketEventHandler
 ) {
-    return async (data, fn) => {
+    return async (data: any, fn?: any) => {
         try {
             const validatedData = validate(
                 data,

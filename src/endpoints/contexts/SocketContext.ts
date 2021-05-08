@@ -9,6 +9,9 @@ export interface IUserClientSocketEntry {
     clientId: string;
     socket: Socket;
 
+    // marks whether the user is currently viewing the page
+    isActive?: boolean;
+
     // TODO:
     // Should we keep a list of all the rooms a client is subscribed to?
     // It'll make re-subscribing after socket reconnection and removing the socket from the room
@@ -36,6 +39,12 @@ export interface ISocketContext {
         ctx: IBaseContext,
         userId: string
     ) => IUserClientSocketEntry[];
+    updateSocketEntry: (
+        ctx: IBaseContext,
+        userId: string,
+        clientId: string,
+        update: Partial<{ isActive?: boolean }>
+    ) => void;
 }
 
 export default class SocketContext implements ISocketContext {
@@ -158,6 +167,31 @@ export default class SocketContext implements ISocketContext {
 
     public getUserSocketEntries(ctx: IBaseContext, userId: string) {
         return userIdToSocketEntriesMap[userId] || [];
+    }
+
+    public updateSocketEntry(
+        ctx: IBaseContext,
+        userId: string,
+        clientId: string,
+        update: Partial<{ isActive?: boolean }>
+    ) {
+        const entries = userIdToSocketEntriesMap[userId];
+
+        if (!entries) {
+            return;
+        }
+
+        const entryIndex = entries.findIndex(
+            (entry) => entry.clientId === clientId
+        );
+
+        if (entryIndex == -1) {
+            return;
+        }
+
+        const entry = { ...entries[entryIndex], ...update };
+        entries[entryIndex] = entry;
+        userIdToSocketEntriesMap[userId] = entries;
     }
 
     private getSocketIndex(userId: string, socketId: string) {

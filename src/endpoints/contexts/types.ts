@@ -11,10 +11,11 @@ import { INotificationModel } from "../../mongo/notification";
 import { INotificationSubscriptionModel } from "../../mongo/notification/NotificationSubscriptionModel";
 import { IRoomModel } from "../../mongo/room";
 import { ISprintModel } from "../../mongo/sprint";
-import { IUser, IUserModel } from "../../mongo/user";
-import { IBaseUserTokenData } from "./UserTokenContext";
+import { IUserModel } from "../../mongo/user";
 import { IClientModel } from "../../mongo/client/Model";
 import { ITokenModel } from "../../mongo/token";
+import { IPushSubscriptionModel } from "../../mongo/pushSubscriptions";
+import { IBaseTokenData } from "./UserTokenContext";
 
 export interface IContextModels {
     userModel: IUserModel;
@@ -32,9 +33,10 @@ export interface IContextModels {
     userAssignedPermissionGroup: IUserAssignedPermissionGroupModel;
     clientModel: IClientModel;
     tokenModel: ITokenModel;
+    pushSubscriptionModel: IPushSubscriptionModel;
 }
 
 export interface IServerRequest extends Request {
     // decoded JWT token using the expressJWT middleware
-    user?: IBaseUserTokenData;
+    user?: IBaseTokenData;
 }

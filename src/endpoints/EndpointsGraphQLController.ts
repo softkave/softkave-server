@@ -10,6 +10,9 @@ import CommentsEndpointsGraphQLController, {
 } from "./comments/CommentsEndpointsGraphQLController";
 import { getNotificationEndpointsGraphQLController } from "./notifications";
 import NotificationEndpointsGraphQLController from "./notifications/NotificationEndpointsGraphQLController";
+import PushSubscriptionsEndpointsGraphQLController, {
+    getPushSubscriptionsEndpointsGraphQLController,
+} from "./pushSubscription/PushSubscriptionEndpointsGraphQLController";
 import SprintsEndpointsGraphQLController, {
     getSprintsEndpointsGraphQLController,
 } from "./sprints/SprintsEndpointsGraphQLController";
@@ -28,6 +31,7 @@ export default class EndpointsGraphQLController {
     public system: SystemEndpointsGraphQLController = getSystemEndpointsGraphQLController();
     public accessControl: AccessControlEndpointsGraphQLController = getAccessControlEndpointsGraphQLController();
     public notifications: NotificationEndpointsGraphQLController = getNotificationEndpointsGraphQLController();
+    public pushNotifications: PushSubscriptionsEndpointsGraphQLController = getPushSubscriptionsEndpointsGraphQLController();
 }
 
 export const getEndpointsGraphQLController = makeSingletonFunc(

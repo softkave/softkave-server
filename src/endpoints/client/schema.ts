@@ -1,3 +1,4 @@
-const clientSchema = ``;
+const clientSchema = `
+`;
 
 export default clientSchema;

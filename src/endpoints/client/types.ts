@@ -1,4 +1,6 @@
-import { IClient } from "../../mongo/client";
-import { ConvertDatesToStrings } from "../../utilities/types";
-
-export type IPublicClient = ConvertDatesToStrings<IClient>;
+export type IPublicClient = {
+    clientId: string;
+    hasUserSeenNotificationsPermissionDialog?: boolean;
+    muteChatNotifications?: boolean;
+    isSubcribedToPushNotifications?: boolean;
+};

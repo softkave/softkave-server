@@ -9,6 +9,7 @@ import subscribe from "../rooms/subscribe/subscribe";
 import unsubscribe from "../rooms/unsubscribe/unsubscribe";
 import authSocketHandler from "./incoming/authSocketHandler";
 import disconnectSocketHandler from "./incoming/disconnectSocketHandler";
+import updateSocketEntry from "./incoming/updateSocketEntry";
 import { IncomingSocketEvents } from "./incomingEventTypes";
 import { makeSocketHandler } from "./utils";
 
@@ -67,6 +68,11 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
     socket.on(
         IncomingSocketEvents.UpdateRoomReadCounter,
         makeSocketHandler(ctx, socket, updateRoomReadCounter)
+    );
+
+    socket.on(
+        IncomingSocketEvents.UpdateSocketEntry,
+        makeSocketHandler(ctx, socket, updateSocketEntry)
     );
 }
 

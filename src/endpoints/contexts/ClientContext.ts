@@ -10,15 +10,11 @@ export interface IClientContext {
         ctx: IBaseContext,
         customId: string
     ) => Promise<IClient | null>;
-    getClientByUserId: (
-        ctx: IBaseContext,
-        userId: string
-    ) => Promise<IClient | null>;
     assertGetClientById: (
         ctx: IBaseContext,
         customId: string
     ) => Promise<IClient>;
-    updateClientById: (
+    updateClientByClientAndUserId: (
         ctx: IBaseContext,
         customId: string,
         userId: string,
@@ -45,17 +41,6 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public getClientByUserId = wrapFireAndThrowError(
-        (ctx: IBaseContext, userId: string) => {
-            return ctx.models.clientModel.model
-                .findOne({
-                    userId,
-                })
-                .lean()
-                .exec();
-        }
-    );
-
     public assertGetClientById = wrapFireAndThrowError(
         async (ctx: IBaseContext, customId: string) => {
             const client = await ctx.client.getClientById(ctx, customId);
@@ -68,7 +53,7 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public updateClientById = wrapFireAndThrowError(
+    public updateClientByClientAndUserId = wrapFireAndThrowError(
         (
             ctx: IBaseContext,
             customId: string,

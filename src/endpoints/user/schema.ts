@@ -46,16 +46,21 @@ const userSchema = `
     }
 
     type Client {
-        customId: String
-        userId: String
-        createdAt: String
-        hasNotificationsAPI: Boolean
-        grantedNotificationsPermission: Boolean
+        clientId: String
+        hasUserSeenNotificationsPermissionDialog: Boolean
+        muteChatNotifications: Boolean
+        isSubcribedToPushNotifications: Boolean
     }
 
     input UpdateClientDataInput {
-        hasNotificationsAPI: Boolean
-        grantedNotificationsPermission: Boolean
+        hasUserSeenNotificationsPermissionDialog: Boolean
+        muteChatNotifications: Boolean
+        isSubcribedToPushNotifications: Boolean
+    }
+
+    type UpdateClientResponse {
+        errors: [Error]
+        client: IClient
     }
 
     type UserQuery {
@@ -77,7 +82,7 @@ const userSchema = `
         ): ErrorOnlyResponse
 
         getUserData: UserQueryResult
-        updateClient (customId: String!, data: UpdateClientDataInput!) : ErrorOnlyResponse
+        updateClient: (clientId: String!, data: UpdateClientDataInput!) => UpdateClientResponse
     }
 `;
 

@@ -7,10 +7,11 @@ export interface IClient {
     userId: string;
     clientId: string;
     createdAt: string;
+    updatedAt?: string;
     clientType: ClientType;
     tokenId: string;
     hasUserSeenNotificationsPermissionDialog?: boolean;
-    muteNotifications?: boolean;
+    muteChatNotifications?: boolean;
     isSubcribedToPushNotifications?: boolean;
 }
 
@@ -19,6 +20,7 @@ const clientMongoSchema = {
     userId: { type: String },
     clientId: { type: String },
     createdAt: { type: Date, default: getDate },
+    updatedAt: { type: Date },
     clientType: { type: String },
     tokenId: { type: String },
     hasUserSeenNotificationsPermissionDialog: { type: Boolean },

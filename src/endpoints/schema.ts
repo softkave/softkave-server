@@ -4,6 +4,7 @@ const endpointSchema = `
         block: BlockQuery
         sprint: SprintQuery
         system: SystemQuery
+        pushSubscription: PushSubscriptionQuery
     }
 
     type Mutation {
@@ -11,6 +12,7 @@ const endpointSchema = `
         block: BlockQuery
         sprint: SprintQuery
         system: SystemQuery
+        pushSubscription: PushSubscriptionQuery
     }
 `;
 

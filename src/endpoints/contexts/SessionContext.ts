@@ -115,6 +115,7 @@ export default class SessionContext implements ISessionContext {
 
         reqData.user = user;
         reqData.client = client;
+        reqData.clientId = client.clientId;
         reqData.tokenData = token;
 
         return { token, user, client };

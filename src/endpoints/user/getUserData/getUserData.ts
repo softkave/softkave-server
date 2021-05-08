@@ -4,10 +4,7 @@ import { GetUserDataEndpoint } from "./types";
 
 const getUserData: GetUserDataEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
-    const client = await context.client.getClientByUserId(
-        context,
-        user.customId
-    );
+    const client = instData.client;
 
     return {
         user: getPublicUserData(user),

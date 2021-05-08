@@ -5,7 +5,7 @@ import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
 import http from "http";
 // import aws from "./res/aws";
-import socketio from "socket.io";
+import { Server } from "socket.io";
 // import multer from "multer";
 // import multerS3 from "multer-s3";
 // import { nanoid } from "nanoid";
@@ -115,22 +115,16 @@ app.use(
 );
 
 const httpServer = http.createServer(app);
-const io = socketio(httpServer, {
+const io = new Server(httpServer, {
     path: "/socket",
     serveClient: false,
-    handlePreflightRequest: (server, req, res) => {
-        const headers = {
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": req.headers.origin, // or the specific origin you want to give access to,
-            "Access-Control-Allow-Credentials": "true",
-        };
-        res.writeHead(200, headers);
-        res.end();
+    cors: {
+        origin: whiteListedCorsOrigins,
+        methods: ["GET", "POST"],
     },
 });
 
 setupSocketServer(io);
-
 app.use(handleErrors);
 
 connection.wait().then(async () => {
