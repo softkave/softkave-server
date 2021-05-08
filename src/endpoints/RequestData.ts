@@ -1,25 +1,30 @@
 import { Socket } from "socket.io";
+import { IClient } from "../mongo/client";
+import { IToken } from "../mongo/token/definitions";
+import { IUser } from "../mongo/user";
+import { clientConstants } from "./client/constants";
 import { IBaseContext } from "./contexts/BaseContext";
 import { IServerRequest } from "./contexts/types";
-import {
-    IDecodedTokenData,
-    IDecodedUserTokenData,
-    IGeneralTokenSubject,
-} from "./contexts/UserTokenContext";
+import { IBaseTokenData } from "./contexts/UserTokenContext";
 import { InvalidRequestError } from "./errors";
 import { IIncomingSocketEventPacket } from "./socket/types";
+import { JWTEndpoints } from "./types";
 
 export interface IRequestContructorParams<
     T = any,
-    TokenData = IDecodedTokenData<IGeneralTokenSubject>
+    TokenData = IToken,
+    IncomingTokenData extends IBaseTokenData = IBaseTokenData
 > {
     req?: IServerRequest;
     socket?: Socket;
     data?: T;
     tokenData?: TokenData;
+    incomingTokenData?: IncomingTokenData | null;
     userAgent?: string;
     ips?: string[];
-    clientId?: string;
+    user?: IUser | null;
+    client?: IClient | null;
+    clientId?: string | null;
 }
 
 export interface IRequestDataOptions {
@@ -28,7 +33,8 @@ export interface IRequestDataOptions {
 
 export default class RequestData<
     T = any,
-    TokenData extends IDecodedTokenData = IDecodedTokenData
+    TokenData extends IToken = IToken,
+    IncomingTokenData extends IBaseTokenData = IBaseTokenData
 > {
     public static async fromExpressRequest<DataType>(
         ctx: IBaseContext,
@@ -43,18 +49,18 @@ export default class RequestData<
         requestData.ips =
             Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
         requestData.userAgent = req.headers["user-agent"];
-
-        if (req.user) {
-            requestData.tokenData = req.user;
-        }
+        requestData.incomingTokenData = req.user;
+        requestData.clientId = req.headers[
+            clientConstants.clientIdHeaderKey
+        ] as string;
 
         if (options.checkUserToken) {
-            // assigns tokenData to requestData in there somewhere
-            await ctx.session.getUser(ctx, requestData);
-
-            // TODO: maybe a bad idea to rely on getUser to set tokenData
-            //       find a better way
-            requestData.clientId = ((requestData.tokenData as unknown) as IDecodedUserTokenData).sub.clientId;
+            await ctx.session.getExpressSession(
+                ctx,
+                requestData,
+                true,
+                JWTEndpoints.Login
+            );
         }
 
         return requestData;
@@ -74,19 +80,25 @@ export default class RequestData<
         requestData.userAgent = socket.handshake.headers
             ? socket.handshake.headers["user-agent"]
             : undefined;
+        requestData.clientId = data.clientId;
 
         if (!skipTokenHandling) {
             if (!data.token) {
                 throw new InvalidRequestError();
             }
 
-            const tokenData = await ctx.session.validateUserToken(
+            const incomingTokenData = await ctx.userToken.decodeToken(
                 ctx,
                 data.token
             );
 
-            requestData.tokenData = tokenData;
-            requestData.clientId = tokenData.sub.clientId;
+            requestData.incomingTokenData = incomingTokenData;
+            await ctx.session.getSocketSession(
+                ctx,
+                requestData,
+                true,
+                JWTEndpoints.Login
+            );
         }
 
         return requestData;
@@ -95,20 +107,28 @@ export default class RequestData<
     public req?: IServerRequest | null;
     public socket?: Socket | null;
     public data?: T;
+    public incomingTokenData?: IncomingTokenData | null;
     public tokenData?: TokenData | null;
     public userAgent?: string;
-    public clientId?: string;
     public ips: string[];
+    public user?: IUser | null;
+    public client?: IClient | null;
+    public clientId?: string | null;
 
     public constructor(arg?: IRequestContructorParams<T, TokenData>) {
-        if (arg) {
-            this.req = arg.req;
-            this.socket = arg.socket;
-            this.data = arg.data;
-            this.tokenData = arg.tokenData;
-            this.userAgent = arg.userAgent;
-            this.ips = arg.ips;
-            this.clientId = arg.clientId;
+        if (!arg) {
+            return;
         }
+
+        this.req = arg.req;
+        this.socket = arg.socket;
+        this.data = arg.data;
+        this.tokenData = arg.tokenData;
+        this.incomingTokenData = arg.incomingTokenData as IncomingTokenData;
+        this.userAgent = arg.userAgent;
+        this.ips = arg.ips;
+        this.user = arg.user;
+        this.client = arg.client;
+        this.clientId = arg.clientId;
     }
 }

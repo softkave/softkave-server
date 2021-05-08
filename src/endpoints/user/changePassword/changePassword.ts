@@ -3,6 +3,7 @@ import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getPublicClientData } from "../../client/utils";
 import { JWTEndpoints } from "../../types";
+import { fireAndForgetPromise } from "../../utils";
 import { getPublicUserData } from "../utils";
 import { ChangePasswordEndpoint } from "./types";
 import { changePasswordJoiSchema } from "./validation";
@@ -10,29 +11,29 @@ import { changePasswordJoiSchema } from "./validation";
 const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     const result = validate(instData.data, changePasswordJoiSchema);
     const passwordValue = result.password;
-    const user = await context.session.getUser(context, instData);
+    let user = await context.session.getUser(context, instData);
     const hash = await argon2.hash(passwordValue);
 
-    await context.session.updateUser(context, instData, {
+    user = await context.user.updateUserById(context, user.customId, {
         hash,
         passwordLastChangedAt: getDateString(),
     });
 
     context.socket.disconnectUser(user.customId);
-    context.session.clearCachedUserData(context, instData);
+    instData.user = user;
+    delete instData.tokenData;
+    delete instData.incomingTokenData;
 
-    const client = await context.client.getClientByUserId(
-        context,
-        user.customId
+    fireAndForgetPromise(
+        context.token.deleteTokensByUserId(context, user.customId)
     );
 
     return {
         user: getPublicUserData(user),
-        token: await context.userToken.getUserToken(context, instData, {
-            user: user,
+        token: await context.userToken.newUserToken(context, instData, {
             audience: [JWTEndpoints.Login],
         }),
-        client: getPublicClientData(client),
+        client: getPublicClientData(instData.client),
     };
 };
 

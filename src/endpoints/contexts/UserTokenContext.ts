@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
+import { ClientType } from "../../models/system";
+import { IClient } from "../../mongo/client";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { ServerError } from "../../utilities/errors";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import RequestData from "../RequestData";
 import { JWTEndpoints } from "../types";
-import { CredentialsExpiredError, LoginAgainError } from "../user/errors";
+import { CredentialsExpiredError } from "../user/errors";
 import { fireAndForgetPromise, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -16,9 +17,7 @@ export interface IGeneralTokenSubject {
     id: string;
 }
 
-export interface IUserTokenSubject extends IGeneralTokenSubject {
-    clientId: string;
-}
+export interface IUserTokenSubject extends IGeneralTokenSubject {}
 
 export interface IBaseTokenData<
     Sub extends IGeneralTokenSubject = IGeneralTokenSubject
@@ -30,22 +29,27 @@ export interface IBaseTokenData<
     exp?: number;
 }
 
-export interface IDecodedTokenData<
-    Sub extends IGeneralTokenSubject = IGeneralTokenSubject
-> extends IBaseTokenData<Sub> {
-    meta?: Record<string, string | number | boolean | null>;
-    userId?: string;
-}
-
 export type IUserTokenData = IBaseTokenData<IUserTokenSubject>;
 
-export interface IDecodedUserTokenData
-    extends IDecodedTokenData<IUserTokenSubject> {
-    userId: string;
+export interface IUserTokenContext {
+    newUserToken: (
+        ctx: IBaseContext,
+        reqData: RequestData,
+        params: INewUserTokenParameters
+    ) => Promise<string>;
+    newToken: (ctx: IBaseContext, params: INewTokenParameters) => string;
+    decodeToken: (
+        ctx: IBaseContext,
+        token: string
+    ) => Promise<IBaseTokenData<IGeneralTokenSubject>>;
+    containsAudience: (
+        ctx: IBaseContext,
+        tokenData: IBaseTokenData<IGeneralTokenSubject>,
+        inputAud: JWTEndpoints
+    ) => boolean;
 }
 
 export interface INewUserTokenParameters {
-    user: IUser;
     audience: JWTEndpoints[];
     expires?: number;
     meta?: Record<string, string | number | boolean | null>;
@@ -58,46 +62,21 @@ export interface INewTokenParameters {
     user?: IUser;
 }
 
-export interface IUserTokenContext {
-    newUserToken: (
-        ctx: IBaseContext,
-        params: INewUserTokenParameters
-    ) => string;
-    newToken: (ctx: IBaseContext, params: INewTokenParameters) => string;
-    getUserToken: (
-        ctx: IBaseContext,
-        reqData: RequestData,
-        params: INewUserTokenParameters
-    ) => Promise<string>;
-    decodeUserToken: (
-        ctx: IBaseContext,
-        token: string
-    ) => Promise<IDecodedUserTokenData>;
-    completeDecodeUserToken: (
-        ctx: IBaseContext,
-        tokenData: IUserTokenData
-    ) => Promise<IDecodedUserTokenData>;
-    decodeToken: (
-        ctx: IBaseContext,
-        token: string
-    ) => Promise<IDecodedTokenData<IGeneralTokenSubject>>;
-    containsAudience: (
-        ctx: IBaseContext,
-        tokenData: IDecodedTokenData<IGeneralTokenSubject>,
-        inputAud: JWTEndpoints
-    ) => boolean;
-}
-
 class UserTokenContext implements IUserTokenContext {
     newUserToken = wrapFireAndThrowError(
-        (ctx: IBaseContext, params: INewUserTokenParameters) => {
+        async (
+            ctx: IBaseContext,
+            reqData: RequestData,
+            params: INewUserTokenParameters
+        ) => {
+            ctx.session.assertUser(ctx, reqData);
+
             const tokenId = getNewId();
-            const clientId = getNewId();
+            const clientId = reqData.clientId || getNewId();
             const payload: Omit<IUserTokenData, "iat"> = {
                 aud: params.audience || [],
                 version: CURRENT_USER_TOKEN_VERSION,
                 sub: {
-                    clientId,
                     id: tokenId,
                 },
             };
@@ -107,26 +86,43 @@ class UserTokenContext implements IUserTokenContext {
                 payload.exp = p.expires / 1000; // exp is in seconds
             }
 
-            fireAndForgetPromise(
-                ctx.client.saveClient(ctx, {
-                    customId: clientId,
-                    createdAt: getDateString(),
-                    userId: params.user.customId,
-                })
-            );
+            let clientPromise: Promise<IClient> | IClient = reqData.client;
 
-            fireAndForgetPromise(
-                ctx.token.saveToken(ctx, {
-                    customId: tokenId,
-                    audience: params.audience,
-                    issuedAt: getDateString(),
-                    userId: params.user.customId,
-                    version: CURRENT_USER_TOKEN_VERSION,
-                    expires: params.expires,
-                    isActive: true,
-                    meta: params.meta,
-                })
-            );
+            if (!reqData.clientId) {
+                clientPromise = ctx.client.saveClient(ctx, {
+                    tokenId,
+                    clientId,
+                    customId: getNewId(),
+                    createdAt: getDateString(),
+                    userId: reqData.user.customId,
+                    clientType: ClientType.Browser,
+                });
+            } else {
+                await ctx.token.deleteTokenByUserAndClientId(
+                    ctx,
+                    reqData.clientId,
+                    reqData.user.customId
+                );
+            }
+
+            const tokenPromise = ctx.token.saveToken(ctx, {
+                clientId,
+                customId: tokenId,
+                audience: params.audience,
+                issuedAt: getDateString(),
+                userId: reqData.user.customId,
+                version: CURRENT_USER_TOKEN_VERSION,
+                expires: params.expires,
+                meta: params.meta,
+            });
+
+            const [client, token] = await Promise.all([
+                clientPromise,
+                tokenPromise,
+            ]);
+
+            reqData.client = client;
+            reqData.tokenData = token;
 
             return jwt.sign(payload, ctx.appVariables.jwtSecret);
         }
@@ -135,6 +131,8 @@ class UserTokenContext implements IUserTokenContext {
     newToken = wrapFireAndThrowError(
         (ctx: IBaseContext, params: INewTokenParameters) => {
             const tokenId = getNewId();
+
+            // iat is assigned by the jwt library
             const payload: Omit<IBaseTokenData<IGeneralTokenSubject>, "iat"> = {
                 aud: params.audience || [],
                 version: CURRENT_USER_TOKEN_VERSION,
@@ -156,7 +154,6 @@ class UserTokenContext implements IUserTokenContext {
                     userId: params.user?.customId,
                     version: CURRENT_USER_TOKEN_VERSION,
                     expires: params.expires,
-                    isActive: true,
                     meta: params.meta,
                 })
             );
@@ -165,112 +162,17 @@ class UserTokenContext implements IUserTokenContext {
         }
     );
 
-    getUserToken = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            reqData: RequestData<any, IDecodedUserTokenData>,
-            params: INewUserTokenParameters
-        ) => {
-            if (
-                !reqData.tokenData ||
-                !reqData.clientId ||
-                reqData.tokenData.version < CURRENT_USER_TOKEN_VERSION
-            ) {
-                return ctx.userToken.newUserToken(ctx, params);
-            }
-
-            const [client, token] = await Promise.all([
-                ctx.client.getClientById(ctx, reqData.clientId),
-                ctx.token.getTokenById(ctx, reqData.tokenData.sub.id),
-            ]);
-
-            if (!client || !token || !token.isActive) {
-                return ctx.userToken.newUserToken(ctx, params);
-            }
-
-            const payload: Omit<IUserTokenData, "iat"> = {
-                aud: params.audience || [],
-                version: CURRENT_USER_TOKEN_VERSION,
-                sub: {
-                    clientId: reqData.tokenData.sub.clientId,
-                    id: reqData.tokenData.sub.id,
-                },
-            };
-
-            if (params.expires) {
-                // @ts-ignore
-                payload.exp = p.expires / 1000; // exp is in seconds
-            }
-
-            return jwt.sign(payload, ctx.appVariables.jwtSecret);
-        }
-    );
-
-    decodeUserToken = wrapFireAndThrowError(
-        async (ctx: IBaseContext, token: string) => {
-            const tokenData = jwt.verify(
-                token,
-                ctx.appVariables.jwtSecret
-            ) as IDecodedUserTokenData;
-
-            if (tokenData.version < CURRENT_USER_TOKEN_VERSION) {
-                throw new LoginAgainError();
-            }
-
-            return ctx.userToken.completeDecodeUserToken(ctx, tokenData);
-        }
-    );
-
-    completeDecodeUserToken = wrapFireAndThrowError(
-        async (ctx: IBaseContext, tokenData: IUserTokenData) => {
-            const decodedData: IDecodedUserTokenData = {
-                ...tokenData,
-                userId: "", // TODO: this is a hack! Can we find a better way?
-            };
-
-            const [client, dbToken] = await Promise.all([
-                ctx.client.assertGetClientById(ctx, decodedData.sub.clientId),
-                ctx.token.assertGetTokenById(ctx, decodedData.sub.id),
-            ]);
-
-            if (!dbToken.isActive) {
-                throw new CredentialsExpiredError();
-            }
-
-            decodedData.meta = dbToken.meta;
-            decodedData.userId = dbToken.userId;
-
-            if (!decodedData.userId) {
-                console.log(`token: ${dbToken.customId} exists with no userId`);
-                throw new ServerError();
-            }
-
-            return decodedData;
-        }
-    );
-
     decodeToken = wrapFireAndThrowError(
         async (ctx: IBaseContext, token: string) => {
             const tokenData = jwt.verify(
                 token,
                 ctx.appVariables.jwtSecret
-            ) as IDecodedTokenData<IGeneralTokenSubject>;
+            ) as IBaseTokenData<IGeneralTokenSubject>;
 
             if (tokenData.version < CURRENT_USER_TOKEN_VERSION) {
-                throw new LoginAgainError();
-            }
-
-            const dbToken = await ctx.token.assertGetTokenById(
-                ctx,
-                tokenData.sub.id
-            );
-
-            if (!dbToken.isActive) {
                 throw new CredentialsExpiredError();
             }
 
-            tokenData.meta = dbToken.meta;
-            tokenData.userId = dbToken.userId;
             return tokenData;
         }
     );

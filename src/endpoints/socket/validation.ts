@@ -10,8 +10,17 @@ const resourceType = Joi.string()
         SystemResourceType.Room,
     ]);
 
+const incomingEventData = Joi.object()
+    .keys({
+        token: Joi.string().required(),
+        clientId: Joi.string().required(),
+        data: Joi.any(),
+    })
+    .required();
+
 const socketValidationSchemas = {
     resourceType,
+    incomingEventData,
 };
 
 export default socketValidationSchemas;

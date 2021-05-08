@@ -6,9 +6,13 @@ import { IPublicClient } from "./types";
 const publicClientFields = getFields<IPublicClient>({
     createdAt: getDateString,
     customId: true,
-    grantedNotificationsPermission: true,
-    hasNotificationsAPI: true,
+    hasUserSeenNotificationsPermissionDialog: true,
+    isSubcribedToPushNotifications: true,
     userId: true,
+    muteNotifications: true,
+    clientType: true,
+    clientId: true,
+    tokenId: true,
 });
 
 export function getPublicClientData(client: IClient): IPublicClient {

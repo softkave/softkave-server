@@ -1,1 +1,3 @@
-export const clientConstants = {};
+export const clientConstants = {
+    clientIdHeaderKey: "x-client-id",
+};

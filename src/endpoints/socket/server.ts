@@ -31,14 +31,17 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         IncomingSocketEvents.Auth,
         makeSocketHandler(ctx, socket, authSocketHandler)
     );
+
     socket.on(
         "disconnect",
         makeSocketHandler(ctx, socket, disconnectSocketHandler)
     );
+
     socket.on(
         IncomingSocketEvents.Subscribe,
         makeSocketHandler(ctx, socket, subscribe)
     );
+
     socket.on(
         IncomingSocketEvents.Unsubscribe,
         makeSocketHandler(ctx, socket, unsubscribe)
@@ -55,10 +58,12 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
         IncomingSocketEvents.GetUserRoomsAndChats,
         makeSocketHandler(ctx, socket, getUserRoomsAndChats)
     );
+
     socket.on(
         IncomingSocketEvents.SendMessage,
         makeSocketHandler(ctx, socket, sendMessage)
     );
+
     socket.on(
         IncomingSocketEvents.UpdateRoomReadCounter,
         makeSocketHandler(ctx, socket, updateRoomReadCounter)

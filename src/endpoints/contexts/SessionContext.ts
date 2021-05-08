@@ -1,163 +1,96 @@
-import merge from "lodash/merge";
-import moment from "moment";
-import { resolveJWTError } from "../../middlewares/handleErrors";
+import { IClient } from "../../mongo/client";
+import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { PermissionDeniedError } from "../errors";
+import { ServerError } from "../../utilities/errors";
 import RequestData from "../RequestData";
+import { IIncomingSocketEventPacket } from "../socket/types";
 import { JWTEndpoints } from "../types";
-import {
-    InvalidCredentialsError,
-    LoginAgainError,
-    UserDoesNotExistError,
-} from "../user/errors";
-import { wrapFireAndThrowError } from "../utils";
+import { InvalidCredentialsError } from "../user/errors";
 import { IBaseContext } from "./BaseContext";
-import {
-    IDecodedTokenData,
-    IDecodedUserTokenData,
-    IUserTokenData,
-} from "./UserTokenContext";
-
-// TODO: how can we validate user signin before getting to the endpoints that require user signin
-// for security purposes, in case someone forgets to check
 
 export interface ISessionContext {
-    addUserToSession: (
+    getUser: (
         ctx: IBaseContext,
         data: RequestData,
-        user: IUser
-    ) => void;
-    getUser: (ctx: IBaseContext, data: RequestData) => Promise<IUser>;
-    getRequestToken: (
-        ctx: IBaseContext,
-        data: RequestData
-    ) => IDecodedTokenData;
-    updateUser: (
-        ctx: IBaseContext,
-        data: RequestData,
-        partialUserData: Partial<IUser>
-    ) => Promise<IUser | undefined>;
-    assertUser: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
-    validateUserTokenData: (
-        ctx: IBaseContext,
-        data: RequestData,
-        tokenData: IUserTokenData,
         required?: boolean,
         audience?: JWTEndpoints
-    ) => Promise<IUser | undefined>;
-    validateUserToken: (
+    ) => Promise<IUser>;
+    assertUser: (
         ctx: IBaseContext,
-        token: string
-    ) => Promise<IDecodedUserTokenData>;
+        data: RequestData,
+        audience?: JWTEndpoints
+    ) => Promise<boolean>;
     tryGetUser: (
         ctx: IBaseContext,
-        data: RequestData
+        data: RequestData,
+        audience?: JWTEndpoints
     ) => Promise<IUser | undefined>;
-    clearCachedUserData: (ctx: IBaseContext, data: RequestData) => void;
+    getExpressSession: (
+        ctx: IBaseContext,
+        data: RequestData,
+        required?: boolean,
+        audience?: JWTEndpoints
+    ) => Promise<{ user: IUser; client: IClient; token: IToken }>;
+    getSocketSession: (
+        ctx: IBaseContext,
+        data: RequestData,
+        required?: boolean,
+        audience?: JWTEndpoints
+    ) => Promise<{ user: IUser; client: IClient; token: IToken }>;
+    getSession: (
+        ctx: IBaseContext,
+        data: RequestData,
+        required?: boolean,
+        audience?: JWTEndpoints
+    ) => Promise<{ user: IUser; client: IClient; token: IToken }>;
 }
 
 export default class SessionContext implements ISessionContext {
     private static async __getUser(
         ctx: IBaseContext,
         data: RequestData,
-        required = true
+        required: boolean = true,
+        audience = JWTEndpoints.Login
     ): Promise<IUser | undefined> {
-        if (data.req) {
-            // TODO: not using cached data on multiple requests
-            if (data.req.userData) {
-                return data.req.userData;
-            }
+        if (data.user) {
+            return data.user;
+        }
 
-            const user = await ctx.session.validateUserTokenData(
+        if (data.req) {
+            const { user } = await ctx.session.getExpressSession(
                 ctx,
                 data,
-                data.req.user,
                 required,
-                JWTEndpoints.Login
+                audience
             );
 
-            // TODO:
-            // Caching the user data when we have multi-tenancy can be problematic
-            // cause the user may have been updated before a string of requests are complete
-            data.req.userData = user;
             return user;
         } else if (data.socket) {
-            const userId = ctx.socket.getUserIdBySocketId(data);
-
-            if (!userId) {
-                if (required) {
-                    throw new PermissionDeniedError();
-                } else {
-                    return;
-                }
-            }
-
-            const user = await ctx.user.getUserById(ctx, userId);
-
-            if (!user) {
-                ctx.socket.disconnectUser(userId);
-                throw new UserDoesNotExistError();
-            }
+            const { user } = await ctx.session.getSocketSession(
+                ctx,
+                data,
+                required,
+                audience
+            );
 
             return user;
         }
+
+        throw new ServerError();
     }
 
-    public updateUser = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            partialUserData: Partial<IUser>
-        ) => {
-            const user = await this.getUser(ctx, data);
-
-            // TODO: is this safe, and does it work?
-            merge(user, partialUserData);
-
-            return ctx.models.userModel.model
-                .findOneAndUpdate(
-                    { customId: user.customId },
-                    partialUserData,
-                    { new: true }
-                )
-                .lean()
-                .exec();
-        }
-    );
-
-    public clearCachedUserData(ctx: IBaseContext, data: RequestData) {
-        if (data.req) {
-            delete data.req.userData;
-        }
-    }
-
-    public async validateUserToken(ctx: IBaseContext, token: string) {
-        try {
-            const tokenData = await ctx.userToken.decodeUserToken(ctx, token);
-            return tokenData;
-        } catch (error) {
-            console.error(error);
-            const JWTError = resolveJWTError(error);
-
-            if (JWTError) {
-                throw JWTError;
-            }
-
-            throw new PermissionDeniedError();
-        }
-    }
-
-    public async validateUserTokenData(
+    public async getSession(
         ctx: IBaseContext,
-        data: RequestData,
-        tokenData: IUserTokenData,
+        reqData: RequestData,
         required: boolean = true,
         audience = JWTEndpoints.Login
     ) {
+        const incomingTokenData = reqData.incomingTokenData;
+
         if (
-            !tokenData ||
-            !ctx.userToken.containsAudience(ctx, tokenData, audience)
+            !incomingTokenData ||
+            !ctx.userToken.containsAudience(ctx, incomingTokenData, audience)
         ) {
             if (required) {
                 throw new InvalidCredentialsError();
@@ -166,44 +99,76 @@ export default class SessionContext implements ISessionContext {
             }
         }
 
-        const decodedData = await ctx.userToken.completeDecodeUserToken(
-            ctx,
-            tokenData
-        );
+        const token =
+            reqData.tokenData ||
+            (await ctx.token.assertGetTokenById(ctx, incomingTokenData.sub.id));
 
-        const user = await ctx.user.assertGetUserById(ctx, decodedData.userId);
-        data.tokenData = decodedData;
-        return user;
-    }
+        const [client, user] = await Promise.all([
+            reqData.client ||
+                ctx.client.assertGetClientById(ctx, token.clientId),
+            reqData.user || ctx.user.assertGetUserById(ctx, token.userId),
+        ]);
 
-    public addUserToSession(ctx: IBaseContext, data: RequestData, user: IUser) {
-        if (data.req) {
-            data.req.userData = user;
-        } else if (data.socket) {
-            ctx.socket.mapUserToSocketId(data, user);
-        }
-    }
-
-    public async getUser(ctx: IBaseContext, data: RequestData) {
-        return SessionContext.__getUser(ctx, data);
-    }
-
-    public async assertUser(ctx: IBaseContext, data: RequestData) {
-        return !!SessionContext.__getUser(ctx, data);
-    }
-
-    public async tryGetUser(ctx: IBaseContext, data: RequestData) {
-        return SessionContext.__getUser(ctx, data, false);
-    }
-
-    public getRequestToken(ctx: IBaseContext, data: RequestData) {
-        const tokenData = data.tokenData;
-
-        if (!tokenData) {
+        if (token.userId !== client.userId) {
             throw new InvalidCredentialsError();
         }
 
-        return tokenData;
+        reqData.user = user;
+        reqData.client = client;
+        reqData.tokenData = token;
+
+        return { token, user, client };
+    }
+
+    public async getExpressSession(
+        ctx: IBaseContext,
+        data: RequestData,
+        required: boolean = true,
+        audience = JWTEndpoints.Login
+    ) {
+        if (!data.req) {
+            throw new ServerError();
+        }
+
+        return ctx.session.getSession(ctx, data, required, audience);
+    }
+
+    public async getSocketSession(
+        ctx: IBaseContext,
+        data: RequestData<IIncomingSocketEventPacket<any>>,
+        required: boolean = true,
+        audience = JWTEndpoints.Login
+    ) {
+        if (!data.socket) {
+            throw new ServerError();
+        }
+
+        return ctx.session.getSession(ctx, data, required, audience);
+    }
+
+    public async getUser(
+        ctx: IBaseContext,
+        data: RequestData,
+        required: boolean = true,
+        audience = JWTEndpoints.Login
+    ) {
+        return SessionContext.__getUser(ctx, data, required, audience);
+    }
+
+    public async assertUser(
+        ctx: IBaseContext,
+        data: RequestData,
+        audience = JWTEndpoints.Login
+    ) {
+        return !!SessionContext.__getUser(ctx, data, true, audience);
+    }
+
+    public async tryGetUser(
+        ctx: IBaseContext,
+        data: RequestData,
+        audience = JWTEndpoints.Login
+    ) {
+        return SessionContext.__getUser(ctx, data, false, audience);
     }
 }
 

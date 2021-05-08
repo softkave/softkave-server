@@ -35,7 +35,7 @@ const signup: SignupEndpoint = async (context, instData) => {
     };
 
     const user = await context.user.saveUser(context, value);
-    context.session.addUserToSession(context, instData, user);
+    instData.user = user;
     await context.createUserRootBlock(context, { ...instData, data: { user } });
 
     context.auditLog.insert(context, instData, {
@@ -44,18 +44,12 @@ const signup: SignupEndpoint = async (context, instData) => {
         resourceType: SystemResourceType.User,
     });
 
-    const client = await context.client.getClientByUserId(
-        context,
-        user.customId
-    );
-
     return {
         user: getPublicUserData(user),
-        token: await context.userToken.getUserToken(context, instData, {
-            user: user,
+        token: await context.userToken.newUserToken(context, instData, {
             audience: [JWTEndpoints.Login],
         }),
-        client: getPublicClientData(client),
+        client: getPublicClientData(instData.client),
     };
 };
 

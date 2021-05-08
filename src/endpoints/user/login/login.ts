@@ -22,19 +22,13 @@ const login: LoginEndpoint = async (context, instData) => {
             loginDetails.password
         );
 
-        const client = await context.client.getClientByUserId(
-            context,
-            user.customId
-        );
-
         if (passwordMatch) {
             return {
                 user: getPublicUserData(user),
-                token: await context.userToken.getUserToken(context, instData, {
-                    user: user,
+                token: await context.userToken.newUserToken(context, instData, {
                     audience: [JWTEndpoints.Login],
                 }),
-                client: getPublicClientData(client),
+                client: getPublicClientData(instData.client),
             };
         }
     } catch (error) {

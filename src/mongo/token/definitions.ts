@@ -4,11 +4,14 @@ export interface IToken {
     customId: string;
     userId?: string;
     version: number;
-    issuedAt: string; // not same as iat in token
+
+    // not same as iat in token, may be a litte bit behind or after
+    // and is a ISO string, where iat is time in seconds
+    issuedAt: string;
     audience: string[];
     expires?: number;
-    isActive: boolean;
     meta?: Record<string, string | number | boolean | null>;
+    clientId?: string;
 }
 
 const tokenMongoSchema = {
@@ -20,6 +23,7 @@ const tokenMongoSchema = {
     expires: { type: Number },
     isActive: { type: Number },
     meta: { type: SchemaTypes.Mixed },
+    clientId: { type: String },
 };
 
 export default tokenMongoSchema;

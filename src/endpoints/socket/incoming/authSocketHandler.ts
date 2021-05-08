@@ -3,9 +3,9 @@ import { SocketEventHandler } from "../types";
 
 const authSocketHandler: SocketEventHandler = async (ctx, data, fn) => {
     try {
-        const user = await ctx.session.validateUserTokenData(
+        const user = await ctx.session.getUser(
             ctx,
-            data.tokenData,
+            data,
             true,
             JWTEndpoints.Login
         );

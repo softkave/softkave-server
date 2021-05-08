@@ -3,6 +3,7 @@ import RequestData from "../RequestData";
 
 export interface IIncomingSocketEventPacket<T> {
     token: string;
+    clientId: string;
     data?: T;
 }
 

@@ -8,6 +8,7 @@ import { IBaseContext } from "./BaseContext";
 export interface IUserClientSocketEntry {
     clientId: string;
     socket: Socket;
+
     // TODO:
     // Should we keep a list of all the rooms a client is subscribed to?
     // It'll make re-subscribing after socket reconnection and removing the socket from the room
@@ -33,7 +34,7 @@ export interface ISocketContext {
     ) => boolean;
     getUserSocketEntries: (
         ctx: IBaseContext,
-        userId
+        userId: string
     ) => IUserClientSocketEntry[];
 }
 

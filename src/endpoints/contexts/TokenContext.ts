@@ -1,8 +1,7 @@
 import { IToken } from "../../mongo/token";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import getNewId from "../../utilities/getNewId";
 import { TokenDoesNotExistError } from "../token/errors";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface ITokenContext {
@@ -20,6 +19,13 @@ export interface ITokenContext {
         customId: string,
         data: Partial<IToken>
     ) => Promise<IToken | null>;
+    deleteTokenByUserAndClientId: (
+        ctx: IBaseContext,
+        clientId: string,
+        userId: string
+    ) => Promise<void>;
+    deleteTokenById: (ctx: IBaseContext, tokenId: string) => Promise<void>;
+    deleteTokensByUserId: (ctx: IBaseContext, userId: string) => Promise<void>;
 }
 
 export default class TokenContext implements ITokenContext {
@@ -64,6 +70,37 @@ export default class TokenContext implements ITokenContext {
                     { new: true }
                 )
                 .lean()
+                .exec();
+        }
+    );
+
+    public deleteTokenByUserAndClientId = wrapFireAndThrowError(
+        async (ctx: IBaseContext, clientId: string, userId: string) => {
+            await ctx.models.tokenModel.model
+                .deleteOne({
+                    clientId,
+                    userId,
+                })
+                .exec();
+        }
+    );
+
+    public deleteTokenById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, tokenId: string) => {
+            await ctx.models.tokenModel.model
+                .deleteOne({
+                    customId: tokenId,
+                })
+                .exec();
+        }
+    );
+
+    public deleteTokensByUserId = wrapFireAndThrowError(
+        async (ctx: IBaseContext, userId: string) => {
+            await ctx.models.tokenModel.model
+                .deleteMany({
+                    userId,
+                })
                 .exec();
         }
     );

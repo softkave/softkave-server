@@ -51,3 +51,7 @@ export enum TextResourceTypes {
     Text = "Text",
     Note = "Note",
 }
+
+export enum ClientType {
+    Browser = "browser",
+}
