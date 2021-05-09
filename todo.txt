@@ -36,9 +36,7 @@ just make special accomodations for them
 
 - Text search & indexing, elastic search
 - File upload
-- How many dynos do I have with our subscription on Heroku
 - Payment
-- dueAt - your date, and dueAt duration + or -
 
 Subscription edge cases
 - when comments in a task are updated, let user know

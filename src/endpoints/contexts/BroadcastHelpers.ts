@@ -5,7 +5,6 @@ import {
     CollaborationRequestStatusType,
     ICollaborationRequest,
 } from "../../mongo/collaboration-request";
-import { INotification } from "../../mongo/notification";
 import { IRoom } from "../../mongo/room";
 import { ISprint } from "../../mongo/sprint";
 import { IUser } from "../../mongo/user";
@@ -15,15 +14,10 @@ import { IUpdateItemById } from "../../utilities/types";
 import { IPublicBlock } from "../block/types";
 import { getPublicBlockData } from "../block/utils";
 import { getPublicChatData, getPublicRoomData } from "../chat/utils";
-import {
-    IPublicCollaborationRequest,
-    IPublicNotificationData,
-} from "../notifications/types";
+import { IPublicCollaborationRequest } from "../notifications/types";
 import {
     getPublicCollaborationRequest,
     getPublicCollaborationRequestArray,
-    getPublicNotificationData,
-    getPublicNotificationsArray,
 } from "../notifications/utils";
 import RequestData from "../RequestData";
 import {
@@ -45,6 +39,7 @@ import {
 import { IPublicSprint } from "../sprints/types";
 import { wrapFireAndDontThrow } from "../utils";
 import { IBaseContext } from "./BaseContext";
+import { IBroadcastResult } from "./RoomContext";
 
 interface IBroadcastBlockUpdateArgs {
     blockId: string;
@@ -58,102 +53,103 @@ interface IBroadcastBlockUpdateArgs {
 export interface IBroadcastHelpers {
     broadcastBlockUpdate: (
         context: IBaseContext,
-        args: IBroadcastBlockUpdateArgs,
-        instData?: RequestData
+        instData: RequestData,
+        args: IBroadcastBlockUpdateArgs
     ) => Promise<void>;
     broadcastNewOrgCollaborationRequests: (
         context: IBaseContext,
+        instData: RequestData,
         block: IBlock,
-        collaborationRequests: ICollaborationRequest[],
-        instData?: RequestData
+        collaborationRequests: ICollaborationRequest[]
     ) => void;
     broadcastNewUserCollaborationRequest: (
         context: IBaseContext,
+        instData: RequestData,
         existingUser: IUser,
-        request: ICollaborationRequest,
-        instData?: RequestData
+        request: ICollaborationRequest
     ) => void;
     broadcastUserUpdate: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
-        data: Partial<IUser>,
-        instData?: RequestData
+        data: Partial<IUser>
     ) => void;
     broadcastCollaborationRequestsUpdateToBlock: (
         context: IBaseContext,
+        instData: RequestData,
         block: IBlock,
-        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
-        instData?: RequestData
+        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
     ) => void;
     broadcastCollaborationRequestsUpdateToUser: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
-        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
-        instData?: RequestData
+        updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
     ) => void;
     broadcastCollaborationRequestResponse: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
         request: ICollaborationRequest,
         response: CollaborationRequestResponse,
         respondedAt: string,
-        org: IPublicBlock,
-        instData?: RequestData
+        org: IPublicBlock
     ) => void;
     broadcastNewRoom: (
         context: IBaseContext,
+        instData: RequestData,
         room: IRoom,
-        instData?: RequestData
+        excludeSender?: boolean
     ) => void;
     broadcastNewMessage: (
         context: IBaseContext,
+        instData: RequestData,
         room: IRoom,
-        chat: IChat,
-        instData?: RequestData
-    ) => void;
+        chat: IChat
+    ) => Promise<IBroadcastResult>;
     broadcastRoomReadCounterUpdate: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
         roomId: string,
-        readCounter: string,
-        instData?: RequestData
+        readCounter: string
     ) => void;
     broadcastNewSprint: (
         context: IBaseContext,
+        instData: RequestData,
         board: IBlock,
-        sprint: IPublicSprint,
-        instData?: RequestData
+        sprint: IPublicSprint
     ) => void;
     broadcastSprintUpdate: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
         board: IBlock,
         sprint: ISprint,
         data: Partial<ISprint>,
-        updatedAtStr: string,
-        instData?: RequestData
+        updatedAtStr: string
     ) => void;
     broadcastEndSprint: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
         board: IBlock,
         sprint: ISprint,
-        endDateStr: string,
-        instData?: RequestData
+        endDateStr: string
     ) => void;
     broadcastStartSprint: (
         context: IBaseContext,
+        instData: RequestData,
         user: IUser,
         board: IBlock,
         sprint: ISprint,
-        startDateStr: string,
-        instData?: RequestData
+        startDateStr: string
     ) => void;
     broadcastDeleteSprint: (
         context: IBaseContext,
+        instData: RequestData,
         board: IBlock,
-        sprint: ISprint,
-        instData?: RequestData
+        sprint: ISprint
     ) => void;
 }
 
@@ -161,8 +157,8 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastBlockUpdate = wrapFireAndDontThrow(
         async (
             context: IBaseContext,
-            args: IBroadcastBlockUpdateArgs,
-            instData?: RequestData
+            instData: RequestData,
+            args: IBroadcastBlockUpdateArgs
         ) => {
             const { updateType, blockId, data, blockType } = args;
             let { block, parentId } = args;
@@ -200,10 +196,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
                     context.room.broadcast(
                         context,
+                        instData,
                         userRoomName,
                         event,
                         eventData,
-                        instData
+                        true
                     );
 
                     return;
@@ -221,10 +218,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
                     context.room.broadcast(
                         context,
+                        instData,
                         roomName,
                         event,
                         eventData,
-                        instData
+                        true
                     );
                 });
 
@@ -249,10 +247,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                 );
                 context.room.broadcast(
                     context,
+                    instData,
                     roomName,
                     event,
                     eventData,
-                    instData
+                    true
                 );
                 return;
             }
@@ -265,10 +264,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
                 context.room.broadcast(
                     context,
+                    instData,
                     roomName,
                     event,
                     eventData,
-                    instData
+                    true
                 );
                 return;
             }
@@ -278,9 +278,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastNewOrgCollaborationRequests = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             block: IBlock,
-            collaborationRequests: ICollaborationRequest[],
-            instData?: RequestData
+            collaborationRequests: ICollaborationRequest[]
         ) => {
             const orgBroadcastPacket: IOutgoingNewCollaborationRequestsPacket = {
                 requests: getPublicCollaborationRequestArray(
@@ -295,10 +295,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 blockRoomName,
                 OutgoingSocketEvents.OrgNewCollaborationRequests,
                 orgBroadcastPacket,
-                instData
+                true
             );
         }
     );
@@ -306,9 +307,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastNewUserCollaborationRequest = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             existingUser: IUser,
-            request: ICollaborationRequest,
-            instData?: RequestData
+            request: ICollaborationRequest
         ) => {
             const userRoomName = context.room.getUserRoomName(
                 existingUser.customId
@@ -320,10 +321,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 userRoomName,
                 OutgoingSocketEvents.UserNewCollaborationRequest,
                 newRequestPacket,
-                instData
+                true
             );
         }
     );
@@ -331,9 +333,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastUserUpdate = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
-            data: Partial<IUser>,
-            instData?: RequestData
+            data: Partial<IUser>
         ) => {
             const broadcastData: IOutgoingUserUpdatePacket = {
                 notificationsLastCheckedAt: getDateString(
@@ -344,26 +346,33 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             const userRoomName = context.room.getUserRoomName(user.customId);
             context.room.broadcast(
                 context,
+                instData,
                 userRoomName,
                 OutgoingSocketEvents.UserUpdate,
                 broadcastData,
-                instData
+                true
             );
         }
     );
 
     public broadcastNewRoom = wrapFireAndDontThrow(
-        (context: IBaseContext, room: IRoom, instData?: RequestData) => {
+        (
+            context: IBaseContext,
+            instData: RequestData,
+            room: IRoom,
+            excludeSender?: boolean
+        ) => {
             const newRoomPacket: IOutgoingNewRoomPacket = {
                 room: getPublicRoomData(room),
             };
 
             context.room.broadcast(
                 context,
+                instData,
                 room.name,
                 OutgoingSocketEvents.NewRoom,
                 newRoomPacket,
-                instData
+                excludeSender
             );
         }
     );
@@ -371,20 +380,21 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastNewMessage = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             room: IRoom,
-            chat: IChat,
-            instData?: RequestData
+            chat: IChat
         ) => {
             const outgoingNewMessagePacket: IOutgoingSendMessagePacket = {
                 chat: getPublicChatData(chat),
             };
 
-            context.room.broadcast(
+            return context.room.broadcast(
                 context,
+                instData,
                 room.name,
                 OutgoingSocketEvents.NewMessage,
                 outgoingNewMessagePacket,
-                instData
+                true
             );
         }
     );
@@ -392,10 +402,10 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastRoomReadCounterUpdate = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
             roomId: string,
-            readCounter: string,
-            instData?: RequestData
+            readCounter: string
         ) => {
             const roomSignature = context.room.getChatRoomName(roomId);
             const outgoingUpdateRoomCounterPacket: IOutgoingUpdateRoomReadCounterPacket = {
@@ -405,10 +415,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomSignature,
                 OutgoingSocketEvents.UpdateRoomReadCounter,
                 outgoingUpdateRoomCounterPacket,
-                instData
+                true
             );
         }
     );
@@ -416,9 +427,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastNewSprint = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             board: IBlock,
-            sprint: IPublicSprint,
-            instData?: RequestData
+            sprint: IPublicSprint
         ) => {
             const roomName = context.room.getBlockRoomName(
                 board.type,
@@ -430,10 +441,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomName,
                 OutgoingSocketEvents.NewSprint,
                 newSprintPacket,
-                instData
+                true
             );
         }
     );
@@ -441,12 +453,12 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastSprintUpdate = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
             board: IBlock,
             sprint: ISprint,
             data: Partial<ISprint>,
-            updatedAtStr: string,
-            instData?: RequestData
+            updatedAtStr: string
         ) => {
             const roomName = context.room.getBlockRoomName(
                 board.type,
@@ -463,10 +475,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomName,
                 OutgoingSocketEvents.UpdateSprint,
                 startSprintPacket,
-                instData
+                true
             );
         }
     );
@@ -474,11 +487,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastStartSprint = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
             board: IBlock,
             sprint: ISprint,
-            startDateStr: string,
-            instData?: RequestData
+            startDateStr: string
         ) => {
             const roomName = context.room.getBlockRoomName(
                 board.type,
@@ -492,10 +505,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomName,
                 OutgoingSocketEvents.StartSprint,
                 startSprintPacket,
-                instData
+                true
             );
         }
     );
@@ -503,9 +517,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastDeleteSprint = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             board: IBlock,
-            sprint: ISprint,
-            instData?: RequestData
+            sprint: ISprint
         ) => {
             const roomName = context.room.getBlockRoomName(
                 board.type,
@@ -517,10 +531,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomName,
                 OutgoingSocketEvents.DeleteSprint,
                 deleteSprintPacket,
-                instData
+                true
             );
         }
     );
@@ -528,9 +543,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastCollaborationRequestsUpdateToBlock = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             block: IBlock,
-            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
-            instData?: RequestData
+            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
         ) => {
             const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket = {
                 requests: updates,
@@ -543,10 +558,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 blockRoomName,
                 OutgoingSocketEvents.UpdateCollaborationRequests,
                 updateNotificationsPacket,
-                instData
+                true
             );
         }
     );
@@ -554,9 +570,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastCollaborationRequestsUpdateToUser = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
-            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>,
-            instData?: RequestData
+            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
         ) => {
             const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket = {
                 requests: updates,
@@ -566,10 +582,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 userRoomName,
                 OutgoingSocketEvents.UpdateCollaborationRequests,
                 updateNotificationsPacket,
-                instData
+                true
             );
         }
     );
@@ -577,12 +594,12 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastCollaborationRequestResponse = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
             request: ICollaborationRequest,
             response: CollaborationRequestResponse,
             respondedAt: string,
-            org: IPublicBlock,
-            instData?: RequestData
+            org: IPublicBlock
         ) => {
             const orgRoomName = context.room.getBlockRoomName(
                 org.type,
@@ -596,10 +613,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 orgRoomName,
                 OutgoingSocketEvents.CollaborationRequestResponse,
                 orgsBroadcastData,
-                instData
+                true
             );
 
             const userRoomName = context.room.getUserRoomName(user.customId);
@@ -615,10 +633,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 userRoomName,
                 OutgoingSocketEvents.CollaborationRequestResponse,
                 userClientsBroadcastData,
-                instData
+                true
             );
         }
     );
@@ -626,11 +645,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     public broadcastEndSprint = wrapFireAndDontThrow(
         (
             context: IBaseContext,
+            instData: RequestData,
             user: IUser,
             board: IBlock,
             sprint: ISprint,
-            endDateStr: string,
-            instData?: RequestData
+            endDateStr: string
         ) => {
             const roomName = context.room.getBlockRoomName(
                 board.type,
@@ -644,10 +663,11 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             context.room.broadcast(
                 context,
+                instData,
                 roomName,
                 OutgoingSocketEvents.EndSprint,
                 updateSprintPacket,
-                instData
+                true
             );
         }
     );

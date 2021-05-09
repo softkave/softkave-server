@@ -1,4 +1,3 @@
-import { Server } from "socket.io";
 import { SystemResourceType } from "../../models/system";
 import { BlockType } from "../../mongo/block";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
@@ -6,6 +5,7 @@ import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndDontThrow } from "../utils";
 import { IBaseContext } from "./BaseContext";
+import { IAuthenticatedSocketEntry } from "./SocketContext";
 
 /**
  * RoomContext
@@ -18,6 +18,11 @@ import { IBaseContext } from "./BaseContext";
  * socket.io ( the underlying socket library we're using ), because the socket.io
  * version of rooms was inconsistent and error prone.
  */
+
+export interface IBroadcastResult {
+    inactiveSockets: IAuthenticatedSocketEntry[];
+    broadcastsCount: number;
+}
 
 export interface IRoomContext {
     subscribe: (data: RequestData, roomName: string) => void;
@@ -34,11 +39,13 @@ export interface IRoomContext {
     leave: (data: RequestData, roomName: string) => void;
     broadcast: (
         ctx: IBaseContext,
+        data: RequestData,
         roomName: string,
-        eventName: string,
+        eventName: OutgoingSocketEvents,
         eventData: any,
-        data?: RequestData
-    ) => void;
+        excludeSender?: boolean,
+        activeSocketsOnly?: boolean
+    ) => Promise<IBroadcastResult>;
     isUserInRoom: (
         ctx: IBaseContext,
         roomName: string,
@@ -65,17 +72,23 @@ function leaveRoom(roomName: string, socketId: string) {
 }
 
 function broadcast(
+    ctx: IBaseContext,
+    reqData: RequestData,
     roomName: string,
     eventId: string,
     data: any,
-    io: Server,
-    fromSocketId?: string
+    excludeSocketId?: string,
+    activeSocketsOnly?: boolean
 ) {
     const room = rooms[roomName] || {};
     const omit = {};
+    const result: IBroadcastResult = {
+        inactiveSockets: [],
+        broadcastsCount: 0,
+    };
 
-    if (fromSocketId) {
-        omit[fromSocketId] = true;
+    if (excludeSocketId) {
+        omit[excludeSocketId] = true;
     }
 
     for (const socketId in room) {
@@ -84,16 +97,26 @@ function broadcast(
             continue;
         }
 
-        const socket = io.to(socketId);
+        const socket = ctx.socketServer.to(socketId);
+        const entry = ctx.socket.getSocketEntry(ctx, socketId);
 
-        if (!socket) {
+        if (!socket || !entry) {
             // TODO: log
             delete room[socketId];
+            ctx.socket.disconnectSocket(reqData);
+            continue;
+        }
+
+        if (entry.isInactive && activeSocketsOnly) {
+            result.inactiveSockets.push(entry);
             continue;
         }
 
         socket.emit(eventId, data);
+        result.broadcastsCount += 1;
     }
+
+    return result;
 }
 
 export default class RoomContext implements IRoomContext {
@@ -158,10 +181,12 @@ export default class RoomContext implements IRoomContext {
     public broadcast = wrapFireAndDontThrow(
         async (
             ctx: IBaseContext,
+            data: RequestData,
             roomName: string,
             eventName: OutgoingSocketEvents,
             eventData: any,
-            data?: RequestData
+            excludeSender?: boolean,
+            activeSocketsOnly?: boolean
         ) => {
             // TODO: how can we make this better? Also, getUser I think calls mongo again
             if (data && !data.socket) {
@@ -169,18 +194,22 @@ export default class RoomContext implements IRoomContext {
                 ctx.socket.attachSocketToRequestData(ctx, data, user);
             }
 
-            broadcast(
+            const result = broadcast(
+                ctx,
+                data,
                 roomName,
                 eventName,
                 eventData,
-                ctx.socketServer,
-                data?.socket?.id
+                excludeSender && data?.socket?.id,
+                activeSocketsOnly
             );
 
             ctx.broadcastHistory.insert(ctx, roomName, {
                 data: eventData,
                 event: eventName,
             });
+
+            return result;
         }
     );
 

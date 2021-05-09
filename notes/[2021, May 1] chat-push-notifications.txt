@@ -15,7 +15,7 @@
 -   Setup a model to persist the client push notification subscriptions, and map it to the user
 -   Implement a way to know when the user is active or not
 -   Send the browser push notifications of the count of unseen messages and the chat rooms count the messages are from. 
-    For example, "5 new messages from 3 chats"
+    For example, "5 messages from 3 chats"
 -   Unsubscribe to push notifications if the user is logged out, 
     or if permission is revoked through the browser or the user decides to mute notifications
 

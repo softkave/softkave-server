@@ -16,6 +16,7 @@ import { IClientModel } from "../../mongo/client/Model";
 import { ITokenModel } from "../../mongo/token";
 import { IPushSubscriptionModel } from "../../mongo/pushSubscriptions";
 import { IBaseTokenData } from "./UserTokenContext";
+import { IUnseenChatsModel } from "../../mongo/unseenChats";
 
 export interface IContextModels {
     userModel: IUserModel;
@@ -34,6 +35,7 @@ export interface IContextModels {
     clientModel: IClientModel;
     tokenModel: ITokenModel;
     pushSubscriptionModel: IPushSubscriptionModel;
+    unseenChatsModel: IUnseenChatsModel;
 }
 
 export interface IServerRequest extends Request {

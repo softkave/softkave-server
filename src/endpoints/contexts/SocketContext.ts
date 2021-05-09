@@ -9,9 +9,6 @@ export interface IUserClientSocketEntry {
     clientId: string;
     socket: Socket;
 
-    // marks whether the user is currently viewing the page
-    isActive?: boolean;
-
     // TODO:
     // Should we keep a list of all the rooms a client is subscribed to?
     // It'll make re-subscribing after socket reconnection and removing the socket from the room
@@ -19,7 +16,14 @@ export interface IUserClientSocketEntry {
     // could have genuinely disconnected
 }
 
-const authenticatedSockets: { [key: string]: string } = {};
+export interface IAuthenticatedSocketEntry {
+    userId: string;
+
+    // marks whether the user is currently viewing the page
+    isInactive?: boolean;
+}
+
+const authenticatedSockets: { [key: string]: IAuthenticatedSocketEntry } = {};
 const userIdToSocketEntriesMap: {
     [key: string]: IUserClientSocketEntry[];
 } = {};
@@ -41,10 +45,13 @@ export interface ISocketContext {
     ) => IUserClientSocketEntry[];
     updateSocketEntry: (
         ctx: IBaseContext,
-        userId: string,
-        clientId: string,
-        update: Partial<{ isActive?: boolean }>
+        socketId: string,
+        update: Partial<{ isInactive?: boolean }>
     ) => void;
+    getSocketEntry: (
+        ctx: IBaseContext,
+        socketId: string
+    ) => IAuthenticatedSocketEntry;
 }
 
 export default class SocketContext implements ISocketContext {
@@ -57,7 +64,9 @@ export default class SocketContext implements ISocketContext {
     }
 
     public mapUserToSocketId(data: RequestData, user: IUser) {
-        authenticatedSockets[data.socket.id] = user.customId;
+        authenticatedSockets[data.socket.id] = {
+            userId: user.customId,
+        };
 
         const existingSocketIndex = this.getSocketIndex(
             user.customId,
@@ -79,28 +88,26 @@ export default class SocketContext implements ISocketContext {
     }
 
     public disconnectSocket(data: RequestData) {
-        const userId = authenticatedSockets[data.socket.id];
+        const entry = authenticatedSockets[data.socket.id];
 
-        if (!userId) {
+        if (!entry) {
             return;
         }
 
         delete authenticatedSockets[data.socket.id];
-
-        const socketIndex = this.getSocketIndex(userId, data.socket.id);
+        const socketIndex = this.getSocketIndex(entry.userId, data.socket.id);
 
         if (socketIndex === -1) {
             return;
         }
 
-        const socketEntries = userIdToSocketEntriesMap[userId];
-
+        const socketEntries = userIdToSocketEntriesMap[entry.userId];
         socketEntries.splice(socketIndex, 1);
 
         if (socketEntries.length > 0) {
-            userIdToSocketEntriesMap[userId] = socketEntries;
+            userIdToSocketEntriesMap[entry.userId] = socketEntries;
         } else {
-            delete userIdToSocketEntriesMap[userId];
+            delete userIdToSocketEntriesMap[entry.userId];
         }
     }
 
@@ -119,7 +126,7 @@ export default class SocketContext implements ISocketContext {
     }
 
     public getUserIdBySocketId(data: RequestData) {
-        return authenticatedSockets[data.socket.id];
+        return authenticatedSockets[data.socket.id]?.userId;
     }
 
     public attachSocketToRequestData(
@@ -154,10 +161,10 @@ export default class SocketContext implements ISocketContext {
         }
 
         const socketEntry = socketEntries[entryIndex];
-        const userId = authenticatedSockets[socketEntry.socket.id];
+        const entry = authenticatedSockets[socketEntry.socket.id];
 
-        if (!userId || userId !== user.customId) {
-            this.disconnectUser(userId);
+        if (!entry || entry.userId !== user.customId) {
+            this.disconnectUser(entry.userId);
             return false;
         }
 
@@ -171,27 +178,19 @@ export default class SocketContext implements ISocketContext {
 
     public updateSocketEntry(
         ctx: IBaseContext,
-        userId: string,
-        clientId: string,
-        update: Partial<{ isActive?: boolean }>
+        socketId: string,
+        update: Partial<{ isInactive?: boolean }>
     ) {
-        const entries = userIdToSocketEntriesMap[userId];
-
-        if (!entries) {
+        if (!authenticatedSockets[socketId]) {
             return;
         }
 
-        const entryIndex = entries.findIndex(
-            (entry) => entry.clientId === clientId
-        );
+        const entry = { ...authenticatedSockets[socketId], ...update };
+        authenticatedSockets[socketId] = entry;
+    }
 
-        if (entryIndex == -1) {
-            return;
-        }
-
-        const entry = { ...entries[entryIndex], ...update };
-        entries[entryIndex] = entry;
-        userIdToSocketEntriesMap[userId] = entries;
+    public getSocketEntry(ctx: IBaseContext, socketId: string) {
+        return authenticatedSockets[socketId];
     }
 
     private getSocketIndex(userId: string, socketId: string) {

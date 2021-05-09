@@ -1,10 +1,10 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { assertBlock } from "../../../mongo/block/utils";
 import { IRoom } from "../../../mongo/room";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { IBroadcastResult } from "../../contexts/RoomContext";
+import { fireAndForgetPromise } from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
@@ -13,13 +13,49 @@ import { getPublicChatData } from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
+async function sendPushNotification(
+    context: IBaseContext,
+    userId: string,
+    roomId: string,
+    broadcastResultPromise: Promise<IBroadcastResult>
+) {
+    const broadcastResult = await broadcastResultPromise;
+
+    if (broadcastResult.broadcastsCount > 0) {
+        return;
+    }
+
+    const unseenChats = await context.unseenChats.addEntry(
+        context,
+        userId,
+        roomId
+    );
+
+    const {
+        roomsCount,
+        chatsCount,
+    } = context.unseenChats.sumUnseenChatsAndRooms(context, unseenChats);
+
+    // TODO: exclude clients with chat notifications muted
+    const subscriptions = await context.pushSubscription.getPushSubscriptionsByUserId(
+        context,
+        userId
+    );
+
+    const message = `${chatsCount} messages from ${roomsCount}`;
+    subscriptions.forEach((subscription) => {
+        fireAndForgetPromise(
+            context.webPush.sendNotification(subscription, message)
+        );
+    });
+}
+
 const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     const user = await context.session.getUser(context, instaData);
     context.socket.assertSocket(instaData);
     const data = validate(instaData.data, sendMessageJoiSchema);
-    const org = await context.block.getBlockById(context, data.orgId);
+    const org = await context.block.assertGetBlockById(context, data.orgId);
 
-    assertBlock(org);
     // await context.accessControl.assertPermission(
     //     context,
     //     {
@@ -59,7 +95,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         // It's a new room/chat
         context.room.subscribeUser(context, room.name, user.customId);
         context.room.subscribeUser(context, room.name, data.recipientId);
-        context.broadcastHelpers.broadcastNewRoom(context, room);
+        context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
     }
 
     const chat = await context.chat.insertMessage(
@@ -70,11 +106,20 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.message
     );
 
-    context.broadcastHelpers.broadcastNewMessage(
+    const broadcastResultPromise = context.broadcastHelpers.broadcastNewMessage(
         context,
+        instaData,
         room,
-        chat,
-        instaData
+        chat
+    );
+
+    fireAndForgetPromise(
+        sendPushNotification(
+            context,
+            user.customId,
+            data.roomId,
+            broadcastResultPromise
+        )
     );
 
     if (data.roomId) {
@@ -88,10 +133,10 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
         context.broadcastHelpers.broadcastRoomReadCounterUpdate(
             context,
+            instaData,
             user,
             room.customId,
-            readCounter,
-            instaData
+            readCounter
         );
     }
 

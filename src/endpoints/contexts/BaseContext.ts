@@ -52,6 +52,12 @@ import {
     IPushSubscriptionContext,
 } from "./PushSubscriptionContext";
 import { getPushSubscriptionModel } from "../../mongo/pushSubscriptions";
+import {
+    getUnseenChatsContext,
+    IUnseenChatsContext,
+} from "./UnseenChatsContext";
+import { getUnseenChatsModel } from "../../mongo/unseenChats";
+import webPush from "web-push";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -64,7 +70,6 @@ export interface IBaseContext {
     room: IRoomContext;
     broadcastHistory: IBroadcastHistoryContext;
     models: IContextModels;
-    socketServer: Server;
     comment: ICommentContext;
     sprint: ISprintContext;
     chat: IChatContext;
@@ -73,9 +78,18 @@ export interface IBaseContext {
     token: ITokenContext;
     userToken: IUserTokenContext;
     pushSubscription: IPushSubscriptionContext;
+    unseenChats: IUnseenChatsContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
+    socketServer: Server;
+    webPush: typeof webPush;
 }
+
+webPush.setVapidDetails(
+    "www.softkave.com",
+    appVariables.vapidPublicKey,
+    appVariables.vapidPrivateKey
+);
 
 export default class BaseContext implements IBaseContext {
     public block: IBlockContext = getBlockContext();
@@ -95,6 +109,7 @@ export default class BaseContext implements IBaseContext {
     public token = getTokenContext();
     public userToken = getUserTokenContext();
     public pushSubscription = getPushSubscriptionContext();
+    public unseenChats = getUnseenChatsContext();
     public models: IContextModels = {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
@@ -112,10 +127,12 @@ export default class BaseContext implements IBaseContext {
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
         pushSubscriptionModel: getPushSubscriptionModel(),
+        unseenChatsModel: getUnseenChatsModel(),
     };
     public socketServer: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();
     public appVariables = appVariables;
+    public webPush = webPush;
 }
 
 export const getBaseContext = makeSingletonFunc(() => new BaseContext());

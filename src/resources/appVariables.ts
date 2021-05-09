@@ -8,6 +8,8 @@ export const appVariables = {
     feedbackBoardId: process.env.FEEDBACK_BOARD_ID,
     feedbackUserId: process.env.FEEDBACK_USER_ID,
     port: process.env.PORT,
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
+    vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
 
     appName: "Softkave",
     emailSendFrom: "hello@softkave.com",

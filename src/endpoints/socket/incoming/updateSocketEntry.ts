@@ -5,12 +5,12 @@ import { SocketEventHandler } from "../types";
 
 const validationSchema = Joi.object()
     .keys({
-        isActive: Joi.bool(),
+        isInactive: Joi.bool(),
     })
     .required();
 
 interface IUpdateSocketEntryData {
-    isActive?: boolean;
+    isInactive?: boolean;
 }
 
 const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
@@ -19,14 +19,10 @@ const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
     fn
 ) => {
     const validatedData = validate(data.data, validationSchema);
-    const user = await ctx.session.getUser(ctx, data, true, JWTEndpoints.Login);
 
-    ctx.socket.updateSocketEntry(
-        ctx,
-        user.customId,
-        data.clientId,
-        validatedData
-    );
+    await ctx.session.assertUser(ctx, data, JWTEndpoints.Login);
+    ctx.socket.assertSocket(data);
+    ctx.socket.updateSocketEntry(ctx, data.socket.id, validatedData);
 };
 
 export default updateSocketEntry;
