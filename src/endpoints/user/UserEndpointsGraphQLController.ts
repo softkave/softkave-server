@@ -15,6 +15,7 @@ import { getSignupContext } from "./signup/context";
 import signup from "./signup/signup";
 import updateUser from "./updateUser/updateUser";
 import userExists from "./userExists/userExists";
+import { getUpdateUserEndpointContext } from "./updateUser/context";
 
 export default class UserEndpointsGraphQLController {
     public signup(data, req) {
@@ -114,7 +115,7 @@ export default class UserEndpointsGraphQLController {
     public updateUser(data, req) {
         return wrapEndpoint(data, req, async () =>
             updateUser(
-                getBaseContext(),
+                getUpdateUserEndpointContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,

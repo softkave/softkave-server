@@ -3,7 +3,6 @@ import { Endpoint } from "../../types";
 import { IPublicClient } from "../../client/types";
 
 export interface IUpdateClientParameters {
-    customId: string;
     data: {
         hasUserSeenNotificationsPermissionDialog?: boolean;
         muteChatNotifications?: boolean;

@@ -44,11 +44,13 @@ const signup: SignupEndpoint = async (context, instData) => {
         resourceType: SystemResourceType.User,
     });
 
+    const token = await context.userToken.newUserToken(context, instData, {
+        audience: [JWTEndpoints.Login],
+    });
+
     return {
+        token,
         user: getPublicUserData(user),
-        token: await context.userToken.newUserToken(context, instData, {
-            audience: [JWTEndpoints.Login],
-        }),
         client: getPublicClientData(instData.client),
     };
 };

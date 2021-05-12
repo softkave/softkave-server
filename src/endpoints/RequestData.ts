@@ -9,6 +9,7 @@ import { IBaseTokenData } from "./contexts/UserTokenContext";
 import { InvalidRequestError } from "./errors";
 import { IIncomingSocketEventPacket } from "./socket/types";
 import { JWTEndpoints } from "./types";
+import { LoginAgainError } from "./user/errors";
 
 export interface IRequestContructorParams<
     T = any,
@@ -54,6 +55,10 @@ export default class RequestData<
             clientConstants.clientIdHeaderKey
         ] as string;
 
+        if (requestData.incomingTokenData && !requestData.clientId) {
+            throw new LoginAgainError();
+        }
+
         if (options.checkUserToken) {
             await ctx.session.getExpressSession(
                 ctx,
@@ -81,6 +86,10 @@ export default class RequestData<
             ? socket.handshake.headers["user-agent"]
             : undefined;
         requestData.clientId = data.clientId;
+
+        if (!requestData.clientId) {
+            throw new LoginAgainError();
+        }
 
         if (!skipTokenHandling) {
             if (!data.token) {

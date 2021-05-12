@@ -28,11 +28,13 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
         context.token.deleteTokensByUserId(context, user.customId)
     );
 
+    const token = await context.userToken.newUserToken(context, instData, {
+        audience: [JWTEndpoints.Login],
+    });
+
     return {
+        token,
         user: getPublicUserData(user),
-        token: await context.userToken.newUserToken(context, instData, {
-            audience: [JWTEndpoints.Login],
-        }),
         client: getPublicClientData(instData.client),
     };
 };

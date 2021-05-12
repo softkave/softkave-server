@@ -10,7 +10,7 @@ const updateClient: UpdateClientEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const client = await context.client.updateClientByClientAndUserId(
         context,
-        data.customId,
+        instData.clientId,
         user.customId,
         { ...data.data, updatedAt: getDateString() }
     );

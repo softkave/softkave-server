@@ -25,6 +25,8 @@ const userSchema = `
         name: String
         notificationsLastCheckedAt: String
         color: String
+        email: String
+        password: String
     }
 
     type UserQueryResult {
@@ -50,12 +52,14 @@ const userSchema = `
         hasUserSeenNotificationsPermissionDialog: Boolean
         muteChatNotifications: Boolean
         isSubcribedToPushNotifications: Boolean
+        isLoggedIn: Boolean
     }
 
     input UpdateClientDataInput {
         hasUserSeenNotificationsPermissionDialog: Boolean
         muteChatNotifications: Boolean
         isSubcribedToPushNotifications: Boolean
+        isLoggedIn: Boolean
     }
 
     type UpdateClientResponse {
@@ -69,20 +73,18 @@ const userSchema = `
         login (email: String!, password: String!) : UserQueryResult
         forgotPassword (email: String!) : ErrorOnlyResponse
         changePassword (password: String!) : UserQueryResult
-        updateUser (data: UserUpdateInput!): ErrorOnlyResponse
+        updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
         getUserNotifications: GetNotificationsResponse
         respondToCollaborationRequest (
             requestId: String!, response: String!
         ): RespondToCollaborationRequestResponse
-
         markNotificationRead (
             notificationId: String!,
             readAt: String!
         ): ErrorOnlyResponse
-
         getUserData: UserQueryResult
-        updateClient: (clientId: String!, data: UpdateClientDataInput!) => UpdateClientResponse
+        updateClient: (data: UpdateClientDataInput!) => UpdateClientResponse
     }
 `;
 

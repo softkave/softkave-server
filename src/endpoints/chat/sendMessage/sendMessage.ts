@@ -25,6 +25,8 @@ async function sendPushNotification(
         return;
     }
 
+    // TODO: what happens when the user gets another message in the same room
+    // while the current one is processing
     const unseenChats = await context.unseenChats.addEntry(
         context,
         userId,
