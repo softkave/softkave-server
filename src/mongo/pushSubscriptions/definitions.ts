@@ -3,7 +3,6 @@ import { getDate } from "../../utilities/fns";
 
 export interface IPushSubscription {
     customId: string;
-    userId: string;
     clientId: string;
     createdAt: string;
     endpoint: string;
@@ -15,7 +14,6 @@ export interface IPushSubscription {
 
 const pushSubscriptionMongoSchema = {
     customId: { type: String, unique: true, index: true },
-    userId: { type: String },
     clientId: { type: String },
     createdAt: { type: Date, default: getDate },
     endpoint: { type: String },

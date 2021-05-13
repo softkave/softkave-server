@@ -33,16 +33,25 @@ async function sendPushNotification(
         roomId
     );
 
-    const {
-        roomsCount,
-        chatsCount,
-    } = context.unseenChats.sumUnseenChatsAndRooms(context, unseenChats);
+    const { roomsCount, chatsCount } =
+        context.unseenChats.sumUnseenChatsAndRooms(context, unseenChats);
 
-    // TODO: exclude clients with chat notifications muted
-    const subscriptions = await context.pushSubscription.getPushSubscriptionsByUserId(
+    const clients = await context.client.getPushSubscribedClients(
         context,
         userId
     );
+
+    if (clients.length === 0) {
+        return;
+    }
+
+    // TODO: exclude clients with chat notifications muted
+    const subscriptions =
+        await context.pushSubscription.getPushSubscriptionsByUserId(
+            context,
+            userId,
+            clients.map((client) => client.clientId)
+        );
 
     const message = `${chatsCount} messages from ${roomsCount}`;
     subscriptions.forEach((subscription) => {

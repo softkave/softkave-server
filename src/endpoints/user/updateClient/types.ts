@@ -7,6 +7,7 @@ export interface IUpdateClientParameters {
         hasUserSeenNotificationsPermissionDialog?: boolean;
         muteChatNotifications?: boolean;
         isSubcribedToPushNotifications?: boolean;
+        isLoggedIn?: boolean;
     };
 }
 

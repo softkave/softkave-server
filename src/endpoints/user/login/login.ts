@@ -31,6 +31,16 @@ const login: LoginEndpoint = async (context, instData) => {
                 }
             );
 
+            // TODO: can we make this better?
+            const client = await context.client.updateUserEntry(
+                context,
+                instData,
+                instData.clientId,
+                user.customId,
+                { isLoggedIn: true }
+            );
+
+            instData.client = client;
             return {
                 token,
                 user: getPublicUserData(user),

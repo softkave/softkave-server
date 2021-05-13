@@ -1,4 +1,4 @@
-import { IClient } from "../../mongo/client";
+import { IClient, IClientUserView } from "../../mongo/client";
 import { extractFields, getFields } from "../utils";
 import { IPublicClient } from "./types";
 
@@ -7,6 +7,7 @@ const publicClientFields = getFields<IPublicClient>({
     isSubcribedToPushNotifications: true,
     muteChatNotifications: true,
     clientId: true,
+    isLoggedIn: true,
 });
 
 export function getPublicClientData(client: IClient): IPublicClient {
@@ -15,4 +16,33 @@ export function getPublicClientData(client: IClient): IPublicClient {
 
 export function getPublicClientArray(clients: IClient[]): IPublicClient[] {
     return clients.map((client) => extractFields(client, publicClientFields));
+}
+
+export function findUserEntryInClient(client: IClient, userId: string) {
+    const index = client.users.findIndex((data) => data.userId === userId);
+
+    if (index === -1) {
+        return null;
+    } else {
+        return { index, entry: client.users[index] };
+    }
+}
+
+export function clientToClientUserView(client: IClient, userId: string) {
+    const findResult = findUserEntryInClient(client, userId);
+
+    if (!findResult) {
+        throw new Error("Client is not attached to user");
+    }
+
+    const view: IClientUserView = {
+        customId: client.customId,
+        clientId: client.clientId,
+        createdAt: client.createdAt,
+        clientType: client.clientType,
+        isSubcribedToPushNotifications: client.isSubcribedToPushNotifications,
+        ...findResult.entry,
+    };
+
+    return view;
 }

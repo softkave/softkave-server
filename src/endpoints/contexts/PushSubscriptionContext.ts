@@ -22,7 +22,8 @@ export interface IPushSubscriptionContext {
     ) => Promise<IPushSubscription | null>;
     getPushSubscriptionsByUserId: (
         ctx: IBaseContext,
-        userId: string
+        userId: string,
+        clientIds: string[]
     ) => Promise<IPushSubscription[]>;
     assertGetPushSubscriptionById: (
         ctx: IBaseContext,
@@ -40,7 +41,8 @@ export interface IPushSubscriptionContext {
 }
 
 export default class PushSubscriptionContext
-    implements IPushSubscriptionContext {
+    implements IPushSubscriptionContext
+{
     public savePushSubscription = wrapFireAndThrowError(
         async (ctx: IBaseContext, data: IPushSubscription) => {
             const pushSubscription = new ctx.models.pushSubscriptionModel.model(
@@ -83,10 +85,11 @@ export default class PushSubscriptionContext
     );
 
     public getPushSubscriptionsByUserId = wrapFireAndThrowError(
-        (ctx: IBaseContext, userId: string) => {
+        (ctx: IBaseContext, userId: string, clientIds: string[]) => {
             return ctx.models.pushSubscriptionModel.model
                 .find({
                     userId,
+                    clientId: { $in: clientIds },
                 })
                 .lean()
                 .exec();
@@ -95,10 +98,11 @@ export default class PushSubscriptionContext
 
     public assertGetPushSubscriptionById = wrapFireAndThrowError(
         async (ctx: IBaseContext, customId: string) => {
-            const pushSubscription = await ctx.pushSubscription.getPushSubscriptionById(
-                ctx,
-                customId
-            );
+            const pushSubscription =
+                await ctx.pushSubscription.getPushSubscriptionById(
+                    ctx,
+                    customId
+                );
 
             if (!pushSubscription) {
                 throw new PushSubscriptionDoesNotExistError();

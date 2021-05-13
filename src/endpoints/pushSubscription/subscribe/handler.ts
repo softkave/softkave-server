@@ -11,13 +11,14 @@ const subscribePushSubscription: SubscribePushSubscriptionEndpoint = async (
 ) => {
     const data = validate(instData.data, subscribePushSubscriptionJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const existingSubscription = await context.pushSubscription.getPushSubscription(
-        context,
-        user.customId,
-        instData.client.clientId,
-        data.endpoint,
-        data.keys
-    );
+    const existingSubscription =
+        await context.pushSubscription.getPushSubscription(
+            context,
+            user.customId,
+            instData.client.clientId,
+            data.endpoint,
+            data.keys
+        );
 
     if (existingSubscription) {
         throw new PushSubscriptionExistsError();
@@ -37,7 +38,6 @@ const subscribePushSubscription: SubscribePushSubscriptionEndpoint = async (
         customId: getNewId(),
         endpoint: data.endpoint,
         keys: data.keys,
-        userId: user.customId,
     });
 };
 

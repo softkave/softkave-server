@@ -2,30 +2,49 @@ import { Document } from "mongoose";
 import { ClientType } from "../../models/system";
 import { getDate } from "../../utilities/fns";
 
-export interface IClient {
-    customId: string;
+export interface IClientUserEntry {
     userId: string;
-    clientId: string;
-    createdAt: string;
-    updatedAt?: string;
-    clientType: ClientType;
     tokenId: string;
     hasUserSeenNotificationsPermissionDialog?: boolean;
+    isLoggedIn?: boolean;
     muteChatNotifications?: boolean;
+}
+
+export interface IClientUserView extends IClientUserEntry {
+    customId: string;
+    clientId: string;
+    createdAt: string;
+    clientType: ClientType;
     isSubcribedToPushNotifications?: boolean;
+}
+
+export interface IClient {
+    customId: string;
+    clientId: string;
+    createdAt: string;
+    clientType: ClientType;
+    isSubcribedToPushNotifications?: boolean;
+    users: Array<IClientUserEntry>;
 }
 
 const clientMongoSchema = {
     customId: { type: String, unique: true, index: true },
-    userId: { type: String },
     clientId: { type: String },
     createdAt: { type: Date, default: getDate },
-    updatedAt: { type: Date },
     clientType: { type: String },
-    tokenId: { type: String },
-    hasUserSeenNotificationsPermissionDialog: { type: Boolean },
-    muteNotifications: { type: Boolean },
     isSubcribedToPushNotifications: { type: Boolean },
+    users: {
+        type: [
+            {
+                userId: { type: String },
+                tokenId: { type: String },
+                hasUserSeenNotificationsPermissionDialog: { type: Boolean },
+                isLoggedIn: { type: Boolean },
+                muteChatNotifications: { type: Boolean, default: false },
+            },
+        ],
+        default: [],
+    },
 };
 
 export default clientMongoSchema;

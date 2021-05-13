@@ -90,12 +90,17 @@ class UserTokenContext implements IUserTokenContext {
 
             if (!reqData.clientId) {
                 clientPromise = ctx.client.saveClient(ctx, {
-                    tokenId,
                     clientId,
                     customId: getNewId(),
                     createdAt: getDateString(),
-                    userId: reqData.user.customId,
                     clientType: ClientType.Browser,
+                    users: [
+                        {
+                            tokenId,
+                            userId: reqData.user.customId,
+                            muteChatNotifications: false,
+                        },
+                    ],
                 });
             } else {
                 await ctx.token.deleteTokenByUserAndClientId(
