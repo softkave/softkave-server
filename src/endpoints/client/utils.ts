@@ -2,32 +2,6 @@ import { IClient, IClientUserView } from "../../mongo/client";
 import { extractFields, getFields } from "../utils";
 import { IPublicClient } from "./types";
 
-const publicClientFields = getFields<IPublicClient>({
-    hasUserSeenNotificationsPermissionDialog: true,
-    isSubcribedToPushNotifications: true,
-    muteChatNotifications: true,
-    clientId: true,
-    isLoggedIn: true,
-});
-
-export function getPublicClientData(client: IClient): IPublicClient {
-    return extractFields(client, publicClientFields);
-}
-
-export function getPublicClientArray(clients: IClient[]): IPublicClient[] {
-    return clients.map((client) => extractFields(client, publicClientFields));
-}
-
-export function findUserEntryInClient(client: IClient, userId: string) {
-    const index = client.users.findIndex((data) => data.userId === userId);
-
-    if (index === -1) {
-        return null;
-    } else {
-        return { index, entry: client.users[index] };
-    }
-}
-
 export function clientToClientUserView(client: IClient, userId: string) {
     const findResult = findUserEntryInClient(client, userId);
 
@@ -45,4 +19,28 @@ export function clientToClientUserView(client: IClient, userId: string) {
     };
 
     return view;
+}
+
+export function getPublicClientData(
+    client: IClient,
+    userId: string
+): IPublicClient {
+    return clientToClientUserView(client, userId);
+}
+
+export function getPublicClientArray(
+    clients: IClient[],
+    userId: string
+): IPublicClient[] {
+    return clients.map((client) => clientToClientUserView(client, userId));
+}
+
+export function findUserEntryInClient(client: IClient, userId: string) {
+    const index = client.users.findIndex((data) => data.userId === userId);
+
+    if (index === -1) {
+        return null;
+    } else {
+        return { index, entry: client.users[index] };
+    }
 }

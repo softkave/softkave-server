@@ -8,7 +8,7 @@ const getUserData: GetUserDataEndpoint = async (context, instData) => {
 
     return {
         user: getPublicUserData(user),
-        client: getPublicClientData(client),
+        client: getPublicClientData(client, user.customId),
     };
 };
 

@@ -51,7 +51,7 @@ const signup: SignupEndpoint = async (context, instData) => {
     return {
         token,
         user: getPublicUserData(user),
-        client: getPublicClientData(instData.client),
+        client: getPublicClientData(instData.client, user.customId),
     };
 };
 

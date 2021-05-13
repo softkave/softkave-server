@@ -19,7 +19,7 @@ const updateClient: UpdateClientEndpoint = async (context, instData) => {
         throw new ClientDoesNotExistError();
     }
 
-    return { client: getPublicClientData(client) };
+    return { client: getPublicClientData(client, user.customId) };
 };
 
 export default updateClient;

@@ -67,7 +67,7 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     return {
         token,
         user: getPublicUserData(updatedUser),
-        client: getPublicClientData(instData.client),
+        client: getPublicClientData(instData.client, user.customId),
     };
 };
 
