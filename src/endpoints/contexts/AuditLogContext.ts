@@ -45,7 +45,7 @@ function getLogFromEntry(
     };
 
     if (!log.userId) {
-        log.userId = data.tokenData ? data.tokenData.sub.id : undefined;
+        log.userId = data.tokenData ? data.tokenData.customId : undefined;
     }
 
     return log;

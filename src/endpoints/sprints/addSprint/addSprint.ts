@@ -85,9 +85,9 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
 
     context.broadcastHelpers.broadcastNewSprint(
         context,
+        instData,
         board,
-        publicSprint,
-        instData
+        publicSprint
     );
 
     return { sprint: publicSprint };

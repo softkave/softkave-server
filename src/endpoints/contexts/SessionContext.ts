@@ -3,6 +3,7 @@ import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { ServerError } from "../../utilities/errors";
+import { findUserEntryInClient } from "../client/utils";
 import RequestData from "../RequestData";
 import { IIncomingSocketEventPacket } from "../socket/types";
 import { JWTEndpoints } from "../types";
@@ -109,7 +110,9 @@ export default class SessionContext implements ISessionContext {
             reqData.user || ctx.user.assertGetUserById(ctx, token.userId),
         ]);
 
-        if (token.userId !== client.userId) {
+        const entry = findUserEntryInClient(client, token.userId);
+
+        if (!entry) {
             throw new InvalidCredentialsError();
         }
 

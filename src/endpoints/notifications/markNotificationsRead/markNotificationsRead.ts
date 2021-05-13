@@ -46,10 +46,10 @@ const markNotificationsRead: MarkNotificationReadEndpoint = async (
 
     context.room.broadcast(
         context,
+        instData,
         userRoomName,
         OutgoingSocketEvents.MarkNotificationsRead,
-        updatePacket,
-        instData
+        updatePacket
     );
 
     return { notifications: processedNotifications };

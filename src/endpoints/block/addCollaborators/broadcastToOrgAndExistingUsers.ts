@@ -19,9 +19,9 @@ export function broadcastToOrgsAndExistingUsers(
 
     context.broadcastHelpers.broadcastNewOrgCollaborationRequests(
         context,
+        instData,
         block,
-        collaborationRequests,
-        instData
+        collaborationRequests
     );
 
     collaborationRequests.forEach((request) => {
@@ -33,9 +33,9 @@ export function broadcastToOrgsAndExistingUsers(
 
         context.broadcastHelpers.broadcastNewUserCollaborationRequest(
             context,
+            instData,
             existingUser,
-            request,
-            instData
+            request
         );
     });
 }

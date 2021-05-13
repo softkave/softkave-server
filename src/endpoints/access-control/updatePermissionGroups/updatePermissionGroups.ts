@@ -83,16 +83,17 @@ async function updateUserPermissionGroupMaps(
         if (permissionGroup.data?.users?.add) {
             add = add.concat(
                 permissionGroup.data.users.add.map((id) => {
-                    const userPermissionGroupMap: IUserAssignedPermissionGroup = {
-                        userId: id,
-                        orgId: getBlockRootBlockId(block),
-                        resourceId: block.customId,
-                        resourceType: getBlockAuditLogResourceType(block),
-                        permissionGroupId: permissionGroup.customId,
-                        addedAt: nowStr,
-                        addedBy: user.customId,
-                        customId: getNewId(),
-                    };
+                    const userPermissionGroupMap: IUserAssignedPermissionGroup =
+                        {
+                            userId: id,
+                            orgId: getBlockRootBlockId(block),
+                            resourceId: block.customId,
+                            resourceType: getBlockAuditLogResourceType(block),
+                            permissionGroupId: permissionGroup.customId,
+                            addedAt: nowStr,
+                            addedBy: user.customId,
+                            customId: getNewId(),
+                        };
 
                     return userPermissionGroupMap;
                 })
@@ -151,7 +152,8 @@ const updatePermissionGroups: UpdatePermissionGroupsEndpoint = async (
                 permissionGroupInput.customId === block.publicPermissionGroupId;
 
             if (isPublicPermissionGroup && permissionGroupInput.data.name) {
-                permissionGroupInput.data.name = DefaultPermissionGroupNames.Public.toLowerCase();
+                permissionGroupInput.data.name =
+                    DefaultPermissionGroupNames.Public.toLowerCase();
             }
 
             return {
@@ -183,10 +185,11 @@ const updatePermissionGroups: UpdatePermissionGroupsEndpoint = async (
 
     context.room.broadcast(
         context,
+        instData,
         roomName,
         OutgoingSocketEvents.UpdateBlockPermissionGroups,
         updatePacket,
-        instData
+        true
     );
 
     return {

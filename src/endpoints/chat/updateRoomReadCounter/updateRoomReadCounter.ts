@@ -59,10 +59,10 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
 
     context.broadcastHelpers.broadcastRoomReadCounterUpdate(
         context,
+        instaData,
         user,
         data.roomId,
-        readCounter,
-        instaData
+        readCounter
     );
 
     return { readCounter };

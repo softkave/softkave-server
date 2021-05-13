@@ -57,7 +57,7 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
         },
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(context, {
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
         blockId: savedTaskResult.block.customId,
         updateType: { isNew: true },
         blockType: BlockType.Task,

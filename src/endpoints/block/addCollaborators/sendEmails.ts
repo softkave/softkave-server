@@ -60,9 +60,8 @@ export default async function sendEmails(
             return requests[id];
         });
 
-    const socketUpdates: Array<
-        IUpdateItemById<IPublicCollaborationRequest>
-    > = [];
+    const socketUpdates: Array<IUpdateItemById<IPublicCollaborationRequest>> =
+        [];
 
     successfulRequests.forEach((req) => {
         const sentEmailHistory = req.sentEmailHistory.concat({
@@ -96,6 +95,7 @@ export default async function sendEmails(
     // TODO: public data vs internal
     context.broadcastHelpers.broadcastCollaborationRequestsUpdateToBlock(
         context,
+        instData,
         block,
         socketUpdates
     );

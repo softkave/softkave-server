@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 export interface IMongoModelParameters {
-    rawSchema: mongoose.SchemaDefinitionProperty;
+    // rawSchema: mongoose.SchemaDefinition;
+    rawSchema: any; // TODO: fix later
     modelName: string;
     collectionName: string;
     connection: mongoose.Connection;
@@ -10,7 +11,7 @@ export interface IMongoModelParameters {
 
 class MongoModel<DocumentType extends mongoose.Document = any> {
     public connection: mongoose.Connection;
-    public rawSchema: mongoose.SchemaDefinitionProperty;
+    public rawSchema: mongoose.SchemaDefinition;
     public modelName: string;
     public collectionName: string;
     public schema: mongoose.Schema;

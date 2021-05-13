@@ -58,20 +58,16 @@ const updateSprintOptions: UpdateSprintOptionsEndpoint = async (
         duration: data.data.duration,
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(
-        context,
-        {
-            block: board,
-            updateType: { isUpdate: true },
-            data: {
-                sprintOptions,
-            },
-            blockId: board.customId,
-            blockType: board.type,
-            parentId: board.parent,
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block: board,
+        updateType: { isUpdate: true },
+        data: {
+            sprintOptions,
         },
-        instData
-    );
+        blockId: board.customId,
+        blockType: board.type,
+        parentId: board.parent,
+    });
 
     return {
         sprintOptions: getPublicSprintOptions(updatedBlock.sprintOptions),

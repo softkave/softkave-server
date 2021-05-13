@@ -59,18 +59,17 @@ export async function getIndexesWithDuplicateNames(
         resourceIds.push(block.rootBlockId);
     }
 
-    const permissionGroups = await context.accessControl.getPermissionGroupsByLowerCasedNames(
-        context,
-        resourceIds,
-        names
-    );
+    const permissionGroups =
+        await context.accessControl.getPermissionGroupsByLowerCasedNames(
+            context,
+            resourceIds,
+            names
+        );
 
-    const permissionGroupNamesMap: Record<
-        string,
-        IPermissionGroup
-    > = indexArray(permissionGroups, {
-        path: "lowerCasedName",
-    });
+    const permissionGroupNamesMap: Record<string, IPermissionGroup> =
+        indexArray(permissionGroups, {
+            path: "lowerCasedName",
+        });
 
     const indexesWithDuplicateNames: number[] = [];
 
@@ -123,16 +122,17 @@ async function addPermissionGroupsToUsers(
 
             return data.concat(
                 permissionGroup.users.map((id) => {
-                    const userPermissionGroupMap: IUserAssignedPermissionGroup = {
-                        userId: id,
-                        orgId: getBlockRootBlockId(block),
-                        resourceId: block.customId,
-                        resourceType: getBlockAuditLogResourceType(block),
-                        permissionGroupId: permissionGroup.customId,
-                        addedAt: nowStr,
-                        addedBy: user.customId,
-                        customId: getNewId(),
-                    };
+                    const userPermissionGroupMap: IUserAssignedPermissionGroup =
+                        {
+                            userId: id,
+                            orgId: getBlockRootBlockId(block),
+                            resourceId: block.customId,
+                            resourceType: getBlockAuditLogResourceType(block),
+                            permissionGroupId: permissionGroup.customId,
+                            addedAt: nowStr,
+                            addedBy: user.customId,
+                            customId: getNewId(),
+                        };
 
                     return userPermissionGroupMap;
                 })
@@ -203,12 +203,12 @@ const addPermissionGroups: AddPermissionGroupsEndpoint = async (
     );
 
     const socketOutputPermissionGroups: IPublicPermissionGroup[] = [];
-    const endpointOutputPermissionGroups: IAddPermissionGroupsEndpointResult["permissionGroups"] = [];
+    const endpointOutputPermissionGroups: IAddPermissionGroupsEndpointResult["permissionGroups"] =
+        [];
 
     permissionGroups.forEach((permissionGroup) => {
-        const outputPermissionGroup = getPublicPermissionGroups(
-            permissionGroup
-        );
+        const outputPermissionGroup =
+            getPublicPermissionGroups(permissionGroup);
         socketOutputPermissionGroups.push(outputPermissionGroup);
         endpointOutputPermissionGroups.push({
             permissionGroup: outputPermissionGroup,
@@ -224,10 +224,11 @@ const addPermissionGroups: AddPermissionGroupsEndpoint = async (
 
     context.room.broadcast(
         context,
+        instData,
         roomName,
         OutgoingSocketEvents.UpdateBlockPermissionGroups,
         updatePacket,
-        instData
+        true
     );
 
     return {

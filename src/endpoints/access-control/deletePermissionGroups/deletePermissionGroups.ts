@@ -20,10 +20,11 @@ async function relinkPermissionGroups(
     permissionGroupIds: string[]
 ) {
     const permissionGroupIdsMap = indexArray(permissionGroupIds);
-    const permissionGroups = await ctx.accessControl.getPermissionGroupsByResourceId(
-        ctx,
-        block.customId
-    );
+    const permissionGroups =
+        await ctx.accessControl.getPermissionGroupsByResourceId(
+            ctx,
+            block.customId
+        );
 
     const updates: Array<IUpdateItemById<IPermissionGroup>> = permissionGroups
         .filter(
@@ -94,10 +95,11 @@ const deletePermissionGroups: DeletePermissionGroupsEndpoint = async (
 
     context.room.broadcast(
         context,
+        instData,
         roomName,
         OutgoingSocketEvents.UpdateBlockPermissionGroups,
         updatePacket,
-        instData
+        true
     );
 };
 

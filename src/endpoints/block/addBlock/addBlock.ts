@@ -10,7 +10,7 @@ import { addBlockJoiSchema } from "./validation";
 const addBlock: AddBlockEndpoint = async (context, instData) => {
     const data = validate(instData.data, addBlockJoiSchema);
     const newBlock = data.block;
-    const user = await context.session.getUser(context, instData);
+    let user = await context.session.getUser(context, instData);
 
     if (newBlock.type === BlockType.Org) {
         const orgSaveResult = await context.addBlock(context, {
@@ -25,10 +25,11 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         // TODO: scrub all data that failed it's pipeline
 
         const userOrgs = user.orgs.concat({ customId: org.customId });
-        await context.session.updateUser(context, instData, {
+        user = await context.user.updateUserById(context, user.customId, {
             orgs: userOrgs,
         });
 
+        instData.user = user;
         context.auditLog.insert(context, instData, {
             action: SystemActionType.Create,
             resourceId: org.customId,
@@ -36,17 +37,13 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
             organizationId: org.customId,
         });
 
-        context.broadcastHelpers.broadcastBlockUpdate(
-            context,
-            {
-                updateType: { isNew: true },
-                data: org,
-                block: org,
-                blockId: org.customId,
-                blockType: org.type,
-            },
-            instData
-        );
+        context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+            updateType: { isNew: true },
+            data: org,
+            block: org,
+            blockId: org.customId,
+            blockType: org.type,
+        });
 
         return {
             block: getPublicBlockData(org),
@@ -83,18 +80,14 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         organizationId: getBlockRootBlockId(block),
     });
 
-    context.broadcastHelpers.broadcastBlockUpdate(
-        context,
-        {
-            block,
-            updateType: { isNew: true },
-            data: block,
-            blockId: block.customId,
-            blockType: block.type,
-            parentId: block.parent,
-        },
-        instData
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block,
+        updateType: { isNew: true },
+        data: block,
+        blockId: block.customId,
+        blockType: block.type,
+        parentId: block.parent,
+    });
 
     // TODO: analyze all the net calls you're making and look for ways to reduce them
 

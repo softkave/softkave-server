@@ -5,7 +5,7 @@ import { getPublicBlockData } from "../utils";
 import { CreateRootBlockEndpoint } from "./types";
 
 const createRootBlock: CreateRootBlockEndpoint = async (context, instData) => {
-    const user = await instData.data.user;
+    let user = await instData.data.user;
     const rootBlockInput: INewBlockInput = {
         name: `root_${user.customId}`,
         color: randomColor(),
@@ -20,10 +20,11 @@ const createRootBlock: CreateRootBlockEndpoint = async (context, instData) => {
     const rootBlock = result.block;
 
     // TODO: should we remove the user if the root block fails?
-    await context.session.updateUser(context, instData, {
+    user = await context.user.updateUserById(context, user.customId, {
         rootBlockId: rootBlock.customId,
     });
 
+    instData.user = user;
     return {
         block: getPublicBlockData(rootBlock),
     };

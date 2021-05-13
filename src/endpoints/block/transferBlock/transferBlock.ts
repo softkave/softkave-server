@@ -88,18 +88,14 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
         draggedBlockUpdates
     );
 
-    context.broadcastHelpers.broadcastBlockUpdate(
-        context,
-        {
-            block: draggedBlock,
-            updateType: { isUpdate: true },
-            data: draggedBlockUpdates,
-            blockId: draggedBlock.customId,
-            blockType: draggedBlock.type,
-            parentId: draggedBlock.parent,
-        },
-        instData
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block: draggedBlock,
+        updateType: { isUpdate: true },
+        data: draggedBlockUpdates,
+        blockId: draggedBlock.customId,
+        blockType: draggedBlock.type,
+        parentId: draggedBlock.parent,
+    });
 
     context.auditLog.insert(context, instData, {
         action: SystemActionType.Update,

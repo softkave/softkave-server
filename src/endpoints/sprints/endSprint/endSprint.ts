@@ -64,6 +64,7 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
 
     context.broadcastHelpers.broadcastSprintUpdate(
         context,
+        instData,
         user,
         board,
         sprint,
@@ -71,8 +72,7 @@ const endSprint: EndSprintEndpoint = async (context, instData) => {
             endDate,
             endedBy: user.customId,
         },
-        endDateStr,
-        instData
+        endDateStr
     );
 
     return { endDate: endDateStr };

@@ -59,11 +59,11 @@ const startSprint: StartSprintEndpoint = async (context, instData) => {
 
     context.broadcastHelpers.broadcastStartSprint(
         context,
+        instData,
         user,
         board,
         sprint,
-        startDateStr,
-        instData
+        startDateStr
     );
 
     return { startDate: startDateStr };

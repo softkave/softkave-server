@@ -26,7 +26,7 @@ async function deleteOrgCleanup(
     instData: RequestData<IDeleteBlockParameters>,
     block: IBlock
 ) {
-    const user = await context.session.getUser(context, instData);
+    let user = await context.session.getUser(context, instData);
     const userOrgs = [...user.orgs];
     const userOrgIndex = user.orgs.findIndex(
         (org) => org.customId === block.customId
@@ -35,10 +35,11 @@ async function deleteOrgCleanup(
     userOrgs.splice(userOrgIndex, 1);
 
     // TODO: scrub user collection for unreferenced orgIds
-    await context.session.updateUser(context, instData, {
+    user = await context.user.updateUserById(context, user.customId, {
         orgs: userOrgs,
     });
 
+    instData.user = user;
     const orgUsers = await context.user.getOrgUsers(context, block.customId);
     // const notifications: INotification[] = [];
     const updates: Array<IUpdateItemById<IUser>> = [];
@@ -116,17 +117,13 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
 
     await context.block.deleteBlock(context, block.customId);
 
-    context.broadcastHelpers.broadcastBlockUpdate(
-        context,
-        {
-            block,
-            updateType: { isDelete: true },
-            blockId: block.customId,
-            blockType: block.type,
-            parentId: block.parent,
-        },
-        instData
-    );
+    context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
+        block,
+        updateType: { isDelete: true },
+        blockId: block.customId,
+        blockType: block.type,
+        parentId: block.parent,
+    });
 
     context.auditLog.insert(context, instData, {
         action: SystemActionType.Delete,

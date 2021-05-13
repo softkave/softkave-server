@@ -49,12 +49,12 @@ const updateSprint: UpdateSprintEndpoint = async (context, instData) => {
 
     context.broadcastHelpers.broadcastSprintUpdate(
         context,
+        instData,
         user,
         board,
         sprint,
         data.data,
-        updatedAtStr,
-        instData
+        updatedAtStr
     );
 
     return { sprint: getPublicSprintData(updatedSprint) };

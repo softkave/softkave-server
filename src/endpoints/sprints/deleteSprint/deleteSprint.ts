@@ -91,9 +91,9 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
 
     context.broadcastHelpers.broadcastDeleteSprint(
         context,
+        instData,
         board,
-        sprint,
-        instData
+        sprint
     );
 };
 
