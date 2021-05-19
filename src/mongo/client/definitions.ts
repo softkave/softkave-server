@@ -11,11 +11,10 @@ export interface IClientUserEntry {
 }
 
 export interface IClientUserView extends IClientUserEntry {
-    customId: string;
     clientId: string;
     createdAt: string;
     clientType: ClientType;
-    isSubcribedToPushNotifications?: boolean;
+    isSubcribedToPushNotifications: boolean;
 }
 
 // TODO: can we implement a more efficient system where we use
@@ -23,26 +22,30 @@ export interface IClientUserView extends IClientUserEntry {
 // which is more reliable. Problem is when the user's browser doesn't
 // support web workers or push notification. We could just require
 // they use a browser that suppoer them.
+
 // TODO: should we store if we have permission to show notifications
+
 // TODO: we should mute notifications for the user if they set permissions
 // to "denied" and someone else grants the permission. The others should be
 // fine, but the original user should have notifications turned off.
 // OR we can fingerprint the browsers
 export interface IClient {
-    customId: string;
     clientId: string;
     createdAt: string;
     clientType: ClientType;
-    isSubcribedToPushNotifications?: boolean;
     users: Array<IClientUserEntry>;
+    endpoint?: string;
+    keys?: {
+        p256dh: string;
+        auth: string;
+    };
+    pushSubscribedAt?: string;
 }
 
 const clientMongoSchema = {
-    customId: { type: String, unique: true, index: true },
     clientId: { type: String },
     createdAt: { type: Date, default: getDate },
     clientType: { type: String },
-    isSubcribedToPushNotifications: { type: Boolean },
     users: {
         type: [
             {
@@ -55,6 +58,15 @@ const clientMongoSchema = {
         ],
         default: [],
     },
+    endpoint: { type: String, default: null },
+    keys: {
+        type: {
+            p256dh: { type: String },
+            auth: { type: String },
+        },
+        default: null,
+    },
+    pushSubscribedAt: { type: Date },
 };
 
 export default clientMongoSchema;

@@ -1,6 +1,10 @@
 import moment from "moment";
+import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { JWTEndpoints } from "../../types";
+import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
+import { JWTEndpoint } from "../../types";
+import { fireAndForgetPromise } from "../../utils";
 import { UserDoesNotExistError } from "../errors";
 import { addEntryToPasswordDateLog } from "../utils";
 import { ForgotPasswordEndpoint } from "./types";
@@ -17,18 +21,26 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
 
     // TODO: Validate if user has reached threshold for changing password daily
     // TODO: Generate a change password token ID history
-    // TODO: Or alternatively, instead of sending links to user emails, send a uuid code
-    // corresponding to stored credentials in db
 
     const initTime = moment();
 
     // TODO: the expiration duration should be defined in a config file, not here
     const expiration = moment(initTime).add(2, "days");
-    const token = context.userToken.newToken(context, {
-        user,
-        audience: [JWTEndpoints.ChangePassword],
+    const tokenData = await context.token.saveToken(context, {
+        // clientId: "", // TODO: get client id from request header or socket
+        customId: getNewId(),
+        audience: [JWTEndpoint.ChangePassword],
+        issuedAt: getDateString(),
+        userId: user.customId,
+        version: CURRENT_USER_TOKEN_VERSION,
         expires: expiration.valueOf(),
     });
+
+    const token = context.token.encodeToken(
+        context,
+        tokenData.customId,
+        expiration.valueOf()
+    );
 
     await context.sendChangePasswordEmail({
         expiration,
@@ -40,12 +52,11 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
         user.forgotPasswordHistory
     );
 
-    await context.user
-        .updateUserById(context, user.customId, { forgotPasswordHistory })
-        .catch(() => {
-            // TODO: should we log something here?
-            // Fire and forget
-        });
+    fireAndForgetPromise(
+        context.user.updateUserById(context, user.customId, {
+            forgotPasswordHistory,
+        })
+    );
 };
 
 export default forgotPassword;

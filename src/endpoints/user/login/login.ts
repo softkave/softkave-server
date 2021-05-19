@@ -1,12 +1,16 @@
 import argon2 from "argon2";
 import { ServerError } from "../../../utilities/errors";
 import { validate } from "../../../utilities/joiUtils";
-import { JWTEndpoints } from "../../types";
+import { JWTEndpoint } from "../../types";
 import { InvalidEmailOrPasswordError } from "../errors";
 import { getPublicUserData } from "../utils";
 import { LoginEndpoint } from "./types";
 import { loginJoiSchema } from "./validation";
-import { getPublicClientData } from "../../client/utils";
+import { clientToClientUserView } from "../../client/utils";
+import getNewId from "../../../utilities/getNewId";
+import { getDateString } from "../../../utilities/fns";
+import { ClientType } from "../../../models/system";
+import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 
 const login: LoginEndpoint = async (context, instData) => {
     const loginDetails = validate(instData.data, loginJoiSchema);
@@ -16,43 +20,73 @@ const login: LoginEndpoint = async (context, instData) => {
         throw new InvalidEmailOrPasswordError();
     }
 
+    let passwordMatch = false;
+
     try {
-        const passwordMatch = await argon2.verify(
-            user.hash,
-            loginDetails.password
-        );
-
-        if (passwordMatch) {
-            const token = await context.userToken.newUserToken(
-                context,
-                instData,
-                {
-                    audience: [JWTEndpoints.Login],
-                }
-            );
-
-            // TODO: can we make this better?
-            const client = await context.client.updateUserEntry(
-                context,
-                instData,
-                instData.clientId,
-                user.customId,
-                { isLoggedIn: true }
-            );
-
-            instData.client = client;
-            return {
-                token,
-                user: getPublicUserData(user),
-                client: getPublicClientData(instData.client, user.customId),
-            };
-        }
+        passwordMatch = await argon2.verify(user.hash, loginDetails.password);
     } catch (error) {
         console.error(error);
-
-        // TODO: find a better error type for this error
         throw new ServerError();
     }
+
+    if (!passwordMatch) {
+        throw new InvalidEmailOrPasswordError();
+    }
+
+    let client = await context.session.tryGetClient(context, instData);
+
+    if (!client) {
+        client = clientToClientUserView(
+            await context.client.saveClient(context, {
+                clientId: getNewId(),
+                createdAt: getDateString(),
+                clientType: ClientType.Browser,
+                users: [],
+            }),
+            user.customId
+        );
+    }
+
+    instData.client = client;
+    const tokenData =
+        (await context.token.getTokenByUserAndClientId(
+            context,
+            user.customId,
+            client.clientId
+        )) ||
+        (await context.token.saveToken(context, {
+            clientId: client.clientId,
+            customId: getNewId(),
+            audience: [JWTEndpoint.Login],
+            issuedAt: getDateString(),
+            userId: user.customId,
+            version: CURRENT_USER_TOKEN_VERSION,
+        }));
+
+    instData.tokenData = tokenData;
+    client = clientToClientUserView(
+        await context.client.updateUserEntry(
+            context,
+            instData,
+            client.clientId,
+            user.customId,
+            {
+                userId: user.customId,
+                tokenId: tokenData.customId,
+                isLoggedIn: true,
+            }
+        ),
+        user.customId
+    );
+
+    instData.client = client;
+    const token = context.token.encodeToken(context, tokenData.customId);
+
+    return {
+        token,
+        user: getPublicUserData(user),
+        client: client,
+    };
 };
 
 export default login;

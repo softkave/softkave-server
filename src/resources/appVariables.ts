@@ -21,4 +21,31 @@ export const appVariables = {
     confirmEmailAddressPath: `${clientDomain}/confirm-email-address`,
 };
 
+function checkVariablesExist() {
+    let requiredVariablesMissing = false;
+
+    const logIfMissing = (key, value) => {
+        if (!value) {
+            console.log(`Env variable ${key} not set`);
+            requiredVariablesMissing = true;
+        }
+    };
+
+    logIfMissing("CLIENT_DOMAIN", appVariables.clientDomain);
+    logIfMissing("MONGODB_URI", appVariables.mongoDbURI);
+    logIfMissing("JWT_SECRET", appVariables.jwtSecret);
+    logIfMissing("NODE_ENV", appVariables.nodeEnv);
+    logIfMissing("FEEDBACK_BOARD_ID", appVariables.feedbackBoardId);
+    logIfMissing("FEEDBACK_USER_ID", appVariables.feedbackUserId);
+    logIfMissing("PORT", appVariables.port);
+    logIfMissing("VAPID_PUBLIC_KEY", appVariables.vapidPublicKey);
+    logIfMissing("VAPID_PRIVATE_KEY", appVariables.vapidPrivateKey);
+
+    if (requiredVariablesMissing) {
+        throw new Error("Required env variables missing");
+    }
+}
+
+checkVariablesExist();
+
 export type IAppVariables = typeof appVariables;

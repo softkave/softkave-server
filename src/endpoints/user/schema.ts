@@ -29,10 +29,18 @@ const userSchema = `
         password: String
     }
 
+    type Client {
+        clientId: String
+        hasUserSeenNotificationsPermissionDialog: Boolean
+        muteChatNotifications: Boolean
+        isSubcribedToPushNotifications: Boolean
+        isLoggedIn: Boolean
+    }
+
     type UserQueryResult {
         user: User
         token: String
-        clientId: String
+        client: Client
         errors: [Error]
     }
 
@@ -47,14 +55,6 @@ const userSchema = `
         respondedAt: String
     }
 
-    type Client {
-        clientId: String
-        hasUserSeenNotificationsPermissionDialog: Boolean
-        muteChatNotifications: Boolean
-        isSubcribedToPushNotifications: Boolean
-        isLoggedIn: Boolean
-    }
-
     input UpdateClientDataInput {
         hasUserSeenNotificationsPermissionDialog: Boolean
         muteChatNotifications: Boolean
@@ -64,7 +64,7 @@ const userSchema = `
 
     type UpdateClientResponse {
         errors: [Error]
-        client: IClient
+        client: Client
     }
 
     type UserQuery {
@@ -77,14 +77,15 @@ const userSchema = `
         changePasswordWithToken (password: String!) : UserQueryResult
         getUserNotifications: GetNotificationsResponse
         respondToCollaborationRequest (
-            requestId: String!, response: String!
+            requestId: String!, 
+            response: String!
         ): RespondToCollaborationRequestResponse
         markNotificationRead (
             notificationId: String!,
             readAt: String!
         ): ErrorOnlyResponse
         getUserData: UserQueryResult
-        updateClient: (data: UpdateClientDataInput!) => UpdateClientResponse
+        updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
     }
 `;
 

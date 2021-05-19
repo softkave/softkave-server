@@ -1,5 +1,4 @@
 import { IClient, IClientUserView } from "../../mongo/client";
-import { extractFields, getFields } from "../utils";
 import { IPublicClient } from "./types";
 
 export function clientToClientUserView(client: IClient, userId: string) {
@@ -10,23 +9,17 @@ export function clientToClientUserView(client: IClient, userId: string) {
     }
 
     const view: IClientUserView = {
-        customId: client.customId,
         clientId: client.clientId,
         createdAt: client.createdAt,
         clientType: client.clientType,
-        isSubcribedToPushNotifications: client.isSubcribedToPushNotifications,
+        isSubcribedToPushNotifications: !!(client.endpoint && client.keys),
         ...findResult.entry,
     };
 
     return view;
 }
 
-export function getPublicClientData(
-    client: IClient,
-    userId: string
-): IPublicClient {
-    return clientToClientUserView(client, userId);
-}
+export const getPublicClientData = clientToClientUserView;
 
 export function getPublicClientArray(
     clients: IClient[],

@@ -1,11 +1,17 @@
 import argon2 from "argon2";
 import uuid from "uuid/v4";
-import { SystemActionType, SystemResourceType } from "../../../models/system";
+import {
+    ClientType,
+    SystemActionType,
+    SystemResourceType,
+} from "../../../models/system";
 import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicClientData } from "../../client/utils";
-import { JWTEndpoints } from "../../types";
+import { clientToClientUserView } from "../../client/utils";
+import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
+import { JWTEndpoint } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
 import { getPublicUserData } from "../utils";
 import { SignupEndpoint } from "./types";
@@ -44,14 +50,51 @@ const signup: SignupEndpoint = async (context, instData) => {
         resourceType: SystemResourceType.User,
     });
 
-    const token = await context.userToken.newUserToken(context, instData, {
-        audience: [JWTEndpoints.Login],
+    let client =
+        (await context.session.tryGetClient(context, instData)) ||
+        clientToClientUserView(
+            await context.client.saveClient(context, {
+                clientId: getNewId(),
+                createdAt: getDateString(),
+                clientType: ClientType.Browser,
+                users: [],
+            }),
+            user.customId
+        );
+
+    instData.client = client;
+    const tokenData = await context.token.saveToken(context, {
+        clientId: client.clientId,
+        customId: getNewId(),
+        audience: [JWTEndpoint.Login],
+        issuedAt: getDateString(),
+        userId: user.customId,
+        version: CURRENT_USER_TOKEN_VERSION,
     });
+
+    instData.tokenData = tokenData;
+    client = clientToClientUserView(
+        await context.client.updateUserEntry(
+            context,
+            instData,
+            client.clientId,
+            user.customId,
+            {
+                userId: user.customId,
+                tokenId: tokenData.customId,
+                isLoggedIn: true,
+            }
+        ),
+        user.customId
+    );
+
+    instData.client = client;
+    const token = context.token.encodeToken(context, tokenData.customId);
 
     return {
         token,
         user: getPublicUserData(user),
-        client: getPublicClientData(instData.client, user.customId),
+        client: client,
     };
 };
 

@@ -76,3 +76,28 @@ and if so, then send a push notification.
   and the message. If the user is currently not active, then we'd show a browser-level notification.
 - Run cron jobs to remove tokens and clients not used after 2 months
 - Log token and client uses
+
+
+- what are we building
+- what are the challenges
+- how are we building
+
+- enable chat notifications
+- chat notifications are now enabled, you can change your preferences in the settings page
+
+- user and sessions
+- user-to-client settings
+- push subscription
+
+- User session ( user, token, and client )
+  - from the incoming token data
+  - be able to get user data
+  - be able to get client data or create one
+  - be able to get token or create one and link to client
+
+- population & reconciliation
+  - get incoming token data | decode incoming token data
+  - get token from storage
+  - get client data ( from token, data, or header ) | create if should create
+  - get user if should have user ( token should have [login OR general] audience )
+  - reconcile, check required items if exist and throw error otherwise

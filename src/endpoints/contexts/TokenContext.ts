@@ -1,14 +1,42 @@
 import { IToken } from "../../mongo/token";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { TokenDoesNotExistError } from "../token/errors";
+import { JWTEndpoint } from "../types";
 import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
+import jwt from "jsonwebtoken";
+import { CredentialsExpiredError } from "../user/errors";
+
+export const CURRENT_USER_TOKEN_VERSION = 5;
+
+export interface IGeneralTokenSubject {
+    id: string;
+}
+
+export interface IUserTokenSubject extends IGeneralTokenSubject {}
+
+export interface IBaseTokenData<
+    Sub extends IGeneralTokenSubject = IGeneralTokenSubject
+> {
+    version: number;
+    sub: Sub;
+    iat: number;
+    // aud: string[];
+    exp?: number;
+}
+
+export type IUserTokenData = IBaseTokenData<IUserTokenSubject>;
 
 export interface ITokenContext {
     saveToken: (ctx: IBaseContext, token: IToken) => Promise<IToken>;
     getTokenById: (
         ctx: IBaseContext,
         customId: string
+    ) => Promise<IToken | null>;
+    getTokenByUserAndClientId: (
+        ctx: IBaseContext,
+        userId: string,
+        clientId: string
     ) => Promise<IToken | null>;
     assertGetTokenById: (
         ctx: IBaseContext,
@@ -26,6 +54,20 @@ export interface ITokenContext {
     ) => Promise<void>;
     deleteTokenById: (ctx: IBaseContext, tokenId: string) => Promise<void>;
     deleteTokensByUserId: (ctx: IBaseContext, userId: string) => Promise<void>;
+    decodeToken: (
+        ctx: IBaseContext,
+        token: string
+    ) => IBaseTokenData<IGeneralTokenSubject>;
+    containsAudience: (
+        ctx: IBaseContext,
+        tokenData: IToken,
+        inputAud: JWTEndpoint
+    ) => boolean;
+    encodeToken: (
+        ctx: IBaseContext,
+        tokenId: string,
+        expires?: number
+    ) => string;
 }
 
 export default class TokenContext implements ITokenContext {
@@ -41,6 +83,18 @@ export default class TokenContext implements ITokenContext {
             return ctx.models.tokenModel.model
                 .findOne({
                     customId,
+                })
+                .lean()
+                .exec();
+        }
+    );
+
+    public getTokenByUserAndClientId = wrapFireAndThrowError(
+        (ctx: IBaseContext, userId: string, clientId: string) => {
+            return ctx.models.tokenModel.model
+                .findOne({
+                    userId,
+                    clientId,
                 })
                 .lean()
                 .exec();
@@ -102,6 +156,51 @@ export default class TokenContext implements ITokenContext {
                     userId,
                 })
                 .exec();
+        }
+    );
+
+    public decodeToken = wrapFireAndThrowError(
+        (ctx: IBaseContext, token: string) => {
+            const tokenData = jwt.verify(
+                token,
+                ctx.appVariables.jwtSecret
+            ) as IBaseTokenData<IGeneralTokenSubject>;
+
+            if (tokenData.version < CURRENT_USER_TOKEN_VERSION) {
+                throw new CredentialsExpiredError();
+            }
+
+            return tokenData;
+        }
+    );
+
+    public containsAudience = wrapFireAndThrowError(
+        (ctx: IBaseContext, tokenData: IToken, inputAud: JWTEndpoint) => {
+            const audience = tokenData.audience;
+            const hasAudience = !!audience.find(
+                (nextAud) =>
+                    nextAud === JWTEndpoint.Universal || nextAud === inputAud
+            );
+
+            return hasAudience;
+        }
+    );
+
+    public encodeToken = wrapFireAndThrowError(
+        (ctx: IBaseContext, tokenId: string, expires?: number) => {
+            const payload: Omit<IBaseTokenData, "iat"> = {
+                // aud: audience || [],
+                version: CURRENT_USER_TOKEN_VERSION,
+                sub: {
+                    id: tokenId,
+                },
+            };
+
+            if (expires) {
+                payload.exp = expires / 1000; // exp is in seconds
+            }
+
+            return jwt.sign(payload, ctx.appVariables.jwtSecret);
         }
     );
 }

@@ -1,5 +1,6 @@
 import { SystemActionType, SystemResourceType } from "../../models/system";
 import { IAuditLog, IAuditLogChange } from "../../mongo/audit-log";
+import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
@@ -31,9 +32,10 @@ export interface IAuditLogContext {
     ) => Promise<void>;
 }
 
-function getLogFromEntry(
+export function getLogFromEntry(
     data: RequestData,
-    entry: IAuditLogInsertEntry
+    entry: IAuditLogInsertEntry,
+    user: IUser
 ): IAuditLog {
     const log: IAuditLog = {
         ...entry,
@@ -42,11 +44,8 @@ function getLogFromEntry(
         createdAt: new Date(),
         ips: data.ips,
         userAgent: data.userAgent,
+        userId: user.customId,
     };
-
-    if (!log.userId) {
-        log.userId = data.tokenData ? data.tokenData.customId : undefined;
-    }
 
     return log;
 }
@@ -59,7 +58,10 @@ export default class AuditLogContext implements IAuditLogContext {
             entries: IAuditLogInsertEntry[]
         ) => {
             // TODO: how can we retry failed saves, here, and accross the server
-            const logs = entries.map((entry) => getLogFromEntry(data, entry));
+            const user = await ctx.session.getUser(ctx, data);
+            const logs = entries.map((entry) =>
+                getLogFromEntry(data, entry, user)
+            );
             await ctx.models.auditLogModel.model.insertMany(logs);
         }
     );
@@ -69,7 +71,7 @@ export default class AuditLogContext implements IAuditLogContext {
         data: RequestData,
         log: IAuditLogInsertEntry
     ) {
-        return this.insertMany(ctx, data, [log]);
+        return ctx.auditLog.insertMany(ctx, data, [log]);
     }
 }
 

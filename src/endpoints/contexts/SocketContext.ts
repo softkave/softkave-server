@@ -30,7 +30,11 @@ const userIdToSocketEntriesMap: {
 
 export interface ISocketContext {
     assertSocket: (data: RequestData) => boolean;
-    mapUserToSocketId: (data: RequestData, user: IUser) => void;
+    mapUserToSocketId: (
+        ctx: IBaseContext,
+        data: RequestData,
+        user: IUser
+    ) => Promise<void>;
     disconnectSocket: (data: RequestData) => void;
     disconnectUser: (userId: string) => void;
     getUserIdBySocketId: (data: RequestData) => string | undefined;
@@ -38,7 +42,7 @@ export interface ISocketContext {
         ctx: IBaseContext,
         data: RequestData,
         user: IUser
-    ) => boolean;
+    ) => Promise<boolean>;
     getUserSocketEntries: (
         ctx: IBaseContext,
         userId: string
@@ -52,6 +56,12 @@ export interface ISocketContext {
         ctx: IBaseContext,
         socketId: string
     ) => IAuthenticatedSocketEntry;
+    broadcastToSocket: (
+        ctx: IBaseContext,
+        socketId: string,
+        eventName: string,
+        data: any
+    ) => boolean;
 }
 
 export default class SocketContext implements ISocketContext {
@@ -63,7 +73,11 @@ export default class SocketContext implements ISocketContext {
         return true;
     }
 
-    public mapUserToSocketId(data: RequestData, user: IUser) {
+    public async mapUserToSocketId(
+        ctx: IBaseContext,
+        data: RequestData,
+        user: IUser
+    ) {
         authenticatedSockets[data.socket.id] = {
             userId: user.customId,
         };
@@ -78,9 +92,9 @@ export default class SocketContext implements ISocketContext {
         }
 
         const sockets = userIdToSocketEntriesMap[user.customId] || [];
-
+        const client = await ctx.session.getClient(ctx, data);
         sockets.push({
-            clientId: data.clientId,
+            clientId: client.clientId,
             socket: data.socket,
         });
 
@@ -129,7 +143,7 @@ export default class SocketContext implements ISocketContext {
         return authenticatedSockets[data.socket.id]?.userId;
     }
 
-    public attachSocketToRequestData(
+    public async attachSocketToRequestData(
         ctx: IBaseContext,
         data: RequestData,
         user: IUser
@@ -146,14 +160,9 @@ export default class SocketContext implements ISocketContext {
             return false;
         }
 
-        const clientId = data.clientId;
-
-        if (!clientId) {
-            return false;
-        }
-
+        const client = await ctx.session.getClient(ctx, data);
         const entryIndex = socketEntries.findIndex(
-            (entry) => entry.clientId === clientId
+            (entry) => entry.clientId === client.clientId
         );
 
         if (entryIndex === -1) {
@@ -191,6 +200,22 @@ export default class SocketContext implements ISocketContext {
 
     public getSocketEntry(ctx: IBaseContext, socketId: string) {
         return authenticatedSockets[socketId];
+    }
+
+    public broadcastToSocket(
+        ctx: IBaseContext,
+        socketId: string,
+        eventName: string,
+        data: any
+    ) {
+        const socket = ctx.socketServerInstance.to(socketId);
+
+        if (socket) {
+            socket.emit(eventName, data);
+            return true;
+        }
+
+        return false;
     }
 
     private getSocketIndex(userId: string, socketId: string) {

@@ -45,18 +45,12 @@ async function sendPushNotification(
         return;
     }
 
-    // TODO: exclude clients with chat notifications muted
-    const subscriptions =
-        await context.pushSubscription.getPushSubscriptionsByUserId(
-            context,
-            userId,
-            clients.map((client) => client.clientId)
-        );
-
     const message = `${chatsCount} messages from ${roomsCount}`;
-    subscriptions.forEach((subscription) => {
+    clients.forEach((client) => {
+        const endpoint = client.endpoint!;
+        const keys = client.keys!;
         fireAndForgetPromise(
-            context.webPush.sendNotification(subscription, message)
+            context.webPush.sendNotification(context, endpoint, keys, message)
         );
     });
 }

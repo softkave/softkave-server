@@ -4,12 +4,11 @@ const unsubscribePushSubscription: UnsubscribePushSubscriptionEndpoint = async (
     context,
     instData
 ) => {
-    const user = await context.session.getUser(context, instData);
-    await context.pushSubscription.deletePushSubscriptionsByUserAndClientId(
-        context,
-        user.customId,
-        instData.clientId
-    );
+    const client = await context.session.getClient(context, instData);
+    await context.client.updateClientById(context, client.clientId, {
+        endpoint: null,
+        keys: null,
+    });
 };
 
 export default unsubscribePushSubscription;

@@ -1,12 +1,10 @@
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicClientData } from "../../client/utils";
 import RequestData from "../../RequestData";
 import {
     IOutgoingUserUpdatePacket,
     OutgoingSocketEvents,
 } from "../../socket/outgoingEventTypes";
-import { JWTEndpoints } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
 import { getPublicUserData } from "../utils";
 import { UpdateUserEndpoint } from "./types";
@@ -60,14 +58,14 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
         );
     }
 
-    const token = await context.userToken.newUserToken(context, instData, {
-        audience: [JWTEndpoints.Login],
-    });
+    const tokenData = await context.session.getTokenData(context, instData);
+    const client = await context.session.getClient(context, instData);
+    const token = context.token.encodeToken(context, tokenData.customId);
 
     return {
         token,
+        client,
         user: getPublicUserData(updatedUser),
-        client: getPublicClientData(instData.client, user.customId),
     };
 };
 

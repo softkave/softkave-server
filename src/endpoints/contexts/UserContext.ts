@@ -33,7 +33,7 @@ export interface IUserContext {
     getOrgUsers: (ctx: IBaseContext, blockId: string) => Promise<IUser[]>;
     bulkUpdateUsersById: (
         ctx: IBaseContext,
-        blocks: Array<IUpdateItemById<IUser>>
+        users: Array<IUpdateItemById<IUser>>
     ) => Promise<void>;
 }
 
@@ -137,8 +137,8 @@ export default class UserContext implements IUserContext {
     );
 
     public bulkUpdateUsersById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, blocks: Array<IUpdateItemById<IUser>>) => {
-            const opts = blocks.map((item) => ({
+        async (ctx: IBaseContext, users: Array<IUpdateItemById<IUser>>) => {
+            const opts = users.map((item) => ({
                 updateOne: { filter: { customId: item.id }, update: item.data },
             }));
 

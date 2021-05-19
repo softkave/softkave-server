@@ -1,4 +1,4 @@
-import { JWTEndpoints } from "../../types";
+import { JWTEndpoint } from "../../types";
 import { fireAndForgetPromise } from "../../utils";
 import { CredentialsExpiredError, InvalidCredentialsError } from "../errors";
 import { ChangePasswordWithTokenEndpoint } from "./types";
@@ -7,41 +7,38 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
     context,
     instData
 ) => {
-    const tokenData = instData.incomingTokenData;
+    const tokenData = await context.session.getTokenData(
+        context,
+        instData,
+        JWTEndpoint.ChangePassword
+    );
 
     if (
-        !tokenData ||
-        !context.userToken.containsAudience(
+        !context.token.containsAudience(
             context,
             tokenData,
-            JWTEndpoints.ChangePassword
+            JWTEndpoint.ChangePassword
         )
     ) {
         throw new InvalidCredentialsError();
     }
 
-    if (Date.now() > tokenData.exp * 1000) {
+    const incomingTokenData = instData.incomingTokenData;
+
+    if (Date.now() > incomingTokenData.exp * 1000) {
         throw new CredentialsExpiredError();
     }
 
-    const token = await context.token.assertGetTokenById(
+    const user = await context.user.assertGetUserById(
         context,
-        tokenData.sub.id
+        tokenData.userId
     );
 
-    if (!token.userId) {
-        throw new InvalidCredentialsError();
-    }
-
-    const user = await context.user.assertGetUserById(context, token.userId);
     instData.user = user;
-
     const result = await context.changePassword(context, instData);
 
-    // all tokens should've been deleted in changePassword
-    // but we're doing this again, just in case
     fireAndForgetPromise(
-        context.token.deleteTokenById(context, tokenData.sub.id)
+        context.token.deleteTokenById(context, incomingTokenData.sub.id)
     );
 
     return result;

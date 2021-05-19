@@ -69,17 +69,6 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public bulkGetSprintsByIds = wrapFireAndThrowError(
-        (ctx: IBaseContext, customIds: string[]) => {
-            return ctx.models.sprintModel.model
-                .find({
-                    customId: { $in: customIds },
-                })
-                .lean()
-                .exec();
-        }
-    );
-
     public updateSprintById = wrapFireAndThrowError(
         (ctx: IBaseContext, customId: string, data: Partial<ISprint>) => {
             return ctx.models.sprintModel.model

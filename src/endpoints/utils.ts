@@ -71,6 +71,17 @@ export const wrapFireAndDontThrow: typeof wrapFireAndThrowError = (fn) => {
     return wrapFireAndThrowError(fn, false);
 };
 
+export function tryCatch<T extends (...args: any) => any>(
+    fn: T
+): ReturnType<T> | null {
+    try {
+        return fn();
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
 export function getFields<
     T extends object,
     ScalarTypes = ExtractFieldsDefaultScalarTypes,
@@ -149,7 +160,7 @@ export function extractFields<
             : extractFields(propValue, fields, extraArgs);
     });
 
-    return (result as unknown) as ObjectPaths["result"];
+    return result as unknown as ObjectPaths["result"];
 }
 
 export function getComplexTypeArrayInput<T>(

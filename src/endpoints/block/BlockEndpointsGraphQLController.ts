@@ -29,8 +29,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -43,8 +42,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -57,8 +55,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -71,8 +68,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -85,8 +81,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -99,8 +94,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -113,8 +107,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -127,8 +120,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -141,8 +133,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -155,8 +146,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -169,8 +159,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -183,8 +172,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -197,8 +185,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -211,8 +198,7 @@ export default class BlockEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );

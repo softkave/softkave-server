@@ -33,8 +33,7 @@ export function makeSocketHandler(
             const requestData = await RequestData.fromSocketRequest(
                 ctx,
                 socket,
-                validatedData,
-                handler.skipTokenHandling
+                validatedData
             );
 
             const result = await handler(ctx, requestData, fn);

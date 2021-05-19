@@ -1,25 +1,32 @@
 import { validate } from "../../../utilities/joiUtils";
-import { ClientDoesNotExistError } from "../../client/errors";
-import { getPublicClientData } from "../../client/utils";
+import { clientToClientUserView } from "../../client/utils";
+import { fireAndForgetPromise } from "../../utils";
 import { UpdateClientEndpoint } from "./types";
 import { updateClientJoiSchema } from "./validation";
 
 const updateClient: UpdateClientEndpoint = async (context, instData) => {
     const data = validate(instData.data, updateClientJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const client = await context.client.updateUserEntry(
-        context,
-        instData,
-        instData.clientId,
-        user.customId,
-        data.data
+    let client = await context.session.getClient(context, instData);
+
+    client = clientToClientUserView(
+        await context.client.updateUserEntry(
+            context,
+            instData,
+            client.clientId,
+            user.customId,
+            data.data
+        ),
+        user.customId
     );
 
-    if (!client) {
-        throw new ClientDoesNotExistError();
+    if (data.data.isLoggedIn) {
+        fireAndForgetPromise(
+            context.unseenChats.removeEntry(context, user.customId)
+        );
     }
 
-    return { client: getPublicClientData(client, user.customId) };
+    return { client };
 };
 
 export default updateClient;

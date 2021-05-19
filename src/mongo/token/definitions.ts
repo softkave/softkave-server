@@ -2,7 +2,7 @@ import { Document, SchemaTypes } from "mongoose";
 
 export interface IToken {
     customId: string;
-    userId?: string;
+    userId: string;
     version: number;
 
     // not same as iat in token, may be a litte bit behind or after

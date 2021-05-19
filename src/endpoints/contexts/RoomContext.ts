@@ -97,10 +97,9 @@ function broadcast(
             continue;
         }
 
-        const socket = ctx.socketServer.to(socketId);
         const entry = ctx.socket.getSocketEntry(ctx, socketId);
 
-        if (!socket || !entry) {
+        if (!entry) {
             // TODO: log
             delete room[socketId];
             ctx.socket.disconnectSocket(reqData);
@@ -112,8 +111,21 @@ function broadcast(
             continue;
         }
 
-        socket.emit(eventId, data);
-        result.broadcastsCount += 1;
+        const socketExists = ctx.socket.broadcastToSocket(
+            ctx,
+            socketId,
+            eventId,
+            data
+        );
+
+        if (socketExists) {
+            result.broadcastsCount += 1;
+        } else {
+            // TODO: log
+            delete room[socketId];
+            ctx.socket.disconnectSocket(reqData);
+            continue;
+        }
     }
 
     return result;
@@ -191,7 +203,7 @@ export default class RoomContext implements IRoomContext {
             // TODO: how can we make this better? Also, getUser I think calls mongo again
             if (data && !data.socket) {
                 const user = await ctx.session.getUser(ctx, data);
-                ctx.socket.attachSocketToRequestData(ctx, data, user);
+                await ctx.socket.attachSocketToRequestData(ctx, data, user);
             }
 
             const result = broadcast(

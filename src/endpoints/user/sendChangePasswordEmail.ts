@@ -14,7 +14,7 @@ const changePasswordRoute = "/change-password";
 
 export interface ISendChangePasswordEmailParameters {
     emailAddress: string;
-    query: any;
+    query: Record<string, string | number | boolean>;
     expiration: Moment;
 }
 

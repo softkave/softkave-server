@@ -38,8 +38,7 @@ export default class UserEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -78,8 +77,7 @@ export default class UserEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -105,8 +103,7 @@ export default class UserEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -119,8 +116,7 @@ export default class UserEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -146,8 +142,7 @@ export default class UserEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );

@@ -1,18 +1,11 @@
-import { JWTEndpoints } from "../../types";
+import { JWTEndpoint } from "../../types";
 import { SocketEventHandler } from "../types";
 
 const authSocketHandler: SocketEventHandler = async (ctx, data, fn) => {
     try {
-        const user = await ctx.session.getUser(
-            ctx,
-            data,
-            true,
-            JWTEndpoints.Login
-        );
-
+        const user = await ctx.session.getUser(ctx, data, JWTEndpoint.Login);
         const userRoomName = ctx.room.getUserRoomName(user.customId);
-
-        ctx.socket.mapUserToSocketId(data, user);
+        await ctx.socket.mapUserToSocketId(ctx, data, user);
         ctx.room.subscribe(data, userRoomName);
     } catch (error) {
         data.socket.disconnect();

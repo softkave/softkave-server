@@ -10,7 +10,7 @@ export interface IClientContext {
     saveClient: (ctx: IBaseContext, client: IClient) => Promise<IClient>;
     getClientById: (
         ctx: IBaseContext,
-        customId: string
+        clientId: string
     ) => Promise<IClient | null>;
     getPushSubscribedClients: (
         ctx: IBaseContext,
@@ -18,23 +18,41 @@ export interface IClientContext {
     ) => Promise<IClient[]>;
     assertGetClientById: (
         ctx: IBaseContext,
-        customId: string
+        clientId: string
     ) => Promise<IClient>;
     updateUserEntry: (
         ctx: IBaseContext,
         reqData: RequestData,
-        customId: string,
+        clientId: string,
         userId: string,
         data: Partial<IClientUserEntry>
     ) => Promise<IClient | null>;
     updateClientById: (
         ctx: IBaseContext,
-        customId: string,
+        clientId: string,
         data: Partial<IClient>
+    ) => Promise<IClient | null>;
+    getClientByPushSubscription: (
+        ctx: IBaseContext,
+        endpoint: string,
+        keys: IClient["keys"]
     ) => Promise<IClient | null>;
 }
 
 export default class ClientContext implements IClientContext {
+    public getClientByPushSubscription = wrapFireAndThrowError(
+        (ctx: IBaseContext, endpoint: string, keys: IClient["keys"]) => {
+            return ctx.models.clientModel.model
+                .findOne({
+                    endpoint,
+                    "keys.p256dh": keys.p256dh,
+                    "keys.auth": keys.auth,
+                })
+                .lean()
+                .exec();
+        }
+    );
+
     public saveClient = wrapFireAndThrowError(
         async (ctx: IBaseContext, data: IClient) => {
             const client = new ctx.models.clientModel.model(data);
@@ -43,10 +61,10 @@ export default class ClientContext implements IClientContext {
     );
 
     public getClientById = wrapFireAndThrowError(
-        (ctx: IBaseContext, customId: string) => {
+        (ctx: IBaseContext, clientId: string) => {
             return ctx.models.clientModel.model
                 .findOne({
-                    customId,
+                    clientId,
                 })
                 .lean()
                 .exec();
@@ -57,10 +75,11 @@ export default class ClientContext implements IClientContext {
         (ctx: IBaseContext, userId: string) => {
             return ctx.models.clientModel.model
                 .find({
-                    isSubcribedToPushNotifications: true,
                     users: {
                         $elemMatch: { userId, muteChatNotifications: false },
                     },
+                    endpoint: { $not: null },
+                    keys: { $not: null },
                 })
                 .lean()
                 .exec();
@@ -68,8 +87,8 @@ export default class ClientContext implements IClientContext {
     );
 
     public assertGetClientById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, customId: string) => {
-            const client = await ctx.client.getClientById(ctx, customId);
+        async (ctx: IBaseContext, clientId: string) => {
+            const client = await ctx.client.getClientById(ctx, clientId);
 
             if (!client) {
                 throw new ClientDoesNotExistError();
@@ -83,21 +102,28 @@ export default class ClientContext implements IClientContext {
         async (
             ctx: IBaseContext,
             reqData: RequestData,
-            customId: string,
+            clientId: string,
             userId: string,
             data: Partial<IClientUserEntry>
         ) => {
+            // TODO: possible performance improvement here
+            // should we get the client from the reqData
             const client = await ctx.models.clientModel.model
                 .findOne({
-                    customId,
+                    clientId,
                 })
                 .exec();
 
+            if (!client) {
+                throw new ClientDoesNotExistError();
+            }
+
+            const tokenData = await ctx.session.getTokenData(ctx, reqData);
             let { index, entry } = findUserEntryInClient(client, userId) || {
                 index: client.users.length,
                 entry: {
                     userId,
-                    tokenId: reqData.tokenData?.customId,
+                    tokenId: tokenData.customId,
                 },
             };
 
@@ -110,11 +136,11 @@ export default class ClientContext implements IClientContext {
     );
 
     public updateClientById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, customId: string, data: Partial<IClient>) => {
+        async (ctx: IBaseContext, clientId: string, data: Partial<IClient>) => {
             return await ctx.models.clientModel.model
                 .findOneAndUpdate(
                     {
-                        customId,
+                        clientId,
                     },
                     data,
                     { new: true }

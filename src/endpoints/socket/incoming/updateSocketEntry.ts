@@ -1,6 +1,7 @@
 import Joi from "joi";
 import { validate } from "../../../utilities/joiUtils";
-import { JWTEndpoints } from "../../types";
+import { JWTEndpoint } from "../../types";
+import { fireAndForgetPromise } from "../../utils";
 import { SocketEventHandler } from "../types";
 
 const validationSchema = Joi.object()
@@ -18,11 +19,14 @@ const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
     data,
     fn
 ) => {
-    const validatedData = validate(data.data, validationSchema);
-
-    await ctx.session.assertUser(ctx, data, JWTEndpoints.Login);
+    const incomingData = validate(data.data, validationSchema);
+    const user = await ctx.session.getUser(ctx, data, JWTEndpoint.Login);
     ctx.socket.assertSocket(data);
-    ctx.socket.updateSocketEntry(ctx, data.socket.id, validatedData);
+    ctx.socket.updateSocketEntry(ctx, data.socket.id, incomingData);
+
+    if (!incomingData.isInactive) {
+        fireAndForgetPromise(ctx.unseenChats.removeEntry(ctx, user.customId));
+    }
 };
 
 export default updateSocketEntry;

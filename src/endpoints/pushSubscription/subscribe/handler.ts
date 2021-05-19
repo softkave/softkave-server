@@ -1,5 +1,4 @@
 import { getDateString } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { PushSubscriptionExistsError } from "../errors";
 import { SubscribePushSubscriptionEndpoint } from "./types";
@@ -10,12 +9,10 @@ const subscribePushSubscription: SubscribePushSubscriptionEndpoint = async (
     instData
 ) => {
     const data = validate(instData.data, subscribePushSubscriptionJoiSchema);
-    const user = await context.session.getUser(context, instData);
+    const client = await context.session.getClient(context, instData);
     const existingSubscription =
-        await context.pushSubscription.getPushSubscription(
+        await context.client.getClientByPushSubscription(
             context,
-            user.customId,
-            instData.client.clientId,
             data.endpoint,
             data.keys
         );
@@ -24,20 +21,10 @@ const subscribePushSubscription: SubscribePushSubscriptionEndpoint = async (
         throw new PushSubscriptionExistsError();
     }
 
-    // just to make sure, there should be only one push subscription for a client
-    // per user
-    await context.pushSubscription.deletePushSubscriptionsByUserAndClientId(
-        context,
-        user.customId,
-        instData.clientId
-    );
-
-    await context.pushSubscription.savePushSubscription(context, {
-        clientId: instData.client.clientId,
-        createdAt: getDateString(),
-        customId: getNewId(),
+    await context.client.updateClientById(context, client.clientId, {
         endpoint: data.endpoint,
         keys: data.keys,
+        pushSubscribedAt: getDateString(),
     });
 };
 

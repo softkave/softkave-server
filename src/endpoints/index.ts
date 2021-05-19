@@ -1,6 +1,7 @@
 import { buildSchema } from "graphql";
 import blockSchema from "./block/schema";
 import EndpointsGraphQLController from "./EndpointsGraphQLController";
+import pushSubscriptionSchema from "./pushSubscription/schema";
 import endpointSchema from "./schema";
 import sprintSchema from "./sprints/schema";
 import systemSchema from "./system/schema";
@@ -23,8 +24,15 @@ const rootSchema = `
     ${blockSchema}
     ${sprintSchema}
     ${systemSchema}
+    ${pushSubscriptionSchema}
     ${endpointSchema}
 `;
+
+try {
+    const compiledSchema = buildSchema(rootSchema);
+} catch (error) {
+    console.error(error);
+}
 
 const compiledSchema = buildSchema(rootSchema);
 

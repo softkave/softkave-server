@@ -12,8 +12,7 @@ export default class CommentsEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
@@ -26,15 +25,15 @@ export default class CommentsEndpointsGraphQLController {
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
-                    data,
-                    { checkUserToken: true }
+                    data
                 )
             )
         );
     }
 }
 
-const controller: CommentsEndpointsGraphQLController = new CommentsEndpointsGraphQLController();
+const controller: CommentsEndpointsGraphQLController =
+    new CommentsEndpointsGraphQLController();
 
 export function getCommentsEndpointsGraphQLController() {
     return controller;

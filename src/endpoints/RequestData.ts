@@ -1,15 +1,11 @@
 import { Socket } from "socket.io";
-import { IClient } from "../mongo/client";
+import { IClientUserView } from "../mongo/client";
 import { IToken } from "../mongo/token/definitions";
 import { IUser } from "../mongo/user";
-import { clientConstants } from "./client/constants";
 import { IBaseContext } from "./contexts/BaseContext";
+import { IBaseTokenData } from "./contexts/TokenContext";
 import { IServerRequest } from "./contexts/types";
-import { IBaseTokenData } from "./contexts/UserTokenContext";
-import { InvalidRequestError } from "./errors";
 import { IIncomingSocketEventPacket } from "./socket/types";
-import { JWTEndpoints } from "./types";
-import { LoginAgainError } from "./user/errors";
 
 export interface IRequestContructorParams<
     T = any,
@@ -21,15 +17,11 @@ export interface IRequestContructorParams<
     data?: T;
     tokenData?: TokenData;
     incomingTokenData?: IncomingTokenData | null;
+    incomingSocketData?: IIncomingSocketEventPacket<any> | null;
     userAgent?: string;
     ips?: string[];
     user?: IUser | null;
-    client?: IClient | null;
-    clientId?: string | null;
-}
-
-export interface IRequestDataOptions {
-    checkUserToken?: boolean;
+    client?: IClientUserView | null;
 }
 
 export default class RequestData<
@@ -40,33 +32,18 @@ export default class RequestData<
     public static async fromExpressRequest<DataType>(
         ctx: IBaseContext,
         req: IServerRequest,
-        data?: DataType,
-        options: IRequestDataOptions = {}
+        data?: DataType
     ): Promise<RequestData> {
-        const requestData = new RequestData();
-
-        requestData.req = req;
-        requestData.data = data;
-        requestData.ips =
-            Array.isArray(req.ips) && req.ips.length > 0 ? req.ips : [req.ip];
-        requestData.userAgent = req.headers["user-agent"];
-        requestData.incomingTokenData = req.user;
-        requestData.clientId = req.headers[
-            clientConstants.clientIdHeaderKey
-        ] as string;
-
-        if (requestData.incomingTokenData && !requestData.clientId) {
-            throw new LoginAgainError();
-        }
-
-        if (options.checkUserToken) {
-            await ctx.session.getExpressSession(
-                ctx,
-                requestData,
-                true,
-                JWTEndpoints.Login
-            );
-        }
+        const requestData = new RequestData({
+            req,
+            data,
+            ips:
+                Array.isArray(req.ips) && req.ips.length > 0
+                    ? req.ips
+                    : [req.ip],
+            userAgent: req.headers["user-agent"],
+            incomingTokenData: req.user,
+        });
 
         return requestData;
     }
@@ -74,55 +51,31 @@ export default class RequestData<
     public static async fromSocketRequest<DataType>(
         ctx: IBaseContext,
         socket: Socket,
-        data: IIncomingSocketEventPacket<DataType>,
-        skipTokenHandling?: boolean
+        data: IIncomingSocketEventPacket<DataType>
     ): Promise<RequestData> {
-        const requestData = new RequestData();
-
-        requestData.socket = socket;
-        requestData.data = data?.data;
-        requestData.ips = [socket.handshake.address];
-        requestData.userAgent = socket.handshake.headers
-            ? socket.handshake.headers["user-agent"]
-            : undefined;
-        requestData.clientId = data.clientId;
-
-        if (!requestData.clientId) {
-            throw new LoginAgainError();
-        }
-
-        if (!skipTokenHandling) {
-            if (!data.token) {
-                throw new InvalidRequestError();
-            }
-
-            const incomingTokenData = await ctx.userToken.decodeToken(
-                ctx,
-                data.token
-            );
-
-            requestData.incomingTokenData = incomingTokenData;
-            await ctx.session.getSocketSession(
-                ctx,
-                requestData,
-                true,
-                JWTEndpoints.Login
-            );
-        }
+        const requestData = new RequestData({
+            socket,
+            data: data.data,
+            incomingSocketData: data,
+            ips: [socket.handshake.address],
+            userAgent: socket.handshake.headers
+                ? socket.handshake.headers["user-agent"]
+                : undefined,
+        });
 
         return requestData;
     }
 
     public req?: IServerRequest | null;
     public socket?: Socket | null;
+    public incomingSocketData?: IIncomingSocketEventPacket<any>;
     public data?: T;
     public incomingTokenData?: IncomingTokenData | null;
     public tokenData?: TokenData | null;
     public userAgent?: string;
     public ips: string[];
     public user?: IUser | null;
-    public client?: IClient | null;
-    public clientId?: string | null;
+    public client?: IClientUserView | null;
 
     public constructor(arg?: IRequestContructorParams<T, TokenData>) {
         if (!arg) {
@@ -138,6 +91,6 @@ export default class RequestData<
         this.ips = arg.ips;
         this.user = arg.user;
         this.client = arg.client;
-        this.clientId = arg.clientId;
+        this.incomingSocketData = arg.incomingSocketData;
     }
 }

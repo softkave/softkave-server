@@ -6,14 +6,11 @@ export interface IBaseEndpointResult {
     errors?: OperationError[];
 }
 
-export type Endpoint<
-    C extends IBaseContext = IBaseContext,
-    T = any,
-    R = any
-> = (
-    context: C,
-    instData: RequestData<T>
-) => Promise<(R & IBaseEndpointResult) | undefined>;
+export type Endpoint<C extends IBaseContext = IBaseContext, T = any, R = any> =
+    (
+        context: C,
+        instData: RequestData<T>
+    ) => Promise<(R & IBaseEndpointResult) | undefined>;
 
 export type ExtractFieldTransformer<T, Result = any, ExtraArgs = any> = (
     val: T,
@@ -74,7 +71,7 @@ export interface IObjectPaths<
     }>;
 }
 
-export enum JWTEndpoints {
+export enum JWTEndpoint {
     ChangePassword = "change-password",
     Login = "login",
     Universal = "*",

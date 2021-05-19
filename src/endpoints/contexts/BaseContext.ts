@@ -46,18 +46,13 @@ import { getClientContext, IClientContext } from "./ClientContext";
 import { getTokenContext, ITokenContext } from "./TokenContext";
 import { getClientModel } from "../../mongo/client";
 import { getTokenModel } from "../../mongo/token";
-import { getUserTokenContext, IUserTokenContext } from "./UserTokenContext";
-import {
-    getPushSubscriptionContext,
-    IPushSubscriptionContext,
-} from "./PushSubscriptionContext";
-import { getPushSubscriptionModel } from "../../mongo/pushSubscriptions";
 import {
     getUnseenChatsContext,
     IUnseenChatsContext,
 } from "./UnseenChatsContext";
 import { getUnseenChatsModel } from "../../mongo/unseenChats";
 import webPush from "web-push";
+import { getWebPushContext, IWebPushContext } from "./WebPushContext";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -76,25 +71,19 @@ export interface IBaseContext {
     accessControl: IAccessControlContext;
     client: IClientContext;
     token: ITokenContext;
-    userToken: IUserTokenContext;
-    pushSubscription: IPushSubscriptionContext;
     unseenChats: IUnseenChatsContext;
+    webPush: IWebPushContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
-    socketServer: Server;
-    webPush: typeof webPush;
+    socketServerInstance: Server;
+    webPushInstance: typeof webPush;
 }
-
-webPush.setVapidDetails(
-    "www.softkave.com",
-    appVariables.vapidPublicKey,
-    appVariables.vapidPrivateKey
-);
 
 export default class BaseContext implements IBaseContext {
     public block: IBlockContext = getBlockContext();
     public user: IUserContext = getUserContext();
-    public collaborationRequest: ICollaborationRequestContext = getCollaborationRequestContext();
+    public collaborationRequest: ICollaborationRequestContext =
+        getCollaborationRequestContext();
     public notification: INotificationContext = getNotificationContext();
     public auditLog: IAuditLogContext = getAuditLogContext();
     public session: ISessionContext = getSessionContext();
@@ -107,9 +96,8 @@ export default class BaseContext implements IBaseContext {
     public accessControl = getAccessControlContext();
     public client = getClientContext();
     public token = getTokenContext();
-    public userToken = getUserTokenContext();
-    public pushSubscription = getPushSubscriptionContext();
     public unseenChats = getUnseenChatsContext();
+    public webPush = getWebPushContext();
     public models: IContextModels = {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
@@ -126,13 +114,20 @@ export default class BaseContext implements IBaseContext {
         userAssignedPermissionGroup: getUserAssignedPermissionGroupsModel(),
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
-        pushSubscriptionModel: getPushSubscriptionModel(),
         unseenChatsModel: getUnseenChatsModel(),
     };
-    public socketServer: Server = getSocketServer();
+    public socketServerInstance: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();
     public appVariables = appVariables;
-    public webPush = webPush;
+    public webPushInstance = webPush;
+
+    constructor() {
+        webPush.setVapidDetails(
+            "mailto:abayomi@softkave.com",
+            appVariables.vapidPublicKey,
+            appVariables.vapidPrivateKey
+        );
+    }
 }
 
 export const getBaseContext = makeSingletonFunc(() => new BaseContext());

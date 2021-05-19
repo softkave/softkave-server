@@ -20,21 +20,18 @@ import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
+import { appVariables } from "./resources/appVariables";
 import logger from "./utilities/logger";
 
 logger.info("server initialization");
 
 const connection = getDefaultConnection();
+
+// TODO: wait for all the other models before opening up the port
 const userModel = getUserModel();
 const blockModel = getBlockModel();
 const notificationModel = getNotificationModel();
 const auditLogModel = getAuditLogModel();
-
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!JWT_SECRET) {
-    throw new Error("JWT_SECRET not present");
-}
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -61,7 +58,7 @@ app.use(cors(corsOption));
 
 app.use(
     expressJwt({
-        secret: JWT_SECRET,
+        secret: appVariables.jwtSecret,
         credentialsRequired: false,
     })
 );

@@ -68,7 +68,7 @@ export default class UnseenChatsContext implements IUnseenChatsContext {
         async (
             ctx: IBaseContext,
             count: number = 100,
-            fromDate: string = moment().subtract(2, "days").toISOString()
+            fromDate: string = moment().subtract(1, "days").toISOString()
         ) => {
             const data = await ctx.models.unseenChatsModel.model
                 .find(
