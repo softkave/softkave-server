@@ -18,10 +18,9 @@ const tokenMongoSchema = {
     customId: { type: String, unique: true },
     userId: { type: String },
     version: { type: Number },
-    issuedAt: { type: Number },
+    issuedAt: { type: Date },
     audience: { type: [String] },
     expires: { type: Number },
-    isActive: { type: Number },
     meta: { type: SchemaTypes.Mixed },
     clientId: { type: String },
 };

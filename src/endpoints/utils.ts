@@ -71,11 +71,11 @@ export const wrapFireAndDontThrow: typeof wrapFireAndThrowError = (fn) => {
     return wrapFireAndThrowError(fn, false);
 };
 
-export function tryCatch<T extends (...args: any) => any>(
+export async function tryCatch<T extends (...args: any) => any>(
     fn: T
-): ReturnType<T> | null {
+): Promise<ReturnType<T> | null> {
     try {
-        return fn();
+        return await fn();
     } catch (error) {
         console.error(error);
         return null;

@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import { getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { clientToClientUserView } from "../../client/utils";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
 import { fireAndForgetPromise } from "../../utils";
@@ -13,7 +14,7 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     const result = validate(instData.data, changePasswordJoiSchema);
     const newPassword = result.password;
     let user = await context.session.getUser(context, instData);
-    const client = await context.session.getClient(context, instData);
+    let client = await context.session.getClient(context, instData);
     const hash = await argon2.hash(newPassword);
 
     user = await context.user.updateUserById(context, user.customId, {
@@ -41,11 +42,24 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     });
 
     instData.tokenData = tokenData;
+    client = await context.client.updateUserEntry(
+        context,
+        instData,
+        client.clientId,
+        user.customId,
+        {
+            userId: user.customId,
+            tokenId: tokenData.customId,
+            isLoggedIn: true,
+        }
+    );
+
+    instData.client = client;
     const token = context.token.encodeToken(context, tokenData.customId);
 
     return {
         token,
-        client,
+        client: clientToClientUserView(instData.client, user.customId),
         user: getPublicUserData(user),
     };
 };

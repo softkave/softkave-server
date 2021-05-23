@@ -35,7 +35,9 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
     socket.on(
         "disconnect",
-        makeSocketHandler(ctx, socket, disconnectSocketHandler)
+        makeSocketHandler(ctx, socket, disconnectSocketHandler, {
+            skipDataValidation: true,
+        })
     );
 
     socket.on(

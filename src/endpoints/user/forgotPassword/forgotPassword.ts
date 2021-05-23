@@ -36,10 +36,10 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
         expires: expiration.valueOf(),
     });
 
-    const token = context.token.encodeToken(
+    const token = await context.token.encodeToken(
         context,
         tokenData.customId,
-        expiration.valueOf()
+        tokenData.expires
     );
 
     await context.sendChangePasswordEmail({

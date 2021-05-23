@@ -1,7 +1,7 @@
 const pushSubscriptionSchema = `
 input SubscribePushSubscriptionKeysInput {
-    p256dh: string;
-    auth: string;
+    p256dh: String
+    auth: String
 }
 
 type GetPushNotificationKeys {
@@ -24,7 +24,7 @@ type PushSubscriptionQuery {
     pushSubscriptionExists (
         endpoint: String!, 
         keys: SubscribePushSubscriptionKeysInput!
-    ) : PushSubscriptionExistsResulte
+    ) : PushSubscriptionExistsResult
 }
 `;
 

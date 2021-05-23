@@ -108,10 +108,11 @@ export default class ClientContext implements IClientContext {
         ) => {
             // TODO: possible performance improvement here
             // should we get the client from the reqData
-            const client = await ctx.models.clientModel.model
+            let client = await ctx.models.clientModel.model
                 .findOne({
                     clientId,
                 })
+                .lean()
                 .exec();
 
             if (!client) {
@@ -128,9 +129,19 @@ export default class ClientContext implements IClientContext {
             };
 
             entry = { ...entry, ...data };
-            client.users[index] = entry;
-            client.markModified("users");
-            await client.save();
+            client = await ctx.models.clientModel.model
+                .findOneAndUpdate(
+                    {
+                        clientId: client.clientId,
+                    },
+                    {
+                        [`users.${index}`]: entry,
+                    },
+                    { new: true }
+                )
+                .lean()
+                .exec();
+
             return client;
         }
     );

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { IClientUserView } from "../mongo/client";
+import { IClient } from "../mongo/client";
 import { IToken } from "../mongo/token/definitions";
 import { IUser } from "../mongo/user";
 import { IBaseContext } from "./contexts/BaseContext";
@@ -21,7 +21,7 @@ export interface IRequestContructorParams<
     userAgent?: string;
     ips?: string[];
     user?: IUser | null;
-    client?: IClientUserView | null;
+    client?: IClient | null;
 }
 
 export default class RequestData<
@@ -51,11 +51,11 @@ export default class RequestData<
     public static async fromSocketRequest<DataType>(
         ctx: IBaseContext,
         socket: Socket,
-        data: IIncomingSocketEventPacket<DataType>
+        data: IIncomingSocketEventPacket<DataType> | null
     ): Promise<RequestData> {
         const requestData = new RequestData({
             socket,
-            data: data.data,
+            data: data?.data,
             incomingSocketData: data,
             ips: [socket.handshake.address],
             userAgent: socket.handshake.headers
@@ -75,7 +75,7 @@ export default class RequestData<
     public userAgent?: string;
     public ips: string[];
     public user?: IUser | null;
-    public client?: IClientUserView | null;
+    public client?: IClient | null;
 
     public constructor(arg?: IRequestContructorParams<T, TokenData>) {
         if (!arg) {

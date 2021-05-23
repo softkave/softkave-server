@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 import { validate } from "../../utilities/joiUtils";
 import { IBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
-import { SocketEventHandler } from "./types";
+import { IIncomingSocketEventPacket, SocketEventHandler } from "./types";
 import socketValidationSchemas from "./validation";
 
 export function sendAck(fn, data?: any) {
@@ -18,17 +18,26 @@ export function sendAck(fn, data?: any) {
     }
 }
 
+export interface IMakeSocketHandlerOptions {
+    skipDataValidation?: boolean;
+}
+
 export function makeSocketHandler(
     ctx: IBaseContext,
     socket: Socket,
-    handler: SocketEventHandler
+    handler: SocketEventHandler,
+    options: IMakeSocketHandlerOptions = {}
 ) {
     return async (data: any, fn?: any) => {
         try {
-            const validatedData = validate(
-                data,
-                socketValidationSchemas.incomingEventData
-            );
+            let validatedData: IIncomingSocketEventPacket<any> | null = null;
+
+            if (!options.skipDataValidation) {
+                validatedData = validate(
+                    data,
+                    socketValidationSchemas.incomingEventData
+                );
+            }
 
             const requestData = await RequestData.fromSocketRequest(
                 ctx,

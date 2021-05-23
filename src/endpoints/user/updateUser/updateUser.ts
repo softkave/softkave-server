@@ -1,5 +1,6 @@
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import { clientToClientUserView } from "../../client/utils";
 import RequestData from "../../RequestData";
 import {
     IOutgoingUserUpdatePacket,
@@ -64,7 +65,7 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
 
     return {
         token,
-        client,
+        client: clientToClientUserView(client, user.customId),
         user: getPublicUserData(updatedUser),
     };
 };

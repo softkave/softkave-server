@@ -36,15 +36,12 @@ const login: LoginEndpoint = async (context, instData) => {
     let client = await context.session.tryGetClient(context, instData);
 
     if (!client) {
-        client = clientToClientUserView(
-            await context.client.saveClient(context, {
-                clientId: getNewId(),
-                createdAt: getDateString(),
-                clientType: ClientType.Browser,
-                users: [],
-            }),
-            user.customId
-        );
+        client = await context.client.saveClient(context, {
+            clientId: getNewId(),
+            createdAt: getDateString(),
+            clientType: ClientType.Browser,
+            users: [],
+        });
     }
 
     instData.client = client;
@@ -64,19 +61,16 @@ const login: LoginEndpoint = async (context, instData) => {
         }));
 
     instData.tokenData = tokenData;
-    client = clientToClientUserView(
-        await context.client.updateUserEntry(
-            context,
-            instData,
-            client.clientId,
-            user.customId,
-            {
-                userId: user.customId,
-                tokenId: tokenData.customId,
-                isLoggedIn: true,
-            }
-        ),
-        user.customId
+    client = await context.client.updateUserEntry(
+        context,
+        instData,
+        client.clientId,
+        user.customId,
+        {
+            userId: user.customId,
+            tokenId: tokenData.customId,
+            isLoggedIn: true,
+        }
     );
 
     instData.client = client;
@@ -85,7 +79,7 @@ const login: LoginEndpoint = async (context, instData) => {
     return {
         token,
         user: getPublicUserData(user),
-        client: client,
+        client: clientToClientUserView(instData.client, user.customId),
     };
 };
 

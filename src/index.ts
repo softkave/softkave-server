@@ -115,10 +115,7 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
     path: "/socket",
     serveClient: false,
-    cors: {
-        origin: whiteListedCorsOrigins,
-        methods: ["GET", "POST"],
-    },
+    cors: corsOption,
 });
 
 setupSocketServer(io);

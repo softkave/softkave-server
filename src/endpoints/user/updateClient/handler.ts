@@ -9,15 +9,12 @@ const updateClient: UpdateClientEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     let client = await context.session.getClient(context, instData);
 
-    client = clientToClientUserView(
-        await context.client.updateUserEntry(
-            context,
-            instData,
-            client.clientId,
-            user.customId,
-            data.data
-        ),
-        user.customId
+    client = await context.client.updateUserEntry(
+        context,
+        instData,
+        client.clientId,
+        user.customId,
+        data.data
     );
 
     if (data.data.isLoggedIn) {
@@ -26,7 +23,7 @@ const updateClient: UpdateClientEndpoint = async (context, instData) => {
         );
     }
 
-    return { client };
+    return { client: clientToClientUserView(client, user.customId) };
 };
 
 export default updateClient;

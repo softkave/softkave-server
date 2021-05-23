@@ -1,14 +1,13 @@
-import { IClientUserView } from "../../mongo/client";
+import { IClient } from "../../mongo/client";
 import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { clientConstants } from "../client/constants";
-import { clientToClientUserView } from "../client/utils";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
 import { JWTEndpoint } from "../types";
 import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
-import { tryCatch, wrapFireAndDontThrow } from "../utils";
+import { tryCatch, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import { IBaseTokenData } from "./TokenContext";
 
@@ -22,10 +21,7 @@ export interface ISessionContext {
         data: RequestData,
         audience?: JWTEndpoint
     ) => Promise<IToken>;
-    getClient: (
-        ctx: IBaseContext,
-        data: RequestData
-    ) => Promise<IClientUserView>;
+    getClient: (ctx: IBaseContext, data: RequestData) => Promise<IClient>;
     getUser: (
         ctx: IBaseContext,
         data: RequestData,
@@ -44,7 +40,7 @@ export interface ISessionContext {
     tryGetClient: (
         ctx: IBaseContext,
         data: RequestData
-    ) => Promise<IClientUserView | null>;
+    ) => Promise<IClient | null>;
     assertUser: (
         ctx: IBaseContext,
         data: RequestData,
@@ -54,7 +50,7 @@ export interface ISessionContext {
 }
 
 export default class SessionContext implements ISessionContext {
-    public getIncomingTokenData = wrapFireAndDontThrow(
+    public getIncomingTokenData = wrapFireAndThrowError(
         (ctx: IBaseContext, data: RequestData) => {
             if (data.incomingTokenData) {
                 return data.incomingTokenData;
@@ -78,7 +74,7 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public getTokenData = wrapFireAndDontThrow(
+    public getTokenData = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
             data: RequestData,
@@ -88,7 +84,7 @@ export default class SessionContext implements ISessionContext {
                 return data.tokenData;
             }
 
-            const incomingTokenData = ctx.session.getIncomingTokenData(
+            const incomingTokenData = await ctx.session.getIncomingTokenData(
                 ctx,
                 data
             );
@@ -107,13 +103,13 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public getClient = wrapFireAndDontThrow(
+    public getClient = wrapFireAndThrowError(
         async (ctx: IBaseContext, data: RequestData) => {
             if (data.client) {
                 return data.client;
             }
 
-            const tokenData = await ctx.session.getTokenData(ctx, data);
+            const tokenData = await ctx.session.tryGetTokenData(ctx, data);
             let clientId = "";
 
             if (data.req) {
@@ -125,29 +121,20 @@ export default class SessionContext implements ISessionContext {
             }
 
             if (clientId) {
-                if (clientId !== tokenData.clientId) {
+                if (tokenData && clientId !== tokenData.clientId) {
                     throw new InvalidCredentialsError();
                 }
             } else {
                 throw new LoginAgainError();
             }
 
-            // if (!clientId) {
-            //     throw new LoginAgainError();
-            // }
-
             const client = await ctx.client.assertGetClientById(ctx, clientId);
-            const clientUserView = clientToClientUserView(
-                client,
-                tokenData.userId
-            );
-
-            data.client = clientUserView;
-            return clientUserView;
+            data.client = client;
+            return client;
         }
     );
 
-    public tryGetTokenData = wrapFireAndDontThrow(
+    public tryGetTokenData = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
             data: RequestData,
@@ -159,13 +146,13 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public tryGetClient = wrapFireAndDontThrow(
+    public tryGetClient = wrapFireAndThrowError(
         async (ctx: IBaseContext, data: RequestData) => {
             return await tryCatch(() => ctx.session.getClient(ctx, data));
         }
     );
 
-    public tryGetUser = wrapFireAndDontThrow(
+    public tryGetUser = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
             data: RequestData,
@@ -177,19 +164,23 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public getUser = wrapFireAndDontThrow(
+    public getUser = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
             data: RequestData,
             audience?: JWTEndpoint
         ) => {
+            if (data.user) {
+                return data.user;
+            }
+
             const tokenData = await ctx.session.getTokenData(
                 ctx,
                 data,
                 audience
             );
 
-            await ctx.session.getClient(ctx, data);
+            // await ctx.session.getClient(ctx, data);
             const user = await ctx.user.assertGetUserById(
                 ctx,
                 tokenData.userId
@@ -200,7 +191,7 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public assertUser = wrapFireAndDontThrow(
+    public assertUser = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
             data: RequestData,
@@ -210,7 +201,7 @@ export default class SessionContext implements ISessionContext {
         }
     );
 
-    public assertClient = wrapFireAndDontThrow(
+    public assertClient = wrapFireAndThrowError(
         async (ctx: IBaseContext, data: RequestData) => {
             return !!(await ctx.session.getClient(ctx, data));
         }

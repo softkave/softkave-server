@@ -1,3 +1,7 @@
+import { ClientType } from "../../../models/system";
+import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { clientToClientUserView } from "../../client/utils";
 import { JWTEndpoint } from "../../types";
 import { fireAndForgetPromise } from "../../utils";
 import { CredentialsExpiredError, InvalidCredentialsError } from "../errors";
@@ -35,6 +39,18 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
     );
 
     instData.user = user;
+    let client = await context.session.tryGetClient(context, instData);
+
+    if (!client) {
+        client = await context.client.saveClient(context, {
+            clientId: getNewId(),
+            createdAt: getDateString(),
+            clientType: ClientType.Browser,
+            users: [],
+        });
+    }
+
+    instData.client = client;
     const result = await context.changePassword(context, instData);
 
     fireAndForgetPromise(
