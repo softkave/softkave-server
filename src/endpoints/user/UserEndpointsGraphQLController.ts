@@ -2,7 +2,6 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
-import changePassword from "./changePassword/changePassword";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";
 import { getChangePasswordWithTokenContext } from "./changePasswordWithToken/context";
 import ForgotPasswordContext from "./forgotPassword/context";
@@ -15,7 +14,8 @@ import { getSignupContext } from "./signup/context";
 import signup from "./signup/signup";
 import updateUser from "./updateUser/updateUser";
 import userExists from "./userExists/userExists";
-import { getUpdateUserEndpointContext } from "./updateUser/context";
+import changePasswordWithCurrentPassword from "./changePasswordWithCurrentPassword/handler";
+import { getChangePasswordWithCurrentPasswordContext } from "./changePasswordWithCurrentPassword/context";
 
 export default class UserEndpointsGraphQLController {
     public signup(data, req) {
@@ -33,8 +33,8 @@ export default class UserEndpointsGraphQLController {
 
     public changePassword(data, req) {
         return wrapEndpoint(data, req, async () =>
-            changePassword(
-                getBaseContext(),
+            changePasswordWithCurrentPassword(
+                getChangePasswordWithCurrentPasswordContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,
@@ -112,7 +112,7 @@ export default class UserEndpointsGraphQLController {
     public updateUser(data, req) {
         return wrapEndpoint(data, req, async () =>
             updateUser(
-                getUpdateUserEndpointContext(),
+                getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,

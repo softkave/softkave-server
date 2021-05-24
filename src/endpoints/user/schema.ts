@@ -26,7 +26,6 @@ const userSchema = `
         notificationsLastCheckedAt: String
         color: String
         email: String
-        password: String
     }
 
     type Client {
@@ -72,7 +71,10 @@ const userSchema = `
         signup (user: UserSignupInput!) : UserQueryResult
         login (email: String!, password: String!) : UserQueryResult
         forgotPassword (email: String!) : ErrorOnlyResponse
-        changePassword (password: String!) : UserQueryResult
+        changePassword (
+            currentPassword: String!, 
+            password: String!
+        ) : UserQueryResult
         updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
         getUserNotifications: GetNotificationsResponse

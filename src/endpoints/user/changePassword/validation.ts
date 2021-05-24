@@ -2,5 +2,5 @@ import Joi from "joi";
 import userValidationSchemas from "../validation";
 
 export const changePasswordJoiSchema = Joi.object().keys({
-    password: userValidationSchemas.password,
+    password: userValidationSchemas.password.required(),
 });

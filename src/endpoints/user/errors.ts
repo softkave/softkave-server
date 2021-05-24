@@ -81,3 +81,9 @@ export class CollaborationRequestRevokedError extends OperationError {
     public name = "CollaborationRequestRevokedError";
     public message = "Collaboration request has been revoked";
 }
+
+// tslint:disable-next-line: max-classes-per-file
+export class IncorrectPasswordError extends OperationError {
+    public name = "IncorrectPasswordError";
+    public message = "The password you entered is incorrect";
+}

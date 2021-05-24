@@ -1,22 +1,18 @@
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-import { ChangePasswordEndpoint } from "../changePassword/types";
 import { ILoginResult } from "../login/types";
 
 export interface IUpdateUserParameters {
-    name?: string;
-    email?: string;
-    notificationsLastCheckedAt?: string;
-    color?: string;
-    password?: string;
-}
-
-export interface IUpdateUserEndpointContext extends IBaseContext {
-    changePassword: ChangePasswordEndpoint;
+    data: {
+        name?: string;
+        email?: string;
+        notificationsLastCheckedAt?: string;
+        color?: string;
+    };
 }
 
 export type UpdateUserEndpoint = Endpoint<
-    IUpdateUserEndpointContext,
+    IBaseContext,
     IUpdateUserParameters,
     ILoginResult
 >;

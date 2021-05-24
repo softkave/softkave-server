@@ -6,14 +6,12 @@ import { userConstants } from "./constants";
 const email = Joi.string().trim().lowercase().email();
 
 const password = Joi.string()
-    .required()
     .trim()
     .min(userConstants.minPasswordLength)
     .max(userConstants.maxPasswordLength)
     .regex(regEx.passwordPattern);
 
 const name = Joi.string()
-    .required()
     .trim()
     .min(userConstants.minNameLength)
     .max(userConstants.maxNameLength);

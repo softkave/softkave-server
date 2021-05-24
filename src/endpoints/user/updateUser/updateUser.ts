@@ -1,7 +1,6 @@
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { clientToClientUserView } from "../../client/utils";
-import RequestData from "../../RequestData";
 import {
     IOutgoingUserUpdatePacket,
     OutgoingSocketEvents,
@@ -14,19 +13,26 @@ import { updateUserJoiSchema } from "./validation";
 const updateUser: UpdateUserEndpoint = async (context, instData) => {
     const data = validate(instData.data, updateUserJoiSchema);
     const user = await context.session.getUser(context, instData);
+    const incomingData = data.data;
 
-    if (data.email) {
-        const userExists = await context.user.userExists(context, data.email);
+    if (
+        incomingData.email &&
+        incomingData.email.toLowerCase() !== user.email.toLowerCase()
+    ) {
+        const userExists = await context.user.userExists(
+            context,
+            incomingData.email
+        );
 
         if (userExists) {
             throw new EmailAddressNotAvailableError({ field: "email" });
         }
     }
 
-    if (data.notificationsLastCheckedAt) {
+    if (incomingData.notificationsLastCheckedAt) {
         const broadcastData: IOutgoingUserUpdatePacket = {
             notificationsLastCheckedAt: getDateString(
-                data.notificationsLastCheckedAt
+                incomingData.notificationsLastCheckedAt
             ),
         };
 
@@ -44,21 +50,10 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     const updatedUser = await context.user.updateUserById(
         context,
         user.customId,
-        data
+        incomingData
     );
 
     instData.user = updatedUser;
-
-    if (data.password) {
-        return await context.changePassword(
-            context,
-            new RequestData({
-                ...instData,
-                data: { password: data.password },
-            })
-        );
-    }
-
     const tokenData = await context.session.getTokenData(context, instData);
     const client = await context.session.getClient(context, instData);
     const token = context.token.encodeToken(context, tokenData.customId);

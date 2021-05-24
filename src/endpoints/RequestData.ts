@@ -22,6 +22,7 @@ export interface IRequestContructorParams<
     ips?: string[];
     user?: IUser | null;
     client?: IClient | null;
+    internalInfo?: Record<string, any> | null;
 }
 
 export default class RequestData<
@@ -76,6 +77,7 @@ export default class RequestData<
     public ips: string[];
     public user?: IUser | null;
     public client?: IClient | null;
+    public internalInfo?: Record<string, any> | null;
 
     public constructor(arg?: IRequestContructorParams<T, TokenData>) {
         if (!arg) {
@@ -92,5 +94,6 @@ export default class RequestData<
         this.user = arg.user;
         this.client = arg.client;
         this.incomingSocketData = arg.incomingSocketData;
+        this.internalInfo = arg.internalInfo;
     }
 }

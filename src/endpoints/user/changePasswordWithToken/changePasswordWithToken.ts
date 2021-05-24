@@ -1,7 +1,6 @@
 import { ClientType } from "../../../models/system";
 import { getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
-import { clientToClientUserView } from "../../client/utils";
 import { JWTEndpoint } from "../../types";
 import { fireAndForgetPromise } from "../../utils";
 import { CredentialsExpiredError, InvalidCredentialsError } from "../errors";

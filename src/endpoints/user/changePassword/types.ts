@@ -1,4 +1,3 @@
-import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { ILoginResult } from "../login/types";
