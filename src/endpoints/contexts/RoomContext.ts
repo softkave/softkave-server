@@ -102,13 +102,16 @@ function broadcast(
         if (!entry) {
             // TODO: log
             delete room[socketId];
-            ctx.socket.disconnectSocket(reqData);
+            ctx.socket.disconnectSocket(socketId);
             continue;
         }
 
-        if (entry.isInactive && activeSocketsOnly) {
+        if (entry.isInactive) {
             result.inactiveSockets.push(entry);
-            continue;
+
+            if (activeSocketsOnly) {
+                continue;
+            }
         }
 
         const socketExists = ctx.socket.broadcastToSocket(
@@ -123,7 +126,7 @@ function broadcast(
         } else {
             // TODO: log
             delete room[socketId];
-            ctx.socket.disconnectSocket(reqData);
+            ctx.socket.disconnectSocket(socketId);
             continue;
         }
     }

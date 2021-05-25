@@ -28,12 +28,6 @@ const rootSchema = `
     ${endpointSchema}
 `;
 
-try {
-    const compiledSchema = buildSchema(rootSchema);
-} catch (error) {
-    console.error(error);
-}
-
 const compiledSchema = buildSchema(rootSchema);
 
 export { compiledSchema as indexSchema, EndpointsGraphQLController };

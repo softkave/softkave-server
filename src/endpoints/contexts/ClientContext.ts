@@ -76,10 +76,14 @@ export default class ClientContext implements IClientContext {
             return ctx.models.clientModel.model
                 .find({
                     users: {
-                        $elemMatch: { userId, muteChatNotifications: false },
+                        $elemMatch: {
+                            userId,
+                            muteChatNotifications: false,
+                            isLoggedIn: true,
+                        },
                     },
-                    endpoint: { $not: null },
-                    keys: { $not: null },
+                    endpoint: { $ne: null },
+                    keys: { $ne: null },
                 })
                 .lean()
                 .exec();

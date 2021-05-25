@@ -2,8 +2,8 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
-import getPushNotificationKeys from "./getPushNotificationKeys/handler";
-import pushSubscriptionExists from "./pushNotificationExists/handler";
+import getPushSubscriptionKeys from "./getPushSubscriptionKeys/handler";
+import pushSubscriptionExists from "./pushSubscriptionExists/handler";
 import subscribePushSubscription from "./subscribe/handler";
 import unsubscribePushSubscription from "./unsubscribe/handler";
 
@@ -47,9 +47,9 @@ export default class PushSubscriptionsEndpointsGraphQLController {
         );
     }
 
-    public getPushNotificationKeys(data, req) {
+    public getPushSubscriptionKeys(data, req) {
         return wrapEndpoint(data, req, async () =>
-            getPushNotificationKeys(
+            getPushSubscriptionKeys(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),

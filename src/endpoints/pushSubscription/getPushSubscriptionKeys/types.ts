@@ -1,12 +1,12 @@
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 
-export interface IGetPushNotificationKeysResult {
+export interface IGetPushSubscriptionKeysResult {
     vapidPublicKey: string;
 }
 
-export type GetPushNotificationKeysEndpoint = Endpoint<
+export type GetPushSubscriptionKeysEndpoint = Endpoint<
     IBaseContext,
     {},
-    IGetPushNotificationKeysResult
+    IGetPushSubscriptionKeysResult
 >;

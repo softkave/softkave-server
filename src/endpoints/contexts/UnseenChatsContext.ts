@@ -18,10 +18,6 @@ export interface IUnseenChatsContext {
         count?: number,
         fromDate?: string
     ) => Promise<IUnseenChats[]>;
-    sumUnseenChatsAndRooms: (
-        ctx: IBaseContext,
-        data: IUnseenChats
-    ) => { roomsCount: number; chatsCount: number };
 }
 
 export default class UnseenChatsContext implements IUnseenChatsContext {
@@ -88,21 +84,6 @@ export default class UnseenChatsContext implements IUnseenChatsContext {
             }
 
             return data;
-        }
-    );
-
-    public sumUnseenChatsAndRooms = wrapFireAndThrowError(
-        (ctx: IBaseContext, data: IUnseenChats) => {
-            let roomsCount = 0;
-            let chatsCount = 0;
-
-            for (let roomId in data.rooms) {
-                const roomChatsCount = data.rooms[roomId] || 0;
-                roomsCount += 1;
-                chatsCount += roomChatsCount;
-            }
-
-            return { roomsCount, chatsCount };
         }
     );
 }

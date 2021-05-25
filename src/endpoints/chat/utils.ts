@@ -1,5 +1,6 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
+import { IUnseenChats } from "../../mongo/unseenChats";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicChatData, IPublicRoomData } from "./types";
@@ -42,4 +43,17 @@ export function getPublicRoomsArray(rooms: IRoom[]): IPublicRoomData[] {
 
 export function getPublicChatsArray(chats: IChat[]): IPublicChatData[] {
     return chats.map((chat) => extractFields(chat, publicChatFields));
+}
+
+export function sumUnseenChatsAndRooms(data: IUnseenChats) {
+    let roomsCount = 0;
+    let chatsCount = 0;
+
+    for (let roomId in data.rooms) {
+        const roomChatsCount = data.rooms[roomId] || 0;
+        roomsCount += 1;
+        chatsCount += roomChatsCount;
+    }
+
+    return { roomsCount, chatsCount };
 }

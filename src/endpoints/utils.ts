@@ -31,15 +31,17 @@ export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
     }
 };
 
-export const fireAndForgetFn = async <Fn extends (...args: any) => any>(
+export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     fn: Fn,
     ...args: Array<Parameters<Fn>>
-): Promise<ReturnType<Fn>> => {
-    try {
-        return await fn(...args);
-    } catch (error) {
-        console.error(error);
-    }
+): void => {
+    setTimeout(async () => {
+        try {
+            await fn(...args);
+        } catch (error) {
+            console.error(error);
+        }
+    }, 5);
 };
 
 export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {

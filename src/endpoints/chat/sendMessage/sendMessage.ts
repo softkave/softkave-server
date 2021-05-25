@@ -4,54 +4,62 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { IBroadcastResult } from "../../contexts/RoomContext";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
 } from "../errors";
-import { getPublicChatData } from "../utils";
+import { getPublicChatData, sumUnseenChatsAndRooms } from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
 async function sendPushNotification(
     context: IBaseContext,
-    userId: string,
-    roomId: string,
+    room: IRoom,
     broadcastResultPromise: Promise<IBroadcastResult>
 ) {
     const broadcastResult = await broadcastResultPromise;
 
-    if (broadcastResult.broadcastsCount > 0) {
+    if (broadcastResult.inactiveSockets.length === 0) {
         return;
     }
 
-    // TODO: what happens when the user gets another message in the same room
-    // while the current one is processing
-    const unseenChats = await context.unseenChats.addEntry(
-        context,
-        userId,
-        roomId
-    );
-
-    const { roomsCount, chatsCount } =
-        context.unseenChats.sumUnseenChatsAndRooms(context, unseenChats);
-
-    const clients = await context.client.getPushSubscribedClients(
-        context,
-        userId
-    );
-
-    if (clients.length === 0) {
-        return;
-    }
-
-    const message = `${chatsCount} messages from ${roomsCount}`;
-    clients.forEach((client) => {
-        const endpoint = client.endpoint!;
-        const keys = client.keys!;
-        fireAndForgetPromise(
-            context.webPush.sendNotification(context, endpoint, keys, message)
+    broadcastResult.inactiveSockets.forEach(async (sockEntry) => {
+        // TODO: what happens when the user gets another message in the same room
+        // while the current one is processing
+        const unseenChats = await context.unseenChats.addEntry(
+            context,
+            sockEntry.userId,
+            room.customId
         );
+
+        // TODO: chats count is flaky and sometimes, inactiveSockets count is flaky
+        const { roomsCount, chatsCount } = sumUnseenChatsAndRooms(unseenChats);
+        const clients = await context.client.getPushSubscribedClients(
+            context,
+            sockEntry.userId
+        );
+
+        if (clients.length === 0) {
+            return;
+        }
+
+        const message = `You have ${chatsCount} ${
+            chatsCount === 1 ? "message" : "messages"
+        } from ${roomsCount} ${roomsCount === 1 ? "chat" : "chats"}`;
+
+        clients.forEach((client) => {
+            const endpoint = client.endpoint!;
+            const keys = client.keys!;
+            fireAndForgetPromise(
+                context.webPush.sendNotification(
+                    context,
+                    endpoint,
+                    keys,
+                    message
+                )
+            );
+        });
     });
 }
 
@@ -118,18 +126,17 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         chat
     );
 
-    fireAndForgetPromise(
-        sendPushNotification(
-            context,
-            user.customId,
-            data.roomId,
-            broadcastResultPromise
-        )
+    // TODO: implement a scheduler that can run a task after a task is completed
+
+    // TODO: our fire and forgets are running immediately
+    // go through them and update the ones you want to run
+    // after the main request is done
+    fireAndForgetFn(() =>
+        sendPushNotification(context, room, broadcastResultPromise)
     );
 
     if (data.roomId) {
         const readCounter = getDateString();
-
         await context.chat.updateMemberReadCounter(
             context,
             data.roomId,

@@ -16,6 +16,7 @@ import updateUser from "./updateUser/updateUser";
 import userExists from "./userExists/userExists";
 import changePasswordWithCurrentPassword from "./changePasswordWithCurrentPassword/handler";
 import { getChangePasswordWithCurrentPasswordContext } from "./changePasswordWithCurrentPassword/context";
+import updateClient from "./updateClient/handler";
 
 export default class UserEndpointsGraphQLController {
     public signup(data, req) {
@@ -138,6 +139,19 @@ export default class UserEndpointsGraphQLController {
     public getUserNotifications(data, req) {
         return wrapEndpoint(data, req, async () =>
             getUserNotifications(
+                getBaseContext(),
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
+            )
+        );
+    }
+
+    public updateClient(data, req) {
+        return wrapEndpoint(data, req, async () =>
+            updateClient(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),

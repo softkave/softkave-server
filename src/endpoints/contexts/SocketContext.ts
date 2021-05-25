@@ -35,7 +35,7 @@ export interface ISocketContext {
         data: RequestData,
         user: IUser
     ) => Promise<void>;
-    disconnectSocket: (data: RequestData) => void;
+    disconnectSocket: (socketId: string) => void;
     disconnectUser: (userId: string) => void;
     getUserIdBySocketId: (data: RequestData) => string | undefined;
     attachSocketToRequestData: (
@@ -101,15 +101,15 @@ export default class SocketContext implements ISocketContext {
         userIdToSocketEntriesMap[user.customId] = sockets;
     }
 
-    public disconnectSocket(data: RequestData) {
-        const entry = authenticatedSockets[data.socket.id];
+    public disconnectSocket(socketId: string) {
+        const entry = authenticatedSockets[socketId];
 
         if (!entry) {
             return;
         }
 
-        delete authenticatedSockets[data.socket.id];
-        const socketIndex = this.getSocketIndex(entry.userId, data.socket.id);
+        delete authenticatedSockets[socketId];
+        const socketIndex = this.getSocketIndex(entry.userId, socketId);
 
         if (socketIndex === -1) {
             return;

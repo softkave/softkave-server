@@ -24,14 +24,22 @@ import UserEndpointsGraphQLController, {
 } from "./user/UserEndpointsGraphQLController";
 
 export default class EndpointsGraphQLController {
-    public block: BlockEndpointsGraphQLController = getBlockEndpointsGraphQLController();
-    public user: UserEndpointsGraphQLController = getUserEndpointsGraphQLController();
-    public comment: CommentsEndpointsGraphQLController = getCommentsEndpointsGraphQLController();
-    public sprint: SprintsEndpointsGraphQLController = getSprintsEndpointsGraphQLController();
-    public system: SystemEndpointsGraphQLController = getSystemEndpointsGraphQLController();
-    public accessControl: AccessControlEndpointsGraphQLController = getAccessControlEndpointsGraphQLController();
-    public notifications: NotificationEndpointsGraphQLController = getNotificationEndpointsGraphQLController();
-    public pushNotifications: PushSubscriptionsEndpointsGraphQLController = getPushSubscriptionsEndpointsGraphQLController();
+    public block: BlockEndpointsGraphQLController =
+        getBlockEndpointsGraphQLController();
+    public user: UserEndpointsGraphQLController =
+        getUserEndpointsGraphQLController();
+    public comment: CommentsEndpointsGraphQLController =
+        getCommentsEndpointsGraphQLController();
+    public sprint: SprintsEndpointsGraphQLController =
+        getSprintsEndpointsGraphQLController();
+    public system: SystemEndpointsGraphQLController =
+        getSystemEndpointsGraphQLController();
+    public accessControl: AccessControlEndpointsGraphQLController =
+        getAccessControlEndpointsGraphQLController();
+    public notifications: NotificationEndpointsGraphQLController =
+        getNotificationEndpointsGraphQLController();
+    public pushSubscription: PushSubscriptionsEndpointsGraphQLController =
+        getPushSubscriptionsEndpointsGraphQLController();
 }
 
 export const getEndpointsGraphQLController = makeSingletonFunc(

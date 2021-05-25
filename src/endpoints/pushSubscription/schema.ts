@@ -4,7 +4,7 @@ input SubscribePushSubscriptionKeysInput {
     auth: String
 }
 
-type GetPushNotificationKeys {
+type GetPushSubscriptionKeys {
     errors: [Error]
     vapidPublicKey: String
 }
@@ -20,7 +20,7 @@ type PushSubscriptionQuery {
         keys: SubscribePushSubscriptionKeysInput!
     ) : ErrorOnlyResponse
     unsubscribePushSubscription: ErrorOnlyResponse
-    getPushNotificationKeys: GetPushNotificationKeys
+    getPushSubscriptionKeys: GetPushSubscriptionKeys
     pushSubscriptionExists (
         endpoint: String!, 
         keys: SubscribePushSubscriptionKeysInput!

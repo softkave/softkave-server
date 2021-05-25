@@ -11,6 +11,7 @@ import getNewId from "../../../utilities/getNewId";
 import { getDateString } from "../../../utilities/fns";
 import { ClientType } from "../../../models/system";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
+import { fireAndForgetPromise } from "../../utils";
 
 const login: LoginEndpoint = async (context, instData) => {
     const loginDetails = validate(instData.data, loginJoiSchema);
@@ -75,6 +76,10 @@ const login: LoginEndpoint = async (context, instData) => {
 
     instData.client = client;
     const token = context.token.encodeToken(context, tokenData.customId);
+
+    fireAndForgetPromise(
+        context.unseenChats.removeEntry(context, user.customId)
+    );
 
     return {
         token,
