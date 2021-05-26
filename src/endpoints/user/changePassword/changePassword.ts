@@ -23,7 +23,7 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     });
 
     instData.user = user;
-    context.socket.disconnectUser(user.customId);
+    context.socket.removeUserSocketEntries(context, user.customId);
 
     delete instData.tokenData;
     delete instData.incomingTokenData;

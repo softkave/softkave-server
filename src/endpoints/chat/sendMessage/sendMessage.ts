@@ -1,4 +1,5 @@
 import { IRoom } from "../../../mongo/room";
+import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
@@ -15,21 +16,33 @@ import { sendMessageJoiSchema } from "./validation";
 
 async function sendPushNotification(
     context: IBaseContext,
+    sender: IUser,
     room: IRoom,
     broadcastResultPromise: Promise<IBroadcastResult>
 ) {
     const broadcastResult = await broadcastResultPromise;
+    const members = room.members;
+    const activeUsersMap = broadcastResult.endpoints.reduce(
+        (map, endpoint) => {
+            if (!endpoint.entry.isInactive) {
+                map[endpoint.entry.userId] = true;
+            }
 
-    if (broadcastResult.inactiveSockets.length === 0) {
-        return;
-    }
+            return map;
+        },
+        { [sender.customId]: true } as Record<string, boolean>
+    );
 
-    broadcastResult.inactiveSockets.forEach(async (sockEntry) => {
+    const inactiveMemberIds = members
+        .filter((member) => !activeUsersMap[member.userId])
+        .map((member) => member.userId);
+
+    inactiveMemberIds.forEach(async (userId) => {
         // TODO: what happens when the user gets another message in the same room
         // while the current one is processing
         const unseenChats = await context.unseenChats.addEntry(
             context,
-            sockEntry.userId,
+            userId,
             room.customId
         );
 
@@ -37,7 +50,7 @@ async function sendPushNotification(
         const { roomsCount, chatsCount } = sumUnseenChatsAndRooms(unseenChats);
         const clients = await context.client.getPushSubscribedClients(
             context,
-            sockEntry.userId
+            userId
         );
 
         if (clients.length === 0) {
@@ -132,7 +145,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     // go through them and update the ones you want to run
     // after the main request is done
     fireAndForgetFn(() =>
-        sendPushNotification(context, room, broadcastResultPromise)
+        sendPushNotification(context, user, room, broadcastResultPromise)
     );
 
     if (data.roomId) {

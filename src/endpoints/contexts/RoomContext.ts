@@ -5,7 +5,7 @@ import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
-import { IAuthenticatedSocketEntry } from "./SocketContext";
+import { ISocketEntry } from "./SocketContext";
 
 /**
  * RoomContext
@@ -20,8 +20,10 @@ import { IAuthenticatedSocketEntry } from "./SocketContext";
  */
 
 export interface IBroadcastResult {
-    inactiveSockets: IAuthenticatedSocketEntry[];
-    broadcastsCount: number;
+    endpoints: Array<{
+        didBroadcast: boolean;
+        entry: ISocketEntry;
+    }>;
 }
 
 export interface IRoomContext {
@@ -83,8 +85,7 @@ function broadcast(
     const room = rooms[roomName] || {};
     const omit = {};
     const result: IBroadcastResult = {
-        inactiveSockets: [],
-        broadcastsCount: 0,
+        endpoints: [],
     };
 
     if (excludeSocketId) {
@@ -97,21 +98,21 @@ function broadcast(
             continue;
         }
 
-        const entry = ctx.socket.getSocketEntry(ctx, socketId);
+        const entry = ctx.socket.getEntryBySocketId(ctx, socketId);
 
         if (!entry) {
             // TODO: log
             delete room[socketId];
-            ctx.socket.disconnectSocket(socketId);
             continue;
         }
 
-        if (entry.isInactive) {
-            result.inactiveSockets.push(entry);
+        if (entry.isInactive && activeSocketsOnly) {
+            result.endpoints.push({
+                entry,
+                didBroadcast: false,
+            });
 
-            if (activeSocketsOnly) {
-                continue;
-            }
+            continue;
         }
 
         const socketExists = ctx.socket.broadcastToSocket(
@@ -122,11 +123,14 @@ function broadcast(
         );
 
         if (socketExists) {
-            result.broadcastsCount += 1;
+            result.endpoints.push({
+                entry,
+                didBroadcast: true,
+            });
         } else {
             // TODO: log
             delete room[socketId];
-            ctx.socket.disconnectSocket(socketId);
+            ctx.socket.removeEntryBySocketId(ctx, socketId);
             continue;
         }
     }
@@ -153,7 +157,7 @@ export default class RoomContext implements IRoomContext {
 
     public isUserInRoom = wrapFireAndThrowError(
         (ctx: IBaseContext, roomName: string, userId: string) => {
-            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
             const room = rooms[roomName];
 
             if (!room) {
@@ -166,7 +170,7 @@ export default class RoomContext implements IRoomContext {
 
     public subscribeUser = wrapFireAndThrowError(
         (ctx: IBaseContext, roomName: string, userId: string) => {
-            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
 
             if (socketEntries.length === 0) {
                 return;
@@ -183,7 +187,7 @@ export default class RoomContext implements IRoomContext {
 
     public unSubscribeUser = wrapFireAndThrowError(
         (ctx: IBaseContext, roomName: string, userId: string) => {
-            const socketEntries = ctx.socket.getUserSocketEntries(ctx, userId);
+            const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
             const room = rooms[roomName] || {};
             socketEntries.find((entry) => {
                 delete room[entry.socket.id];

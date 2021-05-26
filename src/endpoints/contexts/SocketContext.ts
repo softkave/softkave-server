@@ -5,63 +5,47 @@ import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
 import { IBaseContext } from "./BaseContext";
 
-export interface IUserClientSocketEntry {
+export interface ISocketEntry {
+    userId: string;
+    socketId: string;
     clientId: string;
     socket: Socket;
-
-    // TODO:
-    // Should we keep a list of all the rooms a client is subscribed to?
-    // It'll make re-subscribing after socket reconnection and removing the socket from the room
-    // on disconnection easier. But we'll only keep the data for some minutes, because the client
-    // could have genuinely disconnected
-}
-
-export interface IAuthenticatedSocketEntry {
-    userId: string;
-
-    // marks whether the user is currently viewing the page
     isInactive?: boolean;
 }
 
-const authenticatedSockets: { [key: string]: IAuthenticatedSocketEntry } = {};
-const userIdToSocketEntriesMap: {
-    [key: string]: IUserClientSocketEntry[];
-} = {};
+const socketEntries: Record<string, ISocketEntry> = {};
+const userIdToEntriesMap: Record<string, Record<string, true>> = {};
 
 export interface ISocketContext {
     assertSocket: (data: RequestData) => boolean;
-    mapUserToSocketId: (
-        ctx: IBaseContext,
-        data: RequestData,
-        user: IUser
-    ) => Promise<void>;
-    disconnectSocket: (socketId: string) => void;
-    disconnectUser: (userId: string) => void;
-    getUserIdBySocketId: (data: RequestData) => string | undefined;
+    assertGetSocket: (data: RequestData) => Socket;
     attachSocketToRequestData: (
         ctx: IBaseContext,
         data: RequestData,
         user: IUser
     ) => Promise<boolean>;
-    getUserSocketEntries: (
-        ctx: IBaseContext,
-        userId: string
-    ) => IUserClientSocketEntry[];
-    updateSocketEntry: (
-        ctx: IBaseContext,
-        socketId: string,
-        update: Partial<{ isInactive?: boolean }>
-    ) => void;
-    getSocketEntry: (
-        ctx: IBaseContext,
-        socketId: string
-    ) => IAuthenticatedSocketEntry;
     broadcastToSocket: (
         ctx: IBaseContext,
         socketId: string,
         eventName: string,
         data: any
     ) => boolean;
+    insertSocketEntry: (
+        ctx: IBaseContext,
+        reqData: RequestData
+    ) => Promise<void>;
+    updateSocketEntry: (
+        ctx: IBaseContext,
+        socketId: string,
+        update: Partial<{ isInactive?: boolean }>
+    ) => void;
+    getEntriesByUserId: (ctx: IBaseContext, userId: string) => ISocketEntry[];
+    getEntryBySocketId: (
+        ctx: IBaseContext,
+        socketId: string
+    ) => ISocketEntry | null;
+    removeUserSocketEntries: (ctx: IBaseContext, userId: string) => void;
+    removeEntryBySocketId: (ctx: IBaseContext, socketId: string) => void;
 }
 
 export default class SocketContext implements ISocketContext {
@@ -73,74 +57,12 @@ export default class SocketContext implements ISocketContext {
         return true;
     }
 
-    public async mapUserToSocketId(
-        ctx: IBaseContext,
-        data: RequestData,
-        user: IUser
-    ) {
-        authenticatedSockets[data.socket.id] = {
-            userId: user.customId,
-        };
-
-        const existingSocketIndex = this.getSocketIndex(
-            user.customId,
-            data.socket.id
-        );
-
-        if (existingSocketIndex !== -1) {
-            return;
+    public assertGetSocket(data: RequestData) {
+        if (!data.socket) {
+            throw new InvalidRequestError();
         }
 
-        const sockets = userIdToSocketEntriesMap[user.customId] || [];
-        const client = await ctx.session.getClient(ctx, data);
-        sockets.push({
-            clientId: client.clientId,
-            socket: data.socket,
-        });
-
-        userIdToSocketEntriesMap[user.customId] = sockets;
-    }
-
-    public disconnectSocket(socketId: string) {
-        const entry = authenticatedSockets[socketId];
-
-        if (!entry) {
-            return;
-        }
-
-        delete authenticatedSockets[socketId];
-        const socketIndex = this.getSocketIndex(entry.userId, socketId);
-
-        if (socketIndex === -1) {
-            return;
-        }
-
-        const socketEntries = userIdToSocketEntriesMap[entry.userId];
-        socketEntries.splice(socketIndex, 1);
-
-        if (socketEntries.length > 0) {
-            userIdToSocketEntriesMap[entry.userId] = socketEntries;
-        } else {
-            delete userIdToSocketEntriesMap[entry.userId];
-        }
-    }
-
-    public disconnectUser(userId: string) {
-        const socketEntries = userIdToSocketEntriesMap[userId];
-
-        if (!socketEntries) {
-            return;
-        }
-
-        delete userIdToSocketEntriesMap[userId];
-
-        socketEntries.forEach((entry) => {
-            delete authenticatedSockets[entry.socket.id];
-        });
-    }
-
-    public getUserIdBySocketId(data: RequestData) {
-        return authenticatedSockets[data.socket.id]?.userId;
+        return data.socket;
     }
 
     public async attachSocketToRequestData(
@@ -148,41 +70,22 @@ export default class SocketContext implements ISocketContext {
         data: RequestData,
         user: IUser
     ) {
-        const socketEntries = userIdToSocketEntriesMap[user.customId];
-
-        if (!socketEntries) {
-            // TODO: this, and the next should be an error, shouldn't it?
-            return false;
-        }
-
-        if (socketEntries.length === 0) {
-            delete userIdToSocketEntriesMap[user.customId];
-            return false;
-        }
-
+        const entries = ctx.socket.getEntriesByUserId(ctx, user.customId);
         const client = await ctx.session.getClient(ctx, data);
-        const entryIndex = socketEntries.findIndex(
+        const clientEntry = entries.find(
             (entry) => entry.clientId === client.clientId
         );
 
-        if (entryIndex === -1) {
-            return false;
+        if (clientEntry) {
+            if (clientEntry.userId !== user.customId) {
+                ctx.socket.removeEntryBySocketId(ctx, clientEntry.socketId);
+            } else {
+                data.socket = clientEntry.socket;
+                return true;
+            }
         }
 
-        const socketEntry = socketEntries[entryIndex];
-        const entry = authenticatedSockets[socketEntry.socket.id];
-
-        if (!entry || entry.userId !== user.customId) {
-            this.disconnectUser(entry.userId);
-            return false;
-        }
-
-        data.socket = socketEntry.socket;
-        return true;
-    }
-
-    public getUserSocketEntries(ctx: IBaseContext, userId: string) {
-        return userIdToSocketEntriesMap[userId] || [];
+        return false;
     }
 
     public updateSocketEntry(
@@ -190,16 +93,19 @@ export default class SocketContext implements ISocketContext {
         socketId: string,
         update: Partial<{ isInactive?: boolean }>
     ) {
-        if (!authenticatedSockets[socketId]) {
-            return;
+        if (socketEntries[socketId]) {
+            let entry = { ...socketEntries[socketId], ...update };
+
+            // console.log("update socket entry");
+            // console.log(
+            //     `${socketEntries[socketId].userId} -> old is inactive = ${socketEntries[socketId].isInactive}`
+            // );
+            // console.log(
+            //     `${entry.userId} -> new is inactive = ${entry.isInactive}`
+            // );
+
+            socketEntries[socketId] = entry;
         }
-
-        const entry = { ...authenticatedSockets[socketId], ...update };
-        authenticatedSockets[socketId] = entry;
-    }
-
-    public getSocketEntry(ctx: IBaseContext, socketId: string) {
-        return authenticatedSockets[socketId];
     }
 
     public broadcastToSocket(
@@ -218,19 +124,66 @@ export default class SocketContext implements ISocketContext {
         return false;
     }
 
-    private getSocketIndex(userId: string, socketId: string) {
-        const sockets = userIdToSocketEntriesMap[userId];
+    insertSocketEntry = async (ctx: IBaseContext, reqData: RequestData) => {
+        const client = await ctx.session.getClient(ctx, reqData);
+        const socket = ctx.socket.assertGetSocket(reqData);
+        const user = await ctx.session.getUser(ctx, reqData);
+        let entry: ISocketEntry = {
+            socket,
+            clientId: client.clientId,
+            socketId: socket.id,
+            userId: user.customId,
+            isInactive: false,
+        };
 
-        if (!sockets) {
-            return -1;
+        if (socketEntries[socket.id]) {
+            entry = { ...socketEntries[socket.id], ...entry };
         }
 
-        const socketIndex = sockets.findIndex(
-            (entry) => entry.socket.id === socketId
-        );
+        socketEntries[socket.id] = entry;
 
-        return socketIndex;
-    }
+        // console.log("insert socket entry");
+        // console.log(`${entry.userId} -> is inactive = ${entry.isInactive}`);
+
+        const userEntries = userIdToEntriesMap[user.customId] || {};
+        userEntries[socket.id] = true;
+        userIdToEntriesMap[user.customId] = userEntries;
+    };
+
+    getEntriesByUserId = (ctx: IBaseContext, userId: string) => {
+        const userEntries = userIdToEntriesMap[userId] || {};
+        return Object.keys(userEntries).map((sockId) => socketEntries[sockId]);
+    };
+
+    getEntryBySocketId = (ctx: IBaseContext, socketId: string) => {
+        return socketEntries[socketId] || null;
+    };
+
+    removeUserSocketEntries = (ctx: IBaseContext, userId: string) => {
+        const userEntries = userIdToEntriesMap[userId] || {};
+        Object.keys(userEntries).map((sockId) => {
+            if (socketEntries[sockId]) {
+                socketEntries[sockId].socket.disconnect(true);
+                delete socketEntries[sockId];
+            }
+        });
+
+        delete userIdToEntriesMap[userId];
+    };
+
+    removeEntryBySocketId = (ctx: IBaseContext, sockId: string) => {
+        if (socketEntries[sockId]) {
+            socketEntries[sockId].socket.disconnect(true);
+            const userEntries =
+                userIdToEntriesMap[socketEntries[sockId].userId];
+
+            if (userEntries) {
+                delete userEntries[sockId];
+            }
+
+            delete socketEntries[sockId];
+        }
+    };
 }
 
 export const getSocketContext = makeSingletonFunc(() => new SocketContext());
