@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import cors, { CorsOptions } from "cors";
 import express from "express";
@@ -22,6 +24,16 @@ import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
 import { appVariables } from "./resources/appVariables";
 import logger from "./utilities/logger";
+
+if (process.env.NODE_ENV === "production") {
+    Sentry.init({
+        dsn: "https://c416dce16a3f4dddab7adf82a64b6227@o881673.ingest.sentry.io/5836122",
+
+        // We recommend adjusting this value in production, or using tracesSampler
+        // for finer control
+        tracesSampleRate: 1.0,
+    });
+}
 
 logger.info("server initialization");
 

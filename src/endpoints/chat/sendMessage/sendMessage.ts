@@ -40,6 +40,10 @@ async function sendPushNotification(
     inactiveMemberIds.forEach(async (userId) => {
         // TODO: what happens when the user gets another message in the same room
         // while the current one is processing
+
+        // TODO: maybe only log the unseen chats
+        // then lock ( still accept updates but only send the current amount )
+        // and send in intervals
         const unseenChats = await context.unseenChats.addEntry(
             context,
             userId,
