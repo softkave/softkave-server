@@ -43,10 +43,10 @@ export interface IBlockContext {
         customId: string,
         data: Partial<IBlock>
     ) => Promise<T | undefined>;
-    saveBlock: (
+    saveBlock: <T = IBlock>(
         ctx: IBaseContext,
         block: Omit<IBlock, "customId">
-    ) => Promise<IBlock>;
+    ) => Promise<T>;
     deleteBlockAndChildren: (
         ctx: IBaseContext,
         customId: string
@@ -289,13 +289,18 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public async saveBlock(ctx: IBaseContext, block: Omit<IBlock, "customId">) {
+    public async saveBlock<T = IBlock>(
+        ctx: IBaseContext,
+        block: Omit<IBlock, "customId">
+    ) {
         const blockDoc = new ctx.models.blockModel.model(block);
-        return saveNewItemToDb(async () => {
+        const newBlock = await saveNewItemToDb(async () => {
             blockDoc.customId = getNewId();
             await blockDoc.save();
             return blockDoc;
         });
+
+        return cast<T>(newBlock);
     }
 }
 

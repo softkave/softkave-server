@@ -1,6 +1,6 @@
 import { getComplexTypeArrayInputGraphQLSchema } from "../utils";
 
-const blockSchema = `
+const taskSchema = `
     type Assignee {
         userId: String
         assignedBy: String
@@ -28,44 +28,6 @@ const blockSchema = `
         completedBy: String
     }
 
-    type Status {
-        customId: String
-        name: String
-        description: String
-        color: String
-        position: Float
-        createdBy: String
-        createdAt: String
-        updatedBy: String
-        updatedAt: String
-    }
-
-    input StatusInput {
-        customId: String
-        name: String
-        color: String
-        description: String
-        position: Float
-    }
-
-    type Label {
-        customId: String
-        name: String
-        color: String
-        description: String
-        createdBy: String
-        createdAt: String
-        updatedBy: String
-        updatedAt: String
-    }
-
-    input LabelInput {
-        customId: String
-        name: String
-        color: String
-        description: String
-    }
-
     type BlockAssignedLabel {
         customId: String
         assignedBy: String
@@ -76,37 +38,13 @@ const blockSchema = `
         customId: String
     }
 
-    type BoardStatusResolution {
-        customId: String
-        name: String
-        createdBy: String
-        createdAt: String
-        description: String
-        updatedBy: String
-        updatedAt: String
-    }
-
-    input BoardStatusResolutionInput {
-        customId: String
-        name: String
-        description: String
-    }
-
     type TaskSprint {
         sprintId: String
         assignedAt: String
         assignedBy: String
     }
 
-    type BoardSprintOptions {
-        duration: String
-        updatedAt: String
-        updatedBy: String
-        createdAt: String
-        createdBy: String
-    }
-
-    type Block {
+    type Task {
         customId: String
         createdBy: String
         createdAt: String
@@ -114,7 +52,6 @@ const blockSchema = `
         name: String
         description: String
         dueAt: String
-        color: String
         updatedAt: String
         updatedBy: String
         parent: String
@@ -122,48 +59,37 @@ const blockSchema = `
         assignees: [Assignee]
         priority: String
         subTasks: [SubTask]
-        boardStatuses: [Status]
-        boardLabels: [Label]
-        boardResolutions: [BoardStatusResolution]
         status: String
         statusAssignedBy: String
         statusAssignedAt: String
         taskResolution: String
         labels: [BlockAssignedLabel]
         taskSprint: TaskSprint
-        currentSprintId: String
-        sprintOptions: BoardSprintOptions
-        lastSprintId: String
     }
 
-    type SingleBlockOpResponse {
+    type SingleTaskOpResponse {
         errors: [Error]
-        block: Block
+        task: Task
     }
 
-    type MultipleBlocksOpResponse {
+    type MultipleTasksOpResponse {
         errors: [Error]
-        blocks: [Block]
+        tasks: [Task]
     }
 
     input TaskSprintInput {
         sprintId: String
     }
 
-    input AddBlockInput {
-        type: String
+    input CreateTaskInput {
         name: String
         description: String
         dueAt: String
-        color: String
         parent: String
         rootBlockId: String
         assignees: [AssigneeInput]
         priority: String
         subTasks: [SubTaskInput]
-        boardStatuses: [StatusInput]
-        boardLabels: [LabelInput]
-        boardResolutions: [BoardStatusResolutionInput]
         status: String
         taskResolution: String
         labels: [BlockAssignedLabelInput]
@@ -179,132 +105,34 @@ const blockSchema = `
         "AssigneeInput"
     )}
     ${getComplexTypeArrayInputGraphQLSchema(
-        "UpdateBlockStatusInput",
-        "StatusInput"
-    )}
-    ${getComplexTypeArrayInputGraphQLSchema(
-        "UpdateBlockBoardStatusResolutionInput",
-        "BoardStatusResolutionInput"
-    )}
-    ${getComplexTypeArrayInputGraphQLSchema(
         "UpdateBlockBlockAssignedLabelInput",
         "BlockAssignedLabelInput"
     )}
-    ${getComplexTypeArrayInputGraphQLSchema(
-        "UpdateBlockLabelInput",
-        "LabelInput"
-    )}
 
-    input UpdateBlockInput {
+    input UpdateTaskInput {
         name: String
         description: String
-        color: String
         priority: String
         parent: String
         subTasks: UpdateBlockSubTaskInput
         dueAt: String
         assignees: UpdateBlockAssigneeInput
-        boardStatuses: UpdateBlockStatusInput
-        boardLabels: UpdateBlockLabelInput
-        boardResolutions: UpdateBlockBoardStatusResolutionInput
         status: String
         taskResolution: String
         labels: UpdateBlockBlockAssignedLabelInput
         taskSprint: TaskSprintInput
     }
 
-    type CollaborationRequestFrom {
-        userId: String
-        name: String
-        blockId: String
-        blockName: String
-        blockType: String
+    type TaskQuery {
+        getBoardTasks (boardId: String!) : MultipleTasksOpResponse
     }
 
-    type NotificationTo {
-        email: String
-    }
-
-    type NotificationStatusHistory {
-        status: String
-        date: String
-    }
-
-    type NotificationSentEmailHistory {
-        date: String
-    }
-
-    type Notification {
-        customId: String
-        from: CollaborationRequestFrom
-        createdAt: String
-        readAt: String
-        to: NotificationTo
-        statusHistory: [NotificationStatusHistory]
-        sentEmailHistory: [NotificationSentEmailHistory]
-        type: String
-    }
-
-    type GetNotificationsResponse {
-        errors: [Error]
-        requests: [Notification]
-    }
-
-    type Collaborator {
-        customId: String
-        name: String
-        email: String
-        color: String
-    }
-
-    type GetBlockCollaboratorsResponse {
-        errors: [Error]
-        collaborators: [Collaborator]
-    }
-
-    input AddCollaboratorInput {
-        email: String!
-        customId: String!
-    }
-
-    type AddCollaboratorResult {
-        errors: [Error]
-        requests: [Notification]
-    }
-
-    type AddBlockResponse {
-        errors: [Error]
-        block: Block
-    }
-
-    type BlockQuery {
-        addBlock (block: AddBlockInput!) : AddBlockResponse
-        updateBlock (
-            blockId: String!,
-            data: UpdateBlockInput!
-        ) : AddBlockResponse
-
-        deleteBlock (blockId: String!) : ErrorOnlyResponse
-        getUserRootBlocks: MultipleBlocksOpResponse
-        getBlockChildren (
-            blockId: String!,
-            typeList: [String!],
-        ) : MultipleBlocksOpResponse
-
-        addCollaborators (
-            blockId: String!,
-            collaborators: [AddCollaboratorInput!]!,
-        ) : AddCollaboratorResult
-
-        removeCollaborator (
-            blockId: String!,
-            collaboratorId: String!
-        ) : ErrorOnlyResponse
-
-        getBlockCollaborators (blockId: String!) : GetBlockCollaboratorsResponse
-        getBlockNotifications(blockId: String!) : GetNotificationsResponse
-        revokeCollaborationRequest (blockId: String!, requestId: String!) : ErrorOnlyResponse
+    type TaskMutation {
+        createTask (task: CreateTaskInput!) : SingleTaskOpResponse
+        updateTask (taskId: String!, data: UpdateTaskInput!) : SingleTaskOpResponse
+        transferTask (taskId: String!, boardId: String!) : SingleTaskOpResponse
+        deleteTask (taskId: String!) : ErrorOnlyResponse
     }
 `;
 
-export default blockSchema;
+export default taskSchema;

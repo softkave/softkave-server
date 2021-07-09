@@ -2,30 +2,23 @@ import { IAssignee, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint, IUpdateComplexTypeArrayInput } from "../../types";
-import { TransferBlockEndpoint } from "../transferBlock/types";
+import { TransferTaskEndpoint } from "../transferTask/types";
 import {
     IAssigneeInput,
     IBlockAssignedLabelInput,
-    IBlockLabelInput,
-    IBlockStatusInput,
-    IBoardStatusResolutionInput,
     IPublicTask,
     ISubTaskInput,
     ITaskSprintInput,
 } from "../types";
 
-export interface IUpdateBlockInput {
+export interface IUpdateTaskInput {
     name?: string;
     description?: string;
-    color?: string;
     priority?: string;
     parent?: string;
     subTasks?: IUpdateComplexTypeArrayInput<ISubTaskInput>;
     dueAt?: string;
     assignees?: IUpdateComplexTypeArrayInput<IAssigneeInput>;
-    boardStatuses?: IUpdateComplexTypeArrayInput<IBlockStatusInput>;
-    boardLabels?: IUpdateComplexTypeArrayInput<IBlockLabelInput>;
-    boardResolutions?: IUpdateComplexTypeArrayInput<IBoardStatusResolutionInput>;
     status?: string;
     taskResolution?: string;
     labels?: IUpdateComplexTypeArrayInput<IBlockAssignedLabelInput>;
@@ -37,13 +30,13 @@ export interface ITaskAssigneesDiff {
     removedAssignees: IAssignee[];
 }
 
-export interface IUpdateBlockParameters {
-    blockId: string;
-    data: IUpdateBlockInput;
+export interface IUpdateTaskParameters {
+    taskId: string;
+    data: IUpdateTaskInput;
 }
 
-export interface IUpdateBlockContext extends IBaseContext {
-    transferBlock: TransferBlockEndpoint;
+export interface IUpdateTaskContext extends IBaseContext {
+    transferTask: TransferTaskEndpoint;
     sendAssignedTaskEmailNotification: (
         board: IBlock,
         taskName: string,
@@ -69,8 +62,8 @@ export interface IUpdateBlockContext extends IBaseContext {
     ) => Promise<void>;
 }
 
-export type UpdateBlockEndpoint = Endpoint<
-    IUpdateBlockContext,
-    IUpdateBlockParameters,
-    { block: IPublicTask }
+export type UpdateTaskEndpoint = Endpoint<
+    IUpdateTaskContext,
+    IUpdateTaskParameters,
+    { task: IPublicTask }
 >;

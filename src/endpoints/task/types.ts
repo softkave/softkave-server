@@ -1,4 +1,5 @@
 import {
+    BlockType,
     IAssignee,
     IBlockAssignedLabel,
     ISubTask,
@@ -29,6 +30,7 @@ export interface ITask {
     createdBy: string;
     createdAt: Date;
     name: string;
+    type: BlockType.Task;
     description?: string;
     updatedAt?: Date;
     updatedBy?: string;
@@ -67,6 +69,7 @@ export type IPublicTask = ConvertDatesToStrings<{
     createdAt: string;
     name: string;
     description?: string;
+    type: BlockType.Task;
     dueAt?: string;
     updatedAt?: string;
     updatedBy?: string;

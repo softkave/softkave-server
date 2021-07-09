@@ -1,2 +1,2 @@
-export * from "./BlockEndpointsGraphQLController";
+export * from "./TaskEndpointsGraphQLController";
 export * from "./schema";

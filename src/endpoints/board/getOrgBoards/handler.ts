@@ -1,8 +1,8 @@
 import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
 import canReadOrg from "../../org/canReadBlock";
-import { OrgDoesNotExistError } from "../../org/errors";
 import { IOrganization } from "../../org/types";
+import { throwOrgNotFoundError } from "../../org/utils";
 import { IBoard } from "../types";
 import { getPublicBoardsArray } from "../utils";
 import { GetOrgBoardsEndpoint } from "./types";
@@ -14,9 +14,7 @@ const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
     const org = await context.block.assertGetBlockById<IOrganization>(
         context,
         data.orgId,
-        () => {
-            throw new OrgDoesNotExistError();
-        }
+        throwOrgNotFoundError
     );
 
     canReadOrg(org.customId, user);

@@ -2,6 +2,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadOrg from "../../org/canReadBlock";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
+import { throwBoardNotFoundError } from "../utils";
 import { DeleteBoardEndpoint } from "./types";
 import { deleteBoardJoiSchema } from "./validation";
 
@@ -10,7 +11,8 @@ const deleteBoard: DeleteBoardEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const board = await context.block.assertGetBlockById<IBoard>(
         context,
-        data.boardId
+        data.boardId,
+        throwBoardNotFoundError
     );
 
     canReadOrg(board.parent, user);

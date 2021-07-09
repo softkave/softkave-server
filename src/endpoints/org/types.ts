@@ -5,7 +5,7 @@ export interface IOrganization {
     customId: string;
     createdBy: string;
     createdAt: Date;
-    type: BlockType;
+    type: BlockType.Org;
     name: string;
     lowerCasedName: string;
     description?: string;
@@ -29,7 +29,7 @@ export type IPublicOrg = ConvertDatesToStrings<{
     customId: string;
     createdBy: string;
     createdAt: Date;
-    type: BlockType;
+    type: BlockType.Org;
     name?: string;
     description?: string;
     updatedAt?: Date;

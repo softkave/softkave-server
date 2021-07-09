@@ -5,15 +5,13 @@ const priorityVeryImportant = "very important";
 const taskConstants = {
     maxNameLength: 300,
     maxDescriptionLength: 1000,
-    maxTaskCollaboratorsLength: 10,
-    maxChildrenCount: 500,
+    maxTaskCollaboratorsLength: 20,
     priorityValuesArray: [
         priorityNotImportant,
         priorityImportant,
         priorityVeryImportant,
     ],
     maxSubTasks: 50,
-    maxLabels: 20,
     maxAssignedLabels: 20,
 };
 

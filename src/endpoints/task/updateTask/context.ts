@@ -4,15 +4,18 @@ import appInfo from "../../../resources/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
-import transferBlock from "../transferBlock/transferBlock";
+import transferTask from "../transferTask/handler";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
-import { IUpdateBlockContext } from "./types";
+import { IUpdateTaskContext } from "./types";
 
-export default class UpdateBlockContext
+// TODO: how can we fix the "type instatiation is excessively deep error"?
+// @ts-ignore
+export default class UpdateTaskContext
     extends BaseContext
-    implements IUpdateBlockContext {
-    public async transferBlock(context, instData) {
-        return await transferBlock(context, instData);
+    implements IUpdateTaskContext
+{
+    public async transferTask(context, instData) {
+        return await transferTask(context, instData);
     }
 
     public async sendAssignedTaskEmailNotification(

@@ -1,9 +1,8 @@
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadOrg from "../canReadBlock";
-import { OrgDoesNotExistError } from "../errors";
 import { IOrganization } from "../types";
-import { getPublicOrgData } from "../utils";
+import { getPublicOrgData, throwOrgNotFoundError } from "../utils";
 import { UpdateOrgEndpoint } from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
@@ -13,9 +12,7 @@ const updateOrg: UpdateOrgEndpoint = async (context, instData) => {
     const org = await context.block.assertGetBlockById<IOrganization>(
         context,
         data.orgId,
-        () => {
-            throw new OrgDoesNotExistError();
-        }
+        throwOrgNotFoundError
     );
 
     canReadOrg(org.customId, user);

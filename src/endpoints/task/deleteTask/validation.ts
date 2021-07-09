@@ -1,8 +1,8 @@
 import Joi from "joi";
 import { validationSchemas } from "../../../utilities/validationUtils";
 
-export const deleteBoardJoiSchema = Joi.object()
+export const deleteTaskJoiSchema = Joi.object()
     .keys({
-        boardId: validationSchemas.uuid.required(),
+        taskId: validationSchemas.uuid.required(),
     })
     .required();

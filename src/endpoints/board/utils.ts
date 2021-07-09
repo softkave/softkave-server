@@ -5,6 +5,7 @@ import {
 } from "../../mongo/collaboration-request";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
+import { BoardDoesNotExistError } from "./errors";
 import { IBoard, IPublicBoard } from "./types";
 
 const publicBoardFields = getFields<IPublicBoard>({
@@ -69,4 +70,8 @@ export function getPublicBoardsArray(
 ): IPublicBoard[] {
     // @ts-ignore
     return boards.map((board) => extractFields(board, publicBoardFields));
+}
+
+export function throwBoardNotFoundError() {
+    throw new BoardDoesNotExistError();
 }

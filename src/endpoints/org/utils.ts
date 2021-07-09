@@ -1,5 +1,6 @@
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
+import { OrgDoesNotExistError } from "./errors";
 import { IOrganization, IPublicOrg } from "./types";
 
 const publicOrgFields = getFields<IPublicOrg>({
@@ -22,4 +23,8 @@ export function getPublicOrgsArray(
     orgs: Array<Partial<IOrganization>>
 ): IPublicOrg[] {
     return orgs.map((org) => extractFields(org, publicOrgFields));
+}
+
+export function throwOrgNotFoundError() {
+    throw new OrgDoesNotExistError();
 }

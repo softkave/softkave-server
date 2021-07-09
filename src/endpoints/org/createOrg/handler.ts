@@ -33,7 +33,7 @@ const createOrg: CreateOrgEndpoint = async (context, instData) => {
         color: data.org.color,
     };
 
-    const savedOrg = await context.block.saveBlock(context, org);
+    const savedOrg = await context.block.saveBlock<IOrganization>(context, org);
 
     // TODO: scrub for orgs that are not added to user and add or clean them
     //    you can do this when user tries to read them, or add them again

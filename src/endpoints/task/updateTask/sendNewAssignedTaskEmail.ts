@@ -4,19 +4,19 @@ import { getTaskAssignedNotification } from "../../notifications/templates/task"
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import diffAssignedUsers from "./diffAssignedUsers";
-import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
+import { IUpdateTaskContext, IUpdateTaskParameters } from "./types";
 
 async function sendNewlyAssignedTaskEmail(
-    context: IUpdateBlockContext,
-    instData: RequestData<IUpdateBlockParameters>,
-    block: IBlock,
-    data: Partial<IBlock>,
-    task: IBlock
+    context: IUpdateTaskContext,
+    instData: RequestData<IUpdateTaskParameters>,
+    task: IBlock,
+    update: Partial<IBlock>,
+    updatedTask: IBlock
 ) {
     // TODO: should we send an email if you're the one who assigned it to yourself?
     // TODO: how should we respect the user and not spam them? -- user settings
 
-    const diff = diffAssignedUsers(block, data);
+    const diff = diffAssignedUsers(task, update);
     const newAssignees = diff.newAssignees;
 
     if (newAssignees.length === 0) {

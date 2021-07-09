@@ -9,7 +9,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadOrg from "../../org/canReadBlock";
 import { fireAndForgetPromise, getComplexTypeArrayInput } from "../../utils";
 import { IBoard } from "../types";
-import { getPublicBoardData } from "../utils";
+import { getPublicBoardData, throwBoardNotFoundError } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
@@ -176,7 +176,8 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const board = await context.block.assertGetBlockById<IBoard>(
         context,
-        data.boardId
+        data.boardId,
+        throwBoardNotFoundError
     );
 
     canReadOrg(board.parent, user);

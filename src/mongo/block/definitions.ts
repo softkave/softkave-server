@@ -209,21 +209,21 @@ const blockSchema = {
     publicPermissionGroupId: { type: String },
 
     // Tasks
-    assignees: { type: [blockAssigneeSchema] },
+    assignees: { type: [blockAssigneeSchema], default: [] },
     priority: { type: String },
-    subTasks: { type: [subTaskSchema] },
+    subTasks: { type: [subTaskSchema], default: [] },
     dueAt: { type: Date },
     status: { type: String },
     statusAssignedBy: { type: String },
     statusAssignedAt: { type: Date },
     taskResolution: { type: String },
-    labels: { type: [blockAssignedLabelSchema] },
+    labels: { type: [blockAssignedLabelSchema], default: [] },
     taskSprint: { type: taskSprintSchema },
 
     // Boards
-    boardStatuses: { type: [blockStatusSchema] },
-    boardLabels: { type: [blockLabelSchema] },
-    boardResolutions: { type: boardStatusResolutionSchema },
+    boardStatuses: { type: [blockStatusSchema], default: [] },
+    boardLabels: { type: [blockLabelSchema], default: [] },
+    boardResolutions: { type: boardStatusResolutionSchema, default: [] },
     currentSprintId: { type: String },
     sprintOptions: { type: boardSprintOptionsSchema },
     lastSprintId: { type: String },

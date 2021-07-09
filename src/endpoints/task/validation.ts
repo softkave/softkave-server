@@ -7,7 +7,7 @@ const taskAssigneeSchema = Joi.object().keys({
     userId: validationSchemas.uuid.required(),
 });
 
-const subTasksSchema = Joi.object().keys({
+const subTaskSchema = Joi.object().keys({
     customId: validationSchemas.uuid,
     description: Joi.string()
         .trim()
@@ -33,7 +33,7 @@ const priority = Joi.string()
     .valid(taskConstants.priorityValuesArray);
 
 const subTasks = Joi.array()
-    .items(subTasksSchema)
+    .items(subTaskSchema)
     .max(taskConstants.maxSubTasks)
     .unique("customId");
 
@@ -62,9 +62,8 @@ const taskValidationSchemas = {
     description,
     dueAt,
     priority,
-    subTasksSchema,
+    subTaskSchema,
     subTasks,
-    parent,
     blockAssignedLabel,
     blockAssignedLabelsList,
     statusAssignedBy,
