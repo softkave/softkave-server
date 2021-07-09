@@ -30,11 +30,11 @@ export default class RequestData<
     TokenData extends IToken = IToken,
     IncomingTokenData extends IBaseTokenData = IBaseTokenData
 > {
-    public static async fromExpressRequest<DataType>(
+    public static fromExpressRequest<DataType>(
         ctx: IBaseContext,
         req: IServerRequest,
         data?: DataType
-    ): Promise<RequestData> {
+    ): RequestData<DataType> {
         const requestData = new RequestData({
             req,
             data,

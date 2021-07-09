@@ -39,6 +39,10 @@ export interface ISprintContext {
         boardId: string
     ) => Promise<boolean>;
     deleteSprint: (ctx: IBaseContext, sprintId: string) => Promise<void>;
+    deleteSprintByBoardId: (
+        ctx: IBaseContext,
+        boardId: string
+    ) => Promise<void>;
     updateUnstartedSprints: (
         ctx: IBaseContext,
         boardId: string,
@@ -116,6 +120,16 @@ export default class SprintContext implements ISprintContext {
             await ctx.models.sprintModel.model
                 .deleteOne({
                     customId: sprintId,
+                })
+                .exec();
+        }
+    );
+
+    public deleteSprintByBoardId = wrapFireAndThrowError(
+        async (ctx: IBaseContext, boardId: string) => {
+            await ctx.models.sprintModel.model
+                .deleteOne({
+                    boardId,
                 })
                 .exec();
         }

@@ -2,7 +2,7 @@ import { Connection, Model, Schema, Document } from "mongoose";
 import { getDate } from "../utilities/fns";
 import { ensureTypeFields } from "./utils";
 
-export interface IOrganization {
+export interface IOrganization1 {
     persistentId: string;
     createdBy: string;
     createdAt: Date;

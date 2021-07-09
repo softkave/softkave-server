@@ -65,7 +65,7 @@ class TestBlockContext implements IBlockContext {
         return blocks[blocks.length - 1];
     };
 
-    deleteBlock = async (ctx: IBaseContext, customId: string) => {
+    deleteBlockAndChildren = async (ctx: IBaseContext, customId: string) => {
         const index = blocks.findIndex((block) => block.customId === customId);
 
         if (index !== -1) {

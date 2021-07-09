@@ -7,21 +7,29 @@ import {
 } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { getDate } from "../../utilities/fns";
+import cast, { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
+import OperationError from "../../utilities/OperationError";
 import { BlockDoesNotExistError } from "../block/errors";
+import { IOrganization } from "../org/types";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IBlockContext {
-    getBlockById: (
+    getBlockById: <T = IBlock>(
         ctx: IBaseContext,
         customId: string
-    ) => Promise<IBlock | undefined>;
-    assertGetBlockById: (
+    ) => Promise<T | undefined>;
+    assertGetBlockById: <T = IBlock>(
         ctx: IBaseContext,
-        customId: string
-    ) => Promise<IBlock>;
+        customId: string,
+        throwError?: () => void
+    ) => Promise<T>;
+    assertBlockById: (
+        ctx: IBaseContext,
+        customId: string,
+        throwError?: () => void
+    ) => Promise<boolean>;
     getBlockByName: (
         ctx: IBaseContext,
         name: string
@@ -30,22 +38,26 @@ export interface IBlockContext {
         ctx: IBaseContext,
         customIds: string[]
     ) => Promise<IBlock[]>;
-    updateBlockById: (
+    updateBlockById: <T = IBlock>(
         ctx: IBaseContext,
         customId: string,
         data: Partial<IBlock>
-    ) => Promise<IBlock | undefined>;
+    ) => Promise<T | undefined>;
     saveBlock: (
         ctx: IBaseContext,
         block: Omit<IBlock, "customId">
     ) => Promise<IBlock>;
-    deleteBlock: (ctx: IBaseContext, customId: string) => Promise<void>;
-    getBlockChildren: (
+    deleteBlockAndChildren: (
+        ctx: IBaseContext,
+        customId: string
+    ) => Promise<void>;
+    getBlockChildren: <T = IBlock>(
         ctx: IBaseContext,
         customId: string,
         typeList?: BlockType[]
-    ) => Promise<IBlock[]>;
+    ) => Promise<T[]>;
     getUserRootBlocks: (ctx: IBaseContext, user: IUser) => Promise<IBlock[]>;
+    getUserOrgs: (ctx: IBaseContext, user: IUser) => Promise<IOrganization[]>;
     bulkUpdateTaskSprints: (
         ctx: IBaseContext,
         sprintId: string,
@@ -64,26 +76,59 @@ export interface IBlockContext {
 
 export default class BlockContext implements IBlockContext {
     public getBlockById = wrapFireAndThrowError(
-        (ctx: IBaseContext, customId: string) => {
-            return ctx.models.blockModel.model
-                .findOne({
-                    customId,
-                    isDeleted: false,
-                })
-                .lean()
-                .exec();
+        async <T = IBlock>(ctx: IBaseContext, customId: string) => {
+            return cast<T>(
+                await ctx.models.blockModel.model
+                    .findOne({
+                        customId,
+                        isDeleted: false,
+                    })
+                    .lean()
+                    .exec()
+            );
         }
     );
 
     public assertGetBlockById = wrapFireAndThrowError(
-        async (ctx: IBaseContext, customId: string) => {
+        async <T = IBlock>(
+            ctx: IBaseContext,
+            customId: string,
+            throwError?: () => void
+        ) => {
             const block = await ctx.block.getBlockById(ctx, customId);
 
             if (!block) {
+                if (throwError) {
+                    throwError();
+                }
+
                 throw new BlockDoesNotExistError();
             }
 
-            return block;
+            return cast<T>(block);
+        }
+    );
+
+    public assertBlockById = wrapFireAndThrowError(
+        async (
+            ctx: IBaseContext,
+            customId: string,
+            throwError?: () => void
+        ) => {
+            const exists = await ctx.models.blockModel.model.exists({
+                customId,
+                isDeleted: false,
+            });
+
+            if (!exists) {
+                if (throwError) {
+                    throwError();
+                }
+
+                throw new BlockDoesNotExistError();
+            }
+
+            return exists;
         }
     );
 
@@ -100,13 +145,19 @@ export default class BlockContext implements IBlockContext {
     );
 
     public updateBlockById = wrapFireAndThrowError(
-        (ctx: IBaseContext, customId: string, data: Partial<IBlock>) => {
-            return ctx.models.blockModel.model
+        async <T = IBlock>(
+            ctx: IBaseContext,
+            customId: string,
+            data: Partial<IBlock>
+        ) => {
+            const block = await ctx.models.blockModel.model
                 .findOneAndUpdate({ customId, isDeleted: false }, data, {
                     new: true,
                 })
                 .lean()
                 .exec();
+
+            return cast<T | undefined>(block);
         }
     );
 
@@ -121,7 +172,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public deleteBlock = wrapFireAndThrowError(
+    public deleteBlockAndChildren = wrapFireAndThrowError(
         async (ctx: IBaseContext, customId: string) => {
             await ctx.models.blockModel.model
                 .deleteMany({ $or: [{ customId }, { parent: customId }] })
@@ -130,7 +181,11 @@ export default class BlockContext implements IBlockContext {
     );
 
     public getBlockChildren = wrapFireAndThrowError(
-        async (ctx: IBaseContext, blockId: string, typeList?: BlockType[]) => {
+        async <T = IBlock>(
+            ctx: IBaseContext,
+            blockId: string,
+            typeList?: BlockType[]
+        ) => {
             const query: FilterQuery<IBlock> = {
                 isDeleted: false,
                 parent: blockId,
@@ -147,7 +202,7 @@ export default class BlockContext implements IBlockContext {
                 .lean()
                 .exec();
 
-            return blocks;
+            return cast<T[]>(blocks);
         }
     );
 
@@ -164,6 +219,24 @@ export default class BlockContext implements IBlockContext {
                 })
                 .lean()
                 .exec();
+        }
+    );
+
+    // TODO: seems similar to getUserRootBlocks, refactor.
+    public getUserOrgs = wrapFireAndThrowError(
+        async (ctx: IBaseContext, user: IUser) => {
+            const organizationIds = user.orgs.map((org) => org.customId);
+            const orgs = await ctx.models.blockModel.model
+                .find({
+                    customId: {
+                        $in: organizationIds,
+                    },
+                    isDeleted: false,
+                })
+                .lean()
+                .exec();
+
+            return cast<IOrganization[]>(orgs);
         }
     );
 
