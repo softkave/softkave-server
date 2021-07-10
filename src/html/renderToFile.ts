@@ -13,6 +13,11 @@ import {
     collaborationRequestEmailText,
 } from "./collaborationRequestEmail";
 import {
+    collaboratorRemovedEmailHTML,
+    collaboratorRemovedEmailText,
+    ICollaboratorRemovedEmailProps,
+} from "./collaboratorRemoved";
+import {
     generateEmailConfirmationHTML,
     generateEmailConfirmationText,
     IGenerateEmailConfirmationMediaProps,
@@ -118,9 +123,9 @@ export function renderForgotPasswordEmailToFile() {
 
 // Confirm email address email
 const comfirmEmailAddressHTMLFile =
-    "email-templates/templates/forgot-password-html.html";
+    "email-templates/templates/confirm-email-address-html.html";
 const confirmEmailAddressTxtFile =
-    "email-templates/templates/forgot-password-text.txt";
+    "email-templates/templates/confirm-email-address-text.txt";
 
 export function renderConfirmEmailAddressMedia() {
     const props: IGenerateEmailConfirmationMediaProps = {
@@ -133,4 +138,22 @@ export function renderConfirmEmailAddressMedia() {
 
     fs.writeFileSync(comfirmEmailAddressHTMLFile, existingUserHTML);
     fs.writeFileSync(confirmEmailAddressTxtFile, existingUserText);
+}
+
+// Collaborator removed
+const collaboratorRemovedHTMLFile =
+    "email-templates/templates/collaborator-removed-html.html";
+const collaboratorRemovedTxtFile =
+    "email-templates/templates/collaborator-removed-text.txt";
+
+export function renderCollaboratorRemovedMedia() {
+    const props: ICollaboratorRemovedEmailProps = {
+        orgName: "Softkave",
+    };
+
+    const existingUserHTML = collaboratorRemovedEmailHTML(props);
+    const existingUserText = collaboratorRemovedEmailText(props);
+
+    fs.writeFileSync(collaboratorRemovedHTMLFile, existingUserHTML);
+    fs.writeFileSync(collaboratorRemovedTxtFile, existingUserText);
 }

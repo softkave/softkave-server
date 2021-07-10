@@ -1,6 +1,6 @@
 import { CollaborationRequestResponse } from "../../mongo/collaboration-request/definitions";
 import { SprintDuration } from "../../mongo/sprint";
-import { IPublicPermissionGroup } from "../access-control/types";
+import { IPublicPermissionGroup } from "../accessControl/types";
 import { IPublicBlock } from "../block/types";
 import { IPublicChatData, IPublicRoomData } from "../chat/types";
 import { IPublicCollaborationRequest } from "../notifications/types";

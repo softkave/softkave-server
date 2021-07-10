@@ -4,14 +4,15 @@ import makeSingletonFunc from "../../../utilities/createSingletonFunc";
 import {
     initializeBoardPermissions,
     initializeOrgAccessControl,
-} from "../../access-control/initializeBlockPermissions";
+} from "../../accessControl/initializeBlockPermissions";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import { wrapFireAndThrowError } from "../../utils";
 import { IInternalAddBlockContext } from "./types";
 
 export default class InternalAddBlockContext
     extends BaseContext
-    implements IInternalAddBlockContext {
+    implements IInternalAddBlockContext
+{
     public initializeBoardPermissions = wrapFireAndThrowError(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
             return initializeBoardPermissions(ctx, user, block);

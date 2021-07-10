@@ -1,7 +1,7 @@
 import makeSingletonFunc from "../utilities/createSingletonFunc";
 import AccessControlEndpointsGraphQLController, {
     getAccessControlEndpointsGraphQLController,
-} from "./access-control/AccessControlEndpointsGraphQLController";
+} from "./accessControl/AccessControlEndpointsGraphQLController";
 import BlockEndpointsGraphQLController, {
     getBlockEndpointsGraphQLController,
 } from "./block/BlockEndpointsGraphQLController";

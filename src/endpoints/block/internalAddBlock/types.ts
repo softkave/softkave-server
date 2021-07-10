@@ -2,7 +2,7 @@ import { IBlock } from "../../../mongo/block";
 import {
     initializeBoardPermissions,
     initializeOrgAccessControl,
-} from "../../access-control/initializeBlockPermissions";
+} from "../../accessControl/initializeBlockPermissions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { INewBlockInput } from "../types";

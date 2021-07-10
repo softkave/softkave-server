@@ -1,7 +1,7 @@
 import {
     getDefaultOrgPermissionGroups,
     makeDefaultPermissions,
-} from "../endpoints/access-control/initializeBlockPermissions";
+} from "../endpoints/accessControl/initializeBlockPermissions";
 import { SystemResourceType } from "../models/system";
 import { getPermissionModel } from "../mongo/access-control/PermissionModel";
 import { getPermissionGroupsModel } from "../mongo/access-control/PermissionGroupsModel";
@@ -27,7 +27,8 @@ export async function script_initOrgPermissions() {
     const permissionGroupModel = getPermissionGroupsModel();
     const permissionModel = getPermissionModel();
     const userModel = getUserModel();
-    const userAssignedPermissionGroupModel = getUserAssignedPermissionGroupsModel();
+    const userAssignedPermissionGroupModel =
+        getUserAssignedPermissionGroupsModel();
 
     await blockModel.waitTillReady();
     await permissionGroupModel.waitTillReady();
@@ -57,7 +58,8 @@ export async function script_initOrgPermissions() {
 
             const permissions = makeDefaultPermissions(doc.createdBy, doc, {
                 [DefaultPermissionGroupNames.Admin]: adminPermissionGroup,
-                [DefaultPermissionGroupNames.Collaborator]: collaboratorPermissionGroup,
+                [DefaultPermissionGroupNames.Collaborator]:
+                    collaboratorPermissionGroup,
                 [DefaultPermissionGroupNames.Public]: publicPermissionGroup,
             });
 
