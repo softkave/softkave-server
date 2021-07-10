@@ -1,0 +1,3 @@
+const collaboratorConstants = {};
+
+export { collaboratorConstants };

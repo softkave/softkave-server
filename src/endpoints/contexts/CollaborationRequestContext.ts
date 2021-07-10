@@ -1,6 +1,7 @@
 import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
+import { CollaborationRequestDoesNotExistError } from "../collaborationRequests/errors";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -9,6 +10,10 @@ export interface ICollaborationRequestContext {
         ctx: IBaseContext,
         id: string
     ) => Promise<ICollaborationRequest | undefined>;
+    assertGetCollaborationRequestById: (
+        ctx: IBaseContext,
+        id: string
+    ) => Promise<ICollaborationRequest>;
     getUserCollaborationRequests: (
         ctx: IBaseContext,
         email: string
@@ -42,13 +47,30 @@ export interface ICollaborationRequestContext {
 }
 
 export default class CollaborationRequestContext
-    implements ICollaborationRequestContext {
+    implements ICollaborationRequestContext
+{
     public getCollaborationRequestById = wrapFireAndThrowError(
         (ctx: IBaseContext, id: string) => {
             return ctx.models.collaborationRequestModel.model
                 .findOne({ customId: id })
                 .lean()
                 .exec();
+        }
+    );
+
+    public assertGetCollaborationRequestById = wrapFireAndThrowError(
+        async (ctx: IBaseContext, id: string) => {
+            const request =
+                await ctx.collaborationRequest.getCollaborationRequestById(
+                    ctx,
+                    id
+                );
+
+            if (!request) {
+                throw new CollaborationRequestDoesNotExistError();
+            }
+
+            return request;
         }
     );
 
@@ -121,9 +143,10 @@ export default class CollaborationRequestContext
         ctx: IBaseContext,
         collaborationRequest: Omit<ICollaborationRequest, "customId">
     ) {
-        const collaborationRequestDoc = new ctx.models.collaborationRequestModel.model(
-            collaborationRequest
-        );
+        const collaborationRequestDoc =
+            new ctx.models.collaborationRequestModel.model(
+                collaborationRequest
+            );
 
         return saveNewItemToDb(() => {
             collaborationRequestDoc.customId = getNewId();

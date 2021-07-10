@@ -28,14 +28,6 @@ const userSchema = `
         email: String
     }
 
-    type Client {
-        clientId: String
-        hasUserSeenNotificationsPermissionDialog: Boolean
-        muteChatNotifications: Boolean
-        isSubcribedToPushNotifications: Boolean
-        isLoggedIn: Boolean
-    }
-
     type UserQueryResult {
         user: User
         token: String
@@ -46,12 +38,6 @@ const userSchema = `
     type UserExistsResult {
         errors: [Error]
         exists: Boolean
-    }
-
-    type RespondToCollaborationRequestResponse {
-        errors: [Error]
-        block: Block
-        respondedAt: String
     }
 
     input UpdateClientDataInput {
@@ -77,15 +63,6 @@ const userSchema = `
         ) : UserQueryResult
         updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
-        getUserNotifications: GetNotificationsResponse
-        respondToCollaborationRequest (
-            requestId: String!, 
-            response: String!
-        ): RespondToCollaborationRequestResponse
-        markNotificationRead (
-            notificationId: String!,
-            readAt: String!
-        ): ErrorOnlyResponse
         getUserData: UserQueryResult
         updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
     }

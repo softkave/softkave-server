@@ -15,3 +15,4 @@
 -   Audit log, mark delete and restore
 -   Transactions
 -   TODO comments app
+-   Send email/notification for remove collaborator

@@ -7,20 +7,18 @@ import { getChangePasswordWithTokenContext } from "./changePasswordWithToken/con
 import ForgotPasswordContext from "./forgotPassword/context";
 import forgotPassword from "./forgotPassword/forgotPassword";
 import getUserData from "./getUserData/getUserData";
-import getUserNotifications from "../notifications/getUserNotifications/getUserNotifications";
 import login from "./login/login";
-import respondToCollaborationRequest from "./respondToCollaborationRequest/respondToCollaborationRequest";
 import { getSignupContext } from "./signup/context";
 import signup from "./signup/signup";
 import updateUser from "./updateUser/updateUser";
 import userExists from "./userExists/userExists";
 import changePasswordWithCurrentPassword from "./changePasswordWithCurrentPassword/handler";
 import { getChangePasswordWithCurrentPasswordContext } from "./changePasswordWithCurrentPassword/context";
-import updateClient from "./updateClient/handler";
 
 export default class UserEndpointsGraphQLController {
     public signup(data, req) {
         return wrapEndpoint(data, req, async () =>
+            // @ts-ignore
             signup(
                 getSignupContext(),
                 await RequestData.fromExpressRequest(
@@ -97,19 +95,6 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public respondToCollaborationRequest(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            respondToCollaborationRequest(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
     public updateUser(data, req) {
         return wrapEndpoint(data, req, async () =>
             updateUser(
@@ -126,32 +111,6 @@ export default class UserEndpointsGraphQLController {
     public userExists(data, req) {
         return wrapEndpoint(data, req, async () =>
             userExists(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public getUserNotifications(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            getUserNotifications(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public updateClient(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            updateClient(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
