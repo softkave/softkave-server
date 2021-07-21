@@ -2,7 +2,7 @@ import { BlockType } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { throwBoardNotFoundError } from "../../board/utils";
-import canReadOrg from "../../org/canReadBlock";
+import canReadOrganization from "../../organization/canReadBlock";
 import { ITask } from "../types";
 import { getPublicTaskData } from "../utils";
 import { CreateTaskEndpoint } from "./types";
@@ -12,7 +12,7 @@ const createTask: CreateTaskEndpoint = async (context, instData) => {
     const data = validate(instData.data, createTaskJoiSchema);
     const user = await context.session.getUser(context, instData);
 
-    canReadOrg(data.task.rootBlockId, user);
+    canReadOrganization(data.task.rootBlockId, user);
     await context.block.assertBlockById(
         context,
         data.task.parent,

@@ -4,8 +4,8 @@ import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";
 import { getChangePasswordWithTokenContext } from "./changePasswordWithToken/context";
-import ForgotPasswordContext from "./forgotPassword/context";
-import forgotPassword from "./forgotPassword/forgotPassword";
+import ForganizationotPasswordContext from "./forganizationotPassword/context";
+import forganizationotPassword from "./forganizationotPassword/forganizationotPassword";
 import getUserData from "./getUserData/getUserData";
 import login from "./login/login";
 import { getSignupContext } from "./signup/context";
@@ -56,10 +56,10 @@ export default class UserEndpointsGraphQLController {
         );
     }
 
-    public forgotPassword(data, req) {
+    public forganizationotPassword(data, req) {
         return wrapEndpoint(data, req, async () =>
-            forgotPassword(
-                new ForgotPasswordContext(),
+            forganizationotPassword(
+                new ForganizationotPasswordContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,

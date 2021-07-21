@@ -39,7 +39,7 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(draggedBlock),
+    //         organizationId: getBlockRootBlockId(draggedBlock),
     //         resourceType: getBlockAuditLogResourceType(draggedBlock),
     //         action: SystemActionType.Update,
     //         permissionResourceId: draggedBlock.permissionResourceId,
@@ -54,11 +54,11 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
     }
 
     if (
-        destinationBlock.type !== BlockType.Org &&
+        destinationBlock.type !== BlockType.Organization &&
         destinationBlock.type !== BlockType.Board
     ) {
         throw new InvalidRequestError({
-            message: "Destination block is not an org or board",
+            message: "Destination block is not an organization or board",
         });
     }
 

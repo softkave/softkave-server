@@ -3,11 +3,11 @@ import { getDate } from "../../utilities/fns";
 
 export const userSchemaVersion = 2; // increment when you make changes that are not backward compatible
 
-export interface IUserOrg {
+export interface IUserOrganization {
     customId: string;
 }
 
-export const userOrgSchema = {
+export const userOrganizationSchema = {
     customId: { type: String, index: true },
 };
 
@@ -17,10 +17,10 @@ export interface IUser {
     email: string;
     hash: string;
     createdAt: string;
-    forgotPasswordHistory: string[];
+    forganizationotPasswordHistory: string[];
     passwordLastChangedAt: string;
     rootBlockId: string;
-    orgs: IUserOrg[];
+    organizations: IUserOrganization[];
     color: string;
     notificationsLastCheckedAt?: string;
 }
@@ -33,10 +33,10 @@ const userSchema = {
     email: { type: String, unique: true, index: true },
     hash: { type: String },
     createdAt: { type: Date, default: () => getDate() },
-    forgotPasswordHistory: { type: [Date] },
+    forganizationotPasswordHistory: { type: [Date] },
     passwordLastChangedAt: { type: Date },
     rootBlockId: { type: String },
-    orgs: { type: [userOrgSchema] },
+    organizations: { type: [userOrganizationSchema] },
     color: { type: String },
     notificationsLastCheckedAt: { type: Date },
 };

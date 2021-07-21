@@ -6,7 +6,7 @@ import { IUpdateItemById } from "../../utilities/types";
 import { IBaseContext } from "../contexts/BaseContext";
 import { ISprintContext } from "../contexts/SprintContext";
 
-const sprints: ISprint[] = [];
+let sprints: ISprint[] = [];
 
 class TestSprintContext implements ISprintContext {
     public getSprintById = async (ctx: IBaseContext, customId: string) => {
@@ -96,6 +96,15 @@ class TestSprintContext implements ISprintContext {
 
         return sprints[sprints.length - 1];
     }
+
+    public deleteSprintByBoardId = async (
+        ctx: IBaseContext,
+        boardId: string
+    ) => {
+        sprints = sprints.filter((sprint) => {
+            return sprint.boardId !== boardId;
+        });
+    };
 }
 
 export const getTestSprintContext = makeSingletonFunc(

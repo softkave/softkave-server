@@ -6,8 +6,11 @@ import {
 import { IUser } from "../../../mongo/user";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadOrg from "../../org/canReadBlock";
-import { fireAndForgetPromise, getComplexTypeArrayInput } from "../../utils";
+import canReadOrganization from "../../organization/canReadBlock";
+import {
+    fireAndForganizationetPromise,
+    getComplexTypeArrayInput,
+} from "../../utils";
 import { IBoard } from "../types";
 import { getPublicBoardData, throwBoardNotFoundError } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
@@ -180,7 +183,7 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
         throwBoardNotFoundError
     );
 
-    canReadOrg(board.parent, user);
+    canReadOrganization(board.parent, user);
 
     const update: Partial<IBoard> = {
         name: data.data.name,
@@ -199,13 +202,13 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardStatusChanges(context, instData, board, update, user)
     );
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardResolutionsChanges(context, instData, board, update)
     );
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardLabelChanges(context, instData, board, update)
     );
 

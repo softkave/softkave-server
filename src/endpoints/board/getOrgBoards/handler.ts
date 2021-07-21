@@ -1,27 +1,30 @@
 import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
-import canReadOrg from "../../org/canReadBlock";
-import { IOrganization } from "../../org/types";
-import { throwOrgNotFoundError } from "../../org/utils";
+import canReadOrganization from "../../organization/canReadBlock";
+import { IOrganization } from "../../organization/types";
+import { throwOrganizationNotFoundError } from "../../organization/utils";
 import { IBoard } from "../types";
 import { getPublicBoardsArray } from "../utils";
-import { GetOrgBoardsEndpoint } from "./types";
-import { getOrgBoardsJoiSchema } from "./validation";
+import { GetOrganizationBoardsEndpoint } from "./types";
+import { getOrganizationBoardsJoiSchema } from "./validation";
 
-const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
-    const data = validate(instData.data, getOrgBoardsJoiSchema);
+const getOrganizationBoards: GetOrganizationBoardsEndpoint = async (
+    context,
+    instData
+) => {
+    const data = validate(instData.data, getOrganizationBoardsJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.assertGetBlockById<IOrganization>(
+    const organization = await context.block.assertGetBlockById<IOrganization>(
         context,
-        data.orgId,
-        throwOrgNotFoundError
+        data.organizationId,
+        throwOrganizationNotFoundError
     );
 
-    canReadOrg(org.customId, user);
+    canReadOrganization(organization.customId, user);
 
     const boards = await context.block.getBlockChildren<IBoard>(
         context,
-        data.orgId,
+        data.organizationId,
         [BlockType.Board]
     );
 
@@ -30,4 +33,4 @@ const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
     };
 };
 
-export default getOrgBoards;
+export default getOrganizationBoards;

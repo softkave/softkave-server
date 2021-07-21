@@ -6,11 +6,11 @@ export const blockExistsJoiSchema = Joi.object().keys({
     name: blockValidationSchemas.name.lowercase(),
     type: blockValidationSchemas.fullBlockType,
     parent: blockValidationSchemas.parent.when("type", {
-        is: Joi.string().not([BlockType.Org, BlockType.Root]),
+        is: Joi.string().not([BlockType.Organization, BlockType.Root]),
         then: Joi.required(),
     }),
     rootBlockId: blockValidationSchemas.parent.when("type", {
-        is: Joi.string().not([BlockType.Org, BlockType.Root]),
+        is: Joi.string().not([BlockType.Organization, BlockType.Root]),
         then: Joi.required(),
     }),
 });

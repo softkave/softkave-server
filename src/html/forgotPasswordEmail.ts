@@ -7,26 +7,28 @@ import {
     getTemplateStylesHTML,
 } from "./helpers";
 
-export const forgotPasswordEmailTitle = "Change Your Password";
+export const forganizationotPasswordEmailTitle = "Change Your Password";
 
-export interface IForgotPasswordEmailProps {
+export interface IForganizationotPasswordEmailProps {
     link: string;
     expiration: Moment;
 }
 
-export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
+export function forganizationotPasswordEmailHTML(
+    props: IForganizationotPasswordEmailProps
+) {
     return `
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="utf-8" />
-        <title>${getHeaderText(forgotPasswordEmailTitle)}</title>
+        <title>${getHeaderText(forganizationotPasswordEmailTitle)}</title>
         <style>
         ${getTemplateStylesHTML()}
         </style>
     </head>
     <body>
-        ${getHeaderHTML(forgotPasswordEmailTitle)}
+        ${getHeaderHTML(forganizationotPasswordEmailTitle)}
         <p>
             To change your password,
             <a href="${props.link}">click here</a>
@@ -60,9 +62,11 @@ export function forgotPasswordEmailHTML(props: IForgotPasswordEmailProps) {
   `;
 }
 
-export function forgotPasswordEmailText(props: IForgotPasswordEmailProps) {
+export function forganizationotPasswordEmailText(
+    props: IForganizationotPasswordEmailProps
+) {
     const txt = `
-    ${getHeaderText(forgotPasswordEmailTitle)}
+    ${getHeaderText(forganizationotPasswordEmailTitle)}
 
     To change your password, copy the following link, and visit in your browser - 
     ${props.link}

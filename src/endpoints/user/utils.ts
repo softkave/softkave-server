@@ -19,7 +19,7 @@ const publicUserFields = getFields<IPublicUserData>({
     email: true,
     createdAt: getDateString,
     rootBlockId: true,
-    orgs: {
+    organizations: {
         customId: true,
     },
     color: true,
@@ -47,6 +47,13 @@ export function getCollaboratorsArray(
     return users.map((user) => extractFields(user, collaboratorFields));
 }
 
-export const userIsPartOfOrg = (user: IUser, orgId: string) => {
-    return user.orgs.findIndex((org) => org.customId === orgId) !== -1;
+export const userIsPartOfOrganization = (
+    user: IUser,
+    organizationId: string
+) => {
+    return (
+        user.organizations.findIndex(
+            (organization) => organization.customId === organizationId
+        ) !== -1
+    );
 };

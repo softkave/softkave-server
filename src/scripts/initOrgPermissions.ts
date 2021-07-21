@@ -1,5 +1,5 @@
 import {
-    getDefaultOrgPermissionGroups,
+    getDefaultOrganizationPermissionGroups,
     makeDefaultPermissions,
 } from "../endpoints/accessControl/initializeBlockPermissions";
 import { SystemResourceType } from "../models/system";
@@ -20,8 +20,8 @@ import {
 } from "./utils";
 import getNewId from "../utilities/getNewId";
 
-export async function script_initOrgPermissions() {
-    logScriptStarted(script_initOrgPermissions);
+export async function script_initOrganizationPermissions() {
+    logScriptStarted(script_initOrganizationPermissions);
 
     const blockModel = getBlockModel();
     const permissionGroupModel = getPermissionGroupsModel();
@@ -36,7 +36,9 @@ export async function script_initOrgPermissions() {
     await userModel.waitTillReady();
     await userAssignedPermissionGroupModel.waitTillReady();
 
-    const cursor = blockModel.model.find({ type: BlockType.Org }).cursor();
+    const cursor = blockModel.model
+        .find({ type: BlockType.Organization })
+        .cursor();
     let docsCount = 0;
 
     try {
@@ -54,7 +56,7 @@ export async function script_initOrgPermissions() {
                 adminPermissionGroup,
                 publicPermissionGroup,
                 collaboratorPermissionGroup,
-            } = getDefaultOrgPermissionGroups(doc.createdBy, doc);
+            } = getDefaultOrganizationPermissionGroups(doc.createdBy, doc);
 
             const permissions = makeDefaultPermissions(doc.createdBy, doc, {
                 [DefaultPermissionGroupNames.Admin]: adminPermissionGroup,
@@ -77,7 +79,7 @@ export async function script_initOrgPermissions() {
             await doc.save();
 
             // TODO: make sure to check that this works
-            console.log(`org '${doc.name}', id = '${doc.customId}'`);
+            console.log(`organization '${doc.name}', id = '${doc.customId}'`);
             console.log(
                 `admin permissionGroup id = '${adminPermissionGroup.customId}`
             );
@@ -86,7 +88,7 @@ export async function script_initOrgPermissions() {
 
             const users = await userModel.model.find(
                 {
-                    "orgs.customId": doc.customId,
+                    "organizations.customId": doc.customId,
                 },
                 { customId: 1 }
             );
@@ -95,9 +97,9 @@ export async function script_initOrgPermissions() {
             const userPermissionGroupMaps = users.map((user) => {
                 const userPermissionGroupMap: IUserAssignedPermissionGroup = {
                     userId: user.customId,
-                    orgId: doc.customId,
+                    organizationId: doc.customId,
                     resourceId: doc.customId,
-                    resourceType: SystemResourceType.Org,
+                    resourceType: SystemResourceType.Organization,
                     permissionGroupId: collaboratorPermissionGroup.customId,
                     addedAt: nowStr,
                     addedBy: doc.createdBy,
@@ -109,9 +111,9 @@ export async function script_initOrgPermissions() {
 
             userPermissionGroupMaps.push({
                 userId: doc.createdBy,
-                orgId: doc.customId,
+                organizationId: doc.customId,
                 resourceId: doc.customId,
-                resourceType: SystemResourceType.Org,
+                resourceType: SystemResourceType.Organization,
                 permissionGroupId: adminPermissionGroup.customId,
                 addedAt: nowStr,
                 addedBy: doc.createdBy,
@@ -127,9 +129,9 @@ export async function script_initOrgPermissions() {
 
         cursor.close();
 
-        console.log(`org(s) count = ${docsCount}`);
-        logScriptSuccessful(script_initOrgPermissions);
+        console.log(`organization(s) count = ${docsCount}`);
+        logScriptSuccessful(script_initOrganizationPermissions);
     } catch (error) {
-        logScriptFailed(script_initOrgPermissions, error);
+        logScriptFailed(script_initOrganizationPermissions, error);
     }
 }

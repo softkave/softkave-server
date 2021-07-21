@@ -12,7 +12,7 @@ import getBlockChildren from "./getBlockChildren/getBlockChildren";
 import getBlockCollaborators from "./getBlockCollaborators/getBlockCollaborators";
 import getBlockNotifications from "./getBlockNotifications/getBlockNotifications";
 import getBoardTasks from "./getBoardTasks/getBoardTasks";
-import getOrgBoards from "./getOrgBoards/getOrgBoards";
+import getOrganizationBoards from "./getOrganizationBoards/getOrganizationBoards";
 import getUserRootBlocks from "./getUserRootBlocks/getUserRootBlocks";
 import removeCollaborator from "./removeCollaborator/removeCollaborator";
 import { getRevokeCollaborationRequestContext } from "./revokeCollaborationRequest/context";
@@ -100,9 +100,9 @@ export default class BlockEndpointsGraphQLController {
         );
     }
 
-    public getOrgBoards(data, req) {
+    public getOrganizationBoards(data, req) {
         return wrapEndpoint(data, req, async () =>
-            getOrgBoards(
+            getOrganizationBoards(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),

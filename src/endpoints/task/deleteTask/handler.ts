@@ -1,5 +1,5 @@
 import { validate } from "../../../utilities/joiUtils";
-import canReadOrg from "../../org/canReadBlock";
+import canReadOrganization from "../../organization/canReadBlock";
 import { ITask } from "../types";
 import { throwTaskNotFoundError } from "../utils";
 import { DeleteTaskEndpoint } from "./types";
@@ -14,7 +14,7 @@ const deleteTask: DeleteTaskEndpoint = async (context, instData) => {
         throwTaskNotFoundError
     );
 
-    canReadOrg(task.rootBlockId, user);
+    canReadOrganization(task.rootBlockId, user);
     await context.block.deleteBlockAndChildren(context, task.customId);
 };
 

@@ -30,7 +30,10 @@ export interface IUserContext {
         ctx: IBaseContext,
         blockId: string
     ) => Promise<ICollaborator[]>;
-    getOrgUsers: (ctx: IBaseContext, blockId: string) => Promise<IUser[]>;
+    getOrganizationUsers: (
+        ctx: IBaseContext,
+        blockId: string
+    ) => Promise<IUser[]>;
     bulkUpdateUsersById: (
         ctx: IBaseContext,
         users: Array<IUpdateItemById<IUser>>
@@ -98,7 +101,7 @@ export default class UserContext implements IUserContext {
     public bulkGetUsersByEmail = wrapFireAndThrowError(
         (ctx: IBaseContext, emails: string[]) => {
             return ctx.models.userModel.model
-                .find({ email: { $in: emails } }, "email orgs")
+                .find({ email: { $in: emails } }, "email organizations")
                 .lean()
                 .exec();
         }
@@ -109,10 +112,10 @@ export default class UserContext implements IUserContext {
             return ctx.models.userModel.model
                 .find(
                     {
-                        orgs: { $elemMatch: { customId: blockId } },
+                        organizations: { $elemMatch: { customId: blockId } },
                     },
                     {
-                        orgs: { $elemMatch: { customId: blockId } },
+                        organizations: { $elemMatch: { customId: blockId } },
                         name: 1,
                         email: 1,
                         createdAt: 1,
@@ -125,11 +128,11 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getOrgUsers = wrapFireAndThrowError(
+    public getOrganizationUsers = wrapFireAndThrowError(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find({
-                    orgs: { $elemMatch: { customId: blockId } },
+                    organizations: { $elemMatch: { customId: blockId } },
                 })
                 .lean()
                 .exec();

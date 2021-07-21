@@ -1,14 +1,13 @@
 import { Moment } from "moment";
 import querystring from "querystring";
 import {
-    forgotPasswordEmailHTML,
-    forgotPasswordEmailText,
-    forgotPasswordEmailTitle,
-} from "../../html/forgotPasswordEmail";
+    forganizationotPasswordEmailHTML,
+    forganizationotPasswordEmailText,
+    forganizationotPasswordEmailTitle,
+} from "../../html/forganizationotPasswordEmail";
 import appInfo from "../../resources/appInfo";
-import aws from "../../resources/aws";
+import sendEmail from "../sendEmail";
 
-const ses = new aws.SES();
 const clientDomain = appInfo.clientDomain;
 const changePasswordRoute = "/change-password";
 
@@ -27,35 +26,15 @@ async function sendChangePasswordEmail({
         query
     )}`;
 
-    const htmlContent = forgotPasswordEmailHTML({ link, expiration });
-    const textContent = forgotPasswordEmailText({ link, expiration });
+    const htmlContent = forganizationotPasswordEmailHTML({ link, expiration });
+    const textContent = forganizationotPasswordEmailText({ link, expiration });
 
-    const result = await ses
-        .sendEmail({
-            Destination: {
-                ToAddresses: [emailAddress],
-            },
-            Source: appInfo.defaultEmailSender,
-            Message: {
-                Subject: {
-                    Charset: appInfo.defaultEmailEncoding,
-                    Data: forgotPasswordEmailTitle,
-                },
-                Body: {
-                    Html: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: htmlContent,
-                    },
-                    Text: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: textContent,
-                    },
-                },
-            },
-        })
-        .promise();
-
-    return result;
+    return await sendEmail({
+        htmlContent,
+        textContent,
+        title: forganizationotPasswordEmailTitle,
+        emailAddresses: [emailAddress],
+    });
 }
 
 export default sendChangePasswordEmail;

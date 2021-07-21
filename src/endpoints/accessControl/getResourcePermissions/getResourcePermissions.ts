@@ -23,14 +23,17 @@ const getResourcePermissions: GetResourcePermissionsEndpoint = async (
 
     assertBlock(block);
 
-    if (block.type !== BlockType.Org && block.type !== BlockType.Board) {
+    if (
+        block.type !== BlockType.Organization &&
+        block.type !== BlockType.Board
+    ) {
         throw new InvalidRequestError();
     }
 
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: getBlockAuditLogResourceType(block),
             action: SystemActionType.Read,
             permissionResourceId: block.permissionResourceId,

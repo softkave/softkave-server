@@ -12,9 +12,9 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
 
     // const permissions = await context.accessControl.queryPermissions(
     //     context,
-    //     user.orgs.map((o) => {
+    //     user.organizations.map((o) => {
     //         return {
-    //             orgId: o.customId,
+    //             organizationId: o.customId,
     //             resourceType: SystemResourceType.Chat,
     //             action: SystemActionType.Read,
     //             permissionResourceId: o.customId,
@@ -26,8 +26,8 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
     const rooms = await context.chat.getRooms(
         context,
         user.customId,
-        // permissions.map((p) => p.orgId)
-        user.orgs.map((org) => org.customId)
+        // permissions.map((p) => p.organizationId)
+        user.organizations.map((organization) => organization.customId)
     );
 
     const chats = await context.chat.getMessages(

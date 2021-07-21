@@ -18,7 +18,7 @@
 //     setupTestEnvVariables();
 // });
 
-// test("save new org", async () => {
+// test("save new organization", async () => {
 //     const context = cast<IAddBlockContext>(await getTestBaseContext());
 //     const instData = await getTestExpressRequestData();
 //     const user = await context.session.getUser(context, instData);

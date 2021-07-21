@@ -7,31 +7,38 @@ import isObject from "lodash/isObject";
 import mongoConstants from "../mongo/constants";
 import { ServerError } from "../utilities/errors";
 import cast, { indexArray } from "../utilities/fns";
+import { IBaseContext } from "./contexts/BaseContext";
+import RequestData from "./RequestData";
 import {
+    Endpoint,
     ExtractFieldsDefaultScalarTypes,
     ExtractFieldsFrom,
     IObjectPaths,
     IUpdateComplexTypeArrayInput,
 } from "./types";
 
-export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
+export const wrapEndpoint = async <Result>(
+    data: any,
+    req: RequestData,
+    endpoint: Endpoint<IBaseContext, any, Result>
+): Promise<ReturnType<Endpoint<IBaseContext, any, Result>>> => {
     try {
         return await endpoint(data, req);
     } catch (error) {
         const errors = Array.isArray(error) ? error : [error];
         console.error(error);
-        return {
+        return cast({
             errors: errors.map((err) => ({
                 name: err.name,
                 message: err.message,
                 action: err.action,
                 field: err.field,
             })),
-        };
+        });
     }
 };
 
-export const fireAndForgetFn = <Fn extends (...args: any) => any>(
+export const fireAndForganizationetFn = <Fn extends (...args: any) => any>(
     fn: Fn,
     ...args: Array<Parameters<Fn>>
 ): void => {
@@ -44,7 +51,7 @@ export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     }, 5);
 };
 
-export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
+export const fireAndForganizationetPromise = async <T>(promise: Promise<T>) => {
     try {
         return await promise;
     } catch (error) {

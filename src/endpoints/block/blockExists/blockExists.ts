@@ -13,7 +13,7 @@ const blockExists: BlockExistsEndpoint = async (context, instData) => {
     const data = validate(instData.data, blockExistsJoiSchema);
     const user = await context.session.getUser(context, instData);
 
-    if (data.type !== BlockType.Org) {
+    if (data.type !== BlockType.Organization) {
         if (!data.parent) {
             throw new InvalidRequestError({
                 message: "Parent ID not provided",
@@ -26,7 +26,7 @@ const blockExists: BlockExistsEndpoint = async (context, instData) => {
         // await context.accessControl.assertPermission(
         //     context,
         //     {
-        //         orgId: getBlockRootBlockId(parent),
+        //         organizationId: getBlockRootBlockId(parent),
         //         resourceType: getBlockAuditLogResourceType(parent),
         //         action: SystemActionType.Read,
         //         permissionResourceId: parent.permissionResourceId,

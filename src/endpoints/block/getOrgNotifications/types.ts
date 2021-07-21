@@ -6,7 +6,7 @@ import {
 } from "../../notifications/types";
 import { Endpoint } from "../../types";
 
-export interface IGetOrgNotificationsParameters {
+export interface IGetOrganizationNotificationsParameters {
     blockId: string;
 }
 
@@ -17,6 +17,6 @@ export interface IGetBlockNotificationsResult {
 
 export type GetBlockNotificationsEndpoint = Endpoint<
     IBaseContext,
-    IGetOrgNotificationsParameters,
+    IGetOrganizationNotificationsParameters,
     IGetBlockNotificationsResult
 >;

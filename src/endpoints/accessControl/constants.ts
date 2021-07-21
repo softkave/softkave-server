@@ -1,12 +1,12 @@
 import { SystemActionType, SystemResourceType } from "../../models/system";
 
 const permissionGroupResourceTypes = [
-    SystemResourceType.Org,
+    SystemResourceType.Organization,
     SystemResourceType.Board,
 ];
 
 const permissionResourceTypes = [
-    SystemResourceType.Org,
+    SystemResourceType.Organization,
     SystemResourceType.Board,
     SystemResourceType.CollaborationRequest,
     SystemResourceType.PermissionGroup,

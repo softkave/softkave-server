@@ -3,7 +3,7 @@ import {
     complexFieldJoiSchema,
     validationSchemas,
 } from "../../../utilities/validationUtils";
-import orgValidationSchemas from "../../org/validation";
+import organizationValidationSchemas from "../../organization/validation";
 import { boardConstants } from "../constants";
 import boardValidationSchemas from "../validation";
 
@@ -11,11 +11,11 @@ export const updateBoardJoiSchema = Joi.object()
     .keys({
         data: Joi.object()
             .keys({
-                name: orgValidationSchemas.name,
-                description: orgValidationSchemas.description
+                name: organizationValidationSchemas.name,
+                description: organizationValidationSchemas.description
                     .optional()
                     .allow([null]),
-                color: orgValidationSchemas.color,
+                color: organizationValidationSchemas.color,
                 parent: boardValidationSchemas.parent,
                 boardStatuses: complexFieldJoiSchema(
                     boardValidationSchemas.statusSchema,

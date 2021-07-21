@@ -6,7 +6,7 @@ import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId } from "../../block/utils";
 import { InvalidRequestError } from "../../errors";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { initializeBoardPermissions } from "../initializeBlockPermissions";
 import { IPermissionInput, SetPermissionsEndpoint } from "./types";
 import { setPermissionsJoiSchema } from "./validation";
@@ -36,14 +36,17 @@ const setPermissions: SetPermissionsEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
     const block = await context.block.assertGetBlockById(context, data.blockId);
 
-    if (block.type !== BlockType.Org && block.type !== BlockType.Board) {
+    if (
+        block.type !== BlockType.Organization &&
+        block.type !== BlockType.Board
+    ) {
         throw new InvalidRequestError();
     }
 
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
             permissionResourceId: block.permissionResourceId,
@@ -68,7 +71,7 @@ const setPermissions: SetPermissionsEndpoint = async (context, instData) => {
 
     await context.accessControl.bulkUpdatePermissionsById(context, processed);
 
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         context.auditLog.insert(context, instData, {
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,

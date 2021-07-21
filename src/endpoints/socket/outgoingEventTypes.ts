@@ -3,12 +3,12 @@ import { SprintDuration } from "../../mongo/sprint";
 import { IPublicPermissionGroup } from "../accessControl/types";
 import { IPublicBlock } from "../block/types";
 import { IPublicChatData, IPublicRoomData } from "../chat/types";
-import { IPublicCollaborationRequest } from "../notifications/types";
+import { IPublicCollaborationRequest } from "../collaborationRequest/types";
 import { IPublicSprint } from "../sprints/types";
 
 export enum OutgoingSocketEvents {
     BlockUpdate = "blockUpdate",
-    OrgNewCollaborationRequests = "orgNewCollaborationRequests",
+    OrganizationNewCollaborationRequests = "organizationNewCollaborationRequests",
     UserNewCollaborationRequest = "userNewCollaborationRequest",
     UserUpdate = "userUpdate",
     UpdateCollaborationRequests = "updateCollaborationRequests",
@@ -57,7 +57,7 @@ export interface IOutgoingCollaborationRequestResponsePacket {
     customId: string;
     response: CollaborationRequestResponse;
     respondedAt: string;
-    org?: IPublicBlock;
+    organization?: IPublicBlock;
 }
 
 export interface IOutgoingNewRoomPacket {

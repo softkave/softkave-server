@@ -5,7 +5,7 @@ const accessControlGraphQLSchema = `
         action: String
         permissionGroups: [String]
         users: [String]
-        orgId: String
+        organizationId: String
         permissionOwnerId: String
         createdBy: String
         createdAt: String
@@ -31,7 +31,7 @@ const accessControlGraphQLSchema = `
 
     type UserAssignedPermissionGroup {
         userId: String
-        orgId: String
+        organizationId: String
         resourceId: String
         resourceType: String
         permissionGroupId: String

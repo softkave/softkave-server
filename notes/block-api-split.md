@@ -2,9 +2,14 @@
 
 ## Goal
 
--   Split the block API into org, board and task API
+-   Split the block API into organization, board and task API
 -   Seperate collaboration request into its own endpoints
 -   Write scripts to populate fields that should be present per block type, including status assigned by from "system" to the creator
+    -   Add required/default fields to the block types
+    -   Move to new models for orgId and block type org change
+    -   snake case models names, not camel case
+-   Priority to high, medium, low
+-   Keep socket updates and remove audit logs
 
 ## Side Effects
 
@@ -12,17 +17,17 @@
 
 ## Implementation
 
--   Org API
+-   Organization API
 
-    -   createOrg
-    -   readUserOrgs
-    -   updateOrg
-    -   orgExists
+    -   createOrganization
+    -   readUserOrganizations
+    -   updateOrganization
+    -   organizationExists
 
 -   Board API
 
     -   createBoard
-    -   readOrgBoards
+    -   readOrganizationBoards
     -   updateBoard
     -   deleteBoard
 

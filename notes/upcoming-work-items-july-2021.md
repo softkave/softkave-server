@@ -6,10 +6,10 @@
 -   Pagination across the board
 -   Re-implement real-time update across the board
 -   Fetch broadcast updates
--   Delete org
+-   Delete organization
 -   Access control
--   Delete org process
--   Leave org process
+-   Delete organization process
+-   Leave organization process
 -   Revoke request
 -   Unit tests across the board
 -   Audit log, mark delete and restore

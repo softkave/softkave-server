@@ -80,17 +80,21 @@ class TestUserContext implements IUserContext {
     getBlockCollaborators = async (ctx: IBaseContext, blockId: string) => {
         return users.filter((user) => {
             return (
-                user.orgs &&
-                user.orgs.findIndex((org) => org.customId === blockId) !== -1
+                user.organizations &&
+                user.organizations.findIndex(
+                    (organization) => organization.customId === blockId
+                ) !== -1
             );
         });
     };
 
-    getOrgUsers = async (ctx: IBaseContext, blockId: string) => {
+    getOrganizationUsers = async (ctx: IBaseContext, blockId: string) => {
         return users.filter((user) => {
             return (
-                user.orgs &&
-                user.orgs.findIndex((org) => org.customId === blockId) !== -1
+                user.organizations &&
+                user.organizations.findIndex(
+                    (organization) => organization.customId === blockId
+                ) !== -1
             );
         });
     };

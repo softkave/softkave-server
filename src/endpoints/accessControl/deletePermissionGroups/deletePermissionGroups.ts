@@ -69,7 +69,7 @@ const deletePermissionGroups: DeletePermissionGroupsEndpoint = async (
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
             permissionResourceId: block.permissionResourceId,

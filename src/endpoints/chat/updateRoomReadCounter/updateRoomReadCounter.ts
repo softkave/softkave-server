@@ -16,21 +16,24 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
     context.socket.assertSocket(instaData);
 
     const data = validate(instaData.data, updateRoomReadCounterJoiSchema);
-    const org = await context.block.getBlockById(context, data.orgId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.organizationId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.Chat,
     //         action: SystemActionType.Read,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
     const currentRoomMemberData = await context.chat.getUserRoomReadCounter(
         context,

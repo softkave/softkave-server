@@ -5,7 +5,7 @@ import { wrapEndpoint } from "../utils";
 import createBoard from "./createBoard/handler";
 import boardExists from "./boardExists/handler";
 import deleteBoard from "./deleteBoard/handler";
-import getOrgBoards from "./getOrgBoards/handler";
+import getOrganizationBoards from "./getOrganizationBoards/handler";
 import UpdateBoardContext from "./updateBoard/context";
 import updateBoard from "./updateBoard/handler";
 
@@ -50,9 +50,9 @@ export default class BoardEndpointsGraphQLController {
         );
     }
 
-    public getOrgBoards(data, req) {
+    public getOrganizationBoards(data, req) {
         return wrapEndpoint(data, req, async () =>
-            getOrgBoards(
+            getOrganizationBoards(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),

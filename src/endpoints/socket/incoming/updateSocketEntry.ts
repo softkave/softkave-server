@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { validate } from "../../../utilities/joiUtils";
 import { JWTEndpoint } from "../../types";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { SocketEventHandler } from "../types";
 
 const validationSchema = Joi.object()
@@ -25,7 +25,9 @@ const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
     ctx.socket.updateSocketEntry(ctx, data.socket.id, incomingData);
 
     if (!incomingData.isInactive) {
-        fireAndForgetPromise(ctx.unseenChats.removeEntry(ctx, user.customId));
+        fireAndForganizationetPromise(
+            ctx.unseenChats.removeEntry(ctx, user.customId)
+        );
     }
 };
 

@@ -14,11 +14,11 @@ import { IUpdateItemById } from "../../utilities/types";
 import { IPublicBlock } from "../block/types";
 import { getPublicBlockData } from "../block/utils";
 import { getPublicChatData, getPublicRoomData } from "../chat/utils";
-import { IPublicCollaborationRequest } from "../notifications/types";
+import { IPublicCollaborationRequest } from "../collaborationRequest/types";
 import {
-    getPublicCollaborationRequest,
     getPublicCollaborationRequestArray,
-} from "../notifications/utils";
+    getPublicCollaborationRequest,
+} from "../collaborationRequest/utils";
 import RequestData from "../RequestData";
 import {
     IOutgoingBlockUpdatePacket,
@@ -56,7 +56,7 @@ export interface IBroadcastHelpers {
         instData: RequestData,
         args: IBroadcastBlockUpdateArgs
     ) => Promise<void>;
-    broadcastNewOrgCollaborationRequests: (
+    broadcastNewOrganizationCollaborationRequests: (
         context: IBaseContext,
         instData: RequestData,
         block: IBlock,
@@ -93,7 +93,7 @@ export interface IBroadcastHelpers {
         request: ICollaborationRequest,
         response: CollaborationRequestResponse,
         respondedAt: string,
-        org: IPublicBlock
+        organization: IPublicBlock
     ) => void;
     broadcastNewRoom: (
         context: IBaseContext,
@@ -183,7 +183,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                 eventData.block = getPublicBlockData(data);
             }
 
-            if (blockType === BlockType.Org) {
+            if (blockType === BlockType.Organization) {
                 if (updateType.isNew) {
                     const user = await context.session.getUser(
                         context,
@@ -206,12 +206,10 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                     return;
                 }
 
-                const orgCollaborators = await context.user.getOrgUsers(
-                    context,
-                    blockId
-                );
+                const organizationCollaborators =
+                    await context.user.getOrganizationUsers(context, blockId);
 
-                orgCollaborators.forEach((collaborator) => {
+                organizationCollaborators.forEach((collaborator) => {
                     const roomName = context.room.getUserRoomName(
                         collaborator.customId
                     );
@@ -226,7 +224,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                     );
                 });
 
-                // TODO: manage room broadcasts yourself, cause if an org is deleted,
+                // TODO: manage room broadcasts yourself, cause if an organization is deleted,
                 //      the room still remains in memory, and there's currently no way to get
                 //      rid of it, except if everybody leaves the room
                 return;
@@ -242,7 +240,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
 
             if (blockType === BlockType.Board) {
                 const roomName = context.room.getBlockRoomName(
-                    BlockType.Org,
+                    BlockType.Organization,
                     parentId
                 );
                 context.room.broadcast(
@@ -275,35 +273,36 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastNewOrgCollaborationRequests = wrapFireAndThrowError(
-        (
-            context: IBaseContext,
-            instData: RequestData,
-            block: IBlock,
-            collaborationRequests: ICollaborationRequest[]
-        ) => {
-            const orgBroadcastPacket: IOutgoingNewCollaborationRequestsPacket =
-                {
-                    requests: getPublicCollaborationRequestArray(
-                        collaborationRequests
-                    ),
-                };
+    public broadcastNewOrganizationCollaborationRequests =
+        wrapFireAndThrowError(
+            (
+                context: IBaseContext,
+                instData: RequestData,
+                block: IBlock,
+                collaborationRequests: ICollaborationRequest[]
+            ) => {
+                const organizationBroadcastPacket: IOutgoingNewCollaborationRequestsPacket =
+                    {
+                        requests: getPublicCollaborationRequestArray(
+                            collaborationRequests
+                        ),
+                    };
 
-            const blockRoomName = context.room.getBlockRoomName(
-                block.type,
-                block.customId
-            );
+                const blockRoomName = context.room.getBlockRoomName(
+                    block.type,
+                    block.customId
+                );
 
-            context.room.broadcast(
-                context,
-                instData,
-                blockRoomName,
-                OutgoingSocketEvents.OrgNewCollaborationRequests,
-                orgBroadcastPacket,
-                true
-            );
-        }
-    );
+                context.room.broadcast(
+                    context,
+                    instData,
+                    blockRoomName,
+                    OutgoingSocketEvents.OrganizationNewCollaborationRequests,
+                    organizationBroadcastPacket,
+                    true
+                );
+            }
+        );
 
     public broadcastNewUserCollaborationRequest = wrapFireAndThrowError(
         (
@@ -603,13 +602,13 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             request: ICollaborationRequest,
             response: CollaborationRequestResponse,
             respondedAt: string,
-            org: IPublicBlock
+            organization: IPublicBlock
         ) => {
-            const orgRoomName = context.room.getBlockRoomName(
-                org.type,
-                org.customId
+            const organizationRoomName = context.room.getBlockRoomName(
+                organization.type,
+                organization.customId
             );
-            const orgsBroadcastData: IOutgoingCollaborationRequestResponsePacket =
+            const organizationsBroadcastData: IOutgoingCollaborationRequestResponsePacket =
                 {
                     response,
                     respondedAt,
@@ -619,9 +618,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             context.room.broadcast(
                 context,
                 instData,
-                orgRoomName,
+                organizationRoomName,
                 OutgoingSocketEvents.CollaborationRequestResponse,
-                orgsBroadcastData,
+                organizationsBroadcastData,
                 true
             );
 
@@ -631,9 +630,9 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
                     response,
                     respondedAt,
                     customId: request.customId,
-                    org:
+                    organization:
                         response === CollaborationRequestStatusType.Accepted
-                            ? org
+                            ? organization
                             : undefined,
                 };
 

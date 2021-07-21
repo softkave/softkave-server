@@ -2,7 +2,7 @@ import { IBlock } from "../../../mongo/block";
 import { INotification } from "../../../mongo/notification";
 import { getTaskAssignedNotification } from "../../notifications/templates/task";
 import RequestData from "../../RequestData";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import diffAssignedUsers from "./diffAssignedUsers";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
 
@@ -36,7 +36,7 @@ async function sendNewlyAssignedTaskEmail(
     //     notifications.push(notification);
     // });
 
-    // fireAndForgetPromise(
+    // fireAndForganizationetPromise(
     //     context.notification.bulkSaveNotifications(context, notifications)
     // );
 }

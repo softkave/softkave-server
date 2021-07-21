@@ -6,7 +6,7 @@ const resourceType = Joi.string()
     .valid([
         SystemResourceType.Board,
         SystemResourceType.Note,
-        SystemResourceType.Org,
+        SystemResourceType.Organization,
         SystemResourceType.Room,
     ]);
 

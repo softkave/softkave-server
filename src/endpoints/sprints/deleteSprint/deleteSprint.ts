@@ -28,7 +28,7 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(board),
+    //         organizationId: getBlockRootBlockId(board),
     //         resourceType: SystemResourceType.Sprint,
     //         action: SystemActionType.Delete,
     //         permissionResourceId: board.permissionResourceId,

@@ -1,5 +1,5 @@
 import { clientToClientUserView } from "../../client/utils";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { getPublicUserData } from "../utils";
 import { GetUserDataEndpoint } from "./types";
 
@@ -9,7 +9,7 @@ const getUserData: GetUserDataEndpoint = async (context, instData) => {
     const token = context.token.encodeToken(context, tokenData.customId);
     const client = await context.session.getClient(context, instData);
 
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         context.unseenChats.removeEntry(context, user.customId)
     );
 

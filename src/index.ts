@@ -1,16 +1,11 @@
 import * as Sentry from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import cors, { CorsOptions } from "cors";
 import express from "express";
 import graphqlHTTP from "express-graphql";
 import expressJwt from "express-jwt";
 import http from "http";
-// import aws from "./res/aws";
 import { Server } from "socket.io";
-// import multer from "multer";
-// import multerS3 from "multer-s3";
-// import { nanoid } from "nanoid";
 import { indexSchema } from "./endpoints";
 import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
 import { setupSocketServer } from "./endpoints/socket/server";
@@ -21,7 +16,6 @@ import { getBlockModel } from "./mongo/block";
 import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
-import appInfo from "./resources/appInfo";
 import { appVariables } from "./resources/appVariables";
 import logger from "./utilities/logger";
 
@@ -75,39 +69,6 @@ app.use(
     })
 );
 
-// 3 months in secs -- 60 secs * 60 mins * 24 hours * 30 days * 3 months
-// const maxAge = 60 * 60 * 24 * 30 * 3;
-
-// // 5 mb in bytes -- 1024 bytes * 1024 kb * 5 mb
-// const maxFileSize = 1024 * 1024 * 5;
-// const s3 = new aws.S3();
-// const multerS3Storage = multerS3({
-//   s3,
-//   bucket:
-//     process.env.NODE_ENV === "production"
-//       ? "softkave-files"
-//       : "softkave-files-dev",
-//   acl: "private",
-//   cacheControl: `max-age=${maxAge}`,
-//   contentType: multerS3.AUTO_CONTENT_TYPE,
-//   key(req, file, cb) {
-//     const fileKey = file.filename + `-${nanoid()}`;
-//     cb(null, fileKey);
-//   },
-// });
-
-// const upload = multer({
-//   storage: multerS3Storage,
-//   limits: {
-//     fileSize: maxFileSize,
-//   },
-// });
-
-// app.post("/upload", upload.array("files", 5), (req, res, next) => {
-//   // req.files is array of `photos` files
-//   // req.body will contain the text fields, if there were any
-// });
-
 app.use(
     bodyParser.json({
         type: "application/json",
@@ -143,7 +104,7 @@ connection.wait().then(async () => {
     // scripts
 
     httpServer.listen(port, () => {
-        logger.info(appInfo.appName);
+        logger.info(appVariables.appName);
         logger.info("server started");
         logger.info("port: " + port);
     });

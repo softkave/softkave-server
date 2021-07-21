@@ -11,7 +11,7 @@ import cast, { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import OperationError from "../../utilities/OperationError";
 import { BlockDoesNotExistError } from "../block/errors";
-import { IOrganization } from "../org/types";
+import { IOrganization } from "../organization/types";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -30,10 +30,6 @@ export interface IBlockContext {
         customId: string,
         throwError?: () => void
     ) => Promise<boolean>;
-    getBlockByName: (
-        ctx: IBaseContext,
-        name: string
-    ) => Promise<IBlock | undefined>;
     bulkGetBlocksByIds: (
         ctx: IBaseContext,
         customIds: string[]
@@ -57,7 +53,10 @@ export interface IBlockContext {
         typeList?: BlockType[]
     ) => Promise<T[]>;
     getUserRootBlocks: (ctx: IBaseContext, user: IUser) => Promise<IBlock[]>;
-    getUserOrgs: (ctx: IBaseContext, user: IUser) => Promise<IOrganization[]>;
+    getUserOrganizations: (
+        ctx: IBaseContext,
+        user: IUser
+    ) => Promise<IOrganization[]>;
     bulkUpdateTaskSprints: (
         ctx: IBaseContext,
         sprintId: string,
@@ -161,17 +160,6 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public getBlockByName = wrapFireAndThrowError(
-        (ctx: IBaseContext, name: string) => {
-            return ctx.models.blockModel.model
-                .findOne({
-                    lowerCasedName: name.toLowerCase(),
-                    isDeleted: false,
-                })
-                .exec();
-        }
-    );
-
     public deleteBlockAndChildren = wrapFireAndThrowError(
         async (ctx: IBaseContext, customId: string) => {
             await ctx.models.blockModel.model
@@ -208,7 +196,9 @@ export default class BlockContext implements IBlockContext {
 
     public getUserRootBlocks = wrapFireAndThrowError(
         (ctx: IBaseContext, user: IUser) => {
-            const organizationIds = user.orgs.map((org) => org.customId);
+            const organizationIds = user.organizations.map(
+                (organization) => organization.customId
+            );
 
             return ctx.models.blockModel.model
                 .find({
@@ -223,10 +213,12 @@ export default class BlockContext implements IBlockContext {
     );
 
     // TODO: seems similar to getUserRootBlocks, refactor.
-    public getUserOrgs = wrapFireAndThrowError(
+    public getUserOrganizations = wrapFireAndThrowError(
         async (ctx: IBaseContext, user: IUser) => {
-            const organizationIds = user.orgs.map((org) => org.customId);
-            const orgs = await ctx.models.blockModel.model
+            const organizationIds = user.organizations.map(
+                (organization) => organization.customId
+            );
+            const organizations = await ctx.models.blockModel.model
                 .find({
                     customId: {
                         $in: organizationIds,
@@ -236,7 +228,7 @@ export default class BlockContext implements IBlockContext {
                 .lean()
                 .exec();
 
-            return cast<IOrganization[]>(orgs);
+            return cast<IOrganization[]>(organizations);
         }
     );
 

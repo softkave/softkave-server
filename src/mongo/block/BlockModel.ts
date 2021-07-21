@@ -4,8 +4,8 @@ import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import blockSchema, { IBlockDocument } from "./definitions";
 
-const modelName = "block-v3";
-const collectionName = "blocks-v3";
+const modelName = "block-v4";
+const collectionName = "blocks-v4";
 
 export const getBlockModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {

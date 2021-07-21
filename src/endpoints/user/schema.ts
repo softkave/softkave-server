@@ -1,5 +1,5 @@
 const userSchema = `
-    type UserOrg {
+    type UserOrganization {
         customId: String
     }
 
@@ -9,7 +9,7 @@ const userSchema = `
         email: String
         createdAt: String
         rootBlockId: String
-        orgs: [UserOrg]
+        organizations: [UserOrganization]
         color: String
         notificationsLastCheckedAt: String
     }
@@ -54,16 +54,19 @@ const userSchema = `
 
     type UserQuery {
         userExists (email: String!) : UserExistsResult
+        getUserData: UserQueryResult
+    }
+
+    type UserMutation {
         signup (user: UserSignupInput!) : UserQueryResult
         login (email: String!, password: String!) : UserQueryResult
-        forgotPassword (email: String!) : ErrorOnlyResponse
+        forganizationotPassword (email: String!) : ErrorOnlyResponse
         changePassword (
             currentPassword: String!, 
             password: String!
         ) : UserQueryResult
         updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
-        getUserData: UserQueryResult
         updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
     }
 `;

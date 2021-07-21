@@ -5,7 +5,10 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { IBroadcastResult } from "../../contexts/RoomContext";
-import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
+import {
+    fireAndForganizationetFn,
+    fireAndForganizationetPromise,
+} from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
@@ -68,7 +71,7 @@ async function sendPushNotification(
         clients.forEach((client) => {
             const endpoint = client.endpoint!;
             const keys = client.keys!;
-            fireAndForgetPromise(
+            fireAndForganizationetPromise(
                 context.webPush.sendNotification(
                     context,
                     endpoint,
@@ -84,20 +87,23 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     const user = await context.session.getUser(context, instaData);
     context.socket.assertSocket(instaData);
     const data = validate(instaData.data, sendMessageJoiSchema);
-    const org = await context.block.assertGetBlockById(context, data.orgId);
+    const organization = await context.block.assertGetBlockById(
+        context,
+        data.organizationId
+    );
 
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.Chat,
     //         action: SystemActionType.Create,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
     // TODO: how can we eliminate OR make the room fetching faster?
     let room: IRoom;
@@ -108,7 +114,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     } else if (data.recipientId) {
         room = await context.chat.insertRoom(
             context,
-            data.orgId,
+            data.organizationId,
             user.customId,
             null,
             [data.recipientId]
@@ -130,7 +136,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     const chat = await context.chat.insertMessage(
         context,
-        data.orgId,
+        data.organizationId,
         user.customId,
         room.customId,
         data.message
@@ -145,10 +151,10 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     // TODO: implement a scheduler that can run a task after a task is completed
 
-    // TODO: our fire and forgets are running immediately
+    // TODO: our fire and forganizationets are running immediately
     // go through them and update the ones you want to run
     // after the main request is done
-    fireAndForgetFn(() =>
+    fireAndForganizationetFn(() =>
         sendPushNotification(context, user, room, broadcastResultPromise)
     );
 

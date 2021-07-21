@@ -1,6 +1,6 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
-import { IUnseenChats } from "../../mongo/unseenChats";
+import { IUnseenChats } from "../../mongo/unseen-chats";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicChatData, IPublicRoomData } from "./types";
@@ -8,7 +8,7 @@ import { IPublicChatData, IPublicRoomData } from "./types";
 const publicRoomFields = getFields<IPublicRoomData>({
     customId: true,
     name: true,
-    orgId: true,
+    organizationId: true,
     createdAt: getDateString,
     createdBy: true,
     members: {
@@ -21,7 +21,7 @@ const publicRoomFields = getFields<IPublicRoomData>({
 
 const publicChatFields = getFields<IPublicChatData>({
     customId: true,
-    orgId: true,
+    organizationId: true,
     message: true,
     sender: true,
     roomId: true,

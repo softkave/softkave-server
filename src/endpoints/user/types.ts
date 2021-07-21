@@ -1,4 +1,4 @@
-import { IUserOrg } from "../../mongo/user";
+import { IUserOrganization } from "../../mongo/user";
 import { ConvertDatesToStrings } from "../../utilities/types";
 
 export type IPublicUserData = ConvertDatesToStrings<{
@@ -7,7 +7,7 @@ export type IPublicUserData = ConvertDatesToStrings<{
     email: string;
     createdAt: string;
     rootBlockId: string;
-    orgs: IUserOrg[];
+    organizations: IUserOrganization[];
     color: string;
     notificationsLastCheckedAt?: string;
 }>;

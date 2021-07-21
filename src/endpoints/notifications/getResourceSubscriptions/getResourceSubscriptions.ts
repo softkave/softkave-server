@@ -18,7 +18,7 @@ const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Notification,
             action: SystemActionType.Read,
             permissionResourceId: block.customId,
@@ -26,10 +26,11 @@ const getResourceSubscriptions: GetResourceSubscriptionsEndpoint = async (
         user
     );
 
-    const subscriptions = await context.notification.getNotificationSubscriptionsByResourceId(
-        context,
-        block.customId
-    );
+    const subscriptions =
+        await context.notification.getNotificationSubscriptionsByResourceId(
+            context,
+            block.customId
+        );
 
     return {
         subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),

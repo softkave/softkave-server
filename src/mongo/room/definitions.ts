@@ -14,7 +14,7 @@ const memberWithReadCounterSchema = {
 export interface IRoom {
     customId: string;
     name: string;
-    orgId: string;
+    organizationId: string;
     createdAt: Date;
     createdBy: string;
     members: IRoomMemberReadCounter[];
@@ -31,7 +31,7 @@ const roomSchema = {
         type: String,
         unique: true,
     },
-    orgId: { type: String },
+    organizationId: { type: String },
     createdAt: { type: Date, default: getDate },
     createdBy: { type: String },
     members: { type: [memberWithReadCounterSchema], index: true },

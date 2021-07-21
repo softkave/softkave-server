@@ -2,6 +2,7 @@ import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { indexArray } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
+import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
 import { IBaseContext } from "../contexts/BaseContext";
 import { ICollaborationRequestContext } from "../contexts/CollaborationRequestContext";
 
@@ -13,6 +14,20 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
         id: string
     ) => {
         return requests.find((request) => request.customId === id);
+    };
+
+    assertGetCollaborationRequestById = async (
+        ctx: IBaseContext,
+        id: string
+    ) => {
+        const request =
+            await ctx.collaborationRequest.getCollaborationRequestById(ctx, id);
+
+        if (!request) {
+            throw new CollaborationRequestDoesNotExistError();
+        }
+
+        return request;
     };
 
     public updateCollaborationRequestById = async (

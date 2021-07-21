@@ -1,45 +1,24 @@
 import makeSingletonFunc from "../utilities/createSingletonFunc";
-import AccessControlEndpointsGraphQLController, {
-    getAccessControlEndpointsGraphQLController,
-} from "./accessControl/AccessControlEndpointsGraphQLController";
-import BlockEndpointsGraphQLController, {
-    getBlockEndpointsGraphQLController,
-} from "./block/BlockEndpointsGraphQLController";
-import CommentsEndpointsGraphQLController, {
-    getCommentsEndpointsGraphQLController,
-} from "./comments/CommentsEndpointsGraphQLController";
-import { getNotificationEndpointsGraphQLController } from "./notifications";
-import NotificationEndpointsGraphQLController from "./notifications/NotificationEndpointsGraphQLController";
-import PushSubscriptionsEndpointsGraphQLController, {
-    getPushSubscriptionsEndpointsGraphQLController,
-} from "./pushSubscription/PushSubscriptionEndpointsGraphQLController";
-import SprintsEndpointsGraphQLController, {
-    getSprintsEndpointsGraphQLController,
-} from "./sprints/SprintsEndpointsGraphQLController";
-import SystemEndpointsGraphQLController, {
-    getSystemEndpointsGraphQLController,
-} from "./system/SystemEndpointsGraphQLController";
-import UserEndpointsGraphQLController, {
-    getUserEndpointsGraphQLController,
-} from "./user/UserEndpointsGraphQLController";
+import { getBoardEndpointsGraphQLController } from "./board";
+import { getClientsEndpointsGraphQLController } from "./client";
+import { getRequestsEndpointsGraphQLController } from "./collaborationRequest/RequestEndpointsGraphQLController";
+import { getCollaboratorEndpointsGraphQLController } from "./collaborator";
+import { getOrganizationEndpointsGraphQLController } from "./organization";
+import { getSprintsEndpointsGraphQLController } from "./sprints/SprintsEndpointsGraphQLController";
+import { getSystemEndpointsGraphQLController } from "./system/SystemEndpointsGraphQLController";
+import { getTaskEndpointsGraphQLController } from "./task";
+import { getUserEndpointsGraphQLController } from "./user/UserEndpointsGraphQLController";
 
 export default class EndpointsGraphQLController {
-    public block: BlockEndpointsGraphQLController =
-        getBlockEndpointsGraphQLController();
-    public user: UserEndpointsGraphQLController =
-        getUserEndpointsGraphQLController();
-    public comment: CommentsEndpointsGraphQLController =
-        getCommentsEndpointsGraphQLController();
-    public sprint: SprintsEndpointsGraphQLController =
-        getSprintsEndpointsGraphQLController();
-    public system: SystemEndpointsGraphQLController =
-        getSystemEndpointsGraphQLController();
-    public accessControl: AccessControlEndpointsGraphQLController =
-        getAccessControlEndpointsGraphQLController();
-    public notifications: NotificationEndpointsGraphQLController =
-        getNotificationEndpointsGraphQLController();
-    public pushSubscription: PushSubscriptionsEndpointsGraphQLController =
-        getPushSubscriptionsEndpointsGraphQLController();
+    public user = getUserEndpointsGraphQLController();
+    public sprint = getSprintsEndpointsGraphQLController();
+    public system = getSystemEndpointsGraphQLController();
+    public collaborationRequest = getRequestsEndpointsGraphQLController;
+    public client = getClientsEndpointsGraphQLController;
+    public collaborators = getCollaboratorEndpointsGraphQLController;
+    public organization = getOrganizationEndpointsGraphQLController;
+    public board = getBoardEndpointsGraphQLController;
+    public task = getTaskEndpointsGraphQLController;
 }
 
 export const getEndpointsGraphQLController = makeSingletonFunc(

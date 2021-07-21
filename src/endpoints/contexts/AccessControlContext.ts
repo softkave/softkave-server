@@ -15,7 +15,7 @@ import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 interface IPermissionQuery {
-    orgId: string;
+    organizationId: string;
     permissionResourceId: string;
     resourceType: SystemResourceType;
     action: SystemActionType;
@@ -154,9 +154,8 @@ export default class AccessControlContext implements IAccessControlContext {
                             )
                         ).map((d) => d.permissionGroupId);
 
-                    userAssignedPermissionGroups[
-                        q.permissionResourceId
-                    ] = permissionGroupIds;
+                    userAssignedPermissionGroups[q.permissionResourceId] =
+                        permissionGroupIds;
                 }
 
                 permissionGroupIds.push(DefaultPermissionGroupNames.Public);
@@ -424,33 +423,37 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    deleteUserAssignedPermissionGroupsByPermissionGroupId = wrapFireAndThrowError(
-        async (ctx: IBaseContext, permissionGroupIds: string[]) => {
-            await ctx.models.userAssignedPermissionGroup.model
-                .deleteMany({ permissionGroupId: { $in: permissionGroupIds } })
-                .exec();
-        }
-    );
+    deleteUserAssignedPermissionGroupsByPermissionGroupId =
+        wrapFireAndThrowError(
+            async (ctx: IBaseContext, permissionGroupIds: string[]) => {
+                await ctx.models.userAssignedPermissionGroup.model
+                    .deleteMany({
+                        permissionGroupId: { $in: permissionGroupIds },
+                    })
+                    .exec();
+            }
+        );
 
-    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            qs: Array<{ userIds: string[]; permissionGroupId: string }>
-        ) => {
-            await ctx.models.userAssignedPermissionGroup.model.bulkWrite(
-                qs.map((q) => {
-                    return {
-                        deleteMany: {
-                            filter: {
-                                permissionGroupId: q.permissionGroupId,
-                                userId: { $in: q.userIds },
+    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds =
+        wrapFireAndThrowError(
+            async (
+                ctx: IBaseContext,
+                qs: Array<{ userIds: string[]; permissionGroupId: string }>
+            ) => {
+                await ctx.models.userAssignedPermissionGroup.model.bulkWrite(
+                    qs.map((q) => {
+                        return {
+                            deleteMany: {
+                                filter: {
+                                    permissionGroupId: q.permissionGroupId,
+                                    userId: { $in: q.userIds },
+                                },
                             },
-                        },
-                    };
-                })
-            );
-        }
-    );
+                        };
+                    })
+                );
+            }
+        );
 
     getUserAssignedPermissionGroups = wrapFireAndThrowError(
         (ctx: IBaseContext, userId: string, resourceId?: string) => {

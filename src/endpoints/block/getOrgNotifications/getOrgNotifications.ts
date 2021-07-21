@@ -10,7 +10,7 @@ import { getBlockRootBlockId } from "../utils";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";
 
-const getOrgNotifications: GetBlockNotificationsEndpoint = async (
+const getOrganizationNotifications: GetBlockNotificationsEndpoint = async (
     context,
     instData
 ) => {
@@ -19,24 +19,27 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
         getBlockCollaborationRequestsJoiSchema
     );
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.blockId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.blockId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
 
     const permissions = await context.accessControl.queryPermissions(
         context,
         [
             {
-                orgId: getBlockRootBlockId(org),
+                organizationId: getBlockRootBlockId(organization),
                 resourceType: SystemResourceType.Notification,
                 action: SystemActionType.Read,
-                permissionResourceId: org.permissionResourceId,
+                permissionResourceId: organization.permissionResourceId,
             },
             {
-                orgId: getBlockRootBlockId(org),
+                organizationId: getBlockRootBlockId(organization),
                 resourceType: SystemResourceType.CollaborationRequest,
                 action: SystemActionType.Read,
-                permissionResourceId: org.permissionResourceId,
+                permissionResourceId: organization.permissionResourceId,
             },
         ],
         user
@@ -52,17 +55,19 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
     let notifications = [];
 
     if (shouldLoadRequests) {
-        requests = await context.collaborationRequest.getCollaborationRequestsByBlockId(
-            context,
-            org.customId
-        );
+        requests =
+            await context.collaborationRequest.getCollaborationRequestsByBlockId(
+                context,
+                organization.customId
+            );
     }
 
     if (shouldLoadNotifications) {
-        notifications = await context.notification.getNotificationsByOrgId(
-            context,
-            org.customId
-        );
+        notifications =
+            await context.notification.getNotificationsByOrganizationId(
+                context,
+                organization.customId
+            );
     }
 
     return {
@@ -71,4 +76,4 @@ const getOrgNotifications: GetBlockNotificationsEndpoint = async (
     };
 };
 
-export default getOrgNotifications;
+export default getOrganizationNotifications;

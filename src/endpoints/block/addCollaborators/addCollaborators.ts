@@ -9,10 +9,10 @@ import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
 import { getPublicCollaborationRequestArray } from "../../notifications/utils";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
-import { broadcastToOrgsAndExistingUsers } from "./broadcastToOrgAndExistingUsers";
+import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrganizationAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
 import sendEmails from "./sendEmails";
 import { AddCollaboratorEndpoint } from "./types";
@@ -22,29 +22,32 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     const result = validate(instData.data, addCollaboratorsJoiSchema);
     const collaborators = result.collaborators;
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, result.blockId);
+    const organization = await context.block.getBlockById(
+        context,
+        result.blockId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
 
-    if (org.type !== BlockType.Org) {
+    if (organization.type !== BlockType.Organization) {
         throw new InvalidRequestError();
     }
 
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.CollaborationRequest,
     //         action: SystemActionType.Create,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
     const { indexedExistingUsers } = await filterNewCollaborators(context, {
-        block: org,
+        block: organization,
         collaborators,
     });
 
@@ -55,12 +58,12 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
             from: {
                 userId: user.customId,
                 name: user.name,
-                blockId: org.customId,
-                blockName: org.name,
-                blockType: org.type,
+                blockId: organization.customId,
+                blockName: organization.name,
+                blockType: organization.type,
             },
             createdAt: now,
-            title: `Collaboration request from ${org.name}`,
+            title: `Collaboration request from ${organization.name}`,
             to: {
                 email: request.email,
             },
@@ -81,17 +84,17 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         collaborationRequests
     );
 
-    broadcastToOrgsAndExistingUsers(context, instData, {
-        block: org,
+    broadcastToOrganizationsAndExistingUsers(context, instData, {
+        block: organization,
         collaborationRequests,
         indexedExistingUsers,
     });
 
     // TODO: maybe deffer sending email till end of day
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         sendEmails(context, instData, {
             user,
-            block: org,
+            block: organization,
             indexedExistingUsers,
             requests: collaborationRequests,
         })

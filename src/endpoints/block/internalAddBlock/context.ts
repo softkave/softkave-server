@@ -3,7 +3,7 @@ import { IUser } from "../../../mongo/user/definitions";
 import makeSingletonFunc from "../../../utilities/createSingletonFunc";
 import {
     initializeBoardPermissions,
-    initializeOrgAccessControl,
+    initializeOrganizationAccessControl,
 } from "../../accessControl/initializeBlockPermissions";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import { wrapFireAndThrowError } from "../../utils";
@@ -19,9 +19,9 @@ export default class InternalAddBlockContext
         }
     );
 
-    public initializeOrgAccessControl = wrapFireAndThrowError(
+    public initializeOrganizationAccessControl = wrapFireAndThrowError(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
-            return initializeOrgAccessControl(ctx, user, block);
+            return initializeOrganizationAccessControl(ctx, user, block);
         }
     );
 }

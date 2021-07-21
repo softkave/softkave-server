@@ -17,12 +17,12 @@ class TestChatContext implements IChatContext {
     public getRooms = async (
         ctx: IBaseContext,
         userId: string,
-        orgIds: string[]
+        organizationIds: string[]
     ) => {
         return rooms.filter(
             (room) =>
                 room.members.find((member) => member.userId === userId) &&
-                orgIds.includes(room.orgId)
+                organizationIds.includes(room.organizationId)
         );
     };
 
@@ -66,7 +66,7 @@ class TestChatContext implements IChatContext {
 
     public insertRoom = async (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         userId: string,
         name: string | null,
         initialMembers?: string[]
@@ -78,7 +78,7 @@ class TestChatContext implements IChatContext {
         const roomId = getNewId();
         const roomName = name || ctx.room.getChatRoomName(roomId);
         rooms.push({
-            orgId,
+            organizationId,
             members,
             customId: roomId,
             name: roomName,
@@ -91,14 +91,14 @@ class TestChatContext implements IChatContext {
 
     public insertMessage = async (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         senderId: string,
         roomId: string,
         message: string
     ) => {
         chats.push({
             customId: getNewId(),
-            orgId,
+            organizationId,
             message,
             roomId,
             sender: senderId,

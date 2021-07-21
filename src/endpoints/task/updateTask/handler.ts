@@ -2,8 +2,8 @@ import { ISprint } from "../../../mongo/sprint";
 import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { IBoard } from "../../board/types";
-import canReadOrg from "../../org/canReadBlock";
-import { fireAndForgetPromise } from "../../utils";
+import canReadOrganization from "../../organization/canReadBlock";
+import { fireAndForganizationetPromise } from "../../utils";
 import { ITask } from "../types";
 import { getPublicTaskData, throwTaskNotFoundError } from "../utils";
 import processUpdateTaskInput from "./processUpdateBlockInput";
@@ -21,7 +21,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         throwTaskNotFoundError
     );
 
-    canReadOrg(task.rootBlockId, user);
+    canReadOrganization(task.rootBlockId, user);
 
     // Parent update ( tranferring block ) is handled separately by transferBlock
     const newBoardId = updateData.parent;
@@ -88,7 +88,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
                 return false;
             }
 
-            return !!assigneeUserData.orgs.find(
+            return !!assigneeUserData.organizations.find(
                 (item) => item.customId === task.rootBlockId
             );
         });
@@ -100,7 +100,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         update
     );
 
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         sendNewlyAssignedTaskEmail(context, instData, task, update, updatedTask)
     );
 

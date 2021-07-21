@@ -1,7 +1,7 @@
 import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
-import { CollaborationRequestDoesNotExistError } from "../collaborationRequests/errors";
+import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
 import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 

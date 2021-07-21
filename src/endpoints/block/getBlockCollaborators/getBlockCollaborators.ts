@@ -19,7 +19,7 @@ const getBlockCollaborators: GetBlockCollaboratorsEndpoint = async (
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(block),
+    //         organizationId: getBlockRootBlockId(block),
     //         resourceType: SystemResourceType.Collaborator,
     //         action: SystemActionType.Read,
     //         permissionResourceId: block.permissionResourceId,

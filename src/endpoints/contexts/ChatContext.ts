@@ -11,7 +11,7 @@ export interface IChatContext {
     getRooms: (
         ctx: IBaseContext,
         userId: string,
-        orgIds: string[]
+        organizationIds: string[]
     ) => Promise<IRoom[]>;
     getRoomById: (
         ctx: IBaseContext,
@@ -30,14 +30,14 @@ export interface IChatContext {
     ) => Promise<void>;
     insertMessage: (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         senderId: string,
         roomId: string,
         message: string
     ) => Promise<IChat>;
     insertRoom: (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         userId: string,
         name: string,
         initialMembers?: string[]
@@ -62,10 +62,14 @@ export default class ChatContext implements IChatContext {
     );
 
     public getRooms = wrapFireAndThrowError(
-        async (ctx: IBaseContext, userId: string, orgIds: string[]) => {
+        async (
+            ctx: IBaseContext,
+            userId: string,
+            organizationIds: string[]
+        ) => {
             return ctx.models.roomModel.model
                 .find({
-                    orgId: { $in: orgIds },
+                    organizationId: { $in: organizationIds },
                     members: { $elemMatch: { userId } },
                 })
                 .lean()
@@ -128,7 +132,7 @@ export default class ChatContext implements IChatContext {
     public insertRoom = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            orgId: string,
+            organizationId: string,
             userId: string,
             name: string | null,
             initialMembers?: string[]
@@ -141,7 +145,7 @@ export default class ChatContext implements IChatContext {
                 const roomId = getNewId();
                 const roomName = name || ctx.room.getChatRoomName(roomId);
                 const newRoom = new ctx.models.roomModel.model({
-                    orgId,
+                    organizationId,
                     members,
                     customId: roomId,
                     name: roomName,
@@ -158,7 +162,7 @@ export default class ChatContext implements IChatContext {
     public insertMessage = wrapFireAndThrowError(
         async (
             ctx: IBaseContext,
-            orgId: string,
+            organizationId: string,
             senderId: string,
             roomId: string,
             message: string
@@ -166,7 +170,7 @@ export default class ChatContext implements IChatContext {
             return saveNewItemToDb(async () => {
                 const newMessage = new ctx.models.chatModel.model({
                     customId: getNewId(),
-                    orgId,
+                    organizationId,
                     message,
                     roomId,
                     sender: senderId,

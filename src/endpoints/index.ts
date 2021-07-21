@@ -1,30 +1,28 @@
 import { buildSchema } from "graphql";
-import blockSchema from "./block/schema";
+import collaborationRequestSchema from "../mongo/collaboration-request/definitions";
+import boardSchema from "./board/schema";
+import clientSchema from "./client/schema";
+import collaboratorsSchema from "./collaborator/schema";
 import EndpointsGraphQLController from "./EndpointsGraphQLController";
-import pushSubscriptionSchema from "./pushSubscription/schema";
+import organizationSchema from "./organization/schema";
 import endpointSchema from "./schema";
 import sprintSchema from "./sprints/schema";
 import systemSchema from "./system/schema";
+import taskSchema from "./task/schema";
 import userSchema from "./user/schema";
+import { utilsSchema } from "./utilsSchema";
 
 const rootSchema = `
-    type Error {
-        field: String
-        message: String
-        type: String
-        action: String
-        name: String
-    }
-
-    type ErrorOnlyResponse {
-        errors: [Error]
-    }
-
+    ${utilsSchema}
     ${userSchema}
-    ${blockSchema}
+    ${organizationSchema}
+    ${boardSchema}
+    ${taskSchema}
+    ${collaborationRequestSchema}
+    ${collaboratorsSchema}
+    ${clientSchema}
     ${sprintSchema}
     ${systemSchema}
-    ${pushSubscriptionSchema}
     ${endpointSchema}
 `;
 

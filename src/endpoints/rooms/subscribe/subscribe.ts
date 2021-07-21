@@ -18,7 +18,7 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
 
     const promises = data.items.map(async (dt) => {
         switch (dt.type) {
-            case SystemResourceType.Org:
+            case SystemResourceType.Organization:
             case SystemResourceType.Board: {
                 const block = await context.block.getBlockById(
                     context,
@@ -29,7 +29,7 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                 // await context.accessControl.assertPermission(
                 //     context,
                 //     {
-                //         orgId: getBlockRootBlockId(block),
+                //         organizationId: getBlockRootBlockId(block),
                 //         resourceType: getBlockAuditLogResourceType(block),
                 //         action: SystemActionType.Read,
                 //         permissionResourceId: block.permissionResourceId,
@@ -58,24 +58,24 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                     throw new RoomDoesNotExistError();
                 }
 
-                const org = await context.block.getBlockById(
+                const organization = await context.block.getBlockById(
                     context,
-                    room.orgId
+                    room.organizationId
                 );
 
-                assertBlock(org);
+                assertBlock(organization);
                 // await context.accessControl.assertPermission(
                 //     context,
                 //     {
-                //         orgId: getBlockRootBlockId(org),
+                //         organizationId: getBlockRootBlockId(organization),
                 //         resourceType: SystemResourceType.Chat,
                 //         action: SystemActionType.Read,
-                //         permissionResourceId: org.permissionResourceId,
+                //         permissionResourceId: organization.permissionResourceId,
                 //     },
                 //     user
                 // );
 
-                canReadBlock({ user, block: org });
+                canReadBlock({ user, block: organization });
 
                 const isUserInRoom = !!room.members.find(
                     (member) => member.userId === user.customId

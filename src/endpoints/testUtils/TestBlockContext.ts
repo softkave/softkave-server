@@ -1,32 +1,49 @@
 import { BlockType, IBlock, ITaskSprint } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { indexArray } from "../../utilities/fns";
+import cast, { indexArray } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IBaseContext } from "../contexts/BaseContext";
 import { IBlockContext } from "../contexts/BlockContext";
+import { IOrganization } from "../organization/types";
 
 const blocks: IBlock[] = [];
 
 class TestBlockContext implements IBlockContext {
-    getBlockById = async (ctx: IBaseContext, customId: string) => {
-        return blocks.find((block) => block.customId === customId);
+    getBlockById = async <T = IBlock>(ctx: IBaseContext, customId: string) => {
+        const block = blocks.find((block) => block.customId === customId);
+        return cast<T>(block);
     };
 
-    assertGetBlockById = async (ctx: IBaseContext, customId: string) => {
+    assertGetBlockById = async <T = IBlock>(
+        ctx: IBaseContext,
+        customId: string,
+        throwError?: () => void
+    ) => {
         const block = await ctx.block.getBlockById(ctx, customId);
 
-        if (block) {
+        if (!block) {
+            if (throwError) throwError();
             throw new BlockDoesNotExistError();
         }
 
-        return block;
+        return cast<T>(block);
     };
 
-    getBlockByName = async (ctx: IBaseContext, name: string) => {
-        name = name.toLowerCase();
-        return blocks.find((block) => block.name === name);
+    assertBlockById = async (
+        ctx: IBaseContext,
+        customId: string,
+        throwError?: () => void
+    ) => {
+        const block = await ctx.block.getBlockById(ctx, customId);
+
+        if (!block) {
+            if (throwError) throwError();
+            throw new BlockDoesNotExistError();
+        }
+
+        return true;
     };
 
     bulkGetBlocksByIds = async (ctx: IBaseContext, customIds: string[]) => {
@@ -41,7 +58,7 @@ class TestBlockContext implements IBlockContext {
         return data;
     };
 
-    updateBlockById = async (
+    updateBlockById = async <T = IBlock>(
         ctx: IBaseContext,
         customId: string,
         data: Partial<IBlock>
@@ -53,16 +70,19 @@ class TestBlockContext implements IBlockContext {
         }
 
         blocks[index] = { ...blocks[index], ...data };
-        return blocks[index];
+        return cast<T>(blocks[index]);
     };
 
-    saveBlock = async (ctx: IBaseContext, block: Omit<IBlock, "customId">) => {
+    saveBlock = async <T = IBlock>(
+        ctx: IBaseContext,
+        block: Omit<IBlock, "customId">
+    ) => {
         blocks.push({
             ...block,
             customId: getNewId(),
         });
 
-        return blocks[blocks.length - 1];
+        return cast<T>(blocks[blocks.length - 1]);
     };
 
     deleteBlockAndChildren = async (ctx: IBaseContext, customId: string) => {
@@ -75,24 +95,37 @@ class TestBlockContext implements IBlockContext {
         blocks.splice(index, 1);
     };
 
-    getBlockChildren = async (
+    getBlockChildren = async <T = IBlock>(
         ctx: IBaseContext,
         customId: string,
         typeList?: BlockType[]
     ) => {
-        return blocks.filter((block) => {
+        const reuslt = blocks.filter((block) => {
             return (
                 block.customId === customId &&
                 (typeList ? typeList.includes(block.type) : true)
             );
         });
+
+        return cast<T[]>(blocks);
     };
 
     getUserRootBlocks = async (ctx: IBaseContext, user: IUser) => {
-        const orgsMap = indexArray(user.orgs, { path: "customId" });
-        return blocks.filter((block) => orgsMap[block.customId]);
+        const organizationsMap = indexArray(user.organizations, {
+            path: "customId",
+        });
+        return blocks.filter((block) => organizationsMap[block.customId]);
     };
 
+    getUserOrganizations = async (ctx: IBaseContext, user: IUser) => {
+        const organizationsMap = indexArray(user.organizations, {
+            path: "customId",
+        });
+        const organizations = blocks.filter(
+            (block) => organizationsMap[block.customId]
+        );
+        return cast<IOrganization[]>(organizations);
+    };
     bulkUpdateTaskSprints = async (
         ctx: IBaseContext,
         sprintId: string,

@@ -125,7 +125,7 @@ async function addPermissionGroupsToUsers(
                     const userPermissionGroupMap: IUserAssignedPermissionGroup =
                         {
                             userId: id,
-                            orgId: getBlockRootBlockId(block),
+                            organizationId: getBlockRootBlockId(block),
                             resourceId: block.customId,
                             resourceType: getBlockAuditLogResourceType(block),
                             permissionGroupId: permissionGroup.customId,
@@ -151,7 +151,7 @@ async function addPermissionGroupsToUsers(
     );
 }
 
-// TODO: validate next and prev permissionGroup ids that they exist in the org/board
+// TODO: validate next and prev permissionGroup ids that they exist in the organization/board
 
 const addPermissionGroups: AddPermissionGroupsEndpoint = async (
     context,
@@ -166,7 +166,7 @@ const addPermissionGroups: AddPermissionGroupsEndpoint = async (
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
             permissionResourceId: block.permissionResourceId,

@@ -17,7 +17,7 @@ const addComment: AddCommentEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(task),
+    //         organizationId: getBlockRootBlockId(task),
     //         resourceType: SystemResourceType.Comment,
     //         action: SystemActionType.Create,
     //         permissionResourceId: task.permissionResourceId,

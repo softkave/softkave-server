@@ -7,7 +7,7 @@ import {
 } from "./helpers";
 
 export interface ICollaboratorRemovedEmailProps {
-    orgName: string;
+    organizationName: string;
 }
 
 export function collaboratorRemovedEmailHTML(
@@ -27,7 +27,7 @@ export function collaboratorRemovedEmailHTML(
         ${getHeaderHTML("Collaborator Removed")}
         <p>
             This is to notify you that you have been removed from ${
-                props.orgName
+                props.organizationName
             }.
         </p>
         <p>
@@ -45,7 +45,9 @@ export function collaboratorRemovedEmailText(
     const txt = `
     ${getHeaderText("Collaborator Removed")}
 
-    This is to notify you that you have been removed from ${props.orgName}.
+    This is to notify you that you have been removed from ${
+        props.organizationName
+    }.
 
     ${getEndGreeting()}
     `;

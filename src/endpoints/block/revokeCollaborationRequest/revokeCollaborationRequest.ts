@@ -14,7 +14,7 @@ import {
     CollaborationRequestDeclinedError,
     CollaborationRequestDoesNotExistError,
 } from "../../user/errors";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import {
@@ -25,7 +25,7 @@ import { revokeRequestJoiSchema } from "./validation";
 
 async function notifyRecipient(
     context: IRevokeCollaborationRequestContext,
-    org: IBlock,
+    organization: IBlock,
     request: ICollaborationRequest
 ) {
     const recipient = await context.user.getUserByEmail(
@@ -35,20 +35,20 @@ async function notifyRecipient(
 
     if (recipient) {
         const notification = getCollaborationRequestRevokedNotification(
-            org,
+            organization,
             recipient,
             request
         );
 
-        fireAndForgetPromise(
+        fireAndForganizationetPromise(
             context.notification.bulkSaveNotifications(context, [notification])
         );
     } else {
         try {
             await context.sendCollaborationRequestRevokedEmail({
                 email: request.to.email,
-                senderName: org.name,
-                title: `Collaboration request from ${org.name} revoked`,
+                senderName: organization.name,
+                title: `Collaboration request from ${organization.name} revoked`,
             });
 
             context.collaborationRequest.updateCollaborationRequestById(
@@ -73,28 +73,32 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
 ) => {
     const data = validate(instData.data, revokeRequestJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.blockId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.blockId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.CollaborationRequest,
     //         action: SystemActionType.RevokeRequest,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
-    let request = await context.collaborationRequest.getCollaborationRequestById(
-        context,
-        data.requestId
-    );
+    let request =
+        await context.collaborationRequest.getCollaborationRequestById(
+            context,
+            data.requestId
+        );
 
-    if (!request || request.from.blockId !== org.customId) {
+    if (!request || request.from.blockId !== organization.customId) {
         throw new CollaborationRequestDoesNotExistError();
     }
 
@@ -121,7 +125,9 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
         }
     );
 
-    fireAndForgetPromise(notifyRecipient(context, org, request));
+    fireAndForganizationetPromise(
+        notifyRecipient(context, organization, request)
+    );
 };
 
 export default revokeCollaborationRequest;

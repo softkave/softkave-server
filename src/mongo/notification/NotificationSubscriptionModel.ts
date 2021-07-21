@@ -7,8 +7,8 @@ import {
     notificationSubscriptionSchema,
 } from "./definitions";
 
-const modelName = "notificationSubscription";
-const collectionName = "notificationSubscriptions";
+const modelName = "notification-subscription";
+const collectionName = "notification-subscriptions";
 
 export const getNotificationSubscriptionModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {

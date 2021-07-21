@@ -4,14 +4,17 @@ import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { UserDoesNotExistError } from "../errors";
 import { addEntryToPasswordDateLog } from "../utils";
-import { ForgotPasswordEndpoint } from "./types";
-import { forgotPasswordJoiSchema } from "./validation";
+import { ForganizationotPasswordEndpoint } from "./types";
+import { forganizationotPasswordJoiSchema } from "./validation";
 
-const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
-    const result = validate(instData.data, forgotPasswordJoiSchema);
+const forganizationotPassword: ForganizationotPasswordEndpoint = async (
+    context,
+    instData
+) => {
+    const result = validate(instData.data, forganizationotPasswordJoiSchema);
     const emailValue = result.email;
     let user = await context.user.getUserByEmail(context, emailValue);
 
@@ -48,15 +51,15 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
         query: { t: token },
     });
 
-    const forgotPasswordHistory = addEntryToPasswordDateLog(
-        user.forgotPasswordHistory
+    const forganizationotPasswordHistory = addEntryToPasswordDateLog(
+        user.forganizationotPasswordHistory
     );
 
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         context.user.updateUserById(context, user.customId, {
-            forgotPasswordHistory,
+            forganizationotPasswordHistory,
         })
     );
 };
 
-export default forgotPassword;
+export default forganizationotPassword;

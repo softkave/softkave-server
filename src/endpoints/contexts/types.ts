@@ -14,7 +14,7 @@ import { ISprintModel } from "../../mongo/sprint";
 import { IUserModel } from "../../mongo/user";
 import { IClientModel } from "../../mongo/client/Model";
 import { ITokenModel } from "../../mongo/token";
-import { IUnseenChatsModel } from "../../mongo/unseenChats";
+import { IUnseenChatsModel } from "../../mongo/unseen-chats";
 import { IBaseTokenData } from "./TokenContext";
 
 export interface IContextModels {

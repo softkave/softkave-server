@@ -4,7 +4,7 @@ import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { getBlockRootBlockId } from "../utils";
 import { IUpdateBlockContext, IUpdateBlockParameters } from "./types";
 
@@ -118,7 +118,7 @@ async function persistBoardResolutionsChanges(
     // TODO: how should we handle if this fails?
     // if it fails, the task will contain resolutions that have been deleted, maybe change in client-side
     // TODO: maybe wite a cron job to clean things up
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         context.bulkUpdateDeletedResolutionsInTasks(
             context,
             block.customId,

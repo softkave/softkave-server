@@ -16,7 +16,7 @@ const getSprints: GetSprintsEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(board),
+    //         organizationId: getBlockRootBlockId(board),
     //         resourceType: SystemResourceType.Board,
     //         action: SystemActionType.Read,
     //         permissionResourceId: board.permissionResourceId,

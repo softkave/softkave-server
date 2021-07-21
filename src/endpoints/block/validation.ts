@@ -8,7 +8,7 @@ const taskCollaboratorSchema = Joi.object().keys({
 });
 
 const userUpdateableTypes = [
-    BlockType.Org,
+    BlockType.Organization,
     BlockType.Board,
     BlockType.Task,
 ] as BlockType[];

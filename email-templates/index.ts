@@ -2,13 +2,13 @@ import {
     renderAssignedTaskEmailToFile,
     renderCollaborationRequestEmailToFile,
     renderConfirmEmailAddressMedia,
-    renderForgotPasswordEmailToFile,
+    renderForganizationotPasswordEmailToFile,
 } from "../src/html/renderToFile";
 
 console.log("Writing templates");
 
 renderCollaborationRequestEmailToFile();
-renderForgotPasswordEmailToFile();
+renderForganizationotPasswordEmailToFile();
 renderAssignedTaskEmailToFile();
 renderConfirmEmailAddressMedia();
 

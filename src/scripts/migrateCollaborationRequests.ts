@@ -68,7 +68,7 @@ const notificationSentEmailHistorySchema = {
 enum NotificationType {
     CollaborationRequest = "collab-req",
     RemoveCollaborator = "remove-collaborator",
-    OrgDeleted = "org-deleted",
+    OrganizationDeleted = "organization-deleted",
 }
 
 interface INotification {
@@ -148,8 +148,7 @@ export async function script_migrateCollaborationRequests() {
                 sentEmailHistory: (req.sentEmailHistory || []).map((item) => {
                     return {
                         date: item.date,
-                        reason:
-                            CollaborationRequestEmailReason.RequestNotification,
+                        reason: CollaborationRequestEmailReason.RequestNotification,
                     };
                 }),
             };

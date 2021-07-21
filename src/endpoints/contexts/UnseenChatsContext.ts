@@ -1,4 +1,4 @@
-import { IUnseenChats } from "../../mongo/unseenChats";
+import { IUnseenChats } from "../../mongo/unseen-chats";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";

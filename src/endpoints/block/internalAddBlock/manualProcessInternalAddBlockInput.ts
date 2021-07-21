@@ -5,7 +5,7 @@ import { IInternalAddBlockNewBlockInput } from "./types";
 
 // TODO: check if resources used exist and are valid
 // for example, check if assignees or sprint exists,
-// check if assignees exist in the org, etc.
+// check if assignees exist in the organization, etc.
 
 export default function manualProcessInternalAddBlockInput(
     inputBlock: IInternalAddBlockNewBlockInput,

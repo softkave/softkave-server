@@ -8,9 +8,11 @@ import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext } from "./types";
 
+// @ts-ignore
 export default class UpdateBlockContext
     extends BaseContext
-    implements IUpdateBlockContext {
+    implements IUpdateBlockContext
+{
     public async transferBlock(context, instData) {
         return await transferBlock(context, instData);
     }

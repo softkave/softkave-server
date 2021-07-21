@@ -4,10 +4,7 @@ import {
     assignedTaskEmailNotificationTitle,
     IAssignedTaskEmailNotificationProps,
 } from "../../../html/assignedTaskEmailNotification";
-import appInfo from "../../../resources/appInfo";
-import aws from "../../../resources/aws";
-
-const ses = new aws.SES();
+import sendEmail from "../../sendEmail";
 
 export interface ISendAssignedTaskEmailNotificationProps
     extends IAssignedTaskEmailNotificationProps {
@@ -20,32 +17,12 @@ async function sendAssignedTaskEmailNotification(
     const htmlContent = assignedTaskEmailNotificationHTML(props);
     const textContent = assignedTaskEmailNotificationText(props);
 
-    const result = await ses
-        .sendEmail({
-            Destination: {
-                ToAddresses: [props.email],
-            },
-            Source: appInfo.defaultEmailSender,
-            Message: {
-                Subject: {
-                    Charset: appInfo.defaultEmailEncoding,
-                    Data: assignedTaskEmailNotificationTitle,
-                },
-                Body: {
-                    Html: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: htmlContent,
-                    },
-                    Text: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: textContent,
-                    },
-                },
-            },
-        })
-        .promise();
-
-    return result;
+    return await sendEmail({
+        htmlContent,
+        textContent,
+        emailAddresses: [props.email],
+        title: assignedTaskEmailNotificationTitle,
+    });
 }
 
 export default sendAssignedTaskEmailNotification;

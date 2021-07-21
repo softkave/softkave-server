@@ -14,7 +14,7 @@ import waitOnPromises, {
 import { IPublicCollaborationRequest } from "../../notifications/types";
 import { getPublicCollaborationRequest } from "../../notifications/utils";
 import RequestData from "../../RequestData";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { IAddCollaboratorsContext } from "./types";
 
 export interface IAddCollaboratorsSendEmailsFnProps {
@@ -37,7 +37,7 @@ export default async function sendEmails(
             const promise = context.sendCollaborationRequestEmail({
                 email: request.to.email,
                 senderName: user.name,
-                senderOrg: block.name,
+                senderOrganization: block.name,
                 title: request.title,
                 loginLink: `${appInfo.clientDomain}/login`,
                 recipientIsUser: !!indexedExistingUsers[request.to.email],
@@ -81,7 +81,7 @@ export default async function sendEmails(
         // Should look into this, and find solutions.
         // I also noticed it mostly for arrays, cause sprint bulk updates work just
         // fine for scalar values, though I haven't tested array updates in sprint bulk updates
-        fireAndForgetPromise(
+        fireAndForganizationetPromise(
             context.collaborationRequest.updateCollaborationRequestById(
                 context,
                 req.customId,

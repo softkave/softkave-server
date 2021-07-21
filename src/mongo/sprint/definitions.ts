@@ -29,7 +29,7 @@ export const boardSprintOptionsSchema = {
 export interface ISprint {
     customId: string;
     boardId: string;
-    orgId: string;
+    organizationId: string;
     duration: SprintDuration;
     createdAt: Date;
     createdBy: string;
@@ -48,7 +48,7 @@ export interface ISprint {
 const sprintSchema = {
     customId: { type: String, unique: true, index: true },
     boardId: { type: String },
-    orgId: { type: String },
+    organizationId: { type: String },
     duration: { type: String },
     prevSprintId: { type: String },
     nextSprintId: { type: String },

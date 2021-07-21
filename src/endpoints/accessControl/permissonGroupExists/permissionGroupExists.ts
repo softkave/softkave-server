@@ -19,7 +19,7 @@ const permissionGroupExists: PermissionGroupExistsEndpoint = async (
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: getBlockAuditLogResourceType(block),
             action: SystemActionType.Read,
             permissionResourceId: block.permissionResourceId,
@@ -27,11 +27,12 @@ const permissionGroupExists: PermissionGroupExistsEndpoint = async (
         user
     );
 
-    const permissionGroups = await context.accessControl.getPermissionGroupsByLowerCasedNames(
-        context,
-        [block.customId],
-        [data.name.toLowerCase()]
-    );
+    const permissionGroups =
+        await context.accessControl.getPermissionGroupsByLowerCasedNames(
+            context,
+            [block.customId],
+            [data.name.toLowerCase()]
+        );
 
     const exists = !!permissionGroups[0];
 

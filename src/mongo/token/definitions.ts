@@ -5,10 +5,13 @@ export interface IToken {
     userId: string;
     version: number;
 
-    // not same as iat in token, may be a litte bit behind or after
-    // and is a ISO string, where iat is time in seconds
+    // not same as iat in encoded token, may be a litte bit behind or after
+    // and is a ISO string, where iat in encoded token is in seconds
     issuedAt: string;
     audience: string[];
+
+    // not same as expires in encoded token. expires here is in milliseconds,
+    // where expires in encoded token is in seconds
     expires?: number;
     meta?: Record<string, string | number | boolean | null>;
     clientId?: string;

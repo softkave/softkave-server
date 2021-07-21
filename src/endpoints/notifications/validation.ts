@@ -17,7 +17,7 @@ const reasonsArr: NotificationReason[] = [
 const notificationReason = Joi.string().valid(reasonsArr);
 
 const typeArr: NotificationType[] = [
-    // NotificationType.OrgDeleted,
+    // NotificationType.OrganizationDeleted,
 
     NotificationType.CollaboratorRemoved,
     NotificationType.CollaboratorPermissionsUpdated,

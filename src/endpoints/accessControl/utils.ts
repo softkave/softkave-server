@@ -40,21 +40,20 @@ const publicPermissionFields = getFields<IPublicPermission>({
     updatedBy: true,
     updatedAt: getDateString,
     available: true,
-    orgId: true,
+    organizationId: true,
 });
 
-const publicUserPermissionGroupMapFields = getFields<IPublicUserAssignedPermissionGroup>(
-    {
+const publicUserPermissionGroupMapFields =
+    getFields<IPublicUserAssignedPermissionGroup>({
         userId: true,
-        orgId: true,
+        organizationId: true,
         resourceId: true,
         resourceType: true,
         permissionGroupId: true,
         addedAt: true,
         addedBy: true,
         customId: true,
-    }
-);
+    });
 
 export const getPublicPermissionGroups = (
     permissionGroup: IPermissionGroup
@@ -86,7 +85,8 @@ export function getPublicPermissionGroupsArray(
 
 export function assertIsPermissionBlock(block: IBlock) {
     if (
-        (block.type !== BlockType.Org && block.type !== BlockType.Board) ||
+        (block.type !== BlockType.Organization &&
+            block.type !== BlockType.Board) ||
         block.permissionResourceId !== block.customId
     ) {
         throw new InvalidRequestError();

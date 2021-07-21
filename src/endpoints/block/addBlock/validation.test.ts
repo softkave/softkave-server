@@ -8,7 +8,10 @@ const newBlockJoiSchema = Joi.object().keys({
     description: blockValidationSchemas.description,
     dueAt: blockValidationSchemas.dueAt,
     color: blockValidationSchemas.color.when("type", {
-        is: Joi.string().valid([BlockType.Board, BlockType.Org] as BlockType[]),
+        is: Joi.string().valid([
+            BlockType.Board,
+            BlockType.Organization,
+        ] as BlockType[]),
         then: Joi.required(),
     }),
     parent: blockValidationSchemas.parent.when("type", {

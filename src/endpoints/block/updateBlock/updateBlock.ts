@@ -6,7 +6,7 @@ import { ISprint } from "../../../mongo/sprint";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
@@ -27,7 +27,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(block),
+    //         organizationId: getBlockRootBlockId(block),
     //         resourceType: getBlockAuditLogResourceType(block),
     //         action: SystemActionType.Update,
     //         permissionResourceId: block.permissionResourceId,
@@ -98,7 +98,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
                 return false;
             }
 
-            return !!assigneeUserData.orgs.find(
+            return !!assigneeUserData.organizations.find(
                 (o) => o.customId === block.rootBlockId
             );
         });
@@ -121,16 +121,16 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardStatusChanges(context, instData, block, update, user)
     );
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardResolutionsChanges(context, instData, block, update)
     );
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         persistBoardLabelChanges(context, instData, block, update)
     );
-    fireAndForgetPromise(
+    fireAndForganizationetPromise(
         sendNewlyAssignedTaskEmail(
             context,
             instData,
@@ -150,7 +150,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             customId: getNewId(),
         },
 
-        // TODO: write a script to add orgId to existing update block audit logs without one
+        // TODO: write a script to add organizationId to existing update block audit logs without one
         // it was omitted prior
         organizationId: getBlockRootBlockId(block),
     });

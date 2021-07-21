@@ -50,7 +50,7 @@ import {
     getUnseenChatsContext,
     IUnseenChatsContext,
 } from "./UnseenChatsContext";
-import { getUnseenChatsModel } from "../../mongo/unseenChats";
+import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
 

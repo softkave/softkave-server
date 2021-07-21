@@ -6,8 +6,8 @@ import collaborationRequestSchema, {
     ICollaborationRequestDocument,
 } from "./definitions";
 
-const modelName = "collaborationRequest";
-const collectionName = "collaborationRequests";
+const modelName = "collaboration-request";
+const collectionName = "collaboration-requests";
 
 export const getCollaborationRequestModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {

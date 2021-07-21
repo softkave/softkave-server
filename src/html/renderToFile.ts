@@ -23,10 +23,10 @@ import {
     IGenerateEmailConfirmationMediaProps,
 } from "./emailConfirmationEmail";
 import {
-    IForgotPasswordEmailProps,
-    forgotPasswordEmailHTML,
-    forgotPasswordEmailText,
-} from "./forgotPasswordEmail";
+    IForganizationotPasswordEmailProps,
+    forganizationotPasswordEmailHTML,
+    forganizationotPasswordEmailText,
+} from "./forganizationotPasswordEmail";
 
 throw new Error(
     "Set env varibles before running code, or run script or code with dotenv"
@@ -77,7 +77,7 @@ export function renderCollaborationRequestEmailToFile() {
         loginLink: `${appInfo.clientDomain}/login`,
         recipientIsUser: true,
         senderName: "Abayomi Isaac",
-        senderOrg: "Softkave",
+        senderOrganization: "Softkave",
         signupLink: `${appInfo.clientDomain}/signup`,
         title: "Collaboration request from Yomi",
     };
@@ -85,7 +85,7 @@ export function renderCollaborationRequestEmailToFile() {
     const newUserProps: ICollaborationRequestEmailProps = {
         loginLink: `${appInfo.clientDomain}/login`,
         senderName: "Abayomi Isaac",
-        senderOrg: "Softkave",
+        senderOrganization: "Softkave",
         signupLink: `${appInfo.clientDomain}/signup`,
         recipientIsUser: false,
         title: "Collaboration request from Isaac",
@@ -102,23 +102,23 @@ export function renderCollaborationRequestEmailToFile() {
     fs.writeFileSync(newUserTextTemplateFile, newUserText);
 }
 
-// Forgot password email
-const forgotPasswordHTMLTemplateFile =
-    "email-templates/templates/forgot-password-html.html";
-const forgotPasswordTextTemplateFile =
-    "email-templates/templates/forgot-password-text.txt";
+// Forganizationot password email
+const forganizationotPasswordHTMLTemplateFile =
+    "email-templates/templates/forganizationot-password-html.html";
+const forganizationotPasswordTextTemplateFile =
+    "email-templates/templates/forganizationot-password-text.txt";
 
-export function renderForgotPasswordEmailToFile() {
-    const props: IForgotPasswordEmailProps = {
+export function renderForganizationotPasswordEmailToFile() {
+    const props: IForganizationotPasswordEmailProps = {
         expiration: moment().add(2, "days"),
         link: `${appInfo.clientDomain}/change-password?t=12345`,
     };
 
-    const existingUserHTML = forgotPasswordEmailHTML(props);
-    const existingUserText = forgotPasswordEmailText(props);
+    const existingUserHTML = forganizationotPasswordEmailHTML(props);
+    const existingUserText = forganizationotPasswordEmailText(props);
 
-    fs.writeFileSync(forgotPasswordHTMLTemplateFile, existingUserHTML);
-    fs.writeFileSync(forgotPasswordTextTemplateFile, existingUserText);
+    fs.writeFileSync(forganizationotPasswordHTMLTemplateFile, existingUserHTML);
+    fs.writeFileSync(forganizationotPasswordTextTemplateFile, existingUserText);
 }
 
 // Confirm email address email
@@ -148,7 +148,7 @@ const collaboratorRemovedTxtFile =
 
 export function renderCollaboratorRemovedMedia() {
     const props: ICollaboratorRemovedEmailProps = {
-        orgName: "Softkave",
+        organizationName: "Softkave",
     };
 
     const existingUserHTML = collaboratorRemovedEmailHTML(props);

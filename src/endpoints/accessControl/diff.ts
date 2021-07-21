@@ -2,7 +2,7 @@ import { IPermission } from "../../mongo/access-control/definitions";
 import { IUser } from "../../mongo/user";
 
 function mapUsersToPermissions(
-    orgId: string,
+    organizationId: string,
     users: IUser[],
     permissions: IPermission[]
 ) {
@@ -20,9 +20,8 @@ function mapUsersToPermissions(
             const permissionGroupPermissions =
                 permissionGroupsToPermissionsMap[permissionGroupId] || {};
             permissionGroupPermissions[permissionGroupId] = p;
-            permissionGroupsToPermissionsMap[
-                permissionGroupId
-            ] = permissionGroupPermissions;
+            permissionGroupsToPermissionsMap[permissionGroupId] =
+                permissionGroupPermissions;
         });
 
         p.users.forEach((userId) => {
@@ -34,8 +33,8 @@ function mapUsersToPermissions(
 
     // users.forEach((user) => {
     //     let userPermissions = usersToPermissionsMap[user.customId] || {};
-    //     const orgData = user.orgs.find((org) => org.customId === orgId);
-    //     const permissionGroups = orgData.permissionGroups || [];
+    //     const organizationData = user.organizations.find((organization) => organization.customId === organizationId);
+    //     const permissionGroups = organizationData.permissionGroups || [];
 
     //     permissionGroups.forEach((permissionGroupId) => {
     //         const permissionGroupPermissions = permissionGroupsToPermissionsMap[permissionGroupId] || {};
@@ -74,13 +73,13 @@ function diffPermissions(
 }
 
 function getPermissionChanges(
-    orgId: string,
+    organizationId: string,
     users: IUser[],
     oldPermissions: IPermission[],
     newPermissions: IPermission[]
 ) {
-    const oldMap = mapUsersToPermissions(orgId, users, oldPermissions);
-    const newMap = mapUsersToPermissions(orgId, users, newPermissions);
+    const oldMap = mapUsersToPermissions(organizationId, users, oldPermissions);
+    const newMap = mapUsersToPermissions(organizationId, users, newPermissions);
     const permissionChanges: Record<
         string,
         {

@@ -36,9 +36,9 @@ export interface INotificationContext {
         ctx: IBaseContext,
         notifications: INotification[]
     ) => Promise<INotification[]>;
-    getNotificationsByOrgId: (
+    getNotificationsByOrganizationId: (
         ctx: IBaseContext,
-        orgId: string
+        organizationId: string
     ) => Promise<INotification[]>;
     markUserNotificationsRead: (
         ctx: IBaseContext,
@@ -147,11 +147,11 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getNotificationsByOrgId = wrapFireAndThrowError(
-        (ctx: IBaseContext, orgId: string) => {
+    public getNotificationsByOrganizationId = wrapFireAndThrowError(
+        (ctx: IBaseContext, organizationId: string) => {
             return ctx.models.notificationModel.model
                 .find({
-                    orgId,
+                    organizationId,
                 })
                 .lean()
                 .exec();

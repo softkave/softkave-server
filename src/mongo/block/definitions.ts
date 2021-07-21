@@ -86,7 +86,7 @@ export const blockStatusSchema = {
 
 export enum BlockType {
     Root = "root",
-    Org = "org",
+    Organization = "organization",
     Board = "board",
     Task = "task",
 }
@@ -159,7 +159,7 @@ export interface IBlock {
     deletedBy?: string;
     permissionResourceId?: string;
 
-    // Orgs and boards
+    // Organizations and boards
     color?: string;
     publicPermissionGroupId?: string;
     // newPermissionsManagerId?: string;
@@ -204,7 +204,7 @@ const blockSchema = {
     deletedBy: { type: String },
     permissionResourceId: { type: String },
 
-    // Orgs and boards
+    // Organizations and boards
     color: { type: String },
     publicPermissionGroupId: { type: String },
 

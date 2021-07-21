@@ -11,7 +11,7 @@ export interface ICollaborationRequestEmailProps {
     signupLink: string;
     loginLink: string;
     senderName: string;
-    senderOrg: string;
+    senderOrganization: string;
     recipientIsUser: boolean;
     title: string;
 }
@@ -33,7 +33,7 @@ export function collaborationRequestEmailHTML(
         ${getHeaderHTML(props.title)}
         <p>
             You have a new collaboration request from
-            <b>${props.senderName}</b> of <b>${props.senderOrg}</b>.
+            <b>${props.senderName}</b> of <b>${props.senderOrganization}</b>.
         </p>
         <p>
             To respond to this request,
@@ -66,7 +66,7 @@ export function collaborationRequestEmailText(
     ${getHeaderText(props.title)}
 
     You have a new collaboration request from ${props.senderName} of ${
-        props.senderOrg
+        props.senderOrganization
     }
 
     To respond to this request, ${getLink()}

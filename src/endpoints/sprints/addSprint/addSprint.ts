@@ -21,7 +21,7 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(board),
+    //         organizationId: getBlockRootBlockId(board),
     //         resourceType: SystemResourceType.Sprint,
     //         action: SystemActionType.Create,
     //         permissionResourceId: board.permissionResourceId,
@@ -57,7 +57,7 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     let sprint: ISprint = {
         customId: getNewId(),
         boardId: data.boardId,
-        orgId: board.rootBlockId,
+        organizationId: board.rootBlockId,
         duration: data.data.duration,
         name: data.data.name,
         createdAt: getDate(),

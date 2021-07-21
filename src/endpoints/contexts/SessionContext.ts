@@ -56,21 +56,7 @@ export default class SessionContext implements ISessionContext {
                 return data.incomingTokenData;
             }
 
-            let incomingTokenData: IBaseTokenData | null = null;
-
-            if (data.req) {
-                incomingTokenData = data.req.user;
-            } else if (data.incomingSocketData) {
-                const tokenString = data.incomingSocketData.token;
-                incomingTokenData = ctx.token.decodeToken(ctx, tokenString);
-            }
-
-            if (!incomingTokenData) {
-                throw new InvalidRequestError();
-            }
-
-            data.incomingTokenData = incomingTokenData;
-            return incomingTokenData;
+            throw new InvalidRequestError();
         }
     );
 
@@ -110,15 +96,7 @@ export default class SessionContext implements ISessionContext {
             }
 
             const tokenData = await ctx.session.tryGetTokenData(ctx, data);
-            let clientId = "";
-
-            if (data.req) {
-                clientId = data.req.headers[
-                    clientConstants.clientIdHeaderKey
-                ] as string;
-            } else if (data.incomingSocketData) {
-                clientId = data.incomingSocketData.clientId;
-            }
+            const clientId = data.clientId;
 
             if (clientId) {
                 if (tokenData && clientId !== tokenData.clientId) {

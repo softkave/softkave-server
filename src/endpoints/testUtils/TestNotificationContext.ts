@@ -10,7 +10,7 @@ class TestNotificationContext implements INotificationContext {
     updateNotificationById = notImplementFn;
     deleteNotificationById = notImplementFn;
     bulkSaveNotifications = notImplementFn;
-    getNotificationsByOrgId = notImplementFn;
+    getNotificationsByOrganizationId = notImplementFn;
     markUserNotificationsRead = notImplementFn;
 
     // Notification subscriptions

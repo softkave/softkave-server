@@ -2,7 +2,7 @@ import { BlockType } from "../../../mongo/block";
 import { validate } from "../../../utilities/joiUtils";
 import { IBoard } from "../../board/types";
 import { throwBoardNotFoundError } from "../../board/utils";
-import canReadOrg from "../../org/canReadBlock";
+import canReadOrganization from "../../organization/canReadBlock";
 import { ITask } from "../types";
 import { getPublicTasksArray } from "../utils";
 import { GetBoardTasksEndpoint } from "./types";
@@ -17,7 +17,7 @@ const getBoardTasks: GetBoardTasksEndpoint = async (context, instData) => {
         throwBoardNotFoundError
     );
 
-    canReadOrg(board.rootBlockId, user);
+    canReadOrganization(board.rootBlockId, user);
 
     const tasks = await context.block.getBlockChildren<ITask>(
         context,

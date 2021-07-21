@@ -34,10 +34,10 @@ const signup: SignupEndpoint = async (context, instData) => {
         name: data.name,
         color: data.color,
         createdAt: now,
-        forgotPasswordHistory: [],
+        forganizationotPasswordHistory: [],
         passwordLastChangedAt: now,
         rootBlockId: "",
-        orgs: [],
+        organizations: [],
     };
 
     const user = await context.user.saveUser(context, value);

@@ -8,8 +8,8 @@ export function getBlockAuditLogResourceType(
         case BlockType.Board:
             return SystemResourceType.Board;
 
-        case BlockType.Org:
-            return SystemResourceType.Org;
+        case BlockType.Organization:
+            return SystemResourceType.Organization;
 
         case BlockType.Root:
             return SystemResourceType.RootBlock;

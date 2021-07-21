@@ -58,6 +58,7 @@ class TestBaseContext implements ITestBaseContext {
         port: "",
         vapidPublicKey: "Hello",
         vapidPrivateKey: "Hello",
+        disableEmail: true,
         appName: "Softkave",
         emailSendFrom: "hello@softkave.com",
         emailEncoding: "UTF-8",

@@ -22,21 +22,25 @@ export async function initializeBoardPermissions(
         return;
     }
 
-    const orgPermissions = await ctx.accessControl.getPermissionsByResourceId(
-        ctx,
-        board.rootBlockId!,
-        true
-    );
+    const organizationPermissions =
+        await ctx.accessControl.getPermissionsByResourceId(
+            ctx,
+            board.rootBlockId!,
+            true
+        );
 
-    const orgPermissionsMap = getPermissions2DimensionalMap(orgPermissions);
+    const organizationPermissionsMap = getPermissions2DimensionalMap(
+        organizationPermissions
+    );
     const boardPermissions = boardResourceTypesToActionList.map((p) => {
-        const orgPermission = orgPermissionsMap[p.resourceType][p.action];
+        const organizationPermission =
+            organizationPermissionsMap[p.resourceType][p.action];
         const permission: IPermission = {
             ...p,
             customId: getNewId(),
-            orgId: board.rootBlockId,
-            permissionGroups: orgPermission.permissionGroups,
-            users: orgPermission.users,
+            organizationId: board.rootBlockId,
+            permissionGroups: organizationPermission.permissionGroups,
+            users: organizationPermission.users,
             permissionOwnerId: board.customId,
             createdBy: user.customId,
             createdAt: getDate(),
@@ -52,16 +56,22 @@ export async function initializeBoardPermissions(
     });
 }
 
-const publicPermissionGroupName = DefaultPermissionGroupNames.Public.toLowerCase();
+const publicPermissionGroupName =
+    DefaultPermissionGroupNames.Public.toLowerCase();
 const publicPermissionGroupDescription = "";
 
-const collaboratorPermissionGroupName = DefaultPermissionGroupNames.Collaborator.toLowerCase();
+const collaboratorPermissionGroupName =
+    DefaultPermissionGroupNames.Collaborator.toLowerCase();
 const collaboratorPermissionGroupDescription = "";
 
-const adminPermissionGroupName = DefaultPermissionGroupNames.Admin.toLowerCase();
+const adminPermissionGroupName =
+    DefaultPermissionGroupNames.Admin.toLowerCase();
 const adminPermissionGroupDescription = "";
 
-export function getDefaultOrgPermissionGroups(userId: string, org: IBlock) {
+export function getDefaultOrganizationPermissionGroups(
+    userId: string,
+    organization: IBlock
+) {
     const newPermissionGroups: IPermissionGroup[] = [];
     const publicPermissionGroup: IPermissionGroup = {
         customId: getNewId(),
@@ -70,8 +80,8 @@ export function getDefaultOrgPermissionGroups(userId: string, org: IBlock) {
         description: publicPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
-        resourceId: org.customId,
-        resourceType: getBlockAuditLogResourceType(org),
+        resourceId: organization.customId,
+        resourceType: getBlockAuditLogResourceType(organization),
     };
 
     const collaboratorPermissionGroup: IPermissionGroup = {
@@ -81,8 +91,8 @@ export function getDefaultOrgPermissionGroups(userId: string, org: IBlock) {
         description: collaboratorPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
-        resourceId: org.customId,
-        resourceType: getBlockAuditLogResourceType(org),
+        resourceId: organization.customId,
+        resourceType: getBlockAuditLogResourceType(organization),
         prevId: publicPermissionGroup.customId,
     };
 
@@ -93,8 +103,8 @@ export function getDefaultOrgPermissionGroups(userId: string, org: IBlock) {
         description: adminPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
-        resourceId: org.customId,
-        resourceType: getBlockAuditLogResourceType(org),
+        resourceId: organization.customId,
+        resourceType: getBlockAuditLogResourceType(organization),
         prevId: collaboratorPermissionGroup.customId,
     };
 
@@ -154,13 +164,13 @@ const defaultPermissionGroupsToPermissionsList = [
         [DefaultPermissionGroupNames.Admin]
     ),
 
-    // Org
-    ...getP(SystemResourceType.Org, [
+    // Organization
+    ...getP(SystemResourceType.Organization, [
         SystemActionType.Read,
         SystemActionType.Update,
     ]),
     ...getP(
-        SystemResourceType.Org,
+        SystemResourceType.Organization,
         [SystemActionType.Delete],
         [DefaultPermissionGroupNames.Admin]
     ),
@@ -263,7 +273,7 @@ const defaultPermissionGroupsToPermissionsList = [
 
 export function makeDefaultPermissions(
     userId: string,
-    org: IBlock,
+    organization: IBlock,
     defaultPermissionGroupsMap: IProvidedDefaultPermissionGroupsMap
 ) {
     const defaultPermissionsMap = getPermissions2DimensionalMap(
@@ -281,11 +291,11 @@ export function makeDefaultPermissions(
                 (name) => defaultPermissionGroupsMap[name].customId
             ),
             users: [],
-            permissionOwnerId: org.customId,
+            permissionOwnerId: organization.customId,
             createdBy: userId,
             createdAt: getDate(),
             available: true,
-            orgId: org.customId,
+            organizationId: organization.customId,
         };
 
         return permission;
@@ -294,19 +304,19 @@ export function makeDefaultPermissions(
     return permissions;
 }
 
-export async function initializeOrgAccessControl(
+export async function initializeOrganizationAccessControl(
     ctx: IBaseContext,
     user: IUser,
-    org: IBlock
+    organization: IBlock
 ) {
     const {
         permissionGroups,
         adminPermissionGroup,
         publicPermissionGroup,
         collaboratorPermissionGroup,
-    } = getDefaultOrgPermissionGroups(user.customId, org);
+    } = getDefaultOrganizationPermissionGroups(user.customId, organization);
 
-    const permissions = makeDefaultPermissions(user.customId, org, {
+    const permissions = makeDefaultPermissions(user.customId, organization, {
         [DefaultPermissionGroupNames.Admin]: adminPermissionGroup,
         [DefaultPermissionGroupNames.Collaborator]: collaboratorPermissionGroup,
         [DefaultPermissionGroupNames.Public]: publicPermissionGroup,
@@ -317,13 +327,13 @@ export async function initializeOrgAccessControl(
 
     await Promise.all([p1, p2]);
 
-    org = await ctx.block.updateBlockById(ctx, org.customId, {
+    organization = await ctx.block.updateBlockById(ctx, organization.customId, {
         publicPermissionGroupId: publicPermissionGroup.customId,
     });
 
     return {
         permissionGroups,
         permissions,
-        org,
+        organization,
     };
 }

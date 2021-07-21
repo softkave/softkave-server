@@ -1,8 +1,8 @@
 import { BlockType } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import canReadOrg from "../../org/canReadBlock";
-import { OrgDoesNotExistError } from "../../org/errors";
+import canReadOrganization from "../../organization/canReadBlock";
+import { OrganizationDoesNotExistError } from "../../organization/errors";
 import { BoardExistsError } from "../errors";
 import { IBoard } from "../types";
 import { getPublicBoardData } from "../utils";
@@ -14,10 +14,10 @@ const createBoard: CreateBoardEndpoint = async (context, instData) => {
     const user = await context.session.getUser(context, instData);
 
     await context.block.assertBlockById(context, data.board.parent, () => {
-        throw new OrgDoesNotExistError();
+        throw new OrganizationDoesNotExistError();
     });
 
-    canReadOrg(data.board.parent, user);
+    canReadOrganization(data.board.parent, user);
 
     const boardExists = await context.block.blockExists(
         context,

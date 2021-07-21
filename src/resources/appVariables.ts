@@ -1,4 +1,16 @@
+import assert from "assert";
+
 const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
+
+function getBoolean(value: string = "") {
+    return value.toLowerCase() === "true";
+}
+
+function getNumber(value: string = "", envName: string) {
+    const num = Number(value);
+    assert.ok(Number.isNaN(num), `${envName} is not a number`);
+    return num;
+}
 
 export const appVariables = {
     clientDomain,
@@ -10,6 +22,7 @@ export const appVariables = {
     port: process.env.PORT,
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
+    disableEmail: getBoolean(process.env.DISABLE_EMAIL),
 
     appName: "Softkave",
     emailSendFrom: "hello@softkave.com",

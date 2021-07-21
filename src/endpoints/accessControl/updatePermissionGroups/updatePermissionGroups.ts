@@ -86,7 +86,7 @@ async function updateUserPermissionGroupMaps(
                     const userPermissionGroupMap: IUserAssignedPermissionGroup =
                         {
                             userId: id,
-                            orgId: getBlockRootBlockId(block),
+                            organizationId: getBlockRootBlockId(block),
                             resourceId: block.customId,
                             resourceType: getBlockAuditLogResourceType(block),
                             permissionGroupId: permissionGroup.customId,
@@ -136,7 +136,7 @@ const updatePermissionGroups: UpdatePermissionGroupsEndpoint = async (
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,
             permissionResourceId: block.permissionResourceId,

@@ -1,10 +1,10 @@
 import Joi from "joi";
-import orgValidationSchemas from "../../org/validation";
+import organizationValidationSchemas from "../../organization/validation";
 import boardValidationSchemas from "../validation";
 
 export const boardExistsJoiSchema = Joi.object()
     .keys({
-        name: orgValidationSchemas.name.lowercase().required(),
+        name: organizationValidationSchemas.name.lowercase().required(),
         parent: boardValidationSchemas.parent.required(),
     })
     .required();

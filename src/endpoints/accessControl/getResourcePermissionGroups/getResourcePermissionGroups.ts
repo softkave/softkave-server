@@ -19,14 +19,17 @@ const getResourcePermissionGroups: GetResourcePermissionGroupsEndpoint = async (
 
     assertBlock(block);
 
-    if (block.type !== BlockType.Org && block.type !== BlockType.Board) {
+    if (
+        block.type !== BlockType.Organization &&
+        block.type !== BlockType.Board
+    ) {
         throw new InvalidRequestError();
     }
 
     await context.accessControl.assertPermission(
         context,
         {
-            orgId: getBlockRootBlockId(block),
+            organizationId: getBlockRootBlockId(block),
             resourceType: getBlockAuditLogResourceType(block),
             action: SystemActionType.Read,
             permissionResourceId: block.permissionResourceId,
@@ -34,10 +37,11 @@ const getResourcePermissionGroups: GetResourcePermissionGroupsEndpoint = async (
         user
     );
 
-    const permissionGroups = await context.accessControl.getPermissionGroupsByResourceId(
-        context,
-        block.customId
-    );
+    const permissionGroups =
+        await context.accessControl.getPermissionGroupsByResourceId(
+            context,
+            block.customId
+        );
 
     return {
         permissionGroups: getPublicPermissionGroupsArray(permissionGroups),

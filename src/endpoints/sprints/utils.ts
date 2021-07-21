@@ -6,7 +6,7 @@ import { IPublicSprint, IPublicSprintOptions } from "./types";
 const publicSprintFields = getFields<IPublicSprint>({
     customId: true,
     boardId: true,
-    orgId: true,
+    organizationId: true,
     duration: true,
     createdAt: getDateString,
     createdBy: true,

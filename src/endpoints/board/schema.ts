@@ -139,7 +139,7 @@ const boardSchema = `
 
     type BoardQuery {
         boardExists (name: String!, parent: String!) : BoardExistsResponse
-        getOrgBoards (boardId: String!) : MultipleBoardsOpResponse
+        getOrganizationBoards (boardId: String!) : MultipleBoardsOpResponse
     }
 
     type BoardMutation {

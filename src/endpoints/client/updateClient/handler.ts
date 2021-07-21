@@ -1,6 +1,6 @@
 import { validate } from "../../../utilities/joiUtils";
 import { clientToClientUserView } from "../utils";
-import { fireAndForgetPromise } from "../../utils";
+import { fireAndForganizationetPromise } from "../../utils";
 import { UpdateClientEndpoint } from "./types";
 import { updateClientJoiSchema } from "./validation";
 
@@ -18,7 +18,7 @@ const updateClient: UpdateClientEndpoint = async (context, instData) => {
     );
 
     if (data.data.isLoggedIn) {
-        fireAndForgetPromise(
+        fireAndForganizationetPromise(
             context.unseenChats.removeEntry(context, user.customId)
         );
     }
