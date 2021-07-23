@@ -3,7 +3,7 @@ import { BlockType } from "../../mongo/block";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
-import { wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import { ISocketEntry } from "./SocketContext";
 
@@ -139,7 +139,7 @@ function broadcast(
 }
 
 export default class RoomContext implements IRoomContext {
-    public subscribe = wrapFireAndThrowError(
+    public subscribe = wrapFireAndThrowErrorAsync(
         (data: RequestData, roomName: string) => {
             if (data.socket) {
                 joinRoom(roomName, data.socket.id);
@@ -147,7 +147,7 @@ export default class RoomContext implements IRoomContext {
         }
     );
 
-    public leave = wrapFireAndThrowError(
+    public leave = wrapFireAndThrowErrorAsync(
         (data: RequestData, roomName: string) => {
             if (data.socket) {
                 leaveRoom(roomName, data.socket.id);
@@ -155,7 +155,7 @@ export default class RoomContext implements IRoomContext {
         }
     );
 
-    public isUserInRoom = wrapFireAndThrowError(
+    public isUserInRoom = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, roomName: string, userId: string) => {
             const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
             const room = rooms[roomName];
@@ -168,7 +168,7 @@ export default class RoomContext implements IRoomContext {
         }
     );
 
-    public subscribeUser = wrapFireAndThrowError(
+    public subscribeUser = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, roomName: string, userId: string) => {
             const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
 
@@ -185,7 +185,7 @@ export default class RoomContext implements IRoomContext {
         }
     );
 
-    public unSubscribeUser = wrapFireAndThrowError(
+    public unSubscribeUser = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, roomName: string, userId: string) => {
             const socketEntries = ctx.socket.getEntriesByUserId(ctx, userId);
             const room = rooms[roomName] || {};
@@ -197,7 +197,7 @@ export default class RoomContext implements IRoomContext {
         }
     );
 
-    public broadcast = wrapFireAndThrowError(
+    public broadcast = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             data: RequestData,

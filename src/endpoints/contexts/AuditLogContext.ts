@@ -5,7 +5,7 @@ import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import RequestData from "../RequestData";
-import { wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IAuditLogInsertEntry {
@@ -51,7 +51,7 @@ export function getLogFromEntry(
 }
 
 export default class AuditLogContext implements IAuditLogContext {
-    public insertMany = wrapFireAndThrowError(
+    public insertMany = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             data: RequestData,

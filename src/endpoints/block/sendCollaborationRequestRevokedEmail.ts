@@ -3,6 +3,7 @@ import {
     collaborationRequestRevokedEmailText,
     ICollaborationRequestRevokedEmailProps,
 } from "../../html/collaborationRequestRevokedEmail";
+import { IBaseContext } from "../contexts/BaseContext";
 import sendEmail from "../sendEmail";
 
 export interface ISendCollaborationRequestRevokedEmailProps
@@ -11,12 +12,13 @@ export interface ISendCollaborationRequestRevokedEmailProps
 }
 
 async function sendCollaborationRequestRevokedEmail(
+    ctx: IBaseContext,
     props: ISendCollaborationRequestRevokedEmailProps
 ) {
     const htmlContent = collaborationRequestRevokedEmailHTML(props);
     const textContent = collaborationRequestRevokedEmailText(props);
 
-    return await sendEmail({
+    return await sendEmail(ctx, {
         htmlContent,
         textContent,
         emailAddresses: [props.email],

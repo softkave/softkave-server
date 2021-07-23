@@ -1,7 +1,4 @@
-import {
-    CreateRootBlockEndpoint,
-    ICreateRootBlockContext,
-} from "../../block/createRootBlock/types";
+import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { ILoginResult } from "../login/types";
 
@@ -16,12 +13,8 @@ export interface ISignupArgData {
     user: INewUserInput;
 }
 
-export interface ISignupContext extends ICreateRootBlockContext {
-    createUserRootBlock: CreateRootBlockEndpoint;
-}
-
 export type SignupEndpoint = Endpoint<
-    ISignupContext,
+    IBaseContext,
     ISignupArgData,
     ILoginResult
 >;

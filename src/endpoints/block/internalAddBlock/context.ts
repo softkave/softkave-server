@@ -6,20 +6,20 @@ import {
     initializeOrganizationAccessControl,
 } from "../../accessControl/initializeBlockPermissions";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
-import { wrapFireAndThrowError } from "../../utils";
+import { wrapFireAndThrowErrorAsync } from "../../utils";
 import { IInternalAddBlockContext } from "./types";
 
 export default class InternalAddBlockContext
     extends BaseContext
     implements IInternalAddBlockContext
 {
-    public initializeBoardPermissions = wrapFireAndThrowError(
+    public initializeBoardPermissions = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
             return initializeBoardPermissions(ctx, user, block);
         }
     );
 
-    public initializeOrganizationAccessControl = wrapFireAndThrowError(
+    public initializeOrganizationAccessControl = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
             return initializeOrganizationAccessControl(ctx, user, block);
         }

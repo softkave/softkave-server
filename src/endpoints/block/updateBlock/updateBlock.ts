@@ -6,7 +6,7 @@ import { ISprint } from "../../../mongo/sprint";
 import { indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
@@ -121,16 +121,16 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardStatusChanges(context, instData, block, update, user)
     );
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardResolutionsChanges(context, instData, block, update)
     );
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardLabelChanges(context, instData, block, update)
     );
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         sendNewlyAssignedTaskEmail(
             context,
             instData,

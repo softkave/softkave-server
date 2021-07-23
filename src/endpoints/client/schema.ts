@@ -19,10 +19,6 @@ type UpdateClientResponse {
     client: Client
 }
 
-type ClientQuery {
-    
-}
-
 type ClientMutation {
     updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
 }

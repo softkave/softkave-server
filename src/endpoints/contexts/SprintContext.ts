@@ -2,7 +2,7 @@ import { ISprint } from "../../mongo/sprint";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface ISprintContext {
@@ -51,7 +51,7 @@ export interface ISprintContext {
 }
 
 export default class SprintContext implements ISprintContext {
-    public getSprintById = wrapFireAndThrowError(
+    public getSprintById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string) => {
             return ctx.models.sprintModel.model
                 .findOne({
@@ -62,7 +62,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public getMany = wrapFireAndThrowError(
+    public getMany = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, ids: string[]) => {
             return ctx.models.sprintModel.model
                 .find({
@@ -73,7 +73,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public updateSprintById = wrapFireAndThrowError(
+    public updateSprintById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string, data: Partial<ISprint>) => {
             return ctx.models.sprintModel.model
                 .findOneAndUpdate({ customId }, data, { new: true })
@@ -82,7 +82,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public bulkUpdateSprintsById = wrapFireAndThrowError(
+    public bulkUpdateSprintsById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, data: Array<IUpdateItemById<ISprint>>) => {
             const opts = data.map((b) => ({
                 updateOne: {
@@ -95,7 +95,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public getSprintsByBoardId = wrapFireAndThrowError(
+    public getSprintsByBoardId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, boardId: string) => {
             return ctx.models.sprintModel.model
                 .find({
@@ -106,7 +106,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public sprintExists = wrapFireAndThrowError(
+    public sprintExists = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, name: string, boardId: string) => {
             return ctx.models.sprintModel.model.exists({
                 boardId,
@@ -115,7 +115,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public deleteSprint = wrapFireAndThrowError(
+    public deleteSprint = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, sprintId: string) => {
             await ctx.models.sprintModel.model
                 .deleteOne({
@@ -125,7 +125,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public deleteSprintByBoardId = wrapFireAndThrowError(
+    public deleteSprintByBoardId = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, boardId: string) => {
             await ctx.models.sprintModel.model
                 .deleteOne({
@@ -135,7 +135,7 @@ export default class SprintContext implements ISprintContext {
         }
     );
 
-    public updateUnstartedSprints = wrapFireAndThrowError(
+    public updateUnstartedSprints = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, boardId: string, data: Partial<ISprint>) => {
             await ctx.models.sprintModel.model
                 .updateMany(

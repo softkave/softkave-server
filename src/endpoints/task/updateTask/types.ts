@@ -38,6 +38,7 @@ export interface IUpdateTaskParameters {
 export interface IUpdateTaskContext extends IBaseContext {
     transferTask: TransferTaskEndpoint;
     sendAssignedTaskEmailNotification: (
+        ctx: IBaseContext,
         board: IBlock,
         taskName: string,
         taskDescription: string,

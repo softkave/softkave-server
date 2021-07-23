@@ -12,7 +12,7 @@ import getNewId from "../../utilities/getNewId";
 import OperationError from "../../utilities/OperationError";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IOrganization } from "../organization/types";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IBlockContext {
@@ -74,7 +74,7 @@ export interface IBlockContext {
 }
 
 export default class BlockContext implements IBlockContext {
-    public getBlockById = wrapFireAndThrowError(
+    public getBlockById = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(ctx: IBaseContext, customId: string) => {
             return cast<T>(
                 await ctx.models.blockModel.model
@@ -88,7 +88,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public assertGetBlockById = wrapFireAndThrowError(
+    public assertGetBlockById = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(
             ctx: IBaseContext,
             customId: string,
@@ -108,7 +108,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public assertBlockById = wrapFireAndThrowError(
+    public assertBlockById = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             customId: string,
@@ -131,7 +131,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public bulkGetBlocksByIds = wrapFireAndThrowError(
+    public bulkGetBlocksByIds = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customIds: string[]) => {
             return ctx.models.blockModel.model
                 .find({
@@ -143,7 +143,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public updateBlockById = wrapFireAndThrowError(
+    public updateBlockById = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(
             ctx: IBaseContext,
             customId: string,
@@ -160,7 +160,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public deleteBlockAndChildren = wrapFireAndThrowError(
+    public deleteBlockAndChildren = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, customId: string) => {
             await ctx.models.blockModel.model
                 .deleteMany({ $or: [{ customId }, { parent: customId }] })
@@ -168,7 +168,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public getBlockChildren = wrapFireAndThrowError(
+    public getBlockChildren = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(
             ctx: IBaseContext,
             blockId: string,
@@ -194,7 +194,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public getUserRootBlocks = wrapFireAndThrowError(
+    public getUserRootBlocks = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser) => {
             const organizationIds = user.organizations.map(
                 (organization) => organization.customId
@@ -213,7 +213,7 @@ export default class BlockContext implements IBlockContext {
     );
 
     // TODO: seems similar to getUserRootBlocks, refactor.
-    public getUserOrganizations = wrapFireAndThrowError(
+    public getUserOrganizations = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, user: IUser) => {
             const organizationIds = user.organizations.map(
                 (organization) => organization.customId
@@ -232,7 +232,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public bulkUpdateTaskSprints = wrapFireAndThrowError(
+    public bulkUpdateTaskSprints = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             sprintId: string,
@@ -260,7 +260,7 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
-    public blockExists = wrapFireAndThrowError(
+    public blockExists = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             name: string,

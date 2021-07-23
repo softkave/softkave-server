@@ -3,17 +3,16 @@ import {
     ICollaborationRequest,
 } from "../../../mongo/collaboration-request";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../resources/appInfo";
 import { getDate } from "../../../utilities/fns";
 import { IUpdateItemById } from "../../../utilities/types";
 import waitOnPromises, {
     IPromiseWithId,
 } from "../../../utilities/waitOnPromises";
-import { IPublicCollaborationRequest } from "../../notifications/types";
-import { getPublicCollaborationRequest } from "../../notifications/utils";
 import { IOrganization } from "../../organization/types";
 import RequestData from "../../RequestData";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
+import { IPublicCollaborationRequest } from "../types";
+import { getPublicCollaborationRequest } from "../utils";
 import { IAddCollaboratorsContext } from "./types";
 
 export interface IAddCollaboratorsSendEmailsFnProps {
@@ -38,9 +37,9 @@ export default async function sendEmails(
                 senderName: user.name,
                 senderOrganization: organization.name,
                 title: request.title,
-                loginLink: `${appInfo.clientDomain}/login`,
+                loginLink: context.appVariables.loginPath,
                 recipientIsUser: !!indexedExistingUsers[request.to.email],
-                signupLink: `${appInfo.clientDomain}/signup`,
+                signupLink: context.appVariables.signupPath,
             });
 
             return {
@@ -80,7 +79,7 @@ export default async function sendEmails(
         // Should look into this, and find solutions.
         // I also noticed it mostly for arrays, cause sprint bulk updates work just
         // fine for scalar values, though I haven't tested array updates in sprint bulk updates
-        fireAndForganizationetPromise(
+        fireAndForgetPromise(
             context.collaborationRequest.updateCollaborationRequestById(
                 context,
                 req.customId,

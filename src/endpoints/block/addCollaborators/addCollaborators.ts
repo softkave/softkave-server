@@ -9,7 +9,7 @@ import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
 import { getPublicCollaborationRequestArray } from "../../notifications/utils";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrganizationAndExistingUsers";
@@ -91,7 +91,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     });
 
     // TODO: maybe deffer sending email till end of day
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         sendEmails(context, instData, {
             user,
             block: organization,

@@ -3,6 +3,7 @@ import {
     collaborationRequestEmailText,
     ICollaborationRequestEmailProps,
 } from "../../html/collaborationRequestEmail";
+import { IBaseContext } from "../contexts/BaseContext";
 import sendEmail from "../sendEmail";
 
 export interface ISendCollaborationRequestEmailProps
@@ -10,11 +11,14 @@ export interface ISendCollaborationRequestEmailProps
     email: string;
 }
 
-async function sendCollabReqEmail(props: ISendCollaborationRequestEmailProps) {
+async function sendCollabReqEmail(
+    ctx: IBaseContext,
+    props: ISendCollaborationRequestEmailProps
+) {
     const htmlContent = collaborationRequestEmailHTML(props);
     const textContent = collaborationRequestEmailText(props);
 
-    return await sendEmail({
+    return await sendEmail(ctx, {
         htmlContent,
         textContent,
         emailAddresses: [props.email],

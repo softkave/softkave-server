@@ -4,17 +4,14 @@ import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { UserDoesNotExistError } from "../errors";
 import { addEntryToPasswordDateLog } from "../utils";
-import { ForganizationotPasswordEndpoint } from "./types";
-import { forganizationotPasswordJoiSchema } from "./validation";
+import { ForgotPasswordEndpoint } from "./types";
+import { forgotPasswordJoiSchema } from "./validation";
 
-const forganizationotPassword: ForganizationotPasswordEndpoint = async (
-    context,
-    instData
-) => {
-    const result = validate(instData.data, forganizationotPasswordJoiSchema);
+const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
+    const result = validate(instData.data, forgotPasswordJoiSchema);
     const emailValue = result.email;
     let user = await context.user.getUserByEmail(context, emailValue);
 
@@ -45,7 +42,7 @@ const forganizationotPassword: ForganizationotPasswordEndpoint = async (
         tokenData.expires
     );
 
-    await context.sendChangePasswordEmail({
+    await context.sendChangePasswordEmail(context, {
         expiration,
         emailAddress: user.email,
         query: { t: token },
@@ -55,11 +52,11 @@ const forganizationotPassword: ForganizationotPasswordEndpoint = async (
         user.forganizationotPasswordHistory
     );
 
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         context.user.updateUserById(context, user.customId, {
             forganizationotPasswordHistory,
         })
     );
 };
 
-export default forganizationotPassword;
+export default forgotPassword;

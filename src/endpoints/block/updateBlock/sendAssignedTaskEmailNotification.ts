@@ -4,6 +4,7 @@ import {
     assignedTaskEmailNotificationTitle,
     IAssignedTaskEmailNotificationProps,
 } from "../../../html/assignedTaskEmailNotification";
+import { IBaseContext } from "../../contexts/BaseContext";
 import sendEmail from "../../sendEmail";
 
 export interface ISendAssignedTaskEmailNotificationProps
@@ -12,12 +13,13 @@ export interface ISendAssignedTaskEmailNotificationProps
 }
 
 async function sendAssignedTaskEmailNotification(
+    ctx: IBaseContext,
     props: ISendAssignedTaskEmailNotificationProps
 ) {
     const htmlContent = assignedTaskEmailNotificationHTML(props);
     const textContent = assignedTaskEmailNotificationText(props);
 
-    return await sendEmail({
+    return await sendEmail(ctx, {
         htmlContent,
         textContent,
         emailAddresses: [props.email],

@@ -14,7 +14,7 @@ import {
     CollaborationRequestDeclinedError,
     CollaborationRequestDoesNotExistError,
 } from "../../user/errors";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { getPublicCollaborationRequest } from "../utils";
 import {
     IRevokeCollaborationRequestContext,
@@ -39,7 +39,7 @@ async function notifyRecipient(
             request
         );
 
-        fireAndForganizationetPromise(
+        fireAndForgetPromise(
             context.notification.bulkSaveNotifications(context, [notification])
         );
     } else {
@@ -114,9 +114,7 @@ const revokeRequest: RevokeCollaborationRequestsEndpoint = async (
             }
         );
 
-    fireAndForganizationetPromise(
-        notifyRecipient(context, organization, savedRequest)
-    );
+    fireAndForgetPromise(notifyRecipient(context, organization, savedRequest));
     return { request: getPublicCollaborationRequest(savedRequest) };
 };
 

@@ -37,7 +37,7 @@ import {
     OutgoingSocketEvents,
 } from "../socket/outgoingEventTypes";
 import { IPublicSprint } from "../sprints/types";
-import { wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import { IBroadcastResult } from "./RoomContext";
 
@@ -154,7 +154,7 @@ export interface IBroadcastHelpers {
 }
 
 export default class BroadcastHelpers implements IBroadcastHelpers {
-    public broadcastBlockUpdate = wrapFireAndThrowError(
+    public broadcastBlockUpdate = wrapFireAndThrowErrorAsync(
         async (
             context: IBaseContext,
             instData: RequestData,
@@ -274,7 +274,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     );
 
     public broadcastNewOrganizationCollaborationRequests =
-        wrapFireAndThrowError(
+        wrapFireAndThrowErrorAsync(
             (
                 context: IBaseContext,
                 instData: RequestData,
@@ -304,7 +304,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
             }
         );
 
-    public broadcastNewUserCollaborationRequest = wrapFireAndThrowError(
+    public broadcastNewUserCollaborationRequest = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -330,7 +330,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastUserUpdate = wrapFireAndThrowError(
+    public broadcastUserUpdate = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -355,7 +355,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastNewRoom = wrapFireAndThrowError(
+    public broadcastNewRoom = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -377,7 +377,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastNewMessage = wrapFireAndThrowError(
+    public broadcastNewMessage = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -399,7 +399,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastRoomReadCounterUpdate = wrapFireAndThrowError(
+    public broadcastRoomReadCounterUpdate = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -425,7 +425,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastNewSprint = wrapFireAndThrowError(
+    public broadcastNewSprint = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -451,7 +451,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastSprintUpdate = wrapFireAndThrowError(
+    public broadcastSprintUpdate = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -485,7 +485,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastStartSprint = wrapFireAndThrowError(
+    public broadcastStartSprint = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -515,7 +515,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastDeleteSprint = wrapFireAndThrowError(
+    public broadcastDeleteSprint = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -541,60 +541,64 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastCollaborationRequestsUpdateToBlock = wrapFireAndThrowError(
-        (
-            context: IBaseContext,
-            instData: RequestData,
-            block: IBlock,
-            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
-        ) => {
-            const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket =
-                {
-                    requests: updates,
-                };
+    public broadcastCollaborationRequestsUpdateToBlock =
+        wrapFireAndThrowErrorAsync(
+            (
+                context: IBaseContext,
+                instData: RequestData,
+                block: IBlock,
+                updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
+            ) => {
+                const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket =
+                    {
+                        requests: updates,
+                    };
 
-            const blockRoomName = context.room.getBlockRoomName(
-                block.type,
-                block.customId
-            );
+                const blockRoomName = context.room.getBlockRoomName(
+                    block.type,
+                    block.customId
+                );
 
-            context.room.broadcast(
-                context,
-                instData,
-                blockRoomName,
-                OutgoingSocketEvents.UpdateCollaborationRequests,
-                updateNotificationsPacket,
-                true
-            );
-        }
-    );
+                context.room.broadcast(
+                    context,
+                    instData,
+                    blockRoomName,
+                    OutgoingSocketEvents.UpdateCollaborationRequests,
+                    updateNotificationsPacket,
+                    true
+                );
+            }
+        );
 
-    public broadcastCollaborationRequestsUpdateToUser = wrapFireAndThrowError(
-        (
-            context: IBaseContext,
-            instData: RequestData,
-            user: IUser,
-            updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
-        ) => {
-            const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket =
-                {
-                    requests: updates,
-                };
+    public broadcastCollaborationRequestsUpdateToUser =
+        wrapFireAndThrowErrorAsync(
+            (
+                context: IBaseContext,
+                instData: RequestData,
+                user: IUser,
+                updates: Array<IUpdateItemById<IPublicCollaborationRequest>>
+            ) => {
+                const updateNotificationsPacket: IOutgoingUpdateCollaborationRequestsPacket =
+                    {
+                        requests: updates,
+                    };
 
-            const userRoomName = context.room.getUserRoomName(user.customId);
+                const userRoomName = context.room.getUserRoomName(
+                    user.customId
+                );
 
-            context.room.broadcast(
-                context,
-                instData,
-                userRoomName,
-                OutgoingSocketEvents.UpdateCollaborationRequests,
-                updateNotificationsPacket,
-                true
-            );
-        }
-    );
+                context.room.broadcast(
+                    context,
+                    instData,
+                    userRoomName,
+                    OutgoingSocketEvents.UpdateCollaborationRequests,
+                    updateNotificationsPacket,
+                    true
+                );
+            }
+        );
 
-    public broadcastCollaborationRequestResponse = wrapFireAndThrowError(
+    public broadcastCollaborationRequestResponse = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,
@@ -647,7 +651,7 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
         }
     );
 
-    public broadcastEndSprint = wrapFireAndThrowError(
+    public broadcastEndSprint = wrapFireAndThrowErrorAsync(
         (
             context: IBaseContext,
             instData: RequestData,

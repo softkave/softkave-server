@@ -9,7 +9,7 @@ import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrganizationAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
 import sendEmails from "./sendEmails";
@@ -73,7 +73,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     });
 
     // TODO: maybe deffer sending email till end of day
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         sendEmails(context, instData, {
             user,
             organization: organization,

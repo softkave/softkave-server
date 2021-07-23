@@ -40,18 +40,6 @@ const userSchema = `
         exists: Boolean
     }
 
-    input UpdateClientDataInput {
-        hasUserSeenNotificationsPermissionDialog: Boolean
-        muteChatNotifications: Boolean
-        isSubcribedToPushNotifications: Boolean
-        isLoggedIn: Boolean
-    }
-
-    type UpdateClientResponse {
-        errors: [Error]
-        client: Client
-    }
-
     type UserQuery {
         userExists (email: String!) : UserExistsResult
         getUserData: UserQueryResult
@@ -67,7 +55,6 @@ const userSchema = `
         ) : UserQueryResult
         updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
-        updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
     }
 `;
 

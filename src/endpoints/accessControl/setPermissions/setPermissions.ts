@@ -6,7 +6,7 @@ import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId } from "../../block/utils";
 import { InvalidRequestError } from "../../errors";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { initializeBoardPermissions } from "../initializeBlockPermissions";
 import { IPermissionInput, SetPermissionsEndpoint } from "./types";
 import { setPermissionsJoiSchema } from "./validation";
@@ -71,7 +71,7 @@ const setPermissions: SetPermissionsEndpoint = async (context, instData) => {
 
     await context.accessControl.bulkUpdatePermissionsById(context, processed);
 
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         context.auditLog.insert(context, instData, {
             resourceType: SystemResourceType.Permission,
             action: SystemActionType.Update,

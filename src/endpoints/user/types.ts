@@ -1,3 +1,4 @@
+import { BlockType } from "../../mongo/block/definitions";
 import { IUserOrganization } from "../../mongo/user";
 import { ConvertDatesToStrings } from "../../utilities/types";
 
@@ -12,9 +13,11 @@ export type IPublicUserData = ConvertDatesToStrings<{
     notificationsLastCheckedAt?: string;
 }>;
 
-export type ICollaborator = ConvertDatesToStrings<{
+export interface IUserRootBlock {
     customId: string;
+    createdBy: string;
+    createdAt: Date;
+    type: BlockType.Root;
     name: string;
-    email: string;
     color: string;
-}>;
+}

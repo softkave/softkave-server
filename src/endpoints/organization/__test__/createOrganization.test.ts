@@ -1,5 +1,5 @@
 import RequestData from "../../RequestData";
-import { setupTestExpressRequest } from "../../testUtils/setupTestExpressRequest";
+import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { wrapEndpoint } from "../../utils";
@@ -29,7 +29,7 @@ const endpoint = (data, req) => {
 describe("create organization", () => {
     test("can create organization", async () => {
         const { token } = await setupTestUser(context);
-        const { req } = setupTestExpressRequest({ token });
+        const { req } = setupTestExpressRequestWithToken({ token });
         const result = await endpoint(input, req);
         expect(result).toBeTruthy();
         expect(result?.errors).toBeFalsy();

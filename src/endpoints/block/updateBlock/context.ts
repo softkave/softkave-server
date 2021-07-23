@@ -1,6 +1,5 @@
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../resources/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
@@ -31,7 +30,7 @@ export default class UpdateBlockContext
             board: board.name,
             assignee: assignee.name,
             assigner: assigner.name,
-            loginLink: appInfo.loginLink,
+            loginLink: this.appVariables.loginPath,
         });
     }
 

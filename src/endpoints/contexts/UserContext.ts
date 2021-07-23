@@ -2,9 +2,9 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
+import { ICollaborator } from "../collaborator/types";
 import { UserDoesNotExistError } from "../user/errors";
-import { ICollaborator } from "../user/types";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface IUserContext {
@@ -41,7 +41,7 @@ export interface IUserContext {
 }
 
 export default class UserContext implements IUserContext {
-    public getUserByEmail = wrapFireAndThrowError(
+    public getUserByEmail = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.userModel.model
                 .findOne({
@@ -52,7 +52,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getUserById = wrapFireAndThrowError(
+    public getUserById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string) => {
             return ctx.models.userModel.model
                 .findOne({
@@ -63,7 +63,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public assertGetUserById = wrapFireAndThrowError(
+    public assertGetUserById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, customId: string) => {
             const user = await ctx.user.getUserById(ctx, customId);
 
@@ -75,7 +75,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public updateUserById = wrapFireAndThrowError(
+    public updateUserById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string, data: Partial<IUser>) => {
             return ctx.models.userModel.model
                 .findOneAndUpdate({ customId }, data, { new: true })
@@ -84,7 +84,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public bulkGetUsersById = wrapFireAndThrowError(
+    public bulkGetUsersById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, ids: string[]) => {
             return ctx.models.userModel.model
                 .find({ customId: { $in: ids } })
@@ -92,13 +92,13 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public userExists = wrapFireAndThrowError(
+    public userExists = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.userModel.model.exists({ email });
         }
     );
 
-    public bulkGetUsersByEmail = wrapFireAndThrowError(
+    public bulkGetUsersByEmail = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, emails: string[]) => {
             return ctx.models.userModel.model
                 .find({ email: { $in: emails } }, "email organizations")
@@ -107,7 +107,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getBlockCollaborators = wrapFireAndThrowError(
+    public getBlockCollaborators = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find(
@@ -128,7 +128,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getOrganizationUsers = wrapFireAndThrowError(
+    public getOrganizationUsers = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find({
@@ -139,7 +139,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public bulkUpdateUsersById = wrapFireAndThrowError(
+    public bulkUpdateUsersById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, users: Array<IUpdateItemById<IUser>>) => {
             const opts = users.map((item) => ({
                 updateOne: { filter: { customId: item.id }, update: item.data },

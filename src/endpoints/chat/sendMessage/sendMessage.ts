@@ -5,10 +5,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { IBroadcastResult } from "../../contexts/RoomContext";
-import {
-    fireAndForganizationetFn,
-    fireAndForganizationetPromise,
-} from "../../utils";
+import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
@@ -71,7 +68,7 @@ async function sendPushNotification(
         clients.forEach((client) => {
             const endpoint = client.endpoint!;
             const keys = client.keys!;
-            fireAndForganizationetPromise(
+            fireAndForgetPromise(
                 context.webPush.sendNotification(
                     context,
                     endpoint,
@@ -154,7 +151,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     // TODO: our fire and forganizationets are running immediately
     // go through them and update the ones you want to run
     // after the main request is done
-    fireAndForganizationetFn(() =>
+    fireAndForgetFn(() =>
         sendPushNotification(context, user, room, broadcastResultPromise)
     );
 

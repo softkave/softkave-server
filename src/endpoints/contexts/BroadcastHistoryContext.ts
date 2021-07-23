@@ -2,7 +2,7 @@ import findLastIndex from "lodash/findLastIndex";
 import moment from "moment";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
-import { wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 interface IBroadcastHistoryItem {
@@ -48,8 +48,9 @@ const maxRoomHistorySliceFromIndex = 800;
  */
 
 export default class BroadcastHistoryContext
-    implements IBroadcastHistoryContext {
-    public insert = wrapFireAndThrowError(
+    implements IBroadcastHistoryContext
+{
+    public insert = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, room: string, item: IBroadcastHistoryItem) => {
             let roomTimestamps = broadcastHistoryTimestamps[room] || [];
             let roomHistory = broadcastHistory[room] || [];
@@ -73,7 +74,7 @@ export default class BroadcastHistoryContext
         }
     );
 
-    public fetch = wrapFireAndThrowError(
+    public fetch = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, from: string, rooms: string[]) => {
             const fromDate = new Date(from);
             const result: IBroadcastHistoryFetchResult = { rooms: {} };

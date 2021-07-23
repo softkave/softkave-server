@@ -8,6 +8,7 @@
     -   Add required/default fields to the block types
     -   Move to new models for orgId and block type org change
     -   snake case models names, not camel case
+    -   Change system to either creator or first collaborator
 -   Priority to high, medium, low
 -   Keep socket updates and remove audit logs
 

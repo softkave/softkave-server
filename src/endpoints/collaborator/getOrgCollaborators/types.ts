@@ -1,6 +1,6 @@
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
-import { ICollaborator } from "../../user/types";
+import { ICollaborator } from "../types";
 
 export interface IGetOrganizationCollaboratorsParameters {
     organizationId: string;

@@ -3,7 +3,7 @@ import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import { getCollaboratorRemovedNotification } from "../../notifications/templates/collaborator";
 import { UserDoesNotExistError } from "../../user/errors";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { RemoveCollaboratorEndpoint } from "./types";

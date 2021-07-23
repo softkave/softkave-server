@@ -1,6 +1,5 @@
 import fs from "fs";
 import moment from "moment";
-import appInfo from "../resources/appInfo";
 import { appVariables } from "../resources/appVariables";
 import {
     IAssignedTaskEmailNotificationProps,
@@ -23,10 +22,10 @@ import {
     IGenerateEmailConfirmationMediaProps,
 } from "./emailConfirmationEmail";
 import {
-    IForganizationotPasswordEmailProps,
-    forganizationotPasswordEmailHTML,
-    forganizationotPasswordEmailText,
-} from "./forganizationotPasswordEmail";
+    forgotPasswordEmailHTML,
+    forgotPasswordEmailText,
+    IForgotPasswordEmailProps,
+} from "./forgotPasswordEmail";
 
 throw new Error(
     "Set env varibles before running code, or run script or code with dotenv"
@@ -43,7 +42,7 @@ export function renderAssignedTaskEmailToFile() {
         assignee: "Abayomi Akintomide",
         assigner: "Ajayi Solomon",
         board: "Softkave",
-        loginLink: `${appInfo.clientDomain}/login`,
+        loginLink: `${appVariables.clientDomain}/login`,
         taskName: "did you know the earth is flat? prove it's not!",
         taskDescription:
             "With all that the world could muster, all their strength and measure, the giant stood tall, unflinching. If not for God, if not for the Christians, ...",
@@ -74,19 +73,19 @@ const newUserTextTemplateFile =
 
 export function renderCollaborationRequestEmailToFile() {
     const existingUserProps: ICollaborationRequestEmailProps = {
-        loginLink: `${appInfo.clientDomain}/login`,
+        loginLink: `${appVariables.clientDomain}/login`,
         recipientIsUser: true,
         senderName: "Abayomi Isaac",
         senderOrganization: "Softkave",
-        signupLink: `${appInfo.clientDomain}/signup`,
+        signupLink: `${appVariables.clientDomain}/signup`,
         title: "Collaboration request from Yomi",
     };
 
     const newUserProps: ICollaborationRequestEmailProps = {
-        loginLink: `${appInfo.clientDomain}/login`,
+        loginLink: `${appVariables.clientDomain}/login`,
         senderName: "Abayomi Isaac",
         senderOrganization: "Softkave",
-        signupLink: `${appInfo.clientDomain}/signup`,
+        signupLink: `${appVariables.clientDomain}/signup`,
         recipientIsUser: false,
         title: "Collaboration request from Isaac",
     };
@@ -109,13 +108,13 @@ const forganizationotPasswordTextTemplateFile =
     "email-templates/templates/forganizationot-password-text.txt";
 
 export function renderForganizationotPasswordEmailToFile() {
-    const props: IForganizationotPasswordEmailProps = {
+    const props: IForgotPasswordEmailProps = {
         expiration: moment().add(2, "days"),
-        link: `${appInfo.clientDomain}/change-password?t=12345`,
+        link: `${appVariables.clientDomain}/change-password?t=12345`,
     };
 
-    const existingUserHTML = forganizationotPasswordEmailHTML(props);
-    const existingUserText = forganizationotPasswordEmailText(props);
+    const existingUserHTML = forgotPasswordEmailHTML(props);
+    const existingUserText = forgotPasswordEmailText(props);
 
     fs.writeFileSync(forganizationotPasswordHTMLTemplateFile, existingUserHTML);
     fs.writeFileSync(forganizationotPasswordTextTemplateFile, existingUserText);

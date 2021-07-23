@@ -2,7 +2,7 @@ import { IUnseenChats } from "../../mongo/unseen-chats";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { wrapFireAndThrowError } from "../utils";
+import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import moment from "moment";
 
@@ -21,7 +21,7 @@ export interface IUnseenChatsContext {
 }
 
 export default class UnseenChatsContext implements IUnseenChatsContext {
-    public addEntry = wrapFireAndThrowError(
+    public addEntry = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, userId: string, roomId: string) => {
             let data = await ctx.models.unseenChatsModel.model
                 .findOne({
@@ -50,7 +50,7 @@ export default class UnseenChatsContext implements IUnseenChatsContext {
         }
     );
 
-    public removeEntry = wrapFireAndThrowError(
+    public removeEntry = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, userId: string) => {
             await ctx.models.unseenChatsModel.model
                 .deleteMany({
@@ -60,7 +60,7 @@ export default class UnseenChatsContext implements IUnseenChatsContext {
         }
     );
 
-    public consume = wrapFireAndThrowError(
+    public consume = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             count: number = 100,

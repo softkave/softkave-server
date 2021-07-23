@@ -1,7 +1,4 @@
-import { Socket } from "socket.io";
-import cast from "../../utilities/fns";
-import { IBaseTokenData } from "../contexts/TokenContext";
-import { IServerRequest } from "../contexts/types";
+import OperationError from "../../utilities/OperationError";
 
 export const notImplementFn = (() => {
     throw new Error("Not implemented");
@@ -9,25 +6,6 @@ export const notImplementFn = (() => {
 
 export const testNoop = (() => {}) as any;
 
-export async function getTestExpressRequest(params: {
-    incomingTokenData: IBaseTokenData;
-    clientId: string;
-}) {
-    const partialRequest: Partial<IServerRequest> = {
-        user: params.incomingTokenData,
-        headers: {
-            ["user-agent"]: "test",
-            ["x-client-id"]: params.clientId,
-        },
-    };
-
-    return cast<IServerRequest>(partialRequest);
-}
-
-export function getTestSocket(params: { id: string }) {
-    const partialSocket: Partial<Socket> = {
-        id: params.id,
-    };
-
-    return cast<Socket>(partialSocket);
+export function findErrorByName(errors: OperationError[], name: string) {
+    return errors.find((error) => error.name === name);
 }

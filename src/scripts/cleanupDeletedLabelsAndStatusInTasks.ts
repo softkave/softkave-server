@@ -1,4 +1,4 @@
-import { fireAndForganizationetPromise } from "../endpoints/utils";
+import { fireAndForgetPromise } from "../endpoints/utils";
 import {
     BlockType,
     getBlockModel,
@@ -50,7 +50,7 @@ export async function script_cleanupDeletedLabelsAndStatusInTasks() {
 
             if (!doc.parent) {
                 deletedTasksCount++;
-                fireAndForganizationetPromise(doc.remove());
+                fireAndForgetPromise(doc.remove());
                 continue;
             }
 
@@ -64,7 +64,7 @@ export async function script_cleanupDeletedLabelsAndStatusInTasks() {
             }
 
             if (!board) {
-                fireAndForganizationetPromise(doc.remove());
+                fireAndForgetPromise(doc.remove());
                 continue;
             }
 
@@ -180,7 +180,7 @@ export async function script_cleanupDeletedLabelsAndStatusInTasks() {
 
             if (changed) {
                 updatedCount++;
-                fireAndForganizationetPromise(doc.save());
+                fireAndForgetPromise(doc.save());
             }
         }
 

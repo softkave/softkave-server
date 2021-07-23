@@ -38,7 +38,7 @@ export const wrapEndpoint = async <Result>(
     }
 };
 
-export const fireAndForganizationetFn = <Fn extends (...args: any) => any>(
+export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     fn: Fn,
     ...args: Array<Parameters<Fn>>
 ): void => {
@@ -51,7 +51,7 @@ export const fireAndForganizationetFn = <Fn extends (...args: any) => any>(
     }, 5);
 };
 
-export const fireAndForganizationetPromise = async <T>(promise: Promise<T>) => {
+export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
     try {
         return await promise;
     } catch (error) {
@@ -59,7 +59,7 @@ export const fireAndForganizationetPromise = async <T>(promise: Promise<T>) => {
     }
 };
 
-export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
+export const wrapFireAndThrowErrorAsync = <Fn extends (...args: any) => any>(
     fn: Fn,
     throwError = true
 ): Fn => {
@@ -76,8 +76,27 @@ export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
     });
 };
 
-export const wrapFireAndDontThrow: typeof wrapFireAndThrowError = (fn) => {
-    return wrapFireAndThrowError(fn, false);
+export const wrapFireAndThrowErrorRegular = <Fn extends (...args: any) => any>(
+    fn: Fn,
+    throwError = true
+): Fn => {
+    return cast<Fn>((...args) => {
+        try {
+            return fn(...args);
+        } catch (error) {
+            console.error(error);
+
+            if (throwError) {
+                throw error;
+            }
+        }
+    });
+};
+
+export const wrapFireAndDontThrowAsync: typeof wrapFireAndThrowErrorAsync = (
+    fn
+) => {
+    return wrapFireAndThrowErrorAsync(fn, false);
 };
 
 export async function tryCatch<T extends (...args: any) => any>(

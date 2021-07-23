@@ -14,7 +14,7 @@ import {
     CollaborationRequestDeclinedError,
     CollaborationRequestDoesNotExistError,
 } from "../../user/errors";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import {
@@ -40,7 +40,7 @@ async function notifyRecipient(
             request
         );
 
-        fireAndForganizationetPromise(
+        fireAndForgetPromise(
             context.notification.bulkSaveNotifications(context, [notification])
         );
     } else {
@@ -125,9 +125,7 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
         }
     );
 
-    fireAndForganizationetPromise(
-        notifyRecipient(context, organization, request)
-    );
+    fireAndForgetPromise(notifyRecipient(context, organization, request));
 };
 
 export default revokeCollaborationRequest;

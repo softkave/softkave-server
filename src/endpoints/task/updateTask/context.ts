@@ -1,6 +1,5 @@
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../resources/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
@@ -19,6 +18,7 @@ export default class UpdateTaskContext
     }
 
     public async sendAssignedTaskEmailNotification(
+        ctx: IBaseContext,
         board: IBlock,
         taskName: string,
         taskDescription: string,
@@ -32,7 +32,7 @@ export default class UpdateTaskContext
             board: board.name,
             assignee: assignee.name,
             assigner: assigner.name,
-            loginLink: appInfo.loginLink,
+            loginLink: ctx.appVariables.loginPath,
         });
     }
 

@@ -1,16 +1,17 @@
-import BaseContext from "../../contexts/BaseContext";
+import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import sendChangePasswordEmail, {
     ISendChangePasswordEmailParameters,
 } from "../sendChangePasswordEmail";
-import { IForganizationotPasswordContext } from "./types";
+import { IForgotPasswordContext } from "./types";
 
-export default class ForganizationotPasswordContext
+export default class ForgotPasswordContext
     extends BaseContext
-    implements IForganizationotPasswordContext
+    implements IForgotPasswordContext
 {
     public async sendChangePasswordEmail(
+        ctx: IBaseContext,
         props: ISendChangePasswordEmailParameters
     ) {
-        await sendChangePasswordEmail(props);
+        await sendChangePasswordEmail(ctx, props);
     }
 }

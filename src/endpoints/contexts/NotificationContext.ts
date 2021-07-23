@@ -4,7 +4,7 @@ import {
 } from "../../mongo/notification";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface INotificationContext {
@@ -70,7 +70,7 @@ export interface INotificationContext {
 }
 
 export default class NotificationContext implements INotificationContext {
-    public markUserNotificationsRead = wrapFireAndThrowError(
+    public markUserNotificationsRead = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             userId,
@@ -95,7 +95,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getNotificationById = wrapFireAndThrowError(
+    public getNotificationById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, id: string, userId: string) => {
             return ctx.models.notificationModel.model
                 .findOne({ customId: id, recipientId: userId })
@@ -104,7 +104,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getUserNotificationsById = wrapFireAndThrowError(
+    public getUserNotificationsById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, ids: string[], userId: string) => {
             return ctx.models.notificationModel.model
                 .find({ customId: { $in: ids }, recipientId: userId })
@@ -113,7 +113,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public updateNotificationById = wrapFireAndThrowError(
+    public updateNotificationById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string, data: Partial<INotification>) => {
             return ctx.models.notificationModel.model
                 .findOneAndUpdate({ customId }, data, { new: true })
@@ -122,7 +122,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getUserNotifications = wrapFireAndThrowError(
+    public getUserNotifications = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, userId: string) => {
             return ctx.models.notificationModel.model
                 .find({
@@ -133,7 +133,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public deleteNotificationById = wrapFireAndThrowError(
+    public deleteNotificationById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, id: string) => {
             await ctx.models.notificationModel.model
                 .deleteOne({ customId: id })
@@ -141,13 +141,13 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public bulkSaveNotifications = wrapFireAndThrowError(
+    public bulkSaveNotifications = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, notifications: INotification[]) => {
             return ctx.models.notificationModel.model.insertMany(notifications);
         }
     );
 
-    public getNotificationsByOrganizationId = wrapFireAndThrowError(
+    public getNotificationsByOrganizationId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, organizationId: string) => {
             return ctx.models.notificationModel.model
                 .find({
@@ -158,7 +158,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getNotificationSubscriptionById = wrapFireAndThrowError(
+    public getNotificationSubscriptionById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, id: string) => {
             return ctx.models.notificationSubscriptionModel.model
                 .findOne({
@@ -169,7 +169,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public updateNotificationSubscriptionById = wrapFireAndThrowError(
+    public updateNotificationSubscriptionById = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             customId: string,
@@ -188,7 +188,7 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public bulkSaveNotificationSubscriptions = wrapFireAndThrowError(
+    public bulkSaveNotificationSubscriptions = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             notificationSubscriptions: INotificationSubscription[]
@@ -199,16 +199,15 @@ export default class NotificationContext implements INotificationContext {
         }
     );
 
-    public getNotificationSubscriptionsByResourceId = wrapFireAndThrowError(
-        (ctx: IBaseContext, resourceId: string) => {
+    public getNotificationSubscriptionsByResourceId =
+        wrapFireAndThrowErrorAsync((ctx: IBaseContext, resourceId: string) => {
             return ctx.models.notificationSubscriptionModel.model
                 .find({
                     resourceId,
                 })
                 .lean()
                 .exec();
-        }
-    );
+        });
 
     public async saveNotification(
         ctx: IBaseContext,

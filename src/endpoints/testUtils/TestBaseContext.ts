@@ -27,7 +27,7 @@ export interface ITestBaseContext extends IBaseContext {
     webPush: ITestWebPushContext;
 }
 
-class TestBaseContext implements ITestBaseContext {
+export class TestBaseContext implements ITestBaseContext {
     public block = getTestBlockContext();
     public user = getTestUserContext();
     public collaborationRequest = getTestCollaborationRequestContext();

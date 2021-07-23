@@ -3,7 +3,7 @@ import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { IBoard } from "../../board/types";
 import canReadOrganization from "../../organization/canReadBlock";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { ITask } from "../types";
 import { getPublicTaskData, throwTaskNotFoundError } from "../utils";
 import processUpdateTaskInput from "./processUpdateBlockInput";
@@ -100,7 +100,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         update
     );
 
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         sendNewlyAssignedTaskEmail(context, instData, task, update, updatedTask)
     );
 

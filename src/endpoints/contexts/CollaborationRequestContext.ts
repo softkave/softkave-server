@@ -2,7 +2,7 @@ import { ICollaborationRequest } from "../../mongo/collaboration-request";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
 export interface ICollaborationRequestContext {
@@ -49,7 +49,7 @@ export interface ICollaborationRequestContext {
 export default class CollaborationRequestContext
     implements ICollaborationRequestContext
 {
-    public getCollaborationRequestById = wrapFireAndThrowError(
+    public getCollaborationRequestById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, id: string) => {
             return ctx.models.collaborationRequestModel.model
                 .findOne({ customId: id })
@@ -58,7 +58,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public assertGetCollaborationRequestById = wrapFireAndThrowError(
+    public assertGetCollaborationRequestById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, id: string) => {
             const request =
                 await ctx.collaborationRequest.getCollaborationRequestById(
@@ -74,7 +74,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public updateCollaborationRequestById = wrapFireAndThrowError(
+    public updateCollaborationRequestById = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             customId: string,
@@ -87,7 +87,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getUserCollaborationRequests = wrapFireAndThrowError(
+    public getUserCollaborationRequests = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.collaborationRequestModel.model
                 .find({
@@ -98,7 +98,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public deleteCollaborationRequestById = wrapFireAndThrowError(
+    public deleteCollaborationRequestById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, id: string) => {
             await ctx.models.collaborationRequestModel.model
                 .deleteOne({ customId: id })
@@ -106,21 +106,22 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getCollaborationRequestsByRecipientEmail = wrapFireAndThrowError(
-        (ctx: IBaseContext, emails: string[], blockId: string) => {
-            return ctx.models.collaborationRequestModel.model
-                .find({
-                    "to.email": {
-                        $in: emails,
-                    },
-                    "from.blockId": blockId,
-                })
-                .lean()
-                .exec();
-        }
-    );
+    public getCollaborationRequestsByRecipientEmail =
+        wrapFireAndThrowErrorAsync(
+            (ctx: IBaseContext, emails: string[], blockId: string) => {
+                return ctx.models.collaborationRequestModel.model
+                    .find({
+                        "to.email": {
+                            $in: emails,
+                        },
+                        "from.blockId": blockId,
+                    })
+                    .lean()
+                    .exec();
+            }
+        );
 
-    public bulkSaveCollaborationRequests = wrapFireAndThrowError(
+    public bulkSaveCollaborationRequests = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, collaborationRequests: ICollaborationRequest[]) => {
             return ctx.models.collaborationRequestModel.model.insertMany(
                 collaborationRequests
@@ -128,7 +129,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getCollaborationRequestsByBlockId = wrapFireAndThrowError(
+    public getCollaborationRequestsByBlockId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.collaborationRequestModel.model
                 .find({

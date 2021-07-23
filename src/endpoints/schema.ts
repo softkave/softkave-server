@@ -4,7 +4,6 @@ const endpointSchema = `
         sprint: SprintQuery
         system: SystemQuery
         collaborationRequest: CollaborationRequestQuery
-        client: ClientQuery
         collaborator: CollaboratorQuery
         organization: OrganizationQuery
         board: BoardQuery

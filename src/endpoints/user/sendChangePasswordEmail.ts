@@ -1,15 +1,12 @@
 import { Moment } from "moment";
 import querystring from "querystring";
 import {
-    forganizationotPasswordEmailHTML,
-    forganizationotPasswordEmailText,
-    forganizationotPasswordEmailTitle,
-} from "../../html/forganizationotPasswordEmail";
-import appInfo from "../../resources/appInfo";
+    forgotPasswordEmailHTML,
+    forgotPasswordEmailText,
+    forgotPasswordEmailTitle,
+} from "../../html/forgotPasswordEmail";
+import { IBaseContext } from "../contexts/BaseContext";
 import sendEmail from "../sendEmail";
-
-const clientDomain = appInfo.clientDomain;
-const changePasswordRoute = "/change-password";
 
 export interface ISendChangePasswordEmailParameters {
     emailAddress: string;
@@ -17,22 +14,21 @@ export interface ISendChangePasswordEmailParameters {
     expiration: Moment;
 }
 
-async function sendChangePasswordEmail({
-    emailAddress,
-    query,
-    expiration,
-}: ISendChangePasswordEmailParameters) {
-    const link = `${clientDomain}${changePasswordRoute}?${querystring.stringify(
-        query
-    )}`;
+async function sendChangePasswordEmail(
+    ctx: IBaseContext,
+    { emailAddress, query, expiration }: ISendChangePasswordEmailParameters
+) {
+    const link = `${
+        ctx.appVariables.changePasswordPath
+    }?${querystring.stringify(query)}`;
 
-    const htmlContent = forganizationotPasswordEmailHTML({ link, expiration });
-    const textContent = forganizationotPasswordEmailText({ link, expiration });
+    const htmlContent = forgotPasswordEmailHTML({ link, expiration });
+    const textContent = forgotPasswordEmailText({ link, expiration });
 
-    return await sendEmail({
+    return await sendEmail(ctx, {
         htmlContent,
         textContent,
-        title: forganizationotPasswordEmailTitle,
+        title: forgotPasswordEmailTitle,
         emailAddresses: [emailAddress],
     });
 }

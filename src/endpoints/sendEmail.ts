@@ -1,6 +1,6 @@
 import { PromiseResult } from "aws-sdk/lib/request";
-import { appVariables } from "../resources/appVariables";
 import aws from "../resources/aws";
+import { IBaseContext } from "./contexts/BaseContext";
 
 const ses = new aws.SES();
 
@@ -12,9 +12,10 @@ export interface ISendEmailProps {
 }
 
 async function sendEmail(
+    ctx: IBaseContext,
     props: ISendEmailProps
 ): Promise<PromiseResult<aws.SES.SendEmailResponse, aws.AWSError> | null> {
-    if (appVariables.disableEmail) {
+    if (ctx.appVariables.disableEmail) {
         return null;
     }
 
@@ -26,19 +27,19 @@ async function sendEmail(
                 Destination: {
                     ToAddresses: emailAddresses,
                 },
-                Source: appVariables.emailSendFrom,
+                Source: ctx.appVariables.emailSendFrom,
                 Message: {
                     Subject: {
-                        Charset: appVariables.emailEncoding,
+                        Charset: ctx.appVariables.emailEncoding,
                         Data: title,
                     },
                     Body: {
                         Html: {
-                            Charset: appVariables.emailEncoding,
+                            Charset: ctx.appVariables.emailEncoding,
                             Data: htmlContent,
                         },
                         Text: {
-                            Charset: appVariables.emailEncoding,
+                            Charset: ctx.appVariables.emailEncoding,
                             Data: textContent,
                         },
                     },

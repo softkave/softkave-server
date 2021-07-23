@@ -12,6 +12,7 @@ import {
     IBaseTokenData,
 } from "../contexts/TokenContext";
 import { JWTEndpoint } from "../types";
+import { testData } from "./data";
 
 export interface ISetupTestUserResult {
     user: IUser;
@@ -32,15 +33,15 @@ export async function setupTestUser(
     }
 
     const inputUser: Omit<IUser, "customId"> = {
-        name: "Abayomi Akintomide",
-        email: "test-user-00@softkave.com",
-        hash: await argon2.hash("test1234567!"),
+        name: testData.testUser00.name,
+        email: testData.testUser00.email,
+        hash: await argon2.hash(testData.testUser00.password),
         createdAt: getDateString(),
         forganizationotPasswordHistory: [],
         passwordLastChangedAt: "",
         rootBlockId: "",
         organizations: [],
-        color: "#ffa39e",
+        color: testData.testUser00.color,
         notificationsLastCheckedAt: "",
     };
 

@@ -9,7 +9,7 @@ import { IUpdateItemById } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { getOrganizationDeletedNotification } from "../../notifications/templates/organization";
 import RequestData from "../../RequestData";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
@@ -61,9 +61,7 @@ async function deleteOrganizationCleanup(
         // notifications.push(getOrganizationDeletedNotification(block, user, organizationUser));
     });
 
-    fireAndForganizationetPromise(
-        context.user.bulkUpdateUsersById(context, updates)
-    );
+    fireAndForgetPromise(context.user.bulkUpdateUsersById(context, updates));
     // fireAndForganizationetPromise(
     //     context.notification.bulkSaveNotifications(context, notifications)
     // );
@@ -141,21 +139,17 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
 
     switch (block.type) {
         case BlockType.Organization:
-            fireAndForganizationetPromise(
+            fireAndForgetPromise(
                 deleteOrganizationCleanup(context, instData, block)
             );
             break;
 
         case BlockType.Board:
-            fireAndForganizationetPromise(
-                deleteBoardCleanup(context, instData, block)
-            );
+            fireAndForgetPromise(deleteBoardCleanup(context, instData, block));
             break;
 
         case BlockType.Task:
-            fireAndForganizationetPromise(
-                deleteTaskCleanup(context, instData, block)
-            );
+            fireAndForgetPromise(deleteTaskCleanup(context, instData, block));
             break;
     }
 };

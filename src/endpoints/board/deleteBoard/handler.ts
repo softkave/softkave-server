@@ -1,6 +1,6 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadOrganization from "../../organization/canReadBlock";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
 import { throwBoardNotFoundError } from "../utils";
 import { DeleteBoardEndpoint } from "./types";
@@ -17,7 +17,7 @@ const deleteBoard: DeleteBoardEndpoint = async (context, instData) => {
 
     canReadOrganization(board.parent, user);
     await context.block.deleteBlockAndChildren(context, board.customId);
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         context.sprint.deleteSprintByBoardId(context, board.customId)
     );
 };

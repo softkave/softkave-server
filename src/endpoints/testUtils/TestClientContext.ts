@@ -74,7 +74,7 @@ class TestClientContext implements IClientContext {
             index: client.users.length,
             entry: {
                 userId,
-                tokenId: tokenData.clientId,
+                tokenId: tokenData.customId,
             },
         };
 

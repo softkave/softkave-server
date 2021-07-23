@@ -1,10 +1,10 @@
-import appInfo from "../resources/appInfo";
+import { appVariables } from "../resources/appVariables";
 
 export function getFooterHTML() {
     return `
     <footer class="email-footer">
         <hr>
-        &copy; ${appInfo.appName} ${new Date().getFullYear()}
+        &copy; ${appVariables.appName} ${new Date().getFullYear()}
     </footer>
     `;
 }
@@ -12,14 +12,14 @@ export function getFooterHTML() {
 export function getHeaderHTML(title) {
     return `
     <header class="email-header email-content-center">
-        <h1>${appInfo.appName} | ${title}</h1>
+        <h1>${appVariables.appName} | ${title}</h1>
         <hr>
     </header>
     `;
 }
 
 export function getHeaderText(title) {
-    const textBlocks = [`${appInfo.appName} | ${title}`];
+    const textBlocks = [`${appVariables.appName} | ${title}`];
     return textBlocks.join("");
 }
 

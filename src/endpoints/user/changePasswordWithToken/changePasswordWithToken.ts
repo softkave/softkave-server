@@ -2,7 +2,7 @@ import { ClientType } from "../../../models/system";
 import { getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { JWTEndpoint } from "../../types";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { CredentialsExpiredError, InvalidCredentialsError } from "../errors";
 import { ChangePasswordWithTokenEndpoint } from "./types";
 
@@ -52,7 +52,7 @@ const changePasswordWithToken: ChangePasswordWithTokenEndpoint = async (
     instData.client = client;
     const result = await context.changePassword(context, instData);
 
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         context.token.deleteTokenById(context, incomingTokenData.sub.id)
     );
 

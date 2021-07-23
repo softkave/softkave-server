@@ -5,7 +5,7 @@ import { validate } from "../../../utilities/joiUtils";
 import { clientToClientUserView } from "../../client/utils";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
-import { fireAndForganizationetPromise } from "../../utils";
+import { fireAndForgetPromise } from "../../utils";
 import { getPublicUserData } from "../utils";
 import { ChangePasswordEndpoint } from "./types";
 import { changePasswordJoiSchema } from "./validation";
@@ -28,7 +28,7 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     delete instData.tokenData;
     delete instData.incomingTokenData;
 
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         context.token.deleteTokensByUserId(context, user.customId)
     );
 

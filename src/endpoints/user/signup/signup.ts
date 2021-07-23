@@ -1,21 +1,46 @@
 import argon2 from "argon2";
+import randomColor from "randomcolor";
 import uuid from "uuid/v4";
 import {
     ClientType,
     SystemActionType,
     SystemResourceType,
 } from "../../../models/system";
+import { BlockType } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { getDateString } from "../../../utilities/fns";
+import { getDate, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { INewBlockInput } from "../../block/types";
 import { clientToClientUserView } from "../../client/utils";
+import { IBaseContext } from "../../contexts/BaseContext";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
+import { IUserRootBlock } from "../types";
 import { getPublicUserData } from "../utils";
 import { SignupEndpoint } from "./types";
 import { newUserInputSchema } from "./validation";
+
+async function createRootBlock(context: IBaseContext, user: IUser) {
+    const newRootBlock: Omit<IUserRootBlock, "customId"> = {
+        name: `root_${user.customId}`,
+        color: randomColor(),
+        type: BlockType.Root,
+        createdAt: getDate(),
+        createdBy: user.customId,
+    };
+
+    // TODO: check if root block exists
+    const rootBlock = await context.block.saveBlock(context, newRootBlock);
+
+    // TODO: should we remove the user if the root block fails?
+    user = await context.user.updateUserById(context, user.customId, {
+        rootBlockId: rootBlock.customId,
+    });
+
+    return user;
+}
 
 const signup: SignupEndpoint = async (context, instData) => {
     const data = validate(instData.data.user, newUserInputSchema);
@@ -40,15 +65,9 @@ const signup: SignupEndpoint = async (context, instData) => {
         organizations: [],
     };
 
-    const user = await context.user.saveUser(context, value);
+    let user = await context.user.saveUser(context, value);
+    user = await createRootBlock(context, user);
     instData.user = user;
-    await context.createUserRootBlock(context, { ...instData, data: { user } });
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Signup,
-        resourceId: user.customId,
-        resourceType: SystemResourceType.User,
-    });
 
     let client =
         (await context.session.tryGetClient(context, instData)) ||

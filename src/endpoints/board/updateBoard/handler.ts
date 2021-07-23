@@ -7,10 +7,7 @@ import { IUser } from "../../../mongo/user";
 import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadOrganization from "../../organization/canReadBlock";
-import {
-    fireAndForganizationetPromise,
-    getComplexTypeArrayInput,
-} from "../../utils";
+import { fireAndForgetPromise, getComplexTypeArrayInput } from "../../utils";
 import { IBoard } from "../types";
 import { getPublicBoardData, throwBoardNotFoundError } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
@@ -202,13 +199,13 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardStatusChanges(context, instData, board, update, user)
     );
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardResolutionsChanges(context, instData, board, update)
     );
-    fireAndForganizationetPromise(
+    fireAndForgetPromise(
         persistBoardLabelChanges(context, instData, board, update)
     );
 
