@@ -1,13 +1,8 @@
 import RequestData from "../../RequestData";
-import {
-    setupTestExpressRequest,
-    setupTestExpressRequestWithToken,
-} from "../../testUtils/setupTestExpressRequest";
+import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { wrapEndpoint } from "../../utils";
-import createOrganization from "../createOrganization/handler";
-import { ICreateOrganizationParameters } from "../createOrganization/types";
 import getUserOrganizations from "../getUserOrganizations/handler";
 
 const context = getTestBaseContext();

@@ -137,8 +137,6 @@ async function persistBoardStatusChanges(
             user
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardStatusChanges;

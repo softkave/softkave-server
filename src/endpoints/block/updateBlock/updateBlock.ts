@@ -1,14 +1,10 @@
-import pick from "lodash/pick";
-import { SystemActionType } from "../../../models/system";
-import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
 import { indexArray } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId, getPublicBlockData } from "../utils";
+import { getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
@@ -24,17 +20,6 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     const block = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(block);
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(block),
-    //         resourceType: getBlockAuditLogResourceType(block),
-    //         action: SystemActionType.Update,
-    //         permissionResourceId: block.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block });
 
     // Parent update ( tranferring block ) is handled separately by transferBlock
@@ -139,21 +124,6 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             updatedBlock
         )
     );
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Update,
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
-        change: {
-            oldValue: pick(block, Object.keys(data.data)),
-            newValue: data.data,
-            customId: getNewId(),
-        },
-
-        // TODO: write a script to add organizationId to existing update block audit logs without one
-        // it was omitted prior
-        organizationId: getBlockRootBlockId(block),
-    });
 
     if (parentInput && block.parent !== parentInput) {
         const result = await context.transferBlock(context, {

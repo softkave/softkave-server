@@ -2,7 +2,6 @@ import { Request } from "express";
 import { IPermissionModel } from "../../mongo/access-control/PermissionModel";
 import { IPermissionGroupModel } from "../../mongo/access-control/PermissionGroupsModel";
 import { IUserAssignedPermissionGroupModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
-import { IAuditLogModel } from "../../mongo/audit-log";
 import { IBlockModel } from "../../mongo/block";
 import { IChatModel } from "../../mongo/chat";
 import { ICollaborationRequestModel } from "../../mongo/collaboration-request";
@@ -21,7 +20,6 @@ export interface IContextModels {
     userModel: IUserModel;
     blockModel: IBlockModel;
     notificationModel: INotificationModel;
-    auditLogModel: IAuditLogModel;
     commentModel: ICommentModel;
     sprintModel: ISprintModel;
     chatModel: IChatModel;

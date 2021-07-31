@@ -6,8 +6,8 @@ import sprintSchema, { ISprintDocument } from "./definitions";
 
 export interface ISprintModel extends MongoModel<ISprintDocument> {}
 
-const modelName = "sprint";
-const collectionName = "sprints";
+const modelName = "sprint-v2";
+const collectionName = "sprints-v2";
 
 export const getSprintModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {

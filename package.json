@@ -44,6 +44,7 @@
         "mongoose": "^5.12.9",
         "nanoid": "^3.1.7",
         "node-fetch": "^2.6.1",
+        "quill-delta": "^4.2.2",
         "randomcolor": "0.5.4",
         "socket.io": "^4.0.2",
         "uuid": "3.3.2",

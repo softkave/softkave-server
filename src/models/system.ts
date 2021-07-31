@@ -20,6 +20,8 @@ export enum SystemResourceType {
     Team = "team",
     PermissionGroup = "permissionGroup",
     Permission = "permission",
+    CustomProperty = "customProperty",
+    CustomValue = "customValue",
 }
 
 export enum NotificationTypes {
@@ -45,11 +47,6 @@ export enum SystemActionType {
     ForganizationotPassword = "forganizationot-password",
     ChangePassword = "change-password",
     ChangePasswordWithToken = "change-password-with-token",
-}
-
-export enum TextResourceTypes {
-    Text = "Text",
-    Note = "Note",
 }
 
 export enum ClientType {

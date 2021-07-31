@@ -20,16 +20,16 @@ export interface IAuditLogInsertEntry {
 }
 
 export interface IAuditLogContext {
-    insert: (
-        ctx: IBaseContext,
-        data: RequestData,
-        log: IAuditLogInsertEntry
-    ) => Promise<void>;
-    insertMany: (
-        ctx: IBaseContext,
-        data: RequestData,
-        log: IAuditLogInsertEntry[]
-    ) => Promise<void>;
+    // insert: (
+    //     ctx: IBaseContext,
+    //     data: RequestData,
+    //     log: IAuditLogInsertEntry
+    // ) => Promise<void>;
+    // insertMany: (
+    //     ctx: IBaseContext,
+    //     data: RequestData,
+    //     log: IAuditLogInsertEntry[]
+    // ) => Promise<void>;
 }
 
 export function getLogFromEntry(
@@ -51,28 +51,27 @@ export function getLogFromEntry(
 }
 
 export default class AuditLogContext implements IAuditLogContext {
-    public insertMany = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            entries: IAuditLogInsertEntry[]
-        ) => {
-            // TODO: how can we retry failed saves, here, and accross the server
-            const user = await ctx.session.getUser(ctx, data);
-            const logs = entries.map((entry) =>
-                getLogFromEntry(data, entry, user)
-            );
-            await ctx.models.auditLogModel.model.insertMany(logs);
-        }
-    );
-
-    public insert(
-        ctx: IBaseContext,
-        data: RequestData,
-        log: IAuditLogInsertEntry
-    ) {
-        return ctx.auditLog.insertMany(ctx, data, [log]);
-    }
+    // public insertMany = wrapFireAndThrowErrorAsync(
+    //     async (
+    //         ctx: IBaseContext,
+    //         data: RequestData,
+    //         entries: IAuditLogInsertEntry[]
+    //     ) => {
+    //         // TODO: how can we retry failed saves, here, and accross the server
+    //         const user = await ctx.session.getUser(ctx, data);
+    //         const logs = entries.map((entry) =>
+    //             getLogFromEntry(data, entry, user)
+    //         );
+    //         await ctx.models.auditLogModel.model.insertMany(logs);
+    //     }
+    // );
+    // public insert(
+    //     ctx: IBaseContext,
+    //     data: RequestData,
+    //     log: IAuditLogInsertEntry
+    // ) {
+    //     return ctx.auditLog.insertMany(ctx, data, [log]);
+    // }
 }
 
 export const getAuditLogContext = makeSingletonFunc(

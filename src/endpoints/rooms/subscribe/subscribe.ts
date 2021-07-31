@@ -1,9 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
+import { SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { RoomDoesNotExistError } from "../../chat/errors";
 import { SubscribeEndpoint } from "./types";
 import { subscribeJoiSchema } from "./validation";

@@ -1,17 +1,12 @@
-import { SystemActionType } from "../../../models/system";
-import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { BlockType, IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
-import { INotification } from "../../../mongo/notification";
 import { IUser } from "../../../mongo/user";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
-import { getOrganizationDeletedNotification } from "../../notifications/templates/organization";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId } from "../utils";
 import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
 import { deleteBlockJoiSchema } from "./validation";
 
@@ -128,13 +123,6 @@ const deleteBlock: DeleteBlockEndpoint = async (context, instData) => {
         blockId: block.customId,
         blockType: block.type,
         parentId: block.parent,
-    });
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Delete,
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
-        organizationId: getBlockRootBlockId(block),
     });
 
     switch (block.type) {

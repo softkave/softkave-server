@@ -121,8 +121,6 @@ async function persistBoardLabelChanges(
             deletedLabelIds
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardLabelChanges;

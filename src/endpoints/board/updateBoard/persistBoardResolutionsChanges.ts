@@ -1,8 +1,5 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBoardStatusResolution } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
-import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
@@ -42,19 +39,10 @@ async function persistBoardResolutionsChanges(
         path: "customId",
     });
 
-    const logEntries: IAuditLogInsertEntry[] = [];
     const deletedResolutionIds: string[] = [];
 
     oldBoardResolutions.forEach((resolution) => {
         if (!indexedNewBoardResolutions[resolution.customId]) {
-            logEntries.push({
-                action: SystemActionType.Delete,
-                resourceId: resolution.customId,
-                resourceType: SystemResourceType.Resolution,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             deletedResolutionIds.push(resolution.customId);
         }
     });
@@ -64,14 +52,6 @@ async function persistBoardResolutionsChanges(
             indexedOldBoardResolutions[resolution.customId];
 
         if (!existingResolution) {
-            logEntries.push({
-                action: SystemActionType.Create,
-                resourceId: resolution.customId,
-                resourceType: SystemResourceType.Resolution,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             return;
         }
 
@@ -91,27 +71,10 @@ async function persistBoardResolutionsChanges(
                 oldValue[field] = existingResolution[field];
                 newValue[field] = resolution[field];
             });
-
-            logEntries.push({
-                action: SystemActionType.Update,
-                resourceId: resolution.customId,
-                resourceType: SystemResourceType.Resolution,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-                change: {
-                    oldValue,
-                    newValue,
-                    customId: getNewId(),
-                },
-            });
         }
     });
 
     if (deletedResolutionIds.length === 0) {
-        // TODO: there will be empty resolution updates in the audit log table
-        // write a script to delete them
-
-        // TODO: do this for all bulk update items
         return;
     }
 
@@ -125,8 +88,6 @@ async function persistBoardResolutionsChanges(
             deletedResolutionIds
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardResolutionsChanges;

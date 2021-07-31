@@ -3,8 +3,6 @@ import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpre
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { wrapEndpoint } from "../../utils";
-import createOrganization from "../createOrganization/handler";
-import { ICreateOrganizationParameters } from "../createOrganization/types";
 import organizationExists from "../organizationExists/handler";
 import { IOrganizationExistsParameters } from "../organizationExists/types";
 

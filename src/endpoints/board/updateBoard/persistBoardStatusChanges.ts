@@ -1,9 +1,6 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlockStatus } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { indexArray } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
-import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
@@ -47,7 +44,6 @@ async function persistBoardStatusChanges(
         path: "customId",
     });
 
-    const logEntries: IAuditLogInsertEntry[] = [];
     const deletedStatusIdsWithReplacement: Array<{
         oldId: string;
         newId: string;
@@ -55,14 +51,6 @@ async function persistBoardStatusChanges(
 
     oldBoardStatuses.forEach((status, index) => {
         if (!indexedNewBoardStatuses[status.customId]) {
-            logEntries.push({
-                action: SystemActionType.Delete,
-                resourceId: status.customId,
-                resourceType: SystemResourceType.Status,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             const newIdIndex =
                 index >= boardStatuses.length ? index - 1 : index;
             const newId = boardStatuses[newIdIndex]?.customId;
@@ -77,14 +65,6 @@ async function persistBoardStatusChanges(
         const existingStatus = indexedOldBoardStatuses[status.customId];
 
         if (!existingStatus) {
-            logEntries.push({
-                action: SystemActionType.Create,
-                resourceId: status.customId,
-                resourceType: SystemResourceType.Status,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             return;
         }
 
@@ -104,25 +84,10 @@ async function persistBoardStatusChanges(
                 oldValue[field] = existingStatus[field];
                 newValue[field] = status[field];
             });
-
-            logEntries.push({
-                action: SystemActionType.Update,
-                resourceId: status.customId,
-                resourceType: SystemResourceType.Status,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-                change: {
-                    oldValue,
-                    newValue,
-                    customId: getNewId(),
-                },
-            });
         }
     });
 
     if (deletedStatusIdsWithReplacement.length === 0) {
-        // TODO: there will be empty status updates in the audit log table
-        // write a script to delete them
         return;
     }
 
@@ -137,8 +102,6 @@ async function persistBoardStatusChanges(
             user
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardStatusChanges;

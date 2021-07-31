@@ -1,8 +1,5 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlockLabel } from "../../../mongo/block";
 import { indexArray } from "../../../utilities/fns";
-import getNewId from "../../../utilities/getNewId";
-import { IAuditLogInsertEntry } from "../../contexts/AuditLogContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
@@ -42,19 +39,10 @@ async function persistBoardLabelChanges(
         path: "customId",
     });
 
-    const logEntries: IAuditLogInsertEntry[] = [];
     const deletedLabelIds: string[] = [];
 
     oldBoardLabels.forEach((label) => {
         if (!indexedNewBoardLabels[label.customId]) {
-            logEntries.push({
-                action: SystemActionType.Delete,
-                resourceId: label.customId,
-                resourceType: SystemResourceType.Label,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             deletedLabelIds.push(label.customId);
         }
     });
@@ -63,14 +51,6 @@ async function persistBoardLabelChanges(
         const existingLabel = indexedOldBoardLabels[label.customId];
 
         if (!existingLabel) {
-            logEntries.push({
-                action: SystemActionType.Create,
-                resourceId: label.customId,
-                resourceType: SystemResourceType.Label,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-            });
-
             return;
         }
 
@@ -87,27 +67,10 @@ async function persistBoardLabelChanges(
                 oldValue[field] = existingLabel[field];
                 newValue[field] = label[field];
             });
-
-            logEntries.push({
-                action: SystemActionType.Update,
-                resourceId: label.customId,
-                resourceType: SystemResourceType.Label,
-                organizationId: board.parent,
-                resourceOwnerId: board.customId,
-                change: {
-                    oldValue,
-                    newValue,
-                    customId: getNewId(),
-                },
-            });
         }
     });
 
     if (deletedLabelIds.length === 0) {
-        // TODO: there will be empty label updates in the audit log table
-        // write a script to delete them
-
-        // TODO: do this for all bulk update items
         return;
     }
 
@@ -121,8 +84,6 @@ async function persistBoardLabelChanges(
             deletedLabelIds
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardLabelChanges;

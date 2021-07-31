@@ -25,8 +25,6 @@ export default class UpdateBoardContext
                             type: BlockType.Task,
                             status: item.oldId,
                         },
-
-                        // TODO: how can we add the context of the status change, and how can we add it to audit log?
                         update: {
                             status: item.newId,
                             statusAssignedAt: getDate(),

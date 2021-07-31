@@ -99,7 +99,6 @@ connection.wait().then(async () => {
     await userModel.waitTillReady();
     await blockModel.waitTillReady();
     await notificationModel.waitTillReady();
-    await auditLogModel.waitTillReady();
 
     // scripts
 

@@ -4,9 +4,12 @@ import isDate from "lodash/isDate";
 import isFunction from "lodash/isFunction";
 import isNull from "lodash/isNull";
 import isObject from "lodash/isObject";
+import { SystemResourceType } from "../models/system";
 import mongoConstants from "../mongo/constants";
+import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
 import cast, { indexArray } from "../utilities/fns";
+import { ConvertDatesToStrings } from "../utilities/types";
 import { IBaseContext } from "./contexts/BaseContext";
 import RequestData from "./RequestData";
 import {
@@ -260,4 +263,26 @@ export function getComplexTypeArrayInputGraphQLSchema(
     `;
 }
 
-export function assertField(data: any, field: string) {}
+const publicParentInformationFields = getFields<IParentInformation>({
+    type: true,
+    customId: true,
+});
+
+export type IPublicParentInformation = ConvertDatesToStrings<{
+    type: SystemResourceType;
+    customId: string;
+}>;
+
+export function getPublicParentInformation(
+    parent: IParentInformation
+): IPublicParentInformation {
+    return extractFields(parent, publicParentInformationFields);
+}
+
+export function getPublicParentInformationArray(
+    parents: IParentInformation[]
+): IPublicParentInformation[] {
+    return parents.map((parent) =>
+        extractFields(parent, publicParentInformationFields)
+    );
+}

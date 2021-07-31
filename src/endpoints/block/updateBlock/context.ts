@@ -23,15 +23,16 @@ export default class UpdateBlockContext
         assigner: IUser,
         assignee: IUser
     ) {
-        return sendAssignedTaskEmailNotification({
-            taskName,
-            taskDescription,
-            email: assignee.email,
-            board: board.name,
-            assignee: assignee.name,
-            assigner: assigner.name,
-            loginLink: this.appVariables.loginPath,
-        });
+        throw new Error("do not use code");
+        // return sendAssignedTaskEmailNotification({
+        //     taskName,
+        //     taskDescription,
+        //     email: assignee.email,
+        //     board: board.name,
+        //     assignee: assignee.name,
+        //     assigner: assigner.name,
+        //     loginLink: this.appVariables.loginPath,
+        // });
     }
 
     public async bulkUpdateDeletedStatusInTasks(

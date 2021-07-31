@@ -1,7 +1,11 @@
 import assert from "assert";
 import RequestData from "../../RequestData";
 import { testData } from "../../testUtils/data";
-import { setupTestExpressRequest } from "../../testUtils/setupTestExpressRequest";
+import { setupTestClient } from "../../testUtils/setupTestClient";
+import {
+    setupTestExpressRequest,
+    setupTestExpressRequestWithClient,
+} from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { findErrorByName } from "../../testUtils/utils";
@@ -97,16 +101,26 @@ describe("signup", () => {
         try {
             await signup(context, reqData);
             throw new Error(
-                "signup should throw EmailAddressNotAvailableError error"
+                "Bug in our code: signup should throw EmailAddressNotAvailableError error"
             );
         } catch (error) {
             expect(error?.name).toEqual(EmailAddressNotAvailableError.name);
         }
     });
 
-    // test("reuses existing clients", async () => {
-    //     /**
-    //      * - test that if an existing client ID is passed, it gets reused
-    //      */
-    // });
+    test("reuses existing clients", async () => {
+        /**
+         * - test that if an existing client ID is passed, it gets reused
+         */
+
+        const context = getTestBaseContext();
+        const { client } = await setupTestClient(context);
+        const { req } = setupTestExpressRequestWithClient({ client });
+        const reqData = RequestData.fromExpressRequest(context, req, input);
+        const result = await signup(context, reqData);
+
+        expect(result).toBeTruthy();
+        expect(result?.client).toBeTruthy();
+        expect(result?.client?.clientId).toEqual(client.clientId);
+    });
 });

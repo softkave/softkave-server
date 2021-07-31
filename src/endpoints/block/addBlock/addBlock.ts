@@ -32,12 +32,6 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         });
 
         instData.user = user;
-        context.auditLog.insert(context, instData, {
-            action: SystemActionType.Create,
-            resourceId: organization.customId,
-            resourceType: SystemResourceType.Organization,
-            organizationId: organization.customId,
-        });
 
         context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
             updateType: { isNew: true },
@@ -74,13 +68,6 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     });
 
     const block = result.block;
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Create,
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
-        organizationId: getBlockRootBlockId(block),
-    });
 
     context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
         block,

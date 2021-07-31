@@ -1,0 +1,23 @@
+Custom Property
+
+Custom properties are custom fields for resources like boards, tasks, etc. Usually defined in the resource's parent.
+- Custom properties can be defined in organizations, for boards
+- Can be defined in boards for tasks
+- Should be defineable for other sub fields including custom properties and subtasks, etc.
+
+Work focus:
+- Defining custom properties in boards for tasks
+- Defining custom properties in organizations for boards
+- Defining organization-wide custom properties reused accross the board
+- Cloning boards to copy over it's custom properties
+- Getting custom properties from other boards
+- Moving some existing app-provided properties like status and labels to custom properties
+- Implemeting one size fits all custom properties endpoints
+
+Endpoints:
+- createProperty
+- updateProperty
+- deleteProperty
+- getProperties
+- getValues
+- updateValues

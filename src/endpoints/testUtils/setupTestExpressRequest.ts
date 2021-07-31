@@ -1,8 +1,32 @@
 import moment from "moment";
+import { IClient } from "../../mongo/client";
 import { IToken } from "../../mongo/token";
 import cast from "../../utilities/fns";
 import { clientConstants } from "../client/constants";
 import { IServerRequest } from "../contexts/types";
+
+export interface ISetupTestExpressRequestWithClientParams {
+    client: IClient;
+}
+
+export interface ISetupTestExpressRequestWithClientResult {
+    req: IServerRequest;
+}
+
+export function setupTestExpressRequestWithClient(
+    props: ISetupTestExpressRequestWithClientParams
+): ISetupTestExpressRequestWithClientResult {
+    const req = cast<IServerRequest>({
+        ip: "test::ip",
+        ips: ["test::ip"],
+        headers: {
+            "user-agent": "test-bot",
+            [clientConstants.clientIdHeaderKey]: props.client.clientId,
+        },
+    });
+
+    return { req };
+}
 
 export interface ISetupTestExpressRequestWithTokenParams {
     token: IToken;

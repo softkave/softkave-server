@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import { getPermissionModel } from "../../mongo/access-control/PermissionModel";
 import { getPermissionGroupsModel } from "../../mongo/access-control/PermissionGroupsModel";
 import { getUserAssignedPermissionGroupsModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
-import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCollaborationRequestModel } from "../../mongo/collaboration-request";
@@ -19,7 +18,6 @@ import {
     getAccessControlContext,
     IAccessControlContext,
 } from "./AccessControlContext";
-import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
 import { getBroadcastHelpers, IBroadcastHelpers } from "./BroadcastHelpers";
 import {
@@ -59,7 +57,6 @@ export interface IBaseContext {
     user: IUserContext;
     collaborationRequest: ICollaborationRequestContext;
     notification: INotificationContext;
-    auditLog: IAuditLogContext;
     session: ISessionContext;
     socket: ISocketContext;
     room: IRoomContext;
@@ -85,7 +82,6 @@ export default class BaseContext implements IBaseContext {
     public collaborationRequest: ICollaborationRequestContext =
         getCollaborationRequestContext();
     public notification: INotificationContext = getNotificationContext();
-    public auditLog: IAuditLogContext = getAuditLogContext();
     public session: ISessionContext = getSessionContext();
     public socket: ISocketContext = getSocketContext();
     public room: IRoomContext = getRoomContext();
@@ -102,7 +98,6 @@ export default class BaseContext implements IBaseContext {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
         notificationModel: getNotificationModel(),
-        auditLogModel: getAuditLogModel(),
         commentModel: getCommentModel(),
         sprintModel: getSprintModel(),
         chatModel: getChatModel(),

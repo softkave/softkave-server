@@ -1,17 +1,12 @@
 import argon2 from "argon2";
 import randomColor from "randomcolor";
 import uuid from "uuid/v4";
-import {
-    ClientType,
-    SystemActionType,
-    SystemResourceType,
-} from "../../../models/system";
+import { ClientType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { INewBlockInput } from "../../block/types";
 import { clientToClientUserView } from "../../client/utils";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";

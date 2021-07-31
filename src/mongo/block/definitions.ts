@@ -148,7 +148,6 @@ export interface IBlock {
     createdAt: Date;
     type: BlockType;
     name?: string;
-    lowerCasedName?: string;
     description?: string;
     updatedAt?: Date;
     updatedBy?: string;

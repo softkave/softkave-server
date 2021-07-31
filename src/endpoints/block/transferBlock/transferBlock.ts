@@ -97,18 +97,6 @@ const transferBlock: TransferBlockEndpoint = async (context, instData) => {
         parentId: draggedBlock.parent,
     });
 
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Update,
-        resourceId: draggedBlock.customId,
-        resourceType: getBlockAuditLogResourceType(draggedBlock),
-        change: {
-            customId: getNewId(),
-            oldValue: { parent: draggedBlock.parent },
-            newValue: { parent: destinationBlock.customId },
-        },
-        organizationId: getBlockRootBlockId(draggedBlock),
-    });
-
     return {
         draggedBlock: updatedTask,
     };
