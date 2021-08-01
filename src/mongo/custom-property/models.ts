@@ -7,7 +7,26 @@ import {
     customPropertyValueSchema,
     ICustomPropertyDocument,
     ICustomPropertyValueDocument,
+    ICustomSelectionOptionDocument,
+    customSelectionOptionSchema,
 } from "./definitions";
+
+const customSelectionOptionModelName = "custom-selection-option";
+const customSelectionOptionCollectionName = "custom-selection-options";
+
+export const getSelectionCustomOptionModel = makeSingletonFunc(
+    (conn: Connection = getDefaultConnection().getConnection()) => {
+        return new MongoModel<ICustomSelectionOptionDocument>({
+            modelName: customSelectionOptionModelName,
+            collectionName: customSelectionOptionCollectionName,
+            rawSchema: customSelectionOptionSchema,
+            connection: conn,
+        });
+    }
+);
+
+export interface ICustomSelectionOptionModel
+    extends MongoModel<ICustomSelectionOptionDocument> {}
 
 const customPropertyModelName = "custom-property";
 const customPropertyCollectionName = "custom-properties";

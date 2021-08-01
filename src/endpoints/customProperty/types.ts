@@ -5,10 +5,10 @@ import { ConvertDatesToStrings } from "../../utilities/types";
 export type IPublicCustomProperty = ConvertDatesToStrings<{
     customId: string;
     name: string;
-    description: string;
+    description?: string;
     parents: IParentInformation[];
     type: CustomPropertyType;
-    isRequired?: string;
+    isRequired?: boolean;
     meta: any;
     createdBy: string;
     createdAt: Date;
@@ -26,4 +26,19 @@ export type IPublicCustomPropertyValue = ConvertDatesToStrings<{
     createdAt: Date;
     updatedBy?: string;
     updatedAt?: Date;
+}>;
+
+export type IPublicCustomSelectionOption = ConvertDatesToStrings<{
+    customId: string;
+    name: string;
+    description?: string;
+    parents: IParentInformation[];
+    propertyId: string;
+    color?: string;
+    createdBy: string;
+    createdAt: Date;
+    updatedBy?: string;
+    updatedAt?: Date;
+    prevOptionId?: string;
+    nextOptionId?: string;
 }>;

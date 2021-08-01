@@ -18,20 +18,12 @@ export interface TextCustomTypeMeta {
     minChars?: number;
     maxChars?: number;
     type: TextResourceTypes;
-    createdBy: string;
-    createdAt: Date;
-    updatedBy?: string;
-    updatedAt?: Date;
 }
 
 export interface DateCustomTypeMeta {
     isRange?: boolean;
     startDate?: string;
     endDate?: string;
-    createdBy: string;
-    createdAt: Date;
-    updatedBy?: string;
-    updatedAt?: Date;
 }
 
 export enum SelectionResourceTypes {
@@ -48,31 +40,27 @@ export interface ISelectionFrom {
     type: BlockType.Organization | BlockType.Board;
 }
 
-export interface SelectionCustomTypeMeta {
-    type: SelectionResourceTypes;
-    isMultiple?: boolean;
-    min?: number;
-    max?: number;
-    selectFrom: ISelectionFrom;
-    createdBy: string;
-    createdAt: Date;
-    updatedBy?: string;
-    updatedAt?: Date;
-}
-
-export interface ISelectionCustomOption {
+export interface ICustomSelectionOption {
     customId: string;
     name: string;
     description?: string;
     parents: IParentInformation[];
     propertyId: string;
-    color: string;
+    color?: string;
     createdBy: string;
     createdAt: Date;
     updatedBy?: string;
     updatedAt?: Date;
     prevOptionId?: string;
     nextOptionId?: string;
+}
+
+export interface SelectionCustomTypeMeta {
+    type: SelectionResourceTypes;
+    isMultiple?: boolean;
+    min?: number;
+    max?: number;
+    selectFrom: ISelectionFrom | null;
 }
 
 export enum NumberTypes {
@@ -88,20 +76,16 @@ export interface NumberCustomTypeMeta {
     type: NumberTypes;
     min: number;
     max: number;
-    createdBy: string;
-    createdAt: Date;
-    updatedBy?: string;
-    updatedAt?: Date;
     format: INumberTypeFormatting;
 }
 
 export interface ICustomProperty {
     customId: string;
     name: string;
-    description: string;
+    description?: string;
     parents: IParentInformation[];
     type: CustomPropertyType;
-    isRequired?: string;
+    isRequired?: boolean;
     meta: any;
     createdBy: string;
     createdAt: Date;
@@ -114,7 +98,7 @@ export interface TextCustomTypeValue {
 }
 
 export interface DateCustomTypeValue {
-    startDate?: Date;
+    date?: Date;
     endDate?: Date;
 }
 
@@ -137,6 +121,21 @@ export interface ICustomPropertyValue {
     updatedBy?: string;
     updatedAt?: Date;
 }
+
+export const customSelectionOptionSchema = {
+    customId: { type: String, unique: true, index: true },
+    name: { type: String },
+    description: { type: String },
+    parents: { type: [parentSchema], default: [] },
+    propertyId: { type: String },
+    color: { type: String },
+    createdBy: { type: String },
+    createdAt: { type: Date, default: getDate },
+    updatedAt: { type: Date },
+    updatedBy: { type: String },
+    prevOptionId: { type: String },
+    nextOptionId: { type: String },
+};
 
 export const customPropertySchema = {
     customId: { type: String, unique: true, index: true },
@@ -165,6 +164,9 @@ export const customPropertyValueSchema = {
 };
 
 export interface ICustomPropertyDocument extends Document, ICustomProperty {}
+
 export interface ICustomPropertyValueDocument
     extends Document,
         ICustomPropertyValue {}
+
+export type ICustomSelectionOptionDocument = ICustomSelectionOption & Document;

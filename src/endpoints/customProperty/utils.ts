@@ -1,10 +1,15 @@
 import {
     ICustomProperty,
     ICustomPropertyValue,
+    ICustomSelectionOption,
 } from "../../mongo/custom-property/definitions";
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
-import { IPublicCustomProperty, IPublicCustomPropertyValue } from "./types";
+import {
+    IPublicCustomProperty,
+    IPublicCustomPropertyValue,
+    IPublicCustomSelectionOption,
+} from "./types";
 
 const publicCustomPropertyFields = getFields<IPublicCustomProperty>({
     customId: true,
@@ -38,6 +43,25 @@ const publicCustomPropertyValueFields = getFields<IPublicCustomPropertyValue>({
     updatedAt: getDateString,
 });
 
+const publicCustomSelectionOptionFields =
+    getFields<IPublicCustomSelectionOption>({
+        customId: true,
+        propertyId: true,
+        parents: {
+            type: true,
+            customId: true,
+        },
+        createdBy: true,
+        createdAt: getDateString,
+        updatedBy: true,
+        updatedAt: getDateString,
+        color: true,
+        description: true,
+        name: true,
+        nextOptionId: true,
+        prevOptionId: true,
+    });
+
 export function getPublicCustomProperty(
     customProperty: ICustomProperty
 ): IPublicCustomProperty {
@@ -63,5 +87,19 @@ export function getPublicCustomPropertyValuesArray(
 ): IPublicCustomPropertyValue[] {
     return values.map((value) =>
         extractFields(value, publicCustomPropertyValueFields)
+    );
+}
+
+export function getPublicCustomSelectionOption(
+    value: ICustomSelectionOption
+): IPublicCustomSelectionOption {
+    return extractFields(value, publicCustomSelectionOptionFields);
+}
+
+export function getPublicCustomSelectionOptionsArray(
+    values: ICustomSelectionOption[]
+): IPublicCustomSelectionOption[] {
+    return values.map((value) =>
+        extractFields(value, publicCustomSelectionOptionFields)
     );
 }
