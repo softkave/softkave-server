@@ -5,9 +5,9 @@ import { wrapEndpoint } from "../utils";
 import createBoard from "./createBoard/handler";
 import boardExists from "./boardExists/handler";
 import deleteBoard from "./deleteBoard/handler";
-import getOrganizationBoards from "./getOrganizationBoards/handler";
 import UpdateBoardContext from "./updateBoard/context";
 import updateBoard from "./updateBoard/handler";
+import getOrganizationBoards from "./getOrgBoards/handler";
 
 export default class BoardEndpointsGraphQLController {
     public createBoard(data, req) {

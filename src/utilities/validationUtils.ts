@@ -12,10 +12,12 @@ export const regEx = {
 
 const uuid = Joi.string().guid().trim();
 const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
+const iso = Joi.date().iso();
 
 export const validationSchemas = {
     uuid,
     color,
+    iso,
 };
 
 export function stripOnEmpty(schema: Joi.Schema, fieldName: string) {

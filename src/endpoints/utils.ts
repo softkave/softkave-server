@@ -4,7 +4,7 @@ import isDate from "lodash/isDate";
 import isFunction from "lodash/isFunction";
 import isNull from "lodash/isNull";
 import isObject from "lodash/isObject";
-import { SystemResourceType } from "../models/system";
+import { ParentResourceType, SystemResourceType } from "../models/system";
 import mongoConstants from "../mongo/constants";
 import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
@@ -269,7 +269,7 @@ const publicParentInformationFields = getFields<IParentInformation>({
 });
 
 export type IPublicParentInformation = ConvertDatesToStrings<{
-    type: SystemResourceType;
+    type: ParentResourceType;
     customId: string;
 }>;
 
@@ -285,4 +285,56 @@ export function getPublicParentInformationArray(
     return parents.map((parent) =>
         extractFields(parent, publicParentInformationFields)
     );
+}
+
+export function getParentIndexByType(
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    return parents.findIndex((parent) => parent.type === type);
+}
+
+export function getParentByType(
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    return parents.find((parent) => parent.type === type);
+}
+
+export function assertGetParentIndexByType(
+    resourceId: string,
+    resourceType: SystemResourceType,
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    const index = parents.findIndex((parent) => parent.type === type);
+
+    if (index === -1) {
+        console.error(
+            `${resourceType}:${resourceId} parent of type ${type} not found`
+        );
+
+        throw new ServerError();
+    }
+
+    return index;
+}
+
+export function assertGetParentByType(
+    resourceId: string,
+    resourceType: SystemResourceType,
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    const parent = parents.find((parent) => parent.type === type);
+
+    if (!parent) {
+        console.error(
+            `${resourceType}:${resourceId} parent of type ${type} not found`
+        );
+
+        throw new ServerError();
+    }
+
+    return parent;
 }

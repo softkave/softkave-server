@@ -1,40 +1,26 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import { getBlockRootBlockId } from "../../block/utils";
-import { getPublicNotificationSubscriptionsArray } from "../utils";
+import canReadOrganization from "../../organization/canReadBlock";
+import { fireAndForgetFn } from "../../utils";
 import { DeletePropertyEndpoint } from "./types";
-import { getResourceSubscriptionsJoiSchema } from "./validation";
+import { deletePropertyJoiSchema } from "./validation";
 
-const getResourceSubscriptions: DeletePropertyEndpoint = async (
-    context,
-    instData
-) => {
-    const data = validate(instData.data, getResourceSubscriptionsJoiSchema);
+const deleteProperty: DeletePropertyEndpoint = async (context, instData) => {
+    const data = validate(instData.data, deletePropertyJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
-
-    assertBlock(block);
-    await context.accessControl.assertPermission(
+    const property = await context.customProperty.getItemById(
         context,
-        {
-            organizationId: getBlockRootBlockId(block),
-            resourceType: SystemResourceType.Notification,
-            action: SystemActionType.Read,
-            permissionResourceId: block.customId,
-        },
-        user
+        data.customId
     );
 
-    const subscriptions =
-        await context.notification.getNotificationSubscriptionsByResourceId(
+    canReadOrganization(property.organizationId, user);
+    await context.customProperty.deleteItemById(context, property.customId);
+    fireAndForgetFn(() => {
+        context.customPropertyValue.bulkDeleteItemsByField(
             context,
-            block.customId
+            "propertyId",
+            property.customId
         );
-
-    return {
-        subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),
-    };
+    });
 };
 
-export default getResourceSubscriptions;
+export default deleteProperty;

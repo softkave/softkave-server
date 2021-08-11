@@ -51,6 +51,19 @@ import {
 import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
+import {
+    getCustomPropertyContext,
+    getCustomPropertyValueContext,
+    getCustomSelectionOptionContext,
+    ICustomPropertyContext,
+    ICustomPropertyValueContext,
+    ICustomSelectionOptionContext,
+} from "./customProperty";
+import {
+    getCustomPropertyModel,
+    getCustomPropertyValueModel,
+    getCustomSelectionOptionModel,
+} from "../../mongo/custom-property/models";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -70,6 +83,9 @@ export interface IBaseContext {
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
     webPush: IWebPushContext;
+    customProperty: ICustomPropertyContext;
+    customPropertyValue: ICustomPropertyValueContext;
+    customSelectionOption: ICustomSelectionOptionContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
     socketServerInstance: Server;
@@ -93,6 +109,9 @@ export default class BaseContext implements IBaseContext {
     public client = getClientContext();
     public token = getTokenContext();
     public unseenChats = getUnseenChatsContext();
+    public customProperty = getCustomPropertyContext();
+    public customPropertyValue = getCustomPropertyValueContext();
+    public customSelectionOption = getCustomSelectionOptionContext();
     public webPush = getWebPushContext();
     public models: IContextModels = {
         userModel: getUserModel(),
@@ -110,6 +129,9 @@ export default class BaseContext implements IBaseContext {
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
         unseenChatsModel: getUnseenChatsModel(),
+        customProperty: getCustomPropertyModel(),
+        customPropertyValue: getCustomPropertyValueModel(),
+        customSelectionOption: getCustomSelectionOptionModel(),
     };
     public socketServerInstance: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();

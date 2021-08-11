@@ -10,7 +10,7 @@ export interface ICreatePropertyEndpointParams {
         name: string;
         description?: string;
         type: CustomPropertyType;
-        isRequired?: string;
+        isRequired?: boolean;
         meta: any;
     };
 }

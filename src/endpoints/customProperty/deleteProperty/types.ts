@@ -7,6 +7,5 @@ export interface IDeletePropertyEndpointParams {
 
 export type DeletePropertyEndpoint = Endpoint<
     IBaseContext,
-    IDeletePropertyEndpointParams,
-    void
+    IDeletePropertyEndpointParams
 >;

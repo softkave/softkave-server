@@ -12,7 +12,30 @@ function getNumber(value: string = "", envName: string) {
     return num;
 }
 
-export const appVariables = {
+export interface IAppVariables {
+    // environment variables
+    clientDomain: string;
+    mongoDbURI: string;
+    jwtSecret: string;
+    nodeEnv: string;
+    feedbackBoardId: string;
+    feedbackUserId: string;
+    port: string;
+    vapidPublicKey: string;
+    vapidPrivateKey: string;
+    disableEmail: boolean;
+
+    appName: string;
+    emailSendFrom: string;
+    emailEncoding: string;
+    dateFormat: string;
+    signupPath: string;
+    loginPath: string;
+    changePasswordPath: string;
+    confirmEmailAddressPath: string;
+}
+
+export const appVariables: IAppVariables = {
     clientDomain,
     mongoDbURI: process.env.MONGODB_URI,
     jwtSecret: process.env.JWT_SECRET,
@@ -60,5 +83,3 @@ function checkVariablesExist() {
 }
 
 checkVariablesExist();
-
-export type IAppVariables = typeof appVariables;

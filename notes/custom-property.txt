@@ -20,4 +20,54 @@ Endpoints:
 - deleteProperty
 - getProperties
 - getValues
-- updateValues
+- updateValue
+- createCustomSelectionOption
+- updateCustomSelectionOption
+
+createProperty
+- validates property
+- check that the user has permission to create the property in the org, 
+  and that the direct parent exists
+- check that the property name does not exist
+- save property
+
+updateProperty
+- validate property
+- check permission
+- assert check property
+- save property
+- delete previous values if type is changed
+
+deleteProperty
+- check permission
+- delete property
+- delete values
+
+getProperties
+- validate
+- check permission
+- return properties
+
+getValues
+- validate
+- check permission
+- return values
+
+updateValue
+- validate
+- check permission
+- update value
+
+createCustomSelectionOption
+- validate
+- check permission
+- check property exists
+- check property is custom
+- check unique if options should be unique
+- save option
+
+updateCustomSelectionOption
+- validate
+- check permission
+- check unique if options should be unique
+- save option

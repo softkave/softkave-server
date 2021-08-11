@@ -1,40 +1,58 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { assertBlock } from "../../../mongo/block/utils";
+import { BlockType } from "../../../mongo/block";
+import { ICustomProperty } from "../../../mongo/custom-property/definitions";
+import cast, { getDate } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { getBlockRootBlockId } from "../../block/utils";
-import { getPublicNotificationSubscriptionsArray } from "../utils";
+import { InvalidRequestError } from "../../errors";
+import canReadOrganization from "../../organization/canReadBlock";
+import { CustomPropertyExistsError } from "../errors";
+import { getPublicCustomProperty } from "../utils";
 import { CreatePropertyEndpoint } from "./types";
 import { createPropertyJoiSchema } from "./validation";
 
-const getResourceSubscriptions: CreatePropertyEndpoint = async (
-    context,
-    instData
-) => {
+const createProperty: CreatePropertyEndpoint = async (context, instData) => {
     const data = validate(instData.data, createPropertyJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
-
-    assertBlock(block);
-    await context.accessControl.assertPermission(
+    const parent = await context.block.assertGetBlockById(
         context,
-        {
-            organizationId: getBlockRootBlockId(block),
-            resourceType: SystemResourceType.Notification,
-            action: SystemActionType.Read,
-            permissionResourceId: block.customId,
-        },
-        user
+        data.parent.customId
     );
 
-    const subscriptions =
-        await context.notification.getNotificationSubscriptionsByResourceId(
-            context,
-            block.customId
-        );
+    if (parent.type !== cast<BlockType>(data.parent.type)) {
+        throw new InvalidRequestError();
+    }
 
+    canReadOrganization(parent.rootBlockId || parent.customId, user);
+    const propertyExists = await context.customProperty.checkItemExistsByName(
+        context,
+        "name",
+        data.property.name
+    );
+
+    if (propertyExists) {
+        throw new CustomPropertyExistsError();
+    }
+
+    const property: ICustomProperty = {
+        customId: getNewId(),
+        name: data.property.name,
+        description: data.property.description,
+        parent: data.parent,
+        type: data.property.type,
+        isRequired: data.property.isRequired,
+        meta: data.property.meta,
+        createdBy: user.customId,
+        createdAt: getDate(),
+        organizationId: parent.rootBlockId || parent.customId,
+    };
+
+    const savedProperty = await context.customProperty.saveItem(
+        context,
+        property
+    );
     return {
-        subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),
+        property: getPublicCustomProperty(savedProperty),
     };
 };
 
-export default getResourceSubscriptions;
+export default createProperty;

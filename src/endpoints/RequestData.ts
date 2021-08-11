@@ -8,16 +8,12 @@ import { IBaseTokenData, IGeneralTokenSubject } from "./contexts/TokenContext";
 import { IServerRequest } from "./contexts/types";
 import { IIncomingSocketEventPacket } from "./socket/types";
 
-export interface IRequestContructorParams<
-    T = any,
-    TokenData extends IToken = IToken,
-    IncomingTokenData extends IBaseTokenData<IGeneralTokenSubject> = IBaseTokenData<IGeneralTokenSubject>
-> {
+export interface IRequestContructorParams<T = any> {
     req?: IServerRequest;
     socket?: Socket;
     data?: T;
-    tokenData?: TokenData;
-    incomingTokenData?: IncomingTokenData | null;
+    tokenData?: IToken;
+    incomingTokenData?: IBaseTokenData<IGeneralTokenSubject> | null;
     incomingSocketData?: IIncomingSocketEventPacket<any> | null;
     userAgent?: string;
     ips?: string[];
@@ -26,11 +22,7 @@ export interface IRequestContructorParams<
     client?: IClient | null;
 }
 
-export default class RequestData<
-    T = any,
-    TokenData extends IToken = IToken,
-    IncomingTokenData extends IBaseTokenData<IGeneralTokenSubject> = IBaseTokenData<IGeneralTokenSubject>
-> {
+export default class RequestData<T = any> {
     public static fromExpressRequest<DataType>(
         ctx: IBaseContext,
         req: IServerRequest,
@@ -82,7 +74,7 @@ export default class RequestData<
     public incomingSocketData?: IIncomingSocketEventPacket<any>;
     public data?: T;
     public incomingTokenData?: IBaseTokenData<IGeneralTokenSubject> | null;
-    public tokenData?: TokenData | null;
+    public tokenData?: IToken | null;
     public userAgent?: string;
     public ips: string[];
     public user?: IUser | null;
@@ -90,7 +82,7 @@ export default class RequestData<
     public client?: IClient | null;
     public reqType?: "express" | "socket";
 
-    public constructor(arg?: IRequestContructorParams<T, TokenData>) {
+    public constructor(arg?: IRequestContructorParams<T>) {
         if (!arg) {
             return;
         }

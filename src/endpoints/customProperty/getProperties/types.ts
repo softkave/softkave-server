@@ -4,7 +4,7 @@ import { Endpoint } from "../../types";
 import { IPublicCustomProperty } from "../types";
 
 export interface IGetPropertiesEndpointParams {
-    parents: IParentInformation[];
+    parentId: string;
 }
 
 export interface IGetPropertiesEndpointResult {

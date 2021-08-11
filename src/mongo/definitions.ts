@@ -1,8 +1,8 @@
-import { SystemResourceType } from "../models/system";
+import { ParentResourceType } from "../models/system";
 import { ensureTypeFields } from "./utils";
 
 export interface IParentInformation {
-    type: SystemResourceType;
+    type: ParentResourceType;
     customId: string;
 }
 

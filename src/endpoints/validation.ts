@@ -1,8 +1,9 @@
 import Joi from "joi";
-import { SystemResourceType } from "../models/system";
+import { ParentResourceType, SystemResourceType } from "../models/system";
 import { validationSchemas } from "../utilities/validationUtils";
+import { endpointConstants } from "./constants";
 
-const systemResourceType = Joi.string().valid([
+const systemResourceTypeArray: SystemResourceType[] = [
     SystemResourceType.User,
     SystemResourceType.Collaborator,
     SystemResourceType.RootBlock,
@@ -26,13 +27,24 @@ const systemResourceType = Joi.string().valid([
     SystemResourceType.Permission,
     SystemResourceType.CustomProperty,
     SystemResourceType.CustomValue,
-]);
+];
 
+const systemResourceType = Joi.string().valid(systemResourceTypeArray);
+
+const parentResourceTypeArray: ParentResourceType[] = [
+    ParentResourceType.Organization,
+    ParentResourceType.Board,
+    ParentResourceType.Task,
+];
+
+const parentResourceType = Joi.string().valid(parentResourceTypeArray);
 const parent = Joi.object().keys({
-    type: systemResourceType.required(),
+    type: parentResourceType.required(),
     customId: validationSchemas.uuid.required(),
 });
 
-const endpointValidationSchemas = { parent };
+const parentArray = Joi.array().items(parent).max(endpointConstants.maxParents);
+
+const endpointValidationSchemas = { parent, parentArray, systemResourceType };
 
 export default endpointValidationSchemas;

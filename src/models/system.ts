@@ -24,6 +24,12 @@ export enum SystemResourceType {
     CustomValue = "customValue",
 }
 
+export enum ParentResourceType {
+    Organization = "organization",
+    Board = "board",
+    Task = "task",
+}
+
 export enum NotificationTypes {
     CollaboratorRemoved = "userRemoved",
     CollaboratorLeft = "userLeft",

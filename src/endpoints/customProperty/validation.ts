@@ -22,17 +22,25 @@ const isRequired = Joi.bool();
 const textResourceType = Joi.string().valid([TextResourceTypes.Text]);
 
 const textMeta = Joi.object().keys({
-    minChars: Joi.number().min(0),
+    minChars: Joi.number().min(0).default(0),
     maxChars: Joi.number()
         .max(customPropertyConstants.textMax)
         .default(customPropertyConstants.textMax),
     type: textResourceType.required(),
+    defaultText: Joi.string().max(Joi.ref("maxChars")).allow(null),
 });
 
+const defaultDate = validationSchemas.iso
+    .min(Joi.ref("startDate"))
+    .max(Joi.ref("endDate"))
+    .allow(null);
+
 const dateMeta = Joi.object().keys({
-    isRange: Joi.bool(),
-    startDate: Joi.date().iso(),
-    endDate: Joi.date().iso(),
+    isRange: Joi.bool().allow(null),
+    startDate: validationSchemas.iso.allow(null),
+    endDate: validationSchemas.iso.allow(null),
+    defaultStartDate: defaultDate,
+    defaultEndDate: defaultDate,
 });
 
 const selectionResourceType = Joi.string().valid([
@@ -45,32 +53,42 @@ const selectionResourceType = Joi.string().valid([
 ]);
 
 const customSelectionOption = Joi.object().keys({
-    description,
+    description: description.allow(null),
     name: name.required(),
-    color: validationSchemas.color,
-    prevOptionId: validationSchemas.uuid,
-    nextOptionId: validationSchemas.uuid,
+    color: validationSchemas.color.allow(null),
+    prevOptionId: validationSchemas.uuid.allow(null),
+    nextOptionId: validationSchemas.uuid.allow(null),
 });
 
 const selectionMeta = Joi.object().keys({
     type: selectionResourceType.required(),
-    isMultiple: Joi.bool(),
-    min: Joi.number().min(0),
+    isMultiple: Joi.bool().allow(null),
+    min: Joi.number().min(0).default(0),
     max: Joi.number()
         .max(customPropertyConstants.selectionMax)
         .default(customPropertyConstants.selectionMax),
-    selectFrom: Joi.any().when("type", {
-        is: Joi.string().valid([SelectionResourceTypes.Custom]),
-        then: Joi.valid(null),
-        otherwise: Joi.object()
-            .keys({
-                customId: validationSchemas.uuid.required(),
-                type: Joi.string()
-                    .valid([BlockType.Organization, BlockType.Board])
-                    .required(),
-            })
-            .required(),
-    }),
+    selectFrom: Joi.object()
+        .keys({
+            customId: validationSchemas.uuid.required(),
+            type: Joi.string()
+                .valid([BlockType.Organization, BlockType.Board])
+                .required(),
+        })
+        .when("type", {
+            is: Joi.string().valid([SelectionResourceTypes.Custom]),
+            then: Joi.valid(null),
+            otherwise: Joi.required(),
+        }),
+    customOptionProps: Joi.object()
+        .keys({
+            areOptionsUnique: Joi.boolean().allow(null),
+        })
+        .when("type", {
+            is: Joi.string().valid([SelectionResourceTypes.Custom]),
+            then: Joi.required(),
+            otherwise: Joi.valid(null),
+        }),
+    defaultOptionId: validationSchemas.uuid.allow(null),
 });
 
 const numberType = Joi.string().valid([
@@ -80,11 +98,38 @@ const numberType = Joi.string().valid([
 
 const numberMeta = Joi.object().keys({
     type: numberType.required(),
-    min: Joi.number(),
-    max: Joi.number(),
-    format: Joi.object().keys({
-        decimalPlaces: Joi.number(),
-    }),
+    min: Joi.number().allow(null),
+    max: Joi.number().allow(null),
+    format: Joi.object()
+        .keys({
+            decimalPlaces: Joi.number().allow(null),
+        })
+        .allow(null),
+    defaultNumber: Joi.number()
+        .min(Joi.ref("min"))
+        .max(Joi.ref("max"))
+        .allow(null),
+});
+
+const meta = Joi.object().when("type", {
+    switch: [
+        {
+            is: Joi.string().valid([CustomPropertyType.Text]),
+            then: textMeta.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Date]),
+            then: dateMeta.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Selection]),
+            then: selectionMeta.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Number]),
+            then: numberMeta.required(),
+        },
+    ],
 });
 
 const textValue = {
@@ -92,8 +137,8 @@ const textValue = {
 };
 
 const dateValue = {
-    date: Joi.date().iso(),
-    endDate: Joi.date().iso(),
+    date: validationSchemas.iso,
+    endDate: validationSchemas.iso,
 };
 
 const selectionValue = {
@@ -118,6 +163,7 @@ const customPropertyValidationSchemas = {
     dateValue,
     selectionValue,
     numberValue,
+    meta,
 };
 
 export default customPropertyValidationSchemas;

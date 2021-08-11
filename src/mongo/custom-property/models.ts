@@ -14,7 +14,7 @@ import {
 const customSelectionOptionModelName = "custom-selection-option";
 const customSelectionOptionCollectionName = "custom-selection-options";
 
-export const getSelectionCustomOptionModel = makeSingletonFunc(
+export const getCustomSelectionOptionModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICustomSelectionOptionDocument>({
             modelName: customSelectionOptionModelName,
@@ -50,7 +50,7 @@ const customPropertyValueCollectionName = "custom-property-values";
 
 export const getCustomPropertyValueModel = makeSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
-        return new MongoModel<ICustomPropertyDocument>({
+        return new MongoModel<ICustomPropertyValueDocument>({
             modelName: customPropertyValueModelName,
             collectionName: customPropertyValueCollectionName,
             rawSchema: customPropertyValueSchema,

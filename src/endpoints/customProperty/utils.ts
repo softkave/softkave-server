@@ -6,6 +6,11 @@ import {
 import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import {
+    CustomPropertyDoesNotExistError,
+    CustomPropertyValueDoesNotExistError,
+    CustomSelectionOptionDoesNotExistError,
+} from "./errors";
+import {
     IPublicCustomProperty,
     IPublicCustomPropertyValue,
     IPublicCustomSelectionOption,
@@ -102,4 +107,16 @@ export function getPublicCustomSelectionOptionsArray(
     return values.map((value) =>
         extractFields(value, publicCustomSelectionOptionFields)
     );
+}
+
+export function throwCustomPropertyNotFoundError() {
+    throw new CustomPropertyDoesNotExistError();
+}
+
+export function throwCustomPropertyValueNotFoundError() {
+    throw new CustomPropertyValueDoesNotExistError();
+}
+
+export function throwCustomSelectionOptionNotFoundError() {
+    throw new CustomSelectionOptionDoesNotExistError();
 }

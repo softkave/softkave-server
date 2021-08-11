@@ -2,7 +2,7 @@ import { IUser } from "../../mongo/user";
 import { PermissionDeniedError } from "../errors";
 import { userIsPartOfOrganization } from "../user/utils";
 
-async function canReadOrganization(organizationId: string, user: IUser) {
+function canReadOrganization(organizationId: string, user: IUser) {
     if (userIsPartOfOrganization(user, organizationId)) {
         return true;
     }

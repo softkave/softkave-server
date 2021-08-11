@@ -14,16 +14,19 @@ export enum TextResourceTypes {
     Text = "text",
 }
 
-export interface TextCustomTypeMeta {
+export interface ITextCustomTypeMeta {
     minChars?: number;
     maxChars?: number;
+    defaultText?: string;
     type: TextResourceTypes;
 }
 
-export interface DateCustomTypeMeta {
+export interface IDateCustomTypeMeta {
     isRange?: boolean;
     startDate?: string;
     endDate?: string;
+    defaultStartDate?: string;
+    defaultEndDate?: string;
 }
 
 export enum SelectionResourceTypes {
@@ -44,7 +47,8 @@ export interface ICustomSelectionOption {
     customId: string;
     name: string;
     description?: string;
-    parents: IParentInformation[];
+    organizationId: string;
+    parent: IParentInformation;
     propertyId: string;
     color?: string;
     createdBy: string;
@@ -55,12 +59,18 @@ export interface ICustomSelectionOption {
     nextOptionId?: string;
 }
 
-export interface SelectionCustomTypeMeta {
+export interface ICustomOptionsProps {
+    areOptionsUnique?: boolean;
+}
+
+export interface ISelectionCustomTypeMeta {
     type: SelectionResourceTypes;
     isMultiple?: boolean;
     min?: number;
     max?: number;
     selectFrom: ISelectionFrom | null;
+    customOptionsProps?: ICustomOptionsProps;
+    defaultOptionId?: string;
 }
 
 export enum NumberTypes {
@@ -72,18 +82,20 @@ export interface INumberTypeFormatting {
     decimalPlaces?: number;
 }
 
-export interface NumberCustomTypeMeta {
+export interface INumberCustomTypeMeta {
     type: NumberTypes;
     min: number;
     max: number;
     format: INumberTypeFormatting;
+    defaultNumber: number;
 }
 
 export interface ICustomProperty {
     customId: string;
     name: string;
     description?: string;
-    parents: IParentInformation[];
+    organizationId: string;
+    parent: IParentInformation;
     type: CustomPropertyType;
     isRequired?: boolean;
     meta: any;
@@ -113,7 +125,8 @@ export interface NumberCustomTypeValue {
 export interface ICustomPropertyValue {
     customId: string;
     propertyId: string;
-    parents: IParentInformation[];
+    organizationId: string;
+    parent: IParentInformation;
     type: CustomPropertyType;
     value: any;
     createdBy: string;
@@ -126,7 +139,8 @@ export const customSelectionOptionSchema = {
     customId: { type: String, unique: true, index: true },
     name: { type: String },
     description: { type: String },
-    parents: { type: [parentSchema], default: [] },
+    parent: { type: parentSchema },
+    organizationId: { type: String },
     propertyId: { type: String },
     color: { type: String },
     createdBy: { type: String },
@@ -143,7 +157,8 @@ export const customPropertySchema = {
     createdAt: { type: Date, default: getDate },
     name: { type: String },
     description: { type: String },
-    parents: { type: [parentSchema], default: [] },
+    organizationId: { type: String },
+    parent: { type: parentSchema },
     type: { type: String },
     isRequired: { type: Boolean },
     meta: { type: SchemaTypes.Mixed },
@@ -154,7 +169,8 @@ export const customPropertySchema = {
 export const customPropertyValueSchema = {
     customId: { type: String, unique: true, index: true },
     propertyId: { type: String },
-    parents: { type: [parentSchema], default: [] },
+    organizationId: { type: String },
+    parent: { type: parentSchema },
     type: { type: String },
     value: { type: SchemaTypes.Mixed },
     createdBy: { type: String },
@@ -163,10 +179,9 @@ export const customPropertyValueSchema = {
     updatedAt: { type: Date },
 };
 
-export interface ICustomPropertyDocument extends Document, ICustomProperty {}
+export interface ICustomPropertyDocument extends Document<ICustomProperty> {}
 
 export interface ICustomPropertyValueDocument
-    extends Document,
-        ICustomPropertyValue {}
+    extends Document<ICustomPropertyValue> {}
 
-export type ICustomSelectionOptionDocument = ICustomSelectionOption & Document;
+export type ICustomSelectionOptionDocument = Document<ICustomSelectionOption>;

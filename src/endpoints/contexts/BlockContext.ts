@@ -9,7 +9,6 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
 import cast, { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import OperationError from "../../utilities/OperationError";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IOrganization } from "../organization/types";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
