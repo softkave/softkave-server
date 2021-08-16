@@ -1,4 +1,14 @@
-import { CustomPropertyType } from "../../mongo/custom-property/definitions";
+import {
+    CustomPropertyType,
+    IDateCustomTypeMeta,
+    IDateCustomTypeValue,
+    INumberCustomTypeMeta,
+    INumberCustomTypeValue,
+    ISelectionCustomTypeMeta,
+    ISelectionCustomTypeValue,
+    ITextCustomTypeMeta,
+    ITextCustomTypeValue,
+} from "../../mongo/custom-property/definitions";
 import { IParentInformation } from "../../mongo/definitions";
 import { ConvertDatesToStrings } from "../../utilities/types";
 
@@ -9,7 +19,11 @@ export type IPublicCustomProperty = ConvertDatesToStrings<{
     parents: IParentInformation[];
     type: CustomPropertyType;
     isRequired?: boolean;
-    meta: any;
+    meta:
+        | ITextCustomTypeMeta
+        | ISelectionCustomTypeMeta
+        | IDateCustomTypeMeta
+        | INumberCustomTypeMeta;
     createdBy: string;
     createdAt: Date;
     updatedBy?: string;
@@ -21,7 +35,11 @@ export type IPublicCustomPropertyValue = ConvertDatesToStrings<{
     propertyId: string;
     parents: IParentInformation[];
     type: CustomPropertyType;
-    value: any;
+    value:
+        | ITextCustomTypeValue
+        | IDateCustomTypeValue
+        | ISelectionCustomTypeValue
+        | INumberCustomTypeValue;
     createdBy: string;
     createdAt: Date;
     updatedBy?: string;

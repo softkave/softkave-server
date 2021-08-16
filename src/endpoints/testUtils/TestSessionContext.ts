@@ -1,8 +1,8 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import SessionContext from "../contexts/SessionContext";
 
 class TestSessionContext extends SessionContext {}
 
-export const getTestSessionContext = makeSingletonFunc(
+export const getTestSessionContext = getSingletonFunc(
     () => new TestSessionContext()
 );

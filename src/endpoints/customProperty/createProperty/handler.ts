@@ -23,7 +23,7 @@ const createProperty: CreatePropertyEndpoint = async (context, instData) => {
     }
 
     canReadOrganization(parent.rootBlockId || parent.customId, user);
-    const propertyExists = await context.customProperty.checkItemExistsByName(
+    const propertyExists = await context.customProperty.customPropertyExists(
         context,
         "name",
         data.property.name
@@ -46,7 +46,7 @@ const createProperty: CreatePropertyEndpoint = async (context, instData) => {
         organizationId: parent.rootBlockId || parent.customId,
     };
 
-    const savedProperty = await context.customProperty.saveItem(
+    const savedProperty = await context.customProperty.saveCustomProperty(
         context,
         property
     );

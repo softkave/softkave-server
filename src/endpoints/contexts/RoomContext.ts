@@ -1,6 +1,6 @@
 import { SystemResourceType } from "../../models/system";
 import { BlockType } from "../../mongo/block";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndThrowErrorAsync } from "../utils";
@@ -245,4 +245,4 @@ export default class RoomContext implements IRoomContext {
     }
 }
 
-export const getRoomContext = makeSingletonFunc(() => new RoomContext());
+export const getRoomContext = getSingletonFunc(() => new RoomContext());

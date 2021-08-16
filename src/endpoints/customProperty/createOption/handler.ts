@@ -10,23 +10,19 @@ import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
 import canReadOrganization from "../../organization/canReadBlock";
 import { CustomSelectionOptionExistsError } from "../errors";
-import {
-    getPublicCustomSelectionOption,
-    throwCustomPropertyNotFoundError,
-} from "../utils";
+import { getPublicCustomSelectionOption } from "../utils";
 import { CreateCustomSelectionOptionEndpoint } from "./types";
 import { createCustomSelectionOptionJoiSchema } from "./validation";
 
-const createCustomSelectionOption: CreateCustomSelectionOptionEndpoint = async (
+const createOption: CreateCustomSelectionOptionEndpoint = async (
     context,
     instData
 ) => {
     const data = validate(instData.data, createCustomSelectionOptionJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const property = await context.customProperty.assertGetItemById(
+    const property = await context.customProperty.assertGetCustomPropertyById(
         context,
-        data.propertyId,
-        throwCustomPropertyNotFoundError
+        data.propertyId
     );
 
     canReadOrganization(property.organizationId, user);
@@ -42,12 +38,10 @@ const createCustomSelectionOption: CreateCustomSelectionOptionEndpoint = async (
     }
 
     if (meta.customOptionsProps.areOptionsUnique) {
-        const optionExists =
-            await context.customSelectionOption.checkItemExistsByName(
-                context,
-                "name",
-                data.data.name
-            );
+        const optionExists = await context.customSelectionOption.exists(
+            context,
+            data.data.name
+        );
 
         if (optionExists) {
             throw new CustomSelectionOptionExistsError();
@@ -70,7 +64,7 @@ const createCustomSelectionOption: CreateCustomSelectionOptionEndpoint = async (
         organizationId: property.organizationId,
     };
 
-    const savedOption = await context.customSelectionOption.saveItem(
+    const savedOption = await context.customSelectionOption.saveOption(
         context,
         newOption
     );
@@ -80,4 +74,4 @@ const createCustomSelectionOption: CreateCustomSelectionOptionEndpoint = async (
     };
 };
 
-export default createCustomSelectionOption;
+export default createOption;

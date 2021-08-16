@@ -1,40 +1,39 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { assertBlock } from "../../../mongo/block/utils";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getBlockRootBlockId } from "../../block/utils";
-import { getPublicNotificationSubscriptionsArray } from "../utils";
-import { UpdatePropertiesEndpoint } from "./types";
-import { getResourceSubscriptionsJoiSchema } from "./validation";
+import canReadOrganization from "../../organization/canReadBlock";
+import { getPublicCustomProperty } from "../utils";
+import { UpdatePropertyEndpoint } from "./types";
+import { updatePropertyEndpointJoiSchema } from "./validation";
 
-const getResourceSubscriptions: UpdatePropertiesEndpoint = async (
-    context,
-    instData
-) => {
-    const data = validate(instData.data, getResourceSubscriptionsJoiSchema);
+const updateProperty: UpdatePropertyEndpoint = async (context, instData) => {
+    const data = validate(instData.data, updatePropertyEndpointJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
-
-    assertBlock(block);
-    await context.accessControl.assertPermission(
+    const property = await context.customProperty.assertGetCustomPropertyById(
         context,
-        {
-            organizationId: getBlockRootBlockId(block),
-            resourceType: SystemResourceType.Notification,
-            action: SystemActionType.Read,
-            permissionResourceId: block.customId,
-        },
-        user
+        data.customId
     );
 
-    const subscriptions =
-        await context.notification.getNotificationSubscriptionsByResourceId(
+    canReadOrganization(property.organizationId, user);
+    const updatedProperty =
+        await context.customProperty.updateCustomPropertyById(
             context,
-            block.customId
+            data.customId,
+            {
+                ...data.property,
+                updatedAt: getDate(),
+                updatedBy: user.customId,
+            }
         );
 
+    // TODO: delete values' values on type change or convert to the new type if possible?
+    // TODO: apply new limits and constraints on meta change
+    if (property.type !== updatedProperty.type) {
+    }
+
     return {
-        subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),
+        // TODO: what happens when the return value is null cause the item has been deleted?
+        property: getPublicCustomProperty(updatedProperty),
     };
 };
 
-export default getResourceSubscriptions;
+export default updateProperty;

@@ -13,9 +13,8 @@ const getProperties: GetPropertiesEndpoint = async (context, instData) => {
     );
 
     canReadOrganization(parent.rootBlockId || parent.customId, user);
-    const properties = await context.customProperty.bulkGetItemsByField(
+    const properties = await context.customProperty.getManyByParentId(
         context,
-        "parent.customId",
         data.parentId
     );
 

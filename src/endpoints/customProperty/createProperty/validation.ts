@@ -1,26 +1,14 @@
 import Joi from "joi";
-import { ParentResourceType } from "../../../models/system";
-import { validationSchemas } from "../../../utilities/validationUtils";
+import endpointValidationSchemas from "../../validation";
 import customPropertyValidationSchemas from "../validation";
 
-const parentResourceTypeArray: ParentResourceType[] = [
-    ParentResourceType.Organization,
-    ParentResourceType.Board,
-];
-
-const parentResourceType = Joi.string().valid(parentResourceTypeArray);
-const parent = Joi.object().keys({
-    type: parentResourceType.required(),
-    customId: validationSchemas.uuid.required(),
-});
-
 export const createPropertyJoiSchema = Joi.object().keys({
-    parent: parent.required(),
+    parent: endpointValidationSchemas.parent.required(),
     property: {
         name: customPropertyValidationSchemas.name.required(),
-        description: customPropertyValidationSchemas.description,
+        description: customPropertyValidationSchemas.description.allow(null),
         type: customPropertyValidationSchemas.type.required(),
-        isRequired: customPropertyValidationSchemas.isRequired,
+        isRequired: customPropertyValidationSchemas.isRequired.allow(null),
         meta: customPropertyValidationSchemas.meta.required(),
     },
 });

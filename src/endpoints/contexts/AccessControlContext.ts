@@ -7,7 +7,7 @@ import {
     IUserAssignedPermissionGroup,
 } from "../../mongo/access-control/definitions";
 import { IUser } from "../../mongo/user";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { IUpdateItemById } from "../../utilities/types";
 import { PermissionDeniedError } from "../errors";
 import { GetMongoUpdateType } from "../types";
@@ -465,6 +465,6 @@ export default class AccessControlContext implements IAccessControlContext {
     );
 }
 
-export const getAccessControlContext = makeSingletonFunc(
+export const getAccessControlContext = getSingletonFunc(
     () => new AccessControlContext()
 );

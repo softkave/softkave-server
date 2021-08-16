@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import commentSchema, { ICommentDocument } from "./definitions";
@@ -9,7 +9,7 @@ export interface ICommentModel extends MongoModel<ICommentDocument> {}
 const modelName = "comment";
 const collectionName = "comments";
 
-export const getCommentModel = makeSingletonFunc(
+export const getCommentModel = getSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICommentDocument>({
             modelName,

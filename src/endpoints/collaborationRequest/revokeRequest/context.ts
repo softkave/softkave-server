@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../../utilities/createSingletonFunc";
 import BaseContext from "../../contexts/BaseContext";
 import sendCollaborationRequestRevokedEmail from "../sendCollaborationRequestRevokedEmail";
 import { IRevokeCollaborationRequestContext } from "./types";
@@ -13,6 +13,6 @@ export default class RevokeCollaborationRequestContext
     }
 }
 
-export const getRevokeCollaborationRequestContext = makeSingletonFunc(
+export const getRevokeCollaborationRequestContext = getSingletonFunc(
     () => new RevokeCollaborationRequestContext()
 );

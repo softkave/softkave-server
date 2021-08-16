@@ -52,7 +52,9 @@ export type ExtractFieldsFrom<
                         ExtraArgs
                     >
         : T[Key] extends object
-        ? ExtractFieldsFrom<T[Key]>
+        ?
+              | ExtractFieldsFrom<T[Key]>
+              | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>
         : boolean | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>;
 };
 

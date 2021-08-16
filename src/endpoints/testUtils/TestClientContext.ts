@@ -1,5 +1,5 @@
 import { IClient, IClientUserEntry } from "../../mongo/client";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { ClientDoesNotExistError } from "../client/errors";
 import { findUserEntryInClient } from "../client/utils";
 import { IBaseContext } from "../contexts/BaseContext";
@@ -99,6 +99,6 @@ class TestClientContext implements IClientContext {
     };
 }
 
-export const getTestClientContext = makeSingletonFunc(
+export const getTestClientContext = getSingletonFunc(
     () => new TestClientContext()
 );

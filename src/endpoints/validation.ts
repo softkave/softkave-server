@@ -30,21 +30,23 @@ const systemResourceTypeArray: SystemResourceType[] = [
 ];
 
 const systemResourceType = Joi.string().valid(systemResourceTypeArray);
-
-const parentResourceTypeArray: ParentResourceType[] = [
+const parentResourceTypeEnumArray: ParentResourceType[] = [
     ParentResourceType.Organization,
     ParentResourceType.Board,
-    ParentResourceType.Task,
 ];
 
-const parentResourceType = Joi.string().valid(parentResourceTypeArray);
+const parentResourceType = Joi.string().valid(parentResourceTypeEnumArray);
 const parent = Joi.object().keys({
     type: parentResourceType.required(),
     customId: validationSchemas.uuid.required(),
 });
 
 const parentArray = Joi.array().items(parent).max(endpointConstants.maxParents);
-
-const endpointValidationSchemas = { parent, parentArray, systemResourceType };
+const endpointValidationSchemas = {
+    parent,
+    parentArray,
+    systemResourceType,
+    parentResourceType,
+};
 
 export default endpointValidationSchemas;

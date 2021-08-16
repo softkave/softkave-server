@@ -1,5 +1,5 @@
 import { IUser } from "../../mongo/user";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { indexArray } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
@@ -118,6 +118,4 @@ class TestUserContext implements IUserContext {
     };
 }
 
-export const getTestUserContext = makeSingletonFunc(
-    () => new TestUserContext()
-);
+export const getTestUserContext = getSingletonFunc(() => new TestUserContext());

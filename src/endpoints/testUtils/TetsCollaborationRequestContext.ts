@@ -1,5 +1,5 @@
 import { ICollaborationRequest } from "../../mongo/collaboration-request";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { indexArray } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
@@ -107,6 +107,6 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
     }
 }
 
-export const getTestCollaborationRequestContext = makeSingletonFunc(
+export const getTestCollaborationRequestContext = getSingletonFunc(
     () => new TestCollaborationRequestContext()
 );

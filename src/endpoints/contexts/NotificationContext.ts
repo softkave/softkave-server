@@ -2,7 +2,7 @@ import {
     INotification,
     INotificationSubscription,
 } from "../../mongo/notification";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
@@ -225,6 +225,6 @@ export default class NotificationContext implements INotificationContext {
     }
 }
 
-export const getNotificationContext = makeSingletonFunc(
+export const getNotificationContext = getSingletonFunc(
     () => new NotificationContext()
 );

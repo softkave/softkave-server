@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../../utilities/createSingletonFunc";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../RequestData";
 import changePassword from "../changePassword/changePassword";
@@ -7,7 +7,8 @@ import { IChangePasswordWithTokenContext } from "./types";
 
 export default class ChangePasswordWithTokenContext
     extends BaseContext
-    implements IChangePasswordWithTokenContext {
+    implements IChangePasswordWithTokenContext
+{
     public async changePassword(
         context: IBaseContext,
         instData: RequestData<IChangePasswordParameters>
@@ -16,6 +17,6 @@ export default class ChangePasswordWithTokenContext
     }
 }
 
-export const getChangePasswordWithTokenContext = makeSingletonFunc(
+export const getChangePasswordWithTokenContext = getSingletonFunc(
     () => new ChangePasswordWithTokenContext()
 );

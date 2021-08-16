@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
 import { getSendFeedbackContext } from "./sendFeedback/context";
@@ -15,6 +15,6 @@ export default class SystemEndpointsGraphQLController {
     }
 }
 
-export const getSystemEndpointsGraphQLController = makeSingletonFunc(
+export const getSystemEndpointsGraphQLController = getSingletonFunc(
     () => new SystemEndpointsGraphQLController()
 );

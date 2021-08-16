@@ -1,4 +1,10 @@
-import { CustomPropertyType } from "../../../mongo/custom-property/definitions";
+import {
+    CustomPropertyType,
+    IDateCustomTypeMeta,
+    INumberCustomTypeMeta,
+    ISelectionCustomTypeMeta,
+    ITextCustomTypeMeta,
+} from "../../../mongo/custom-property/definitions";
 import { IParentInformation } from "../../../mongo/definitions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
@@ -11,7 +17,11 @@ export interface ICreatePropertyEndpointParams {
         description?: string;
         type: CustomPropertyType;
         isRequired?: boolean;
-        meta: any;
+        meta:
+            | ITextCustomTypeMeta
+            | ISelectionCustomTypeMeta
+            | IDateCustomTypeMeta
+            | INumberCustomTypeMeta;
     };
 }
 

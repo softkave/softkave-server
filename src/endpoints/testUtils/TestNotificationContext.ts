@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { INotificationContext } from "../contexts/NotificationContext";
 import { notImplementFn } from "./utils";
 
@@ -20,6 +20,6 @@ class TestNotificationContext implements INotificationContext {
     getNotificationSubscriptionsByResourceId = notImplementFn;
 }
 
-export const getTestNotificationContext = makeSingletonFunc(
+export const getTestNotificationContext = getSingletonFunc(
     () => new TestNotificationContext()
 );

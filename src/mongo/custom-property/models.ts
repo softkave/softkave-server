@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import {
@@ -14,7 +14,7 @@ import {
 const customSelectionOptionModelName = "custom-selection-option";
 const customSelectionOptionCollectionName = "custom-selection-options";
 
-export const getCustomSelectionOptionModel = makeSingletonFunc(
+export const getCustomSelectionOptionModel = getSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICustomSelectionOptionDocument>({
             modelName: customSelectionOptionModelName,
@@ -31,7 +31,7 @@ export interface ICustomSelectionOptionModel
 const customPropertyModelName = "custom-property";
 const customPropertyCollectionName = "custom-properties";
 
-export const getCustomPropertyModel = makeSingletonFunc(
+export const getCustomPropertyModel = getSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICustomPropertyDocument>({
             modelName: customPropertyModelName,
@@ -48,7 +48,7 @@ export interface ICustomPropertyModel
 const customPropertyValueModelName = "custom-property-value";
 const customPropertyValueCollectionName = "custom-property-values";
 
-export const getCustomPropertyValueModel = makeSingletonFunc(
+export const getCustomPropertyValueModel = getSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICustomPropertyValueDocument>({
             modelName: customPropertyValueModelName,

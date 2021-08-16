@@ -1,5 +1,5 @@
 import { IToken } from "../../mongo/token";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { TokenDoesNotExistError } from "../token/errors";
 import { JWTEndpoint } from "../types";
 import {
@@ -208,4 +208,4 @@ export default class TokenContext implements ITokenContext {
     );
 }
 
-export const getTokenContext = makeSingletonFunc(() => new TokenContext());
+export const getTokenContext = getSingletonFunc(() => new TokenContext());

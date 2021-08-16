@@ -1,6 +1,6 @@
 import { IBlock } from "../../../mongo/block/definitions";
 import { IUser } from "../../../mongo/user/definitions";
-import makeSingletonFunc from "../../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../../utilities/createSingletonFunc";
 import {
     initializeBoardPermissions,
     initializeOrganizationAccessControl,
@@ -26,6 +26,6 @@ export default class InternalAddBlockContext
     );
 }
 
-export const getInternalAddBlockContext = makeSingletonFunc(
+export const getInternalAddBlockContext = getSingletonFunc(
     () => new InternalAddBlockContext()
 );

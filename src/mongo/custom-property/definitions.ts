@@ -98,27 +98,31 @@ export interface ICustomProperty {
     parent: IParentInformation;
     type: CustomPropertyType;
     isRequired?: boolean;
-    meta: any;
+    meta:
+        | ITextCustomTypeMeta
+        | ISelectionCustomTypeMeta
+        | IDateCustomTypeMeta
+        | INumberCustomTypeMeta;
     createdBy: string;
     createdAt: Date;
     updatedBy?: string;
     updatedAt?: Date;
 }
 
-export interface TextCustomTypeValue {
+export interface ITextCustomTypeValue {
     value?: string;
 }
 
-export interface DateCustomTypeValue {
+export interface IDateCustomTypeValue {
     date?: Date;
     endDate?: Date;
 }
 
-export interface SelectionCustomTypeValue {
+export interface ISelectionCustomTypeValue {
     value: string[];
 }
 
-export interface NumberCustomTypeValue {
+export interface INumberCustomTypeValue {
     value: number;
 }
 
@@ -128,7 +132,11 @@ export interface ICustomPropertyValue {
     organizationId: string;
     parent: IParentInformation;
     type: CustomPropertyType;
-    value: any;
+    value:
+        | ITextCustomTypeValue
+        | IDateCustomTypeValue
+        | ISelectionCustomTypeValue
+        | INumberCustomTypeValue;
     createdBy: string;
     createdAt: Date;
     updatedBy?: string;

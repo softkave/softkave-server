@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -61,6 +61,6 @@ export default class PushSubscriptionsEndpointsGraphQLController {
     }
 }
 
-export const getPushSubscriptionsEndpointsGraphQLController = makeSingletonFunc(
+export const getPushSubscriptionsEndpointsGraphQLController = getSingletonFunc(
     () => new PushSubscriptionsEndpointsGraphQLController()
 );

@@ -1,5 +1,5 @@
 import { IUnseenChats } from "../../mongo/unseen-chats";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { wrapFireAndThrowErrorAsync } from "../utils";
@@ -88,6 +88,6 @@ export default class UnseenChatsContext implements IUnseenChatsContext {
     );
 }
 
-export const getUnseenChatsContext = makeSingletonFunc(
+export const getUnseenChatsContext = getSingletonFunc(
     () => new UnseenChatsContext()
 );

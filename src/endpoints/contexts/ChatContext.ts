@@ -1,6 +1,6 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom, IRoomMemberReadCounter } from "../../mongo/room";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
@@ -204,4 +204,4 @@ export default class ChatContext implements IChatContext {
     );
 }
 
-export const getChatContext = makeSingletonFunc(() => new ChatContext());
+export const getChatContext = getSingletonFunc(() => new ChatContext());

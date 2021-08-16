@@ -1,12 +1,19 @@
+import {
+    CustomPropertyType,
+    ICustomPropertyValue,
+} from "../../../mongo/custom-property/definitions";
+import { IParentInformation } from "../../../mongo/definitions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomPropertyValue } from "../types";
 
 export interface IUpdateValueEndpointParams {
-    customId: string;
-    data: Partial<{
-        value: any;
-    }>;
+    propertyId: string;
+    parent: IParentInformation;
+    type: CustomPropertyType;
+    data: {
+        value: ICustomPropertyValue["value"];
+    };
 }
 
 export interface IUpdateValueEndpointResult {

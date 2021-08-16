@@ -10,4 +10,11 @@ function canReadOrganization(organizationId: string, user: IUser) {
     throw new PermissionDeniedError();
 }
 
+export function canReadMultipleOrganizations(
+    organizationIds: string[],
+    user: IUser
+) {
+    organizationIds.forEach((id) => canReadOrganization(id, user));
+}
+
 export default canReadOrganization;

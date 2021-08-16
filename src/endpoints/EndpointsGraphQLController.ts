@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../utilities/createSingletonFunc";
+import getSingletonFunc from "../utilities/createSingletonFunc";
 import { getBoardEndpointsGraphQLController } from "./board";
 import { getClientsEndpointsGraphQLController } from "./client";
 import { getRequestsEndpointsGraphQLController } from "./collaborationRequest/RequestEndpointsGraphQLController";
@@ -21,6 +21,6 @@ export default class EndpointsGraphQLController {
     public task = getTaskEndpointsGraphQLController;
 }
 
-export const getEndpointsGraphQLController = makeSingletonFunc(
+export const getEndpointsGraphQLController = getSingletonFunc(
     () => new EndpointsGraphQLController()
 );

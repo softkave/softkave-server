@@ -1,40 +1,31 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import { getBlockRootBlockId } from "../../block/utils";
-import { getPublicNotificationSubscriptionsArray } from "../utils";
+import { IPublicCustomPropertyValue } from "../types";
+import { getPublicCustomPropertyValueData } from "../utils";
 import { GetValuesEndpoint } from "./types";
 import { getResourceSubscriptionsJoiSchema } from "./validation";
 
-const getResourceSubscriptions: GetValuesEndpoint = async (
-    context,
-    instData
-) => {
+const getValues: GetValuesEndpoint = async (context, instData) => {
     const data = validate(instData.data, getResourceSubscriptionsJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const block = await context.block.getBlockById(context, data.blockId);
-
-    assertBlock(block);
-    await context.accessControl.assertPermission(
+    const values = await context.customPropertyValue.getValuesByParents(
         context,
-        {
-            organizationId: getBlockRootBlockId(block),
-            resourceType: SystemResourceType.Notification,
-            action: SystemActionType.Read,
-            permissionResourceId: block.customId,
-        },
-        user
+        data.parents
     );
 
-    const subscriptions =
-        await context.notification.getNotificationSubscriptionsByResourceId(
-            context,
-            block.customId
-        );
+    const userOrganizationsMap: Record<string, true> =
+        user.organizations.reduce((map, organization) => {
+            map[organization.customId] = true;
+            return map;
+        }, {} as Record<string, true>);
 
-    return {
-        subscriptions: getPublicNotificationSubscriptionsArray(subscriptions),
-    };
+    const permittedValues: IPublicCustomPropertyValue[] = [];
+    values.forEach((value) => {
+        if (userOrganizationsMap[value.organizationId]) {
+            permittedValues.push(getPublicCustomPropertyValueData(value));
+        }
+    });
+
+    return { values: permittedValues };
 };
 
-export default getResourceSubscriptions;
+export default getValues;

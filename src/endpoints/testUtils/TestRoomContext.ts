@@ -1,8 +1,6 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import RoomContext from "../contexts/RoomContext";
 
 class TestRoomContext extends RoomContext {}
 
-export const getTestRoomContext = makeSingletonFunc(
-    () => new TestRoomContext()
-);
+export const getTestRoomContext = getSingletonFunc(() => new TestRoomContext());

@@ -1,6 +1,6 @@
 import { RequestOptions } from "web-push";
 import { IClient } from "../../mongo/client";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { IBaseContext } from "../contexts/BaseContext";
 import { IWebPushContext } from "../contexts/WebPushContext";
 
@@ -77,6 +77,6 @@ class TestWebPushContext implements ITestWebPushContext {
     }
 }
 
-export const getTestWebPushContext = makeSingletonFunc(
+export const getTestWebPushContext = getSingletonFunc(
     () => new TestWebPushContext()
 );

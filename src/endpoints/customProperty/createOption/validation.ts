@@ -8,10 +8,11 @@ export const createCustomSelectionOptionJoiSchema = Joi.object()
         data: Joi.object()
             .keys({
                 name: customPropertyValidationSchemas.name.required(),
-                description: customPropertyValidationSchemas.description,
-                color: validationSchemas.color,
-                prevOptionId: validationSchemas.uuid,
-                nextOptionId: validationSchemas.uuid,
+                description:
+                    customPropertyValidationSchemas.description.allow(null),
+                color: validationSchemas.color.allow(null),
+                prevOptionId: validationSchemas.uuid.allow(null),
+                nextOptionId: validationSchemas.uuid.allow(null),
             })
             .required(),
     })

@@ -12,7 +12,7 @@ import { getRoomModel } from "../../mongo/room";
 import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
 import { appVariables, IAppVariables } from "../../resources/appVariables";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import {
     getAccessControlContext,
@@ -52,18 +52,13 @@ import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
 import {
-    getCustomPropertyContext,
-    getCustomPropertyValueContext,
-    getCustomSelectionOptionContext,
-    ICustomPropertyContext,
-    ICustomPropertyValueContext,
-    ICustomSelectionOptionContext,
-} from "./customProperty";
-import {
     getCustomPropertyModel,
     getCustomPropertyValueModel,
     getCustomSelectionOptionModel,
 } from "../../mongo/custom-property/models";
+import { ICustomPropertyDbProvider } from "./CustomPropertyDbProvider";
+import { ICustomPropertyValueDbProvider } from "./CustomPropertyValueDbProvider";
+import { ICustomSelectionOptionDbProvider } from "./CustomSelectionOptionDbProvider";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -83,9 +78,9 @@ export interface IBaseContext {
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
     webPush: IWebPushContext;
-    customProperty: ICustomPropertyContext;
-    customPropertyValue: ICustomPropertyValueContext;
-    customSelectionOption: ICustomSelectionOptionContext;
+    customProperty: ICustomPropertyDbProvider;
+    customPropertyValue: ICustomPropertyValueDbProvider;
+    customSelectionOption: ICustomSelectionOptionDbProvider;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
     socketServerInstance: Server;
@@ -147,4 +142,4 @@ export default class BaseContext implements IBaseContext {
     }
 }
 
-export const getBaseContext = makeSingletonFunc(() => new BaseContext());
+export const getBaseContext = getSingletonFunc(() => new BaseContext());

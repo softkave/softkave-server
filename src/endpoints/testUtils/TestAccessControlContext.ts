@@ -1,4 +1,4 @@
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { IAccessControlContext } from "../contexts/AccessControlContext";
 import { testNoop } from "./utils";
 
@@ -31,6 +31,6 @@ class TestAccessControlContext implements IAccessControlContext {
     getUserAssignedPermissionGroups = testNoop;
 }
 
-export const getTestAccessControlContext = makeSingletonFunc(
+export const getTestAccessControlContext = getSingletonFunc(
     () => new TestAccessControlContext()
 );

@@ -1,5 +1,5 @@
 import { ICollaborationRequest } from "../../mongo/collaboration-request";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
@@ -157,6 +157,6 @@ export default class CollaborationRequestContext
     }
 }
 
-export const getCollaborationRequestContext = makeSingletonFunc(
+export const getCollaborationRequestContext = getSingletonFunc(
     () => new CollaborationRequestContext()
 );

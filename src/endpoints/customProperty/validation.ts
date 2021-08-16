@@ -7,6 +7,7 @@ import {
     TextResourceTypes,
 } from "../../mongo/custom-property/definitions";
 import { validationSchemas } from "../../utilities/validationUtils";
+import taskValidationSchemas from "../task/validation";
 import { customPropertyConstants } from "./constants";
 
 const name = Joi.string().max(customPropertyConstants.nameMax);
@@ -132,22 +133,45 @@ const meta = Joi.object().when("type", {
     ],
 });
 
-const textValue = {
-    value: validationSchemas.uuid,
-};
+const textValue = Joi.object().keys({
+    value: taskValidationSchemas.description.allow(null),
+});
 
-const dateValue = {
-    date: validationSchemas.iso,
-    endDate: validationSchemas.iso,
-};
+const dateValue = Joi.object().keys({
+    date: validationSchemas.iso.allow(null),
+    endDate: validationSchemas.iso.allow(null),
+});
 
-const selectionValue = {
-    value: Joi.array().items(validationSchemas.uuid),
-};
+const selectionValue = Joi.object().keys({
+    value: Joi.array()
+        .items(validationSchemas.uuid)
+        .max(customPropertyConstants.selectionMax),
+});
 
-const numberValue = {
-    value: Joi.number(),
-};
+const numberValue = Joi.object().keys({
+    value: Joi.number().allow(null),
+});
+
+const value = Joi.object().when("type", {
+    switch: [
+        {
+            is: Joi.string().valid([CustomPropertyType.Text]),
+            then: textValue.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Date]),
+            then: dateValue.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Selection]),
+            then: selectionValue.required(),
+        },
+        {
+            is: Joi.string().valid([CustomPropertyType.Number]),
+            then: numberValue.required(),
+        },
+    ],
+});
 
 const customPropertyValidationSchemas = {
     name,
@@ -164,6 +188,7 @@ const customPropertyValidationSchemas = {
     selectionValue,
     numberValue,
     meta,
+    value,
 };
 
 export default customPropertyValidationSchemas;

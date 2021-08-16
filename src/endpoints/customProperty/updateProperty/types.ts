@@ -1,25 +1,37 @@
-import { CustomPropertyType } from "../../../mongo/custom-property/definitions";
+import {
+    CustomPropertyType,
+    IDateCustomTypeMeta,
+    INumberCustomTypeMeta,
+    ISelectionCustomTypeMeta,
+    ITextCustomTypeMeta,
+} from "../../../mongo/custom-property/definitions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomProperty } from "../types";
 
 export interface IUpdatePropertyEndpointParams {
     customId: string;
-    property: Partial<{
-        name: string;
-        description: string;
+    property: {
+        name?: string;
+        description?: string;
         type: CustomPropertyType;
-        isRequired: string;
-        meta: any;
-    }>;
+        isRequired?: boolean;
+
+        // pass in the full meta, not the changes
+        meta?:
+            | ITextCustomTypeMeta
+            | ISelectionCustomTypeMeta
+            | IDateCustomTypeMeta
+            | INumberCustomTypeMeta;
+    };
 }
 
-export interface IUpdatePropertiesResult {
+export interface IUpdatePropertyEndpointResult {
     property: IPublicCustomProperty;
 }
 
-export type UpdatePropertiesEndpoint = Endpoint<
+export type UpdatePropertyEndpoint = Endpoint<
     IBaseContext,
     IUpdatePropertyEndpointParams,
-    IUpdatePropertiesResult
+    IUpdatePropertyEndpointResult
 >;

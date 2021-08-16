@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import {
@@ -10,7 +10,7 @@ import {
 const modelName = "permission-group";
 const collectionName = "permission-groups";
 
-export const getPermissionGroupsModel = makeSingletonFunc(
+export const getPermissionGroupsModel = getSingletonFunc(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<IPermissionGroupDocument>({
             modelName,

@@ -1,5 +1,5 @@
 import { IToken } from "../../mongo/token";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import getSingletonFunc from "../../utilities/createSingletonFunc";
 import { IBaseContext } from "../contexts/BaseContext";
 import TokenContext, { ITokenContext } from "../contexts/TokenContext";
 import { TokenDoesNotExistError } from "../token/errors";
@@ -84,6 +84,6 @@ class TestTokenContext extends TokenContext implements ITokenContext {
     };
 }
 
-export const getTestTokenContext = makeSingletonFunc(
+export const getTestTokenContext = getSingletonFunc(
     () => new TestTokenContext()
 );
