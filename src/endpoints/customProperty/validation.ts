@@ -48,9 +48,8 @@ const selectionResourceType = Joi.string().valid([
     SelectionResourceTypes.Collaborator,
     SelectionResourceTypes.Board,
     SelectionResourceTypes.Task,
-    SelectionResourceTypes.Room,
     SelectionResourceTypes.CollaborationRequest,
-    SelectionResourceTypes.Custom,
+    SelectionResourceTypes.CustomOptions,
 ]);
 
 const customSelectionOption = Joi.object().keys({
@@ -61,8 +60,34 @@ const customSelectionOption = Joi.object().keys({
     nextOptionId: validationSchemas.uuid.allow(null),
 });
 
+const organizationChildrenTypes = Joi.string().valid([
+    SelectionResourceTypes.Collaborator,
+    SelectionResourceTypes.Board,
+    SelectionResourceTypes.CollaborationRequest,
+    SelectionResourceTypes.CustomOptions,
+]);
+
+const boardChildrenTypes = Joi.string().valid([
+    SelectionResourceTypes.Task,
+    SelectionResourceTypes.CustomOptions,
+]);
+
 const selectionMeta = Joi.object().keys({
-    type: selectionResourceType.required(),
+    // TODO: will the when check work cause we are referencing "selectFrom"
+    // which is also referencing type Or should we move the validation to the
+    // handler?
+    type: selectionResourceType.required().when("selectFrom.type", {
+        switch: [
+            {
+                is: Joi.string().valid([BlockType.Organization]),
+                then: organizationChildrenTypes.required(),
+            },
+            {
+                is: Joi.string().valid([BlockType.Board]),
+                then: boardChildrenTypes.required(),
+            },
+        ],
+    }),
     isMultiple: Joi.bool().allow(null),
     min: Joi.number().min(0).default(0),
     max: Joi.number()
@@ -76,7 +101,7 @@ const selectionMeta = Joi.object().keys({
                 .required(),
         })
         .when("type", {
-            is: Joi.string().valid([SelectionResourceTypes.Custom]),
+            is: Joi.string().valid([SelectionResourceTypes.CustomOptions]),
             then: Joi.valid(null),
             otherwise: Joi.required(),
         }),
@@ -85,7 +110,7 @@ const selectionMeta = Joi.object().keys({
             areOptionsUnique: Joi.boolean().allow(null),
         })
         .when("type", {
-            is: Joi.string().valid([SelectionResourceTypes.Custom]),
+            is: Joi.string().valid([SelectionResourceTypes.CustomOptions]),
             then: Joi.required(),
             otherwise: Joi.valid(null),
         }),

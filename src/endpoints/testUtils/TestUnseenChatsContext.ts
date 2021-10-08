@@ -1,6 +1,6 @@
 import moment from "moment";
 import { IUnseenChats } from "../../mongo/unseen-chats";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { IBaseContext } from "../contexts/BaseContext";
@@ -71,6 +71,6 @@ class TestUnseenChatsContext
     };
 }
 
-export const getTestUnseenChatsContext = getSingletonFunc(
+export const getTestUnseenChatsContext = makeSingletonFn(
     () => new TestUnseenChatsContext()
 );

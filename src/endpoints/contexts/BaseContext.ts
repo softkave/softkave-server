@@ -12,7 +12,7 @@ import { getRoomModel } from "../../mongo/room";
 import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
 import { appVariables, IAppVariables } from "../../resources/appVariables";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import {
     getAccessControlContext,
@@ -56,9 +56,26 @@ import {
     getCustomPropertyValueModel,
     getCustomSelectionOptionModel,
 } from "../../mongo/custom-property/models";
-import { ICustomPropertyDbProvider } from "./CustomPropertyDbProvider";
-import { ICustomPropertyValueDbProvider } from "./CustomPropertyValueDbProvider";
-import { ICustomSelectionOptionDbProvider } from "./CustomSelectionOptionDbProvider";
+import { IDataProvider } from "./DataProvider";
+import {
+    ICustomProperty,
+    ICustomPropertyValue,
+    ICustomSelectionOption,
+} from "../../mongo/custom-property/definitions";
+import MongoDataProvider from "./MongoDataProvider";
+import {
+    throwCustomOptionNotFoundError,
+    throwCustomPropertyNotFoundError,
+    throwCustomValueNotFoundError,
+} from "../customProperty/utils";
+import { getEntityAttrValueModel, IEntityAttrValue } from "../../mongo/eav";
+
+export interface IBaseContextDataProviders {
+    customOption: IDataProvider<ICustomSelectionOption>;
+    customProperty: IDataProvider<ICustomProperty>;
+    customValue: IDataProvider<ICustomPropertyValue>;
+    entityAttrValue: IDataProvider<IEntityAttrValue>;
+}
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -78,13 +95,12 @@ export interface IBaseContext {
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
     webPush: IWebPushContext;
-    customProperty: ICustomPropertyDbProvider;
-    customPropertyValue: ICustomPropertyValueDbProvider;
-    customSelectionOption: ICustomSelectionOptionDbProvider;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
     socketServerInstance: Server;
     webPushInstance: typeof webPush;
+
+    data: IBaseContextDataProviders;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -104,9 +120,6 @@ export default class BaseContext implements IBaseContext {
     public client = getClientContext();
     public token = getTokenContext();
     public unseenChats = getUnseenChatsContext();
-    public customProperty = getCustomPropertyContext();
-    public customPropertyValue = getCustomPropertyValueContext();
-    public customSelectionOption = getCustomSelectionOptionContext();
     public webPush = getWebPushContext();
     public models: IContextModels = {
         userModel: getUserModel(),
@@ -124,14 +137,30 @@ export default class BaseContext implements IBaseContext {
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
         unseenChatsModel: getUnseenChatsModel(),
-        customProperty: getCustomPropertyModel(),
-        customPropertyValue: getCustomPropertyValueModel(),
-        customSelectionOption: getCustomSelectionOptionModel(),
     };
     public socketServerInstance: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();
     public appVariables = appVariables;
     public webPushInstance = webPush;
+
+    public data: IBaseContextDataProviders = {
+        customOption: new MongoDataProvider<ICustomSelectionOption>(
+            getCustomSelectionOptionModel(),
+            throwCustomOptionNotFoundError
+        ),
+        customProperty: new MongoDataProvider<ICustomProperty>(
+            getCustomPropertyModel(),
+            throwCustomPropertyNotFoundError
+        ),
+        customValue: new MongoDataProvider<ICustomPropertyValue>(
+            getCustomPropertyValueModel(),
+            throwCustomValueNotFoundError
+        ),
+        entityAttrValue: new MongoDataProvider<IEntityAttrValue>(
+            getEntityAttrValueModel(),
+            throwCustomValueNotFoundError
+        ),
+    };
 
     constructor() {
         webPush.setVapidDetails(
@@ -142,4 +171,4 @@ export default class BaseContext implements IBaseContext {
     }
 }
 
-export const getBaseContext = getSingletonFunc(() => new BaseContext());
+export const getBaseContext = makeSingletonFn(() => new BaseContext());

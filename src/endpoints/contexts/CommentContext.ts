@@ -1,5 +1,5 @@
 import { IComment } from "../../mongo/comment";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
@@ -37,4 +37,4 @@ export default class CommentContext implements ICommentContext {
     );
 }
 
-export const getCommentContext = getSingletonFunc(() => new CommentContext());
+export const getCommentContext = makeSingletonFn(() => new CommentContext());

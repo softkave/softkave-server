@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -121,6 +121,6 @@ export default class UserEndpointsGraphQLController {
     }
 }
 
-export const getUserEndpointsGraphQLController = getSingletonFunc(
+export const getUserEndpointsGraphQLController = makeSingletonFn(
     () => new UserEndpointsGraphQLController()
 );

@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -77,6 +77,6 @@ export default class TaskEndpointsGraphQLController {
     }
 }
 
-export const getTaskEndpointsGraphQLController = getSingletonFunc(
+export const getTaskEndpointsGraphQLController = makeSingletonFn(
     () => new TaskEndpointsGraphQLController()
 );

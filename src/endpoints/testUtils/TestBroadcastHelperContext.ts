@@ -1,8 +1,8 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import BroadcastHelpers from "../contexts/BroadcastHelpers";
 
 class TestBroadcastHelpers extends BroadcastHelpers {}
 
-export const getTestBroadcastHelpers = getSingletonFunc(
+export const getTestBroadcastHelpers = makeSingletonFn(
     () => new TestBroadcastHelpers()
 );

@@ -1,4 +1,3 @@
-import { IParentInformation } from "../../../mongo/definitions";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomProperty } from "../types";

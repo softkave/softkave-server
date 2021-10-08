@@ -1,7 +1,7 @@
 import { SystemActionType, SystemResourceType } from "../../models/system";
 import { IAuditLog, IAuditLogChange } from "../../mongo/audit-log";
 import { IUser } from "../../mongo/user";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import RequestData from "../RequestData";
@@ -74,4 +74,4 @@ export default class AuditLogContext implements IAuditLogContext {
     // }
 }
 
-export const getAuditLogContext = getSingletonFunc(() => new AuditLogContext());
+export const getAuditLogContext = makeSingletonFn(() => new AuditLogContext());

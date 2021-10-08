@@ -2,7 +2,7 @@ export type SingletonFnInit<Singleton, Arguments extends any[]> = (
     ...args: Arguments
 ) => Singleton;
 
-export default function getSingletonFunc<Singleton, Arguments extends any[]>(
+export default function makeSingletonFn<Singleton, Arguments extends any[]>(
     init: SingletonFnInit<Singleton, Arguments>
 ): SingletonFnInit<Singleton, Arguments> {
     let data = null;

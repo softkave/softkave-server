@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import { IDeltaNoteItemDocument } from "./definitions";
@@ -7,7 +7,7 @@ import { IDeltaNoteItemDocument } from "./definitions";
 const deltaNoteItemModelName = "delta-note-item";
 const deltaNoteItemCollectionName = "delta-note-items";
 
-export const getDeltaNoteModel = getSingletonFunc(
+export const getDeltaNoteModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<IDeltaNoteItemDocument>({
             modelName: deltaNoteItemModelName,

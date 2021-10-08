@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
 import InternalAddBlockContext from "../internalAddBlock/context";
 import internalAddBlock from "../internalAddBlock/internalAddBlock";
 import { IAddBlockContext } from "./types";
@@ -12,4 +12,4 @@ export default class AddBlockContext
     }
 }
 
-export const getAddBlockContext = getSingletonFunc(() => new AddBlockContext());
+export const getAddBlockContext = makeSingletonFn(() => new AddBlockContext());

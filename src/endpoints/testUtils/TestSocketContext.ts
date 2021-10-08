@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { IBaseContext } from "../contexts/BaseContext";
 import SocketContext, { ISocketContext } from "../contexts/SocketContext";
 
@@ -61,6 +61,6 @@ class TestSocketContext extends SocketContext implements ITestSocketContext {
     }
 }
 
-export const getTestSocketContext = getSingletonFunc(
+export const getTestSocketContext = makeSingletonFn(
     () => new TestSocketContext()
 );

@@ -1,7 +1,7 @@
 import { IClient } from "../../mongo/client";
 import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
 import { JWTEndpoint } from "../types";
@@ -224,4 +224,4 @@ export default class SessionContext implements ISessionContext {
     );
 }
 
-export const getSessionContext = getSingletonFunc(() => new SessionContext());
+export const getSessionContext = makeSingletonFn(() => new SessionContext());

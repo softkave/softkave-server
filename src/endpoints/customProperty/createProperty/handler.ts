@@ -1,12 +1,17 @@
 import { BlockType } from "../../../mongo/block";
-import { ICustomProperty } from "../../../mongo/custom-property/definitions";
+import {
+    CustomPropertyType,
+    ICustomProperty,
+    ISelectionCustomTypeMeta,
+} from "../../../mongo/custom-property/definitions";
+import { InvalidInputError } from "../../../utilities/errors";
 import cast, { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { InvalidRequestError } from "../../errors";
 import canReadOrganization from "../../organization/canReadBlock";
+import ReusableDataQueries from "../../ReuseableDataQueries";
 import { CustomPropertyExistsError } from "../errors";
-import { getPublicCustomProperty } from "../utils";
+import ToPublicCustomData from "../utils";
 import { CreatePropertyEndpoint } from "./types";
 import { createPropertyJoiSchema } from "./validation";
 
@@ -19,18 +24,27 @@ const createProperty: CreatePropertyEndpoint = async (context, instData) => {
     );
 
     if (parent.type !== cast<BlockType>(data.parent.type)) {
-        throw new InvalidRequestError();
+        throw new InvalidInputError();
     }
 
     canReadOrganization(parent.rootBlockId || parent.customId, user);
-    const propertyExists = await context.customProperty.customPropertyExists(
-        context,
-        "name",
-        data.property.name
+    const propertyExists = await context.data.customProperty.checkItemExists(
+        ReusableDataQueries.byName(data.property.name)
     );
 
     if (propertyExists) {
         throw new CustomPropertyExistsError();
+    }
+
+    if (data.property.type === CustomPropertyType.Selection) {
+        const meta = cast<ISelectionCustomTypeMeta>(data.property.meta);
+
+        if (meta.selectFrom) {
+            await context.block.assertBlockById(
+                context,
+                meta.selectFrom.customId
+            );
+        }
     }
 
     const property: ICustomProperty = {
@@ -46,12 +60,10 @@ const createProperty: CreatePropertyEndpoint = async (context, instData) => {
         organizationId: parent.rootBlockId || parent.customId,
     };
 
-    const savedProperty = await context.customProperty.saveCustomProperty(
-        context,
-        property
-    );
+    const savedProperty = await context.data.customProperty.saveItem(property);
+
     return {
-        property: getPublicCustomProperty(savedProperty),
+        property: ToPublicCustomData.customProperty(savedProperty),
     };
 };
 

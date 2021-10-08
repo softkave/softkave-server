@@ -2,7 +2,8 @@ import { ICustomSelectionOption } from "../../../mongo/custom-property/definitio
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { canReadMultipleOrganizations } from "../../organization/canReadBlock";
-import { getPublicCustomSelectionOptionsArray } from "../utils";
+import ReusableDataQueries from "../../ReuseableDataQueries";
+import ToPublicCustomData from "../utils";
 import {
     IUpdateManyOptionsEndpointParams,
     UpdateManyOptionsEndpoint,
@@ -29,20 +30,21 @@ const updateManyOptions: UpdateManyOptionsEndpoint = async (
 
     const options = await Promise.all(
         optionIds.map((id) =>
-            context.customSelectionOption.assertGetOptionById(context, id)
+            context.data.customOption.assertGetItem(
+                ReusableDataQueries.byId(id)
+            )
         )
     );
 
     canReadMultipleOrganizations(organizationIds, user);
 
     // TODO: should we validate that the prev and next ids are valid?
-    const promises: Array<Promise<ICustomSelectionOption>> = [];
+    const updatePromises: Array<Promise<ICustomSelectionOption>> = [];
     options.forEach((option) => {
-        if (optionsUpdateMap[option.customId]) {
-            promises.push(
-                context.customSelectionOption.updateOptionById(
-                    context,
-                    option.customId,
+        if (!!optionsUpdateMap[option.customId]) {
+            updatePromises.push(
+                context.data.customOption.updateItem(
+                    ReusableDataQueries.byId(option.customId),
                     {
                         ...optionsUpdateMap[option.customId],
                         updatedAt: getDate(),
@@ -55,9 +57,9 @@ const updateManyOptions: UpdateManyOptionsEndpoint = async (
 
     // TODO: can we separate them so we can reports the ones that failed and the ones that passed
     // or can we revert if some failed
-    const updatedOptions = await Promise.all(promises);
+    const updatedOptions = await Promise.all(updatePromises);
     return {
-        options: getPublicCustomSelectionOptionsArray(updatedOptions),
+        options: ToPublicCustomData.customOptionList(updatedOptions),
     };
 };
 

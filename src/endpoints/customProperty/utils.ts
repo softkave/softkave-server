@@ -67,13 +67,13 @@ const publicCustomSelectionOptionFields =
         prevOptionId: true,
     });
 
-export function getPublicCustomProperty(
+function getPublicCustomProperty(
     customProperty: ICustomProperty
 ): IPublicCustomProperty {
     return extractFields(customProperty, publicCustomPropertyFields);
 }
 
-export function getPublicCustomPropertyArray(
+function getPublicCustomPropertyArray(
     customProperties: ICustomProperty[]
 ): IPublicCustomProperty[] {
     return customProperties.map((customProperty) =>
@@ -81,13 +81,13 @@ export function getPublicCustomPropertyArray(
     );
 }
 
-export function getPublicCustomPropertyValueData(
+function getPublicCustomPropertyValue(
     value: ICustomPropertyValue
 ): IPublicCustomPropertyValue {
     return extractFields(value, publicCustomPropertyValueFields);
 }
 
-export function getPublicCustomPropertyValuesArray(
+function getPublicCustomPropertyValuesArray(
     values: ICustomPropertyValue[]
 ): IPublicCustomPropertyValue[] {
     return values.map((value) =>
@@ -95,13 +95,13 @@ export function getPublicCustomPropertyValuesArray(
     );
 }
 
-export function getPublicCustomSelectionOption(
+function getPublicCustomSelectionOption(
     value: ICustomSelectionOption
 ): IPublicCustomSelectionOption {
     return extractFields(value, publicCustomSelectionOptionFields);
 }
 
-export function getPublicCustomSelectionOptionsArray(
+function getPublicCustomSelectionOptionsArray(
     values: ICustomSelectionOption[]
 ): IPublicCustomSelectionOption[] {
     return values.map((value) =>
@@ -109,14 +109,23 @@ export function getPublicCustomSelectionOptionsArray(
     );
 }
 
+export default class ToPublicCustomData {
+    static customOption = getPublicCustomSelectionOption;
+    static customOptionList = getPublicCustomSelectionOptionsArray;
+    static customProperty = getPublicCustomProperty;
+    static customPropertyList = getPublicCustomPropertyArray;
+    static customValue = getPublicCustomPropertyValue;
+    static customValueList = getPublicCustomPropertyValuesArray;
+}
+
 export function throwCustomPropertyNotFoundError() {
     throw new CustomPropertyDoesNotExistError();
 }
 
-export function throwCustomPropertyValueNotFoundError() {
+export function throwCustomValueNotFoundError() {
     throw new CustomPropertyValueDoesNotExistError();
 }
 
-export function throwCustomSelectionOptionNotFoundError() {
+export function throwCustomOptionNotFoundError() {
     throw new CustomSelectionOptionDoesNotExistError();
 }

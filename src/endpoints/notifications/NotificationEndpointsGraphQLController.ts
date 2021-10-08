@@ -1,7 +1,7 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 
 export default class NotificationEndpointsGraphQLController {}
 
-export const getNotificationEndpointsGraphQLController = getSingletonFunc(
+export const getNotificationEndpointsGraphQLController = makeSingletonFn(
     () => new NotificationEndpointsGraphQLController()
 );

@@ -10,6 +10,16 @@ type Error {
 type ErrorOnlyResponse {
     errors: [Error]
 }
+
+type ParentInformation {
+    type: String
+    customId: String
+}
+
+input ParentInformationInput {
+    type: String!
+    customId: String!
+}
 `;
 
 export { utilsSchema };

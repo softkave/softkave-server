@@ -1,5 +1,5 @@
 import { IAuditLog } from "../../mongo/audit-log";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import {
     getLogFromEntry,
     IAuditLogContext,
@@ -10,6 +10,6 @@ import BroadcastHistoryContext from "../contexts/BroadcastHistoryContext";
 
 class TestBroadcastHistoryContext extends BroadcastHistoryContext {}
 
-export const getTestBroadcastHistoryContext = getSingletonFunc(
+export const getTestBroadcastHistoryContext = makeSingletonFn(
     () => new TestBroadcastHistoryContext()
 );

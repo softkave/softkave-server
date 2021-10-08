@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import tokenMongoSchema, { ITokenDocument } from "./definitions";
@@ -9,7 +9,7 @@ export interface ITokenModel extends MongoModel<ITokenDocument> {}
 const modelName = "token";
 const collectionName = "tokens";
 
-export const getTokenModel = getSingletonFunc(
+export const getTokenModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ITokenDocument>({
             modelName,

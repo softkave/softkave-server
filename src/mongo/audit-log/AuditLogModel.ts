@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import auditLogSchema, { IAuditLogDocument } from "./definitions";
@@ -7,7 +7,7 @@ import auditLogSchema, { IAuditLogDocument } from "./definitions";
 const modelName = "audit-log";
 const collectionName = "audit-logs";
 
-export const getAuditLogModel = getSingletonFunc(
+export const getAuditLogModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<IAuditLogDocument>({
             modelName,

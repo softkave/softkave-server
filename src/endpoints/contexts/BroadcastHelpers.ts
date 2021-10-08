@@ -8,7 +8,7 @@ import {
 import { IRoom } from "../../mongo/room";
 import { ISprint } from "../../mongo/sprint";
 import { IUser } from "../../mongo/user";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import { IUpdateItemById } from "../../utilities/types";
 import { IPublicBlock } from "../block/types";
@@ -682,6 +682,6 @@ export default class BroadcastHelpers implements IBroadcastHelpers {
     );
 }
 
-export const getBroadcastHelpers = getSingletonFunc(
+export const getBroadcastHelpers = makeSingletonFn(
     () => new BroadcastHelpers()
 );

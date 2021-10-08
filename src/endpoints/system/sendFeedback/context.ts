@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
 import InternalAddBlockContext from "../../block/internalAddBlock/context";
 import internalAddBlock from "../../block/internalAddBlock/internalAddBlock";
 import { ISendFeedbackContext } from "./types";
@@ -12,6 +12,6 @@ export default class SendFeedbackContext
     }
 }
 
-export const getSendFeedbackContext = getSingletonFunc(
+export const getSendFeedbackContext = makeSingletonFn(
     () => new SendFeedbackContext()
 );

@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getBaseContext } from "../contexts/BaseContext";
 import RequestData from "../RequestData";
 import { wrapEndpoint } from "../utils";
@@ -58,6 +58,6 @@ export default class CustomPropertyEndpointsGraphQLController {
     }
 }
 
-export const getCustomPropertyEndpointsGraphQLController = getSingletonFunc(
+export const getCustomPropertyEndpointsGraphQLController = makeSingletonFn(
     () => new CustomPropertyEndpointsGraphQLController()
 );

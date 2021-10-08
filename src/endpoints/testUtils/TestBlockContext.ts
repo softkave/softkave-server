@@ -1,6 +1,6 @@
 import { BlockType, IBlock, ITaskSprint } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import cast, { indexArray } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { BlockDoesNotExistError } from "../block/errors";
@@ -175,6 +175,6 @@ class TestBlockContext implements IBlockContext {
     };
 }
 
-export const getTestBlockContext = getSingletonFunc(
+export const getTestBlockContext = makeSingletonFn(
     () => new TestBlockContext()
 );

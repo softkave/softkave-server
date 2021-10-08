@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { ICommentContext } from "../contexts/CommentContext";
 import { notImplementFn } from "./utils";
 
@@ -7,6 +7,6 @@ class TestCommentContext implements ICommentContext {
     getComments = notImplementFn;
 }
 
-export const getTestCommentContext = getSingletonFunc(
+export const getTestCommentContext = makeSingletonFn(
     () => new TestCommentContext()
 );

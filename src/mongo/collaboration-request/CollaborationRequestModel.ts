@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import collaborationRequestSchema, {
@@ -9,7 +9,7 @@ import collaborationRequestSchema, {
 const modelName = "collaboration-request";
 const collectionName = "collaboration-requests";
 
-export const getCollaborationRequestModel = getSingletonFunc(
+export const getCollaborationRequestModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<ICollaborationRequestDocument>({
             modelName,

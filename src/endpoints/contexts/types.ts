@@ -37,9 +37,6 @@ export interface IContextModels {
     clientModel: IClientModel;
     tokenModel: ITokenModel;
     unseenChatsModel: IUnseenChatsModel;
-    customProperty: ICustomPropertyModel;
-    customPropertyValue: ICustomPropertyValueModel;
-    customSelectionOption: ICustomSelectionOptionModel;
 }
 
 export interface IServerRequest extends Request {

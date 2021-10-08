@@ -1,5 +1,5 @@
 import { IClient, IClientUserEntry } from "../../mongo/client";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { ClientDoesNotExistError } from "../client/errors";
 import { findUserEntryInClient } from "../client/utils";
 import RequestData from "../RequestData";
@@ -166,4 +166,4 @@ export default class ClientContext implements IClientContext {
     );
 }
 
-export const getClientContext = getSingletonFunc(() => new ClientContext());
+export const getClientContext = makeSingletonFn(() => new ClientContext());

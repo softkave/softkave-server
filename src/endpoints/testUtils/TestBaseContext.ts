@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { IBaseContext } from "../contexts/BaseContext";
 import { getTestAccessControlContext } from "./TestAccessControlContext";
 import { getTestAuditLogContext } from "./TestAuditLogContext";
@@ -71,4 +71,4 @@ export class TestBaseContext implements ITestBaseContext {
     public webPushInstance = {} as any;
 }
 
-export const getTestBaseContext = getSingletonFunc(() => new TestBaseContext());
+export const getTestBaseContext = makeSingletonFn(() => new TestBaseContext());

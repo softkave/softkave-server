@@ -9,8 +9,8 @@ export interface IUpdateManyOptionsEndpointParams {
             name: string;
             description?: string;
             color?: string;
-            prevOptionId?: string;
-            nextOptionId?: string;
+            // prevOptionId?: string;
+            // nextOptionId?: string;
         }>;
     }>;
 }

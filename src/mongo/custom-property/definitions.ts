@@ -35,7 +35,7 @@ export enum SelectionResourceTypes {
     Task = "task",
     Room = "room",
     CollaborationRequest = "collaborationRequest",
-    Custom = "custom",
+    CustomOptions = "customOptions",
 }
 
 export interface ISelectionFrom {
@@ -55,12 +55,17 @@ export interface ICustomSelectionOption {
     createdAt: Date;
     updatedBy?: string;
     updatedAt?: Date;
+
+    // TODO: validate if options exist
     prevOptionId?: string;
     nextOptionId?: string;
 }
 
 export interface ICustomOptionsProps {
     areOptionsUnique?: boolean;
+
+    // TODO: check that all options have prev and next option IDs, except the first and last
+    enforceOptionsLink?: boolean;
 }
 
 export interface ISelectionCustomTypeMeta {
@@ -70,6 +75,9 @@ export interface ISelectionCustomTypeMeta {
     max?: number;
     selectFrom: ISelectionFrom | null;
     customOptionsProps?: ICustomOptionsProps;
+
+    // TODO: validate if default options exists
+    // TODO: remove option ID when default option is deleted
     defaultOptionId?: string;
 }
 
@@ -135,7 +143,7 @@ export interface ICustomPropertyValue {
     value:
         | ITextCustomTypeValue
         | IDateCustomTypeValue
-        | ISelectionCustomTypeValue
+        // | ISelectionCustomTypeValue
         | INumberCustomTypeValue;
     createdBy: string;
     createdAt: Date;
@@ -193,3 +201,7 @@ export interface ICustomPropertyValueDocument
     extends Document<ICustomPropertyValue> {}
 
 export type ICustomSelectionOptionDocument = Document<ICustomSelectionOption>;
+
+export enum CustomValueAttrs {
+    Value = "value",
+}

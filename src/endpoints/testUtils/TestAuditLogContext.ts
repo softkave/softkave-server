@@ -1,5 +1,5 @@
 import { IAuditLog } from "../../mongo/audit-log";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import {
     getLogFromEntry,
     IAuditLogContext,
@@ -32,6 +32,6 @@ class TestAuditLogContext implements IAuditLogContext {
     }
 }
 
-export const getTestAuditLogContext = getSingletonFunc(
+export const getTestAuditLogContext = makeSingletonFn(
     () => new TestAuditLogContext()
 );

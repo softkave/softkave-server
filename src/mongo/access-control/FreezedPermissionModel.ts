@@ -1,5 +1,5 @@
 import { Connection } from "mongoose";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDefaultConnection } from "../defaultConnection";
 import MongoModel from "../MongoModel";
 import {
@@ -10,7 +10,7 @@ import {
 const modelName = "freezedPermission";
 const collectionName = "freezedPermissions";
 
-export const getFreezedPermissionsModel = getSingletonFunc(
+export const getFreezedPermissionsModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {
         return new MongoModel<IFreezedPermissionDocument>({
             modelName,

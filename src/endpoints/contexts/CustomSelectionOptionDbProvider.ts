@@ -1,4 +1,5 @@
 import { ICustomSelectionOption } from "../../mongo/custom-property/definitions";
+import { IParentInformation } from "../../mongo/definitions";
 import { IUpdateItemById } from "../../utilities/types";
 import { IBaseContext } from "./BaseContext";
 
@@ -15,6 +16,7 @@ export interface ICustomSelectionOptionDbProvider {
         ctx: IBaseContext,
         customId: string
     ) => Promise<ICustomSelectionOption>;
+    assertOptionById: (ctx: IBaseContext, customId: string) => Promise<boolean>;
     getMany: (
         ctx: IBaseContext,
         ids: string[]
@@ -33,4 +35,10 @@ export interface ICustomSelectionOptionDbProvider {
         ctx: IBaseContext,
         customselectionoptionId: string
     ) => Promise<void>;
+    parentHasOptions: (
+        ctx: IBaseContext,
+        parent: IParentInformation,
+        propertyId: string
+    ) => Promise<boolean>;
+    deleteManyByPropertyId: (ctx: IBaseContext, id: string) => Promise<void>;
 }

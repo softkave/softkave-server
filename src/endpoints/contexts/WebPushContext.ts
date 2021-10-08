@@ -1,6 +1,6 @@
 import { RequestOptions, SendResult } from "web-push";
 import { IClient } from "../../mongo/client";
-import getSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./BaseContext";
 
@@ -32,4 +32,4 @@ export default class WebPushContext implements IWebPushContext {
     );
 }
 
-export const getWebPushContext = getSingletonFunc(() => new WebPushContext());
+export const getWebPushContext = makeSingletonFn(() => new WebPushContext());

@@ -1,4 +1,4 @@
-import getSingletonFunc from "../../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
 import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
 import RequestData from "../../RequestData";
 import changePassword from "../changePassword/changePassword";
@@ -17,6 +17,6 @@ export default class ChangePasswordWithTokenContext
     }
 }
 
-export const getChangePasswordWithTokenContext = getSingletonFunc(
+export const getChangePasswordWithTokenContext = makeSingletonFn(
     () => new ChangePasswordWithTokenContext()
 );
