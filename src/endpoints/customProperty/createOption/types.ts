@@ -9,7 +9,6 @@ export interface ICreateCustomSelectionOptionEndpointParams {
         description?: string;
         color?: string;
         prevOptionId?: string;
-        nextOptionId?: string;
     };
 }
 
