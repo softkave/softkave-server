@@ -1,3 +1,4 @@
+import { string } from "joi";
 import {
     CustomPropertyType,
     IDateCustomTypeMeta,
@@ -6,6 +7,7 @@ import {
     ITextCustomTypeMeta,
 } from "../../../mongo/custom-property/definitions";
 import { IParentInformation } from "../../../mongo/definitions";
+import { Join, PathsToStringProps } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomProperty } from "../types";
@@ -24,6 +26,11 @@ export interface ICreatePropertyEndpointParams {
             | INumberCustomTypeMeta;
     };
 }
+
+export type ICreatePropertyEndpointParamsFields = Join<
+    PathsToStringProps<ICreatePropertyEndpointParams>,
+    "."
+>;
 
 export interface ICreatePropertyEndpointResult {
     property: IPublicCustomProperty;

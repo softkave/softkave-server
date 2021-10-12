@@ -7,21 +7,21 @@ import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomPropertyValue } from "../types";
 
-export interface IUpdateValueEndpointParams {
+export interface IInsertCustomValueEndpointParams {
     propertyId: string;
     parent: IParentInformation;
     type: CustomPropertyType;
     data: {
-        value: ICustomPropertyValue["value"];
+        value: string[] | ICustomPropertyValue["value"];
     };
 }
 
-export interface IUpdateValueEndpointResult {
+export interface IInsertCustomValueEndpointResult {
     value: IPublicCustomPropertyValue;
 }
 
-export type UpdateValueEndpoint = Endpoint<
+export type InsertCustomValueEndpoint = Endpoint<
     IBaseContext,
-    IUpdateValueEndpointParams,
-    IUpdateValueEndpointResult
+    IInsertCustomValueEndpointParams,
+    IInsertCustomValueEndpointResult
 >;

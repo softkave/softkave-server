@@ -24,7 +24,7 @@ const updateProperty: UpdatePropertyEndpoint = async (context, instData) => {
         }
     );
 
-    // TODO: delete values' values on type change or convert to the new type if possible?
+    // TODO: Try to convert values to the new type if possible?
     if (property.type !== updatedProperty.type) {
         await context.data.customProperty.deleteManyItems(
             CustomDataQueries.byPropertyId(property.customId)

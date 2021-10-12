@@ -84,6 +84,10 @@ export function ternaryOp(a: any, b: any, c: any) {
     return a ? b : c;
 }
 
-export default function cast<ToType>(resource: any): ToType {
+export function cast<ToType>(resource: any): ToType {
     return resource as unknown as ToType;
+}
+
+export function same<T>(item: T) {
+    return item;
 }

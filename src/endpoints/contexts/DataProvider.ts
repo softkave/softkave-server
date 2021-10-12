@@ -69,6 +69,12 @@ export interface IDataProvider<T extends object> {
         throwError?: () => void
     ) => Promise<T>;
     deleteManyItems: (filter: IDataProviderFilter<T>) => Promise<void>;
+    bulkDeleteItems: (
+        items: Array<{
+            filter: IDataProviderFilter<T>;
+            deleteFirstItemOnly?: boolean;
+        }>
+    ) => Promise<void>;
     assertItemExists: (
         filter: IDataProviderFilter<T>,
         throwError?: () => void

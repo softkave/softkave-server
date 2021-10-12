@@ -1,3 +1,15 @@
+import { changeOptionPositionEndpointSchema } from "./changeOptionPosition/schema";
+import { createOptionEndpointSchema } from "./createOption/schema";
+import { createPropertyEndpointSchema } from "./createProperty/schema";
+import { deleteOptionEndpointSchema } from "./deleteOption/schema";
+import { deletePropertyEndpointSchema } from "./deleteProperty/schema";
+import { getPropertiesEndpointSchema } from "./getProperties/schema";
+import { getValuesEndpointSchema } from "./getValues/schema";
+import { insertCustomValueEndpointSchema } from "./insertCustomValue/schema";
+import { updateCustomValueEndpointSchema } from "./updateCustomValue/schema";
+import { updateOptionEndpointSchema } from "./updateOption/schema";
+import { updatePropertyEndpointSchema } from "./updateProperty/schema";
+
 const customPropertySchema = `
 type TextCustomTypeMeta {
     minChars: Float
@@ -62,10 +74,10 @@ type NumberCustomTypeMeta {
     defaultNumber: Float
 }
 
-union CustomPropertyMeta = ITextCustomTypeMeta 
-    | ISelectionCustomTypeMeta 
-    | IDateCustomTypeMeta 
-    | INumberCustomTypeMeta
+union CustomPropertyMeta = TextCustomTypeMeta 
+    | SelectionCustomTypeMeta 
+    | DateCustomTypeMeta 
+    | NumberCustomTypeMeta
 
 type CustomProperty {
     customId: String
@@ -91,18 +103,13 @@ type DateCustomTypeValue {
     endDate: String
 }
 
-type SelectionCustomTypeValue {
-    value: [String]
-}
-
 type NumberCustomTypeValue {
     value: Float
 }
 
-union CustomPropertyInternalValue = ITextCustomTypeValue
-    | IDateCustomTypeValue
-    | ISelectionCustomTypeValue
-    | INumberCustomTypeValue
+union CustomPropertyValueValue = TextCustomTypeValue
+    | DateCustomTypeValue
+    | NumberCustomTypeValue
 
 type CustomPropertyValue {
     customId: String
@@ -110,66 +117,66 @@ type CustomPropertyValue {
     organizationId: String
     parent: ParentInformation
     type: String
-    value: CustomPropertyInternalValue
+    value: CustomPropertyValueValue
     createdBy: String
     createdAt: String
     updatedBy: String
     updatedAt: String
 }
 
-input UpdateBoardInput {
-    name: String
-    description: String
-    color: String
-    boardStatuses: UpdateBlockStatusInput
-    boardLabels: UpdateBlockLabelInput
-    boardResolutions: UpdateBlockBoardStatusResolutionInput
-}
-
-type SingleOptionResponse {
+type SingleCustomOptionResponse {
     errors: [Error]
     values: [CustomSelectionOption]
 }
 
-type SinglePropertyResponse {
+type SingleCustomPropertyResponse {
     errors: [Error]
     values: [CustomProperty]
 }
 
-type SingleValueResponse {
+type SingleCustomValueResponse {
     errors: [Error]
     values: [CustomPropertyValue]
 }
 
-type MultiplePropertiesResponse {
+type MultipleCustomPropertiesResponse {
     errors: [Error]
     properties: [CustomProperty]
 }
 
-type MultipleValuesResponse {
+type MultipleCustomValuesResponse {
     errors: [Error]
     values: [CustomPropertyValue]
 }
 
-type MultipleOptionsResponse {
+type MultipleCustomOptionsResponse {
     errors: [Error]
     values: [CustomSelectionOption]
 }
 
-type CustomQuery {
-    getProperties (parentId: String!) : MultiplePropertiesResponse
-    getValues (parents: [ParentInformationInput!]!) : MultipleValuesResponse
+${createOptionEndpointSchema.types}
+${createPropertyEndpointSchema.types}
+${updateOptionEndpointSchema.types}
+${updatePropertyEndpointSchema.types}
+${insertCustomValueEndpointSchema.types}
+${updateCustomValueEndpointSchema.types}
+
+
+type CustomPropertiesQuery {
+    ${getPropertiesEndpointSchema.endpoint}
+    ${getValuesEndpointSchema.endpoint}
 }
 
-type CustomMutation {
-    changeOptionPosition () : SingleOptionResponse
-    createOption () : SingleOptionResponse
-    createProperty () : SinglePropertyResponse
-    deleteProperty () : ErrorOnlyResponse
-    updateManyOptions () : MultipleOptionsResponse
-    updateOption () : SingleOptionResponse
-    updateProperty () : SinglePropertyResponse
-    updateValue () : SingleValueResponse
+type CustomPropertiesMutation {
+    ${changeOptionPositionEndpointSchema.endpoint}
+    ${createOptionEndpointSchema.endpoint}
+    ${createPropertyEndpointSchema.endpoint}
+    ${deletePropertyEndpointSchema.endpoint}
+    ${updateOptionEndpointSchema.endpoint}
+    ${deleteOptionEndpointSchema.endpoint}
+    ${updatePropertyEndpointSchema.endpoint}
+    ${insertCustomValueEndpointSchema.endpoint}
+    ${updateCustomValueEndpointSchema.endpoint}
 }
 `;
 

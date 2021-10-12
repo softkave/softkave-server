@@ -23,27 +23,9 @@ const deleteOption: DeleteOptionEndpoint = async (context, instData) => {
     );
 
     fireAndForgetFn(async () => {
-        context.data.customValue.deleteManyItems(
-            CustomDataQueries.byPropertyId(data.customId)
+        context.data.entityAttrValue.deleteManyItems(
+            CustomDataQueries.bySelectionValue(option.customId)
         );
-
-        let values: ICustomPropertyValue[] = [];
-
-        do {
-            values = await context.data.customValue.getManyItems(
-                CustomDataQueries.byPropertyId(data.customId),
-                { limit: 50 }
-            );
-
-            const updatedValues = values.map((value) => {
-                const i = (
-                    value.value as ISelectionCustomTypeValue
-                )?.value?.indexOf(option.customId);
-
-                if (i !== -1) {
-                }
-            });
-        } while (values.length > 0);
     });
 };
 

@@ -203,5 +203,5 @@ export interface ICustomPropertyValueDocument
 export type ICustomSelectionOptionDocument = Document<ICustomSelectionOption>;
 
 export enum CustomValueAttrs {
-    Value = "value",
+    SelectionValue = "selection-value",
 }
