@@ -1,4 +1,4 @@
-import Joi, { Schema as JoiSchema, ValidationOptions } from "joi";
+import { Schema as JoiSchema, ValidationOptions } from "joi";
 import { InvalidInputError } from "./errors";
 
 export function validate<DataType>(
@@ -6,7 +6,7 @@ export function validate<DataType>(
     schema: JoiSchema,
     options?: ValidationOptions
 ): DataType {
-    const { error, value } = Joi.validate(data, schema, {
+    const { error, value } = schema.validate(data, {
         abortEarly: false,
         convert: true,
         ...options,

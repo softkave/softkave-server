@@ -131,7 +131,7 @@ export default class BlockContext implements IBlockContext {
 
     public getBlockChildren = wrapFireAndThrowError(
         async (ctx: IBaseContext, blockId: string, typeList?: BlockType[]) => {
-            const query: FilterQuery<IBlock> = {
+            const query: FilterQuery<IBlockDocument> = {
                 isDeleted: false,
                 parent: blockId,
             };
@@ -202,7 +202,7 @@ export default class BlockContext implements IBlockContext {
             type: BlockType,
             parent?: string
         ) => {
-            const query: FilterQuery<IBlock> = {
+            const query: FilterQuery<IBlockDocument> = {
                 type,
                 lowerCasedName: name.toLowerCase(),
                 isDeleted: false,
