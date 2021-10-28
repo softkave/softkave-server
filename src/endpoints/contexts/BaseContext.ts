@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { getPermissionModel } from "../../mongo/access-control/PermissionModel";
 import { getPermissionGroupsModel } from "../../mongo/access-control/PermissionGroupsModel";
 import { getUserAssignedPermissionGroupsModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
-import { getBlockModel } from "../../mongo/block";
+import { getBlockModel, IBlock } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCollaborationRequestModel } from "../../mongo/collaboration-request";
 import { getCommentModel } from "../../mongo/comment";
@@ -69,6 +69,7 @@ import {
     throwCustomValueNotFoundError,
 } from "../customProperty/utils";
 import { getEntityAttrValueModel, IEntityAttrValue } from "../../mongo/eav";
+import NotImplementedDataProvider from "./NotImplementedDataProvider";
 
 export interface IBaseContextDataProviders {
     customOption: IDataProvider<ICustomSelectionOption>;
@@ -144,18 +145,21 @@ export default class BaseContext implements IBaseContext {
     public webPushInstance = webPush;
 
     public data: IBaseContextDataProviders = {
-        customOption: new MongoDataProvider<ICustomSelectionOption>(
-            getCustomSelectionOptionModel(),
-            throwCustomOptionNotFoundError
-        ),
-        customProperty: new MongoDataProvider<ICustomProperty>(
-            getCustomPropertyModel(),
-            throwCustomPropertyNotFoundError
-        ),
-        customValue: new MongoDataProvider<ICustomPropertyValue>(
-            getCustomPropertyValueModel(),
-            throwCustomValueNotFoundError
-        ),
+        // customOption: new MongoDataProvider<ICustomSelectionOption>(
+        //     getCustomSelectionOptionModel(),
+        //     throwCustomOptionNotFoundError
+        // ),
+        // customProperty: new MongoDataProvider<ICustomProperty>(
+        //     getCustomPropertyModel(),
+        //     throwCustomPropertyNotFoundError
+        // ),
+        // customValue: new MongoDataProvider<ICustomPropertyValue>(
+        //     getCustomPropertyValueModel(),
+        //     throwCustomValueNotFoundError
+        // ),
+        customOption: new NotImplementedDataProvider<ICustomSelectionOption>(),
+        customProperty: new NotImplementedDataProvider<ICustomProperty>(),
+        customValue: new NotImplementedDataProvider<ICustomPropertyValue>(),
         entityAttrValue: new MongoDataProvider<IEntityAttrValue>(
             getEntityAttrValueModel(),
             throwCustomValueNotFoundError

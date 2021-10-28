@@ -22,7 +22,7 @@ class TestChatContext implements IChatContext {
         return rooms.filter(
             (room) =>
                 room.members.find((member) => member.userId === userId) &&
-                organizationIds.includes(room.organizationId)
+                organizationIds.includes(room.orgId)
         );
     };
 
@@ -78,7 +78,7 @@ class TestChatContext implements IChatContext {
         const roomId = getNewId();
         const roomName = name || ctx.room.getChatRoomName(roomId);
         rooms.push({
-            organizationId,
+            orgId: organizationId,
             members,
             customId: roomId,
             name: roomName,
@@ -98,7 +98,7 @@ class TestChatContext implements IChatContext {
     ) => {
         chats.push({
             customId: getNewId(),
-            organizationId,
+            orgId: organizationId,
             message,
             roomId,
             sender: senderId,

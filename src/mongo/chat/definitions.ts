@@ -3,7 +3,7 @@ import { getDate } from "../../utilities/fns";
 
 export interface IChat {
     customId: string;
-    organizationId: string;
+    orgId: string;
     message: string;
     sender: string;
     roomId: string;
@@ -13,7 +13,7 @@ export interface IChat {
 
 const chatMongoSchema = {
     customId: { type: String, unique: true },
-    organizationId: { type: String },
+    orgId: { type: String },
     message: { type: String },
     sender: { type: String },
     roomId: { type: String },

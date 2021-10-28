@@ -86,15 +86,15 @@ export const blockStatusSchema = {
 
 export enum BlockType {
     Root = "root",
-    Organization = "organization",
+    Organization = "org",
     Board = "board",
     Task = "task",
 }
 
 export enum BlockPriority {
-    Important = "important",
-    NotImportant = "not important",
-    VeryImportant = "very important",
+    Medium = "medium",
+    Low = "low",
+    High = "high",
 }
 
 export interface IBlockAssignedLabel {
@@ -135,7 +135,7 @@ export interface ITaskSprint {
     assignedBy: string;
 }
 
-const taskSprintSchema = {
+export const taskSprintSchema = {
     sprintId: { type: String },
     assignedAt: { type: Date },
     assignedBy: { type: String },
@@ -189,7 +189,6 @@ const blockSchema = {
     // General
     customId: { type: String, unique: true, index: true },
     name: { type: String },
-    lowerCasedName: { type: String, index: true },
     description: { type: String },
     createdAt: { type: Date, default: () => getDate() },
     createdBy: { type: String },

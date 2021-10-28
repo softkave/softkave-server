@@ -1,7 +1,7 @@
 import { IBaseContext } from "../../contexts/BaseContext";
-import { IPublicCollaborationRequest } from "../../notifications/types";
 import { Endpoint } from "../../types";
 import sendCollaborationRequestsEmail from "../sendCollaborationRequestEmail";
+import { IPublicCollaborationRequest } from "../types";
 
 export interface INewCollaboratorInput {
     email: string;

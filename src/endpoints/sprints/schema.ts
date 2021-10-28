@@ -2,7 +2,7 @@ const sprintSchema = `
     type Sprint {
         customId: String
         boardId: String
-        organizationId: String
+        orgId: String
         duration: String
         prevSprintId: String
         nextSprintId: String

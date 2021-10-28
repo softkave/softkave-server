@@ -6,8 +6,8 @@ import roomSchema, { IRoomDocument } from "./definitions";
 
 export interface IRoomModel extends MongoModel<IRoomDocument> {}
 
-const modelName = "room-v2";
-const collectionName = "rooms-v2";
+const modelName = "room";
+const collectionName = "rooms";
 
 export const getRoomModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {

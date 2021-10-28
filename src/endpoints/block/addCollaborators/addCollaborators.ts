@@ -1,4 +1,3 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import {
@@ -11,7 +10,6 @@ import { InvalidRequestError } from "../../errors";
 import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId } from "../utils";
 import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrganizationAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
 import sendEmails from "./sendEmails";

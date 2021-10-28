@@ -67,11 +67,11 @@ const requestsSchema = `
             collaborators: [NewCollaboratorInput!]!
         ) : AddCollaboratorsResult
         revokeRequest (organizationId: String!, requestId: String!) : SingleRequestOpResult
-        respondToCollaborationRequest (
+        respondToRequest (
             requestId: String!, 
             response: String!
         ): RespondToCollaborationRequestResponse
-        markRequestsRead (requestIds: [String!]!): ErrorOnlyResponse
+        markRequestRead (requestId: String!): ErrorOnlyResponse
     }
 `;
 

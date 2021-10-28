@@ -14,13 +14,13 @@ export default class EndpointsGraphQLController {
     public user = getUserEndpointsGraphQLController();
     public sprint = getSprintsEndpointsGraphQLController();
     public system = getSystemEndpointsGraphQLController();
-    public collaborationRequest = getRequestsEndpointsGraphQLController;
-    public client = getClientsEndpointsGraphQLController;
-    public collaborators = getCollaboratorEndpointsGraphQLController;
-    public organization = getOrganizationEndpointsGraphQLController;
-    public board = getBoardEndpointsGraphQLController;
-    public task = getTaskEndpointsGraphQLController;
-    public customProperty = getCustomPropertyEndpointsGraphQLController;
+    public collaborationRequest = getRequestsEndpointsGraphQLController();
+    public client = getClientsEndpointsGraphQLController();
+    public collaborators = getCollaboratorEndpointsGraphQLController();
+    public organization = getOrganizationEndpointsGraphQLController();
+    public board = getBoardEndpointsGraphQLController();
+    public task = getTaskEndpointsGraphQLController();
+    // public customProperty = getCustomPropertyEndpointsGraphQLController();
 }
 
 export const getEndpointsGraphQLController = makeSingletonFn(

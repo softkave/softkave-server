@@ -58,7 +58,7 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
 
                 const organization = await context.block.getBlockById(
                     context,
-                    room.organizationId
+                    room.orgId
                 );
 
                 assertBlock(organization);

@@ -7,7 +7,7 @@ import {
 } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import cast, { getDate } from "../../utilities/fns";
+import { getDate, cast } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IOrganization } from "../organization/types";

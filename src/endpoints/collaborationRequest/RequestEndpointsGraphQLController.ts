@@ -7,7 +7,7 @@ import AddCollaboratorsContext from "./addCollaborators/context";
 import getOrganizationRequests from "./getOrganizationRequests/handler";
 import { getRevokeCollaborationRequestContext } from "./revokeRequest/context";
 import revokeRequest from "./revokeRequest/handler";
-import markRequestsRead from "./markRequestsRead/handler";
+import markRequestRead from "./markRequestRead/handler";
 import respondToRequest from "./respondToRequest/handler";
 import getUserRequests from "./getUserRequests/handler";
 
@@ -65,9 +65,9 @@ export default class RequestsEndpointsGraphQLController {
         );
     }
 
-    public markRequestsRead(data, req) {
+    public markRequestRead(data, req) {
         return wrapEndpoint(data, req, async () =>
-            markRequestsRead(
+            markRequestRead(
                 getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),

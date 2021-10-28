@@ -45,12 +45,10 @@ const organizationSchema = `
 
     type OrganizationMutation {
         createOrganization (
-            organization: CreateOrganizationInput!
-        ) : CreateOrganizationResponse
+            organization: CreateOrganizationInput!) : CreateOrganizationResponse
         updateOrganization (
             organizationId: String!, 
-            data: UpdateOrganizationInput!
-        ) : CreateOrganizationResponse
+            data: UpdateOrganizationInput!) : CreateOrganizationResponse
     }
 `;
 

@@ -161,7 +161,6 @@ ${updatePropertyEndpointSchema.types}
 ${insertCustomValueEndpointSchema.types}
 ${updateCustomValueEndpointSchema.types}
 
-
 type CustomPropertiesQuery {
     ${getPropertiesEndpointSchema.endpoint}
     ${getValuesEndpointSchema.endpoint}

@@ -69,7 +69,7 @@ export default class ChatContext implements IChatContext {
         ) => {
             return ctx.models.roomModel.model
                 .find({
-                    organizationId: { $in: organizationIds },
+                    orgId: { $in: organizationIds },
                     members: { $elemMatch: { userId } },
                 })
                 .lean()

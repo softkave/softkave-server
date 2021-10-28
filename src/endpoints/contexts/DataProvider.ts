@@ -40,6 +40,40 @@ export type IDataProviderFilter<T extends object> = {
     combineOp?: DataProviderFilterCombineOperator;
 };
 
+export interface IDataProviderFilterValueBuilder<Value> {
+    addValue: (
+        value: ValueExpander<GetValueType<Value>>
+    ) => IDataProviderFilterValueBuilder<Value>;
+    addQueryOp: (
+        queryOp: DataProviderFilterValueOperator
+    ) => IDataProviderFilterValueBuilder<Value>;
+    addLogicalOp: (
+        logicalOp: DataProviderFilterValueLogicalOperator
+    ) => IDataProviderFilterValueBuilder<Value>;
+    build: () => IDataProviderFilterValue<Value>;
+}
+
+export interface IDataProviderFilterBuilder<T extends object> {
+    addItem: <K extends keyof T>(
+        key: K,
+        value: ValueExpander<GetValueType<T[K]>>,
+        queryOp?: DataProviderFilterValueOperator,
+        logicalOp?: DataProviderFilterValueLogicalOperator
+    ) => IDataProviderFilterBuilder<T>;
+    addItemBuilder: <K extends keyof T>(
+        key: K,
+        valueBuilder: IDataProviderFilterValueBuilder<T[K]>
+    ) => IDataProviderFilterBuilder<T>;
+    addItemValue: <K extends keyof T>(
+        key: K,
+        valueBuilder: IDataProviderFilterValue<T[K]>
+    ) => IDataProviderFilterBuilder<T>;
+    addCombineOp: (
+        combineOp?: DataProviderFilterCombineOperator
+    ) => IDataProviderFilterBuilder<T>;
+    build: () => IDataProviderFilter<T>;
+}
+
 export interface IGetManyItemsOptions {
     limit?: number;
 }

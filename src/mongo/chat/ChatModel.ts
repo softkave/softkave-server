@@ -6,8 +6,8 @@ import chatMongoSchema, { IChatDocument } from "./definitions";
 
 export interface IChatModel extends MongoModel<IChatDocument> {}
 
-const modelName = "chat-v2";
-const collectionName = "chats-v2";
+const modelName = "chat";
+const collectionName = "chats";
 
 export const getChatModel = makeSingletonFn(
     (conn: Connection = getDefaultConnection().getConnection()) => {

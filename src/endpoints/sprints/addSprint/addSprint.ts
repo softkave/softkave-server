@@ -57,7 +57,7 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     let sprint: ISprint = {
         customId: getNewId(),
         boardId: data.boardId,
-        organizationId: board.rootBlockId,
+        orgId: board.rootBlockId,
         duration: data.data.duration,
         name: data.data.name,
         createdAt: getDate(),

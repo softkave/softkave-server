@@ -8,7 +8,7 @@ import { IPublicChatData, IPublicRoomData } from "./types";
 const publicRoomFields = getFields<IPublicRoomData>({
     customId: true,
     name: true,
-    organizationId: true,
+    orgId: true,
     createdAt: getDateString,
     createdBy: true,
     members: {
@@ -21,7 +21,7 @@ const publicRoomFields = getFields<IPublicRoomData>({
 
 const publicChatFields = getFields<IPublicChatData>({
     customId: true,
-    organizationId: true,
+    orgId: true,
     message: true,
     sender: true,
     roomId: true,

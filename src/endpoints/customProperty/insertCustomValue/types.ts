@@ -1,8 +1,11 @@
 import {
     CustomPropertyType,
-    ICustomPropertyValue,
+    IDateCustomTypeValue,
+    INumberCustomTypeValue,
+    ITextCustomTypeValue,
 } from "../../../mongo/custom-property/definitions";
 import { IParentInformation } from "../../../mongo/definitions";
+import { Join, PathsToStringProps } from "../../../utilities/types";
 import { IBaseContext } from "../../contexts/BaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomPropertyValue } from "../types";
@@ -12,9 +15,18 @@ export interface IInsertCustomValueEndpointParams {
     parent: IParentInformation;
     type: CustomPropertyType;
     data: {
-        value: string[] | ICustomPropertyValue["value"];
+        value:
+            | string[]
+            | ITextCustomTypeValue
+            | IDateCustomTypeValue
+            | INumberCustomTypeValue;
     };
 }
+
+export type IInsertCustomValueEndpointParamsFields = Join<
+    PathsToStringProps<IInsertCustomValueEndpointParams>,
+    "."
+>;
 
 export interface IInsertCustomValueEndpointResult {
     value: IPublicCustomPropertyValue;

@@ -49,7 +49,7 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
         description: data.description,
         parent: feedbackBoard.customId,
         rootBlockId: feedbackBoard.rootBlockId,
-        priority: BlockPriority.Important,
+        priority: BlockPriority.Medium,
         status: status0 ? status0.customId : undefined,
         statusAssignedBy: systemConstants.feedbackUserId,
         createdBy: user.customId,

@@ -7,7 +7,7 @@ import boardExists from "./boardExists/handler";
 import deleteBoard from "./deleteBoard/handler";
 import UpdateBoardContext from "./updateBoard/context";
 import updateBoard from "./updateBoard/handler";
-import getOrganizationBoards from "./getOrgBoards/handler";
+import getOrganizationBoards from "./getOrganizationBoards/handler";
 
 export default class BoardEndpointsGraphQLController {
     public createBoard(data, req) {

@@ -1,7 +1,7 @@
 import { forEach } from "lodash";
 import { Document, FilterQuery } from "mongoose";
 import MongoModel from "../../mongo/MongoModel";
-import cast from "../../utilities/fns";
+import { cast } from "../../utilities/fns";
 import { wrapFireAndThrowErrorAsync } from "../utils";
 import {
     IDataProvider,
@@ -131,6 +131,46 @@ export default class MongoDataProvider<T extends object>
         const savedItem = await item.save();
         return cast<T>(savedItem);
     });
+
+    bulkSaveItems = wrapFireAndThrowErrorAsync(async (data: T[]) => {
+        await this.model.model.insertMany(data);
+    });
+
+    bulkDeleteItems = wrapFireAndThrowErrorAsync(
+        async (
+            items: Array<{
+                filter: IDataProviderFilter<T>;
+                deleteFirstItemOnly?: boolean;
+            }>
+        ) => {
+            await this.model.model.bulkWrite(
+                items.map((item) => ({
+                    [item.deleteFirstItemOnly ? "deleteOne" : "deleteMany"]: {
+                        filter: getMongoQueryFromFilter(item.filter),
+                    },
+                }))
+            );
+        }
+    );
+
+    bulkUpdateItems = wrapFireAndThrowErrorAsync(
+        async (
+            items: Array<{
+                filter: IDataProviderFilter<T>;
+                data: Partial<T>;
+                updateFirstItemOnly?: boolean;
+            }>
+        ) => {
+            await this.model.model.bulkWrite(
+                items.map((item) => ({
+                    [item.updateFirstItemOnly ? "updateOne" : "updateMany"]: {
+                        filter: getMongoQueryFromFilter(item.filter),
+                        update: item.data,
+                    },
+                }))
+            );
+        }
+    );
 }
 
 export function getMongoQueryFromFilter(filter: IDataProviderFilter<any>) {

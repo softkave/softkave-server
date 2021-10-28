@@ -68,8 +68,10 @@ export interface ICollaborationRequest {
     customId: string;
     to: ICollaborationRequestRecipient;
     title: string;
+    body?: string;
     from: ICollaborationRequestFrom;
     createdAt: Date;
+    expiresAt: Date;
     readAt?: Date;
     statusHistory?: ICollaborationRequestStatus[];
     sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];

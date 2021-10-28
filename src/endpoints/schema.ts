@@ -8,6 +8,7 @@ const endpointSchema = `
         organization: OrganizationQuery
         board: BoardQuery
         task: TaskQuery
+        # customProperty: CustomPropertiesQuery
     }
 
     type Mutation {
@@ -20,6 +21,7 @@ const endpointSchema = `
         organization: OrganizationMutation
         board: BoardMutation
         task: TaskMutation
+        # customProperty: CustomPropertiesMutation
     }
 `;
 

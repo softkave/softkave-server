@@ -91,3 +91,11 @@ export function cast<ToType>(resource: any): ToType {
 export function same<T>(item: T) {
     return item;
 }
+
+export function pluralize(str: string, count: number) {
+    return count === 1 ? str : `${str}s`;
+}
+
+export function methodNotImplemented(): any {
+    throw new Error("Method not available");
+}

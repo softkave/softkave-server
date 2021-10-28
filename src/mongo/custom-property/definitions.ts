@@ -34,11 +34,11 @@ export enum SelectionResourceTypes {
     Board = "board",
     Task = "task",
     Room = "room",
-    CollaborationRequest = "collaborationRequest",
-    CustomOptions = "customOptions",
+    CollaborationRequest = "collaboration-request",
+    CustomOptions = "custom-options",
 }
 
-export interface ISelectionFrom {
+export interface ISelectOptionsFrom {
     customId: string;
     type: BlockType.Organization | BlockType.Board;
 }
@@ -61,24 +61,23 @@ export interface ICustomSelectionOption {
     nextOptionId?: string;
 }
 
-export interface ICustomOptionsProps {
-    areOptionsUnique?: boolean;
-
-    // TODO: check that all options have prev and next option IDs, except the first and last
-    enforceOptionsLink?: boolean;
-}
-
 export interface ISelectionCustomTypeMeta {
     type: SelectionResourceTypes;
     isMultiple?: boolean;
     min?: number;
     max?: number;
-    selectFrom: ISelectionFrom | null;
-    customOptionsProps?: ICustomOptionsProps;
+
+    // TODO: update selectFrom on block delete
+    selectFrom: ISelectOptionsFrom | null;
+
+    // Custom options properties
+    areCustomOptionsUnique?: boolean;
+    shouldCustomOptionsBeLinked?: boolean;
+    // End custom options properties
 
     // TODO: validate if default options exists
     // TODO: remove option ID when default option is deleted
-    defaultOptionId?: string;
+    defaultOptions?: string[];
 }
 
 export enum NumberTypes {
@@ -86,16 +85,12 @@ export enum NumberTypes {
     Decimal = "decimal",
 }
 
-export interface INumberTypeFormatting {
-    decimalPlaces?: number;
-}
-
 export interface INumberCustomTypeMeta {
     type: NumberTypes;
     min: number;
     max: number;
-    format: INumberTypeFormatting;
-    defaultNumber: number;
+    decimalPlaces?: number;
+    defaultNumber?: number;
 }
 
 export interface ICustomProperty {

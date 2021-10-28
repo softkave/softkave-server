@@ -1,28 +1,36 @@
+import { BlockType } from "../../../mongo/block";
 import {
     CustomPropertyType,
     CustomValueAttrs,
-    ICustomProperty,
     ICustomPropertyValue,
     INumberCustomTypeMeta,
     INumberCustomTypeValue,
+    ISelectionCustomTypeMeta,
     ITextCustomTypeMeta,
     ITextCustomTypeValue,
+    NumberTypes,
 } from "../../../mongo/custom-property/definitions";
 import { InvalidInputError } from "../../../utilities/errors";
-import { getDate } from "../../../utilities/fns";
+import { getDate, pluralize, same } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { throwBoardNotFoundError } from "../../board/utils";
+import { IBaseContext } from "../../contexts/BaseContext";
 import canReadOrganization from "../../organization/canReadBlock";
+import { throwOrganizationNotFoundError } from "../../organization/utils";
 import CustomDataQueries from "../CustomDataQueries";
 import ToPublicCustomData from "../utils";
-import { InsertCustomValueEndpoint } from "./types";
+import {
+    IInsertCustomValueEndpointParamsFields,
+    InsertCustomValueEndpoint,
+} from "./types";
 import { updateValueEndpointJoiSchema } from "./validation";
 
 function isSelection(type: CustomPropertyType, value: any): value is string[] {
     return type === CustomPropertyType.Selection;
 }
 
-function checkCustomStringValue(
+function checkCustomTextValue(
     meta: ITextCustomTypeMeta,
     value: ITextCustomTypeValue
 ): ITextCustomTypeValue {
@@ -34,6 +42,9 @@ function checkCustomStringValue(
     if (meta.minChars && meta.minChars > value.value.length) {
         throw new InvalidInputError({
             message: `Value should be at least ${meta.minChars} characters`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
         });
     }
 
@@ -41,10 +52,19 @@ function checkCustomStringValue(
     if (meta.maxChars && meta.maxChars > value.value.length) {
         throw new InvalidInputError({
             message: `Value should be at most ${meta.maxChars} characters`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
         });
     }
 
     return value;
+}
+
+function formatNumberValue(meta: INumberCustomTypeMeta, value: number) {
+    return meta.type === NumberTypes.Decimal && meta.decimalPlaces
+        ? value.toFixed(meta.decimalPlaces)
+        : String(value);
 }
 
 function checkCustomNumberValue(
@@ -52,19 +72,94 @@ function checkCustomNumberValue(
     value: INumberCustomTypeValue
 ): INumberCustomTypeValue {
     if (!value.value) {
-        return { value: meta.defaultText || "" };
+        return { value: meta.defaultNumber || 0 };
     }
 
-    if (meta.minChars && meta.minChars > value.value.length) {
+    if (meta.min && meta.min > value.value) {
         throw new InvalidInputError({
-            message: `Value should be at least ${meta.minChars}`,
+            message: `Value should be greater than ${formatNumberValue(
+                meta,
+                meta.min
+            )}`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
         });
     }
 
-    if (meta.maxChars && meta.maxChars > value.value.length) {
+    if (meta.max && meta.max > value.value) {
         throw new InvalidInputError({
-            message: `Value should be at most ${meta.maxChars}`,
+            message: `Value should be less than ${formatNumberValue(
+                meta,
+                meta.max
+            )}`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
         });
+    }
+
+    if (meta.type === NumberTypes.Interger && !Number.isInteger(value.value)) {
+        throw new InvalidInputError({
+            message: `Value should be an integer`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
+        });
+    }
+
+    return value;
+}
+
+async function checkCustomSelectionValue(
+    context: IBaseContext,
+    meta: ISelectionCustomTypeMeta,
+    value: string[]
+): Promise<string[]> {
+    if (!value.length) {
+        // TODO: validate that default options meet max and min constraints
+        // TODO: do the same for other types
+        return meta.defaultOptions || [];
+    }
+
+    if (!meta.isMultiple && value.length > 1) {
+        throw new InvalidInputError({
+            message: `Maximum of 1 item can be selected`,
+            field: same<IInsertCustomValueEndpointParamsFields>(
+                "data.value.value"
+            ),
+        });
+    }
+
+    if (meta.min && meta.min > value.length) {
+        throw new InvalidInputError({
+            message: `Minimum of ${meta.min} ${pluralize(
+                "item",
+                meta.min
+            )} should be selected`,
+        });
+    }
+
+    if (meta.max && meta.max > value.length) {
+        throw new InvalidInputError({
+            message: `Maximum of ${meta.max} ${pluralize(
+                "item",
+                meta.max
+            )} should be selected`,
+        });
+    }
+
+    if (meta.selectFrom) {
+        const block = await context.block.assertGetBlockById(
+            context,
+            meta.selectFrom.customId,
+            () =>
+                meta.selectFrom.type === BlockType.Organization
+                    ? throwOrganizationNotFoundError
+                    : meta.selectFrom.type === BlockType.Board
+                    ? throwBoardNotFoundError
+                    : undefined
+        );
     }
 
     return value;
