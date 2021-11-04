@@ -140,6 +140,15 @@ class TestBlockContext implements IBlockContext {
             }) !== -1
         );
     };
+
+    public countBoardTasks = async (ctx: IBaseContext, boardId: string) => {
+        throw new Error("not implemented yet!!");
+    };
+
+    getTasksByStatus = async () => {
+        throw new Error("not implemented yet!!");
+        return [];
+    };
 }
 
 export const getTestBlockContext = makeSingletonFunc(

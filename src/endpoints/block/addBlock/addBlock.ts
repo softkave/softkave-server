@@ -50,29 +50,13 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         };
     }
 
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         orgId: newBlock.rootBlockId!,
-    //         resourceType:
-    //             newBlock.type === BlockType.Board
-    //                 ? SystemResourceType.Board
-    //                 : SystemResourceType.Task,
-    //         action: SystemActionType.Create,
-    //         permissionResourceId: newBlock.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block: newBlock });
-
     const result = await context.addBlock(context, {
         ...instData,
         data,
     });
 
     const block = result.block;
-
     context.auditLog.insert(context, instData, {
         action: SystemActionType.Create,
         resourceId: block.customId,

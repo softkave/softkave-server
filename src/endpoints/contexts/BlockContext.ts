@@ -60,6 +60,12 @@ export interface IBlockContext {
         type: BlockType,
         parent?: string
     ) => Promise<boolean>;
+    countBoardTasks: (ctx: IBaseContext, boardId: string) => Promise<number>;
+    getTasksByStatus: (
+        ctx: IBaseContext,
+        boardId: string,
+        statusId: string
+    ) => Promise<IBlock[]>;
 }
 
 export default class BlockContext implements IBlockContext {
@@ -224,6 +230,27 @@ export default class BlockContext implements IBlockContext {
             return blockDoc;
         });
     }
+
+    public countBoardTasks = wrapFireAndThrowError(
+        async (ctx: IBaseContext, boardId: string) => {
+            return await ctx.models.blockModel.model
+                .countDocuments({ parent: boardId })
+                .exec();
+        }
+    );
+
+    public getTasksByStatus = wrapFireAndThrowError(
+        (ctx: IBaseContext, boardId: string, statusId: string) => {
+            return ctx.models.blockModel.model
+                .find({
+                    parent: boardId,
+                    status: statusId,
+                    isDeleted: false,
+                })
+                .lean()
+                .exec();
+        }
+    );
 }
 
 export const getBlockContext = makeSingletonFunc(() => new BlockContext());

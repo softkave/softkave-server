@@ -53,6 +53,11 @@ import {
 import { getUnseenChatsModel } from "../../mongo/unseenChats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
+import {
+    getTaskHistoryContext,
+    ITaskHistoryContext,
+} from "./TaskHistoryContext";
+import { getTaskHistoryItemModel } from "../../mongo/task-history";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -72,6 +77,7 @@ export interface IBaseContext {
     client: IClientContext;
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
+    taskHistory: ITaskHistoryContext;
     webPush: IWebPushContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
@@ -97,6 +103,7 @@ export default class BaseContext implements IBaseContext {
     public client = getClientContext();
     public token = getTokenContext();
     public unseenChats = getUnseenChatsContext();
+    public taskHistory = getTaskHistoryContext();
     public webPush = getWebPushContext();
     public models: IContextModels = {
         userModel: getUserModel(),
@@ -115,6 +122,7 @@ export default class BaseContext implements IBaseContext {
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
         unseenChatsModel: getUnseenChatsModel(),
+        taskHistory: getTaskHistoryItemModel(),
     };
     public socketServerInstance: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();

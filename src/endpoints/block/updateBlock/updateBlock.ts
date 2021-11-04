@@ -1,11 +1,18 @@
 import pick from "lodash/pick";
 import { SystemActionType } from "../../../models/system";
 import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
+import { IBlock, BlockType } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
-import { indexArray } from "../../../utilities/fns";
+import {
+    ITaskHistoryItem,
+    TaskHistoryAction,
+} from "../../../mongo/task-history";
+import { IUser } from "../../../mongo/user";
+import { getDateString, indexArray } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { IBaseContext } from "../../contexts/BaseContext";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getBlockRootBlockId, getPublicBlockData } from "../utils";
@@ -14,7 +21,7 @@ import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
 import processUpdateBlockInput from "./processUpdateBlockInput";
 import sendNewlyAssignedTaskEmail from "./sendNewAssignedTaskEmail";
-import { UpdateBlockEndpoint } from "./types";
+import { IUpdateBlockInput, UpdateBlockEndpoint } from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
 const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
@@ -24,17 +31,6 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     const block = await context.block.getBlockById(context, data.blockId);
 
     assertBlock(block);
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         orgId: getBlockRootBlockId(block),
-    //         resourceType: getBlockAuditLogResourceType(block),
-    //         action: SystemActionType.Update,
-    //         permissionResourceId: block.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block });
 
     // Parent update ( tranferring block ) is handled separately by transferBlock
@@ -139,6 +135,9 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             updatedBlock
         )
     );
+    // fireAndForgetPromise(
+    //     insertTaskHistoryItem(context, user, block, updateData)
+    // );
 
     context.auditLog.insert(context, instData, {
         action: SystemActionType.Update,
@@ -171,3 +170,36 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 };
 
 export default updateBlock;
+
+export async function insertTaskHistoryItem(
+    context: IBaseContext,
+    user: IUser,
+    existingBlock: IBlock,
+    input: IUpdateBlockInput
+) {
+    if (
+        existingBlock.type === BlockType.Task ||
+        existingBlock.status === input.status
+    ) {
+        return;
+    }
+
+    const historyItem: ITaskHistoryItem = {
+        customId: getNewId(),
+        organizationId: existingBlock.rootBlockId!,
+        boardId: existingBlock.parent!,
+        taskId: existingBlock.customId,
+        action: TaskHistoryAction.StatusUpdated,
+        createdAt: getDateString(),
+        createdBy: user.customId,
+        value: input.status,
+        timeToStage:
+            new Date(
+                existingBlock.statusAssignedAt || existingBlock.createdAt
+            ).valueOf() - new Date().valueOf(),
+        timeSpentSoFar:
+            new Date(existingBlock.createdAt).valueOf() - new Date().valueOf(),
+    };
+
+    await context.taskHistory.insert(context, historyItem);
+}
