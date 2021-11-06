@@ -23,7 +23,6 @@ import { getNotificationModel } from "./mongo/notification";
 import { getUserModel } from "./mongo/user";
 import appInfo from "./resources/appInfo";
 import { appVariables } from "./resources/appVariables";
-import { script_taskNameUpdates } from "./scripts/taskNameUpdates";
 import logger from "./utilities/logger";
 
 if (process.env.NODE_ENV === "production") {
@@ -142,7 +141,6 @@ connection.wait().then(async () => {
     await auditLogModel.waitTillReady();
 
     // scripts
-    await script_taskNameUpdates();
 
     httpServer.listen(port, () => {
         logger.info(appInfo.appName);
