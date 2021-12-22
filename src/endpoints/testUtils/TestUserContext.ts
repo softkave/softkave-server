@@ -80,8 +80,8 @@ class TestUserContext implements IUserContext {
     getBlockCollaborators = async (ctx: IBaseContext, blockId: string) => {
         return users.filter((user) => {
             return (
-                user.organizations &&
-                user.organizations.findIndex(
+                user.orgs &&
+                user.orgs.findIndex(
                     (organization) => organization.customId === blockId
                 ) !== -1
             );
@@ -91,8 +91,8 @@ class TestUserContext implements IUserContext {
     getOrganizationUsers = async (ctx: IBaseContext, blockId: string) => {
         return users.filter((user) => {
             return (
-                user.organizations &&
-                user.organizations.findIndex(
+                user.orgs &&
+                user.orgs.findIndex(
                     (organization) => organization.customId === blockId
                 ) !== -1
             );

@@ -44,12 +44,12 @@ const createOrganization: CreateOrganizationEndpoint = async (
     //    you can do this when user tries to read them, or add them again
     // TODO: scrub all data that failed it's pipeline
 
-    const userOrganizations = user.organizations.concat({
+    const userOrganizations = user.orgs.concat({
         customId: savedOrganization.customId,
     });
 
     user = await context.user.updateUserById(context, user.customId, {
-        organizations: userOrganizations,
+        orgs: userOrganizations,
     });
 
     instData.user = user;

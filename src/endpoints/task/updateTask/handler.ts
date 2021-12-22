@@ -88,7 +88,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
                 return false;
             }
 
-            return !!assigneeUserData.organizations.find(
+            return !!assigneeUserData.orgs.find(
                 (item) => item.customId === task.rootBlockId
             );
         });

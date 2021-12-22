@@ -11,10 +11,10 @@ import { DeleteBlockEndpoint, IDeleteBlockParameters } from "./types";
 import { deleteBlockJoiSchema } from "./validation";
 
 function removeOrganizationInUser(user: IUser, organizationId: string) {
-    const userOrganizationIndex = user.organizations.findIndex(
+    const userOrganizationIndex = user.orgs.findIndex(
         (organization) => organization.customId === organizationId
     );
-    user.organizations.splice(userOrganizationIndex, 1);
+    user.orgs.splice(userOrganizationIndex, 1);
     return user;
 }
 
@@ -24,8 +24,8 @@ async function deleteOrganizationCleanup(
     block: IBlock
 ) {
     let user = await context.session.getUser(context, instData);
-    const userOrganizations = [...user.organizations];
-    const userOrganizationIndex = user.organizations.findIndex(
+    const userOrganizations = [...user.orgs];
+    const userOrganizationIndex = user.orgs.findIndex(
         (organization) => organization.customId === block.customId
     );
 
@@ -33,7 +33,7 @@ async function deleteOrganizationCleanup(
 
     // TODO: scrub user collection for unreferenced organizationIds
     user = await context.user.updateUserById(context, user.customId, {
-        organizations: userOrganizations,
+        orgs: userOrganizations,
     });
 
     instData.user = user;
@@ -49,7 +49,7 @@ async function deleteOrganizationCleanup(
             removeOrganizationInUser(organizationUser, block.customId);
             updates.push({
                 id: organizationUser.customId,
-                data: { organizations: organizationUser.organizations },
+                data: { orgs: organizationUser.orgs },
             });
         }
 

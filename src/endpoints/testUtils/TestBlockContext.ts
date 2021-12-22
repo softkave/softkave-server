@@ -111,14 +111,14 @@ class TestBlockContext implements IBlockContext {
     };
 
     getUserRootBlocks = async (ctx: IBaseContext, user: IUser) => {
-        const organizationsMap = indexArray(user.organizations, {
+        const organizationsMap = indexArray(user.orgs, {
             path: "customId",
         });
         return blocks.filter((block) => organizationsMap[block.customId]);
     };
 
     getUserOrganizations = async (ctx: IBaseContext, user: IUser) => {
-        const organizationsMap = indexArray(user.organizations, {
+        const organizationsMap = indexArray(user.orgs, {
             path: "customId",
         });
         const organizations = blocks.filter(

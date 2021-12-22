@@ -35,7 +35,7 @@ export async function setupTestUser(
         forganizationotPasswordHistory: [],
         passwordLastChangedAt: "",
         rootBlockId: "",
-        organizations: [],
+        orgs: [],
         color: testData.testUser00.color,
         notificationsLastCheckedAt: "",
     };

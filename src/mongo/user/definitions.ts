@@ -20,7 +20,7 @@ export interface IUser {
     forganizationotPasswordHistory: string[];
     passwordLastChangedAt: string;
     rootBlockId: string;
-    organizations: IUserOrganization[];
+    orgs: IUserOrganization[];
     color: string;
     notificationsLastCheckedAt?: string;
 }

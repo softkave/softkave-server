@@ -57,7 +57,7 @@ const signup: SignupEndpoint = async (context, instData) => {
         forganizationotPasswordHistory: [],
         passwordLastChangedAt: now,
         rootBlockId: "",
-        organizations: [],
+        orgs: [],
     };
 
     let user = await context.user.saveUser(context, value);

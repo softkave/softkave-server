@@ -112,7 +112,7 @@ export default class UserContext implements IUserContext {
             return ctx.models.userModel.model
                 .find(
                     {
-                        organizations: { $elemMatch: { customId: blockId } },
+                        orgs: { $elemMatch: { customId: blockId } },
                     },
                     {
                         organizations: { $elemMatch: { customId: blockId } },
@@ -132,7 +132,7 @@ export default class UserContext implements IUserContext {
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find({
-                    organizations: { $elemMatch: { customId: blockId } },
+                    orgs: { $elemMatch: { customId: blockId } },
                 })
                 .lean()
                 .exec();

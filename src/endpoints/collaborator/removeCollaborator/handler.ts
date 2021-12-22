@@ -29,7 +29,7 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
         throw new UserDoesNotExistError();
     }
 
-    const collaboratorOrganizations = [...collaborator.organizations];
+    const collaboratorOrganizations = [...collaborator.orgs];
     const index = collaboratorOrganizations.findIndex(
         (o) => o.customId === o.customId
     );
@@ -40,7 +40,7 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
 
     collaboratorOrganizations.splice(index, 1);
     await context.user.updateUserById(context, collaborator.customId, {
-        organizations: collaboratorOrganizations,
+        orgs: collaboratorOrganizations,
     });
 };
 

@@ -13,7 +13,7 @@ const getValues: GetValuesEndpoint = async (context, instData) => {
     );
 
     const userOrganizationsMap: Record<string, true> =
-        user.organizations.reduce((map, organization) => {
+        user.orgs.reduce((map, organization) => {
             map[organization.customId] = true;
             return map;
         }, {} as Record<string, true>);

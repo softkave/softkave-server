@@ -92,12 +92,12 @@ const respondToRequest: RespondToCollaborationRequestEndpoint = async (
 
     if (userAccepted) {
         if (!userIsPartOfOrganization(user, organization.customId)) {
-            const userOrganizations = user.organizations.concat({
+            const userOrganizations = user.orgs.concat({
                 customId: organization.customId,
             });
 
             user = await context.user.updateUserById(context, user.customId, {
-                organizations: userOrganizations,
+                orgs: userOrganizations,
             });
 
             return {

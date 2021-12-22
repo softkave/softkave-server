@@ -27,7 +27,7 @@ const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (
         context,
         user.customId,
         // permissions.map((p) => p.organizationId)
-        user.organizations.map((organization) => organization.customId)
+        user.orgs.map((organization) => organization.customId)
     );
 
     const chats = await context.chat.getMessages(
