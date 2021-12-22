@@ -51,31 +51,20 @@ import {
 import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
-import {
-    getCustomPropertyModel,
-    getCustomPropertyValueModel,
-    getCustomSelectionOptionModel,
-} from "../../mongo/custom-property/models";
+import { ICustomSelectionOption, ICustomProperty, ICustomPropertyValue } from "../../mongo/custom-property/definitions";
+import { IEntityAttrValue, getEntityAttrValueModel } from "../../mongo/eav";
+import { getTaskHistoryItemModel } from "../../mongo/task-history";
+import { throwCustomValueNotFoundError } from "../customProperty/utils";
 import { IDataProvider } from "./DataProvider";
-import {
-    ICustomProperty,
-    ICustomPropertyValue,
-    ICustomSelectionOption,
-} from "../../mongo/custom-property/definitions";
 import MongoDataProvider from "./MongoDataProvider";
-import {
-    throwCustomOptionNotFoundError,
-    throwCustomPropertyNotFoundError,
-    throwCustomValueNotFoundError,
-} from "../customProperty/utils";
-import { getEntityAttrValueModel, IEntityAttrValue } from "../../mongo/eav";
 import NotImplementedDataProvider from "./NotImplementedDataProvider";
+import { ITaskHistoryContext, getTaskHistoryContext } from "./TaskHistoryContext";
 
 export interface IBaseContextDataProviders {
-    customOption: IDataProvider<ICustomSelectionOption>;
-    customProperty: IDataProvider<ICustomProperty>;
-    customValue: IDataProvider<ICustomPropertyValue>;
-    entityAttrValue: IDataProvider<IEntityAttrValue>;
+  customOption: IDataProvider<ICustomSelectionOption>;
+  customProperty: IDataProvider<ICustomProperty>;
+  customValue: IDataProvider<ICustomPropertyValue>;
+  entityAttrValue: IDataProvider<IEntityAttrValue>;
 }
 
 export interface IBaseContext {
@@ -95,6 +84,7 @@ export interface IBaseContext {
     client: IClientContext;
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
+    taskHistory: ITaskHistoryContext;
     webPush: IWebPushContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
@@ -121,6 +111,7 @@ export default class BaseContext implements IBaseContext {
     public client = getClientContext();
     public token = getTokenContext();
     public unseenChats = getUnseenChatsContext();
+    public taskHistory = getTaskHistoryContext();
     public webPush = getWebPushContext();
     public models: IContextModels = {
         userModel: getUserModel(),
@@ -138,6 +129,7 @@ export default class BaseContext implements IBaseContext {
         clientModel: getClientModel(),
         tokenModel: getTokenModel(),
         unseenChatsModel: getUnseenChatsModel(),
+        taskHistory: getTaskHistoryItemModel(),
     };
     public socketServerInstance: Server = getSocketServer();
     public broadcastHelpers = getBroadcastHelpers();

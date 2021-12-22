@@ -15,11 +15,7 @@ import { IClientModel } from "../../mongo/client/Model";
 import { ITokenModel } from "../../mongo/token";
 import { IUnseenChatsModel } from "../../mongo/unseen-chats";
 import { IBaseTokenData } from "./TokenContext";
-import {
-    ICustomPropertyModel,
-    ICustomPropertyValueModel,
-    ICustomSelectionOptionModel,
-} from "../../mongo/custom-property/models";
+import { ITaskHistoryItemModel } from "../../mongo/task-history";
 
 export interface IContextModels {
     userModel: IUserModel;
@@ -37,6 +33,7 @@ export interface IContextModels {
     clientModel: IClientModel;
     tokenModel: ITokenModel;
     unseenChatsModel: IUnseenChatsModel;
+    taskHistory: ITaskHistoryItemModel;
 }
 
 export interface IServerRequest extends Request {

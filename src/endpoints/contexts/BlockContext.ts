@@ -70,6 +70,12 @@ export interface IBlockContext {
         type: BlockType,
         parent?: string
     ) => Promise<boolean>;
+    countBoardTasks: (ctx: IBaseContext, boardId: string) => Promise<number>;
+    getTasksByStatus: (
+        ctx: IBaseContext,
+        boardId: string,
+        statusId: string
+    ) => Promise<IBlock[]>;
 }
 
 export default class BlockContext implements IBlockContext {
@@ -167,13 +173,14 @@ export default class BlockContext implements IBlockContext {
         }
     );
 
+
     public getBlockChildren = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(
             ctx: IBaseContext,
             blockId: string,
             typeList?: BlockType[]
         ) => {
-            const query: FilterQuery<IBlock> = {
+            const query: FilterQuery<IBlockDocument> = {
                 isDeleted: false,
                 parent: blockId,
             };
@@ -195,7 +202,7 @@ export default class BlockContext implements IBlockContext {
 
     public getUserRootBlocks = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser) => {
-            const organizationIds = user.organizations.map(
+            const organizationIds = user.orgs.map(
                 (organization) => organization.customId
             );
 
@@ -214,7 +221,7 @@ export default class BlockContext implements IBlockContext {
     // TODO: seems similar to getUserRootBlocks, refactor.
     public getUserOrganizations = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, user: IUser) => {
-            const organizationIds = user.organizations.map(
+            const organizationIds = user.orgs.map(
                 (organization) => organization.customId
             );
             const organizations = await ctx.models.blockModel.model
@@ -266,7 +273,7 @@ export default class BlockContext implements IBlockContext {
             type: BlockType,
             parent?: string
         ) => {
-            const query: FilterQuery<IBlock> = {
+            const query: FilterQuery<IBlockDocument> = {
                 type,
                 lowerCasedName: name.toLowerCase(),
                 isDeleted: false,
@@ -293,6 +300,27 @@ export default class BlockContext implements IBlockContext {
 
         return cast<T>(newBlock);
     }
+
+    public countBoardTasks = wrapFireAndThrowErrorAsync(
+        async (ctx: IBaseContext, boardId: string) => {
+            return await ctx.models.blockModel.model
+                .countDocuments({ parent: boardId })
+                .exec();
+        }
+    );
+
+    public getTasksByStatus = wrapFireAndThrowErrorAsync(
+        (ctx: IBaseContext, boardId: string, statusId: string) => {
+            return ctx.models.blockModel.model
+                .find({
+                    parent: boardId,
+                    status: statusId,
+                    isDeleted: false,
+                })
+                .lean()
+                .exec();
+        }
+    );
 }
 
 export const getBlockContext = makeSingletonFn(() => new BlockContext());

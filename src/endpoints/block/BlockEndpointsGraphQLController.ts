@@ -8,6 +8,7 @@ import addCollaborators from "./addCollaborators/addCollaborators";
 import AddCollaboratorsContext from "./addCollaborators/context";
 import blockExists from "./blockExists/blockExists";
 import deleteBlock from "./deleteBlock/deleteBlock";
+import getAverageTimeToCompleteTasks from "./getAverageTimeToCompleteTasks/getAverageTimeToCompleteTasks";
 import getBlockChildren from "./getBlockChildren/getBlockChildren";
 import getBlockCollaborators from "./getBlockCollaborators/getBlockCollaborators";
 import getBlockNotifications from "./getBlockNotifications/getBlockNotifications";
@@ -24,8 +25,22 @@ import updateBlock from "./updateBlock/updateBlock";
 export default class BlockEndpointsGraphQLController {
     public addBlock(data, req) {
         return wrapEndpoint(data, req, async () =>
+            // @ts-ignore
             addBlock(
                 getAddBlockContext(),
+                await RequestData.fromExpressRequest(
+                    getBaseContext(),
+                    req,
+                    data
+                )
+            )
+        );
+    }
+
+    public getAverageTimeToCompleteTasks(data, req) {
+        return wrapEndpoint(data, req, async () =>
+            getAverageTimeToCompleteTasks(
+                getBaseContext(),
                 await RequestData.fromExpressRequest(
                     getBaseContext(),
                     req,

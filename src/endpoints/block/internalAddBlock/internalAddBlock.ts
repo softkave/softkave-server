@@ -1,4 +1,13 @@
-import { BlockType } from "../../../mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
+import {
+    ITaskHistoryItem,
+    TaskHistoryAction,
+} from "../../../mongo/task-history";
+import { IUser } from "../../../mongo/user";
+import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { IBaseContext } from "../../contexts/BaseContext";
+import { fireAndForgetPromise } from "../../utils";
 import { BlockExistsError } from "../errors";
 import manualProcessInternalAddBlockInput from "./manualProcessInternalAddBlockInput";
 import { InternalAddBlockEndpoint } from "./types";
@@ -29,19 +38,7 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
     }
 
     const block = manualProcessInternalAddBlockInput(inputBlock, user);
-    let savedBlock = await context.block.saveBlock(context, block);
-
-    // if (inputBlock.type === BlockType.Organization) {
-    //     const { organization } = await context.initializeOrganizationAccessControl(
-    //         context,
-    //         user,
-    //         savedBlock
-    //     );
-
-    //     savedBlock = organization;
-    // } else if (inputBlock.type === BlockType.Board) {
-    //     await context.initializeBoardPermissions(context, user, savedBlock);
-    // }
+    const savedBlock = await context.block.saveBlock(context, block);
 
     return {
         block: savedBlock,
@@ -49,3 +46,28 @@ const internalAddBlock: InternalAddBlockEndpoint = async (
 };
 
 export default internalAddBlock;
+
+export async function insertTaskHistoryItem(
+    context: IBaseContext,
+    user: IUser,
+    newBlock: IBlock
+) {
+    if (newBlock.type === BlockType.Task) {
+        return;
+    }
+
+    const historyItem: ITaskHistoryItem = {
+        customId: getNewId(),
+        organizationId: newBlock.rootBlockId!,
+        boardId: newBlock.parent!,
+        taskId: newBlock.customId,
+        action: TaskHistoryAction.StatusUpdated,
+        createdAt: getDateString(),
+        createdBy: user.customId,
+        value: newBlock.status,
+        timeToStage: 0,
+        timeSpentSoFar: 0,
+    };
+
+    await context.taskHistory.insert(context, historyItem);
+}

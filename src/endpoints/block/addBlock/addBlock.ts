@@ -24,11 +24,11 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         //    you can do this when user tries to read them, or add them again
         // TODO: scrub all data that failed it's pipeline
 
-        const userOrganizations = user.organizations.concat({
+        const userOrganizations = user.orgs.concat({
             customId: organization.customId,
         });
         user = await context.user.updateUserById(context, user.customId, {
-            organizations: userOrganizations,
+            orgs: userOrganizations,
         });
 
         instData.user = user;
@@ -46,29 +46,14 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
         };
     }
 
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: newBlock.rootBlockId!,
-    //         resourceType:
-    //             newBlock.type === BlockType.Board
-    //                 ? SystemResourceType.Board
-    //                 : SystemResourceType.Task,
-    //         action: SystemActionType.Create,
-    //         permissionResourceId: newBlock.permissionResourceId,
-    //     },
-    //     user
-    // );
 
     canReadBlock({ user, block: newBlock });
-
     const result = await context.addBlock(context, {
         ...instData,
         data,
     });
 
     const block = result.block;
-
     context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
         block,
         updateType: { isNew: true },

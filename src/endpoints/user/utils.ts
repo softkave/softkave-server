@@ -1,5 +1,6 @@
 import { IUser } from "../../mongo/user";
 import { getDateString } from "../../utilities/fns";
+import { ICollaborator } from "../collaborator/types";
 import { extractFields, getFields } from "../utils";
 import { IPublicUserData } from "./types";
 
@@ -30,13 +31,15 @@ export const getPublicUserData = (user: IUser): IPublicUserData => {
     return extractFields(user, publicUserFields);
 };
 
-export const userIsPartOfOrganization = (
-    user: IUser,
-    organizationId: string
-) => {
-    return (
-        user.organizations.findIndex(
-            (organization) => organization.customId === organizationId
-        ) !== -1
-    );
+
+
+export function getCollaboratorsArray(
+  users: Array<ICollaborator>
+): ICollaborator[] {
+  // @ts-ignore
+  return users.map((user) => extractFields(user, collaboratorFields));
+}
+
+export const userIsPartOfOrg = (user: IUser, orgId: string) => {
+  return user.orgs.findIndex((org) => org.customId === orgId) !== -1;
 };

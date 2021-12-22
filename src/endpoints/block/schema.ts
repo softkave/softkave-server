@@ -1,4 +1,5 @@
 import { getComplexTypeArrayInputGraphQLSchema } from "../utils";
+import { getAverageTimeToCompleteTasksGraphQLSchema } from "./getAverageTimeToCompleteTasks/schema";
 
 const blockSchema = `
     type Assignee {
@@ -277,6 +278,8 @@ const blockSchema = `
         block: Block
     }
 
+    ${getAverageTimeToCompleteTasksGraphQLSchema.types}
+
     type BlockQuery {
         addBlock (block: AddBlockInput!) : AddBlockResponse
         updateBlock (
@@ -304,6 +307,7 @@ const blockSchema = `
         getBlockCollaborators (blockId: String!) : GetBlockCollaboratorsResponse
         getBlockNotifications(blockId: String!) : GetNotificationsResponse
         revokeCollaborationRequest (blockId: String!, requestId: String!) : ErrorOnlyResponse
+        ${getAverageTimeToCompleteTasksGraphQLSchema.endpoint}
     }
 `;
 

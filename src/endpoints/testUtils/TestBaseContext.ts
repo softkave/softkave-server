@@ -44,6 +44,7 @@ export class TestBaseContext implements ITestBaseContext {
     public client = getTestClientContext();
     public token = getTestTokenContext();
     public unseenChats = getTestUnseenChatsContext();
+    public taskHistory = {} as any;
     public webPush = getTestWebPushContext();
     public models = {} as any;
     public socketServerInstance = {} as any;

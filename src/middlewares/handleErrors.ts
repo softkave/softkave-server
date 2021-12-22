@@ -4,7 +4,7 @@ import {
     NotBeforeError,
     TokenExpiredError,
 } from "jsonwebtoken";
-import multer from "multer";
+// import multer from "multer";
 import {
     CredentialsExpiredError,
     InvalidCredentialsError,
@@ -30,10 +30,12 @@ function handleErrors(err: Error | any, req: Request, res: Response, next) {
         res.status(401).send({
             errors: [JWTError],
         });
-    } else if (err instanceof multer.MulterError) {
-        // TODO: how can we handle this better?
-        res.status(500).send(err);
-    } else {
+    }
+    // else if (err instanceof multer.MulterError) {
+    //     // TODO: how can we handle this better?
+    //     res.status(500).send(err);
+    // }
+    else {
         res.status(500).send({
             errors: [new ServerError()],
         });

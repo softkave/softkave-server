@@ -1,7 +1,13 @@
+
+import { IBlock, BlockType } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
-import { indexArray } from "../../../utilities/fns";
+import { ITaskHistoryItem, TaskHistoryAction } from "../../../mongo/task-history";
+import { IUser } from "../../../mongo/user";
+import { indexArray, getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { IBaseContext } from "../../contexts/BaseContext";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
 import { getPublicBlockData } from "../utils";
@@ -10,7 +16,7 @@ import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
 import processUpdateBlockInput from "./processUpdateBlockInput";
 import sendNewlyAssignedTaskEmail from "./sendNewAssignedTaskEmail";
-import { UpdateBlockEndpoint } from "./types";
+import { IUpdateBlockInput, UpdateBlockEndpoint } from "./types";
 import { updateBlockJoiSchema } from "./validation";
 
 const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
@@ -83,7 +89,7 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
                 return false;
             }
 
-            return !!assigneeUserData.organizations.find(
+            return !!assigneeUserData.orgs.find(
                 (o) => o.customId === block.rootBlockId
             );
         });
@@ -124,6 +130,9 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
             updatedBlock
         )
     );
+    // fireAndForgetPromise(
+    //     insertTaskHistoryItem(context, user, block, updateData)
+    // );
 
     if (parentInput && block.parent !== parentInput) {
         const result = await context.transferBlock(context, {
@@ -141,3 +150,36 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
 };
 
 export default updateBlock;
+
+export async function insertTaskHistoryItem(
+    context: IBaseContext,
+    user: IUser,
+    existingBlock: IBlock,
+    input: IUpdateBlockInput
+) {
+    if (
+        existingBlock.type === BlockType.Task ||
+        existingBlock.status === input.status
+    ) {
+        return;
+    }
+
+    const historyItem: ITaskHistoryItem = {
+        customId: getNewId(),
+        organizationId: existingBlock.rootBlockId!,
+        boardId: existingBlock.parent!,
+        taskId: existingBlock.customId,
+        action: TaskHistoryAction.StatusUpdated,
+        createdAt: getDateString(),
+        createdBy: user.customId,
+        value: input.status,
+        timeToStage:
+            new Date(
+                existingBlock.statusAssignedAt || existingBlock.createdAt
+            ).valueOf() - new Date().valueOf(),
+        timeSpentSoFar:
+            new Date(existingBlock.createdAt).valueOf() - new Date().valueOf(),
+    };
+
+    await context.taskHistory.insert(context, historyItem);
+}
