@@ -15,8 +15,8 @@ export enum NotificationType {
     NewCollaborationRequest = "newCollaborationRequest",
     CollaborationRequestResponse = "collaborationRequestResponse",
 
-    OrganizationUpdated = "organizationUpdated",
-    OrganizationDeleted = "organizationDeleted",
+    OrganizationUpdated = "orgUpdated",
+    OrganizationDeleted = "orgDeleted",
 
     CollaboratorRemoved = "collaboratorRemoved",
     CollaboratorPermissionsUpdated = "collaboratorPermissionsUpdated",
@@ -103,7 +103,7 @@ export interface INotification {
     body: string;
     type: NotificationType;
     title: string;
-    organizationId?: string;
+    orgId?: string;
     subscriptionResourceId?: string;
     subscriptionResourceType?: SystemResourceType;
     subscriptionId?: string;
@@ -122,7 +122,7 @@ export const notificationSchema = {
     customId: { type: String, unique: true, index: true },
     recipientId: { type: String },
     body: { type: String },
-    organizationId: { type: String },
+    orgId: { type: String },
     blockId: { type: String },
     createdAt: { type: Date },
     type: { type: String },
@@ -152,7 +152,7 @@ export interface INotificationSubscription {
     resourceType: SystemResourceType;
     resourceId: string;
     type: NotificationType;
-    organizationId: string;
+    orgId: string;
 }
 
 export const notificationSubscriptionSchema = {
@@ -161,7 +161,7 @@ export const notificationSubscriptionSchema = {
     resourceType: { type: String },
     resourceId: { type: String },
     type: { type: String },
-    organizationId: { type: String },
+    orgId: { type: String },
 };
 
 export interface INotificationSubscriptionDocument

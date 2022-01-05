@@ -49,7 +49,7 @@ export interface IPermission {
     action: SystemActionType;
     permissionGroups: string[];
     users: string[];
-    organizationId: string;
+    orgId: string;
     permissionOwnerId: string;
     createdBy: string;
     createdAt: Date;

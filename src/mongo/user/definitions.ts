@@ -17,7 +17,7 @@ export interface IUser {
     email: string;
     hash: string;
     createdAt: string;
-    forganizationotPasswordHistory: string[];
+    forgotPasswordHistory: string[];
     passwordLastChangedAt: string;
     rootBlockId: string;
     orgs: IUserOrganization[];
@@ -33,10 +33,10 @@ const userSchema = {
     email: { type: String, unique: true, index: true },
     hash: { type: String },
     createdAt: { type: Date, default: () => getDate() },
-    forganizationotPasswordHistory: { type: [Date] },
+    forgotPasswordHistory: { type: [Date] },
     passwordLastChangedAt: { type: Date },
     rootBlockId: { type: String },
-    organizations: { type: [userOrganizationSchema] },
+    orgs: { type: [userOrganizationSchema] },
     color: { type: String },
     notificationsLastCheckedAt: { type: Date },
 };

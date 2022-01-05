@@ -2,7 +2,7 @@ export enum SystemResourceType {
     User = "user",
     Collaborator = "collaborator",
     RootBlock = "root",
-    Organization = "organization",
+    Organization = "org",
     Board = "board",
     Task = "task",
     Status = "status",
@@ -25,7 +25,7 @@ export enum SystemResourceType {
 }
 
 export enum ParentResourceType {
-    Organization = "organization",
+    Organization = "org",
     Board = "board",
     Task = "task",
 }
@@ -50,7 +50,7 @@ export enum SystemActionType {
     // user
     Signup = "signup",
     Login = "login",
-    ForganizationotPassword = "forganizationot-password",
+    ForgotPassword = "forgot-password",
     ChangePassword = "change-password",
     ChangePasswordWithToken = "change-password-with-token",
 }
