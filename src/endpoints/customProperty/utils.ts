@@ -3,7 +3,7 @@ import {
     ICustomPropertyValue,
     ICustomSelectionOption,
 } from "../../mongo/custom-property/definitions";
-import cast, { getDateString } from "../../utilities/fns";
+import { getDateString } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import {
     CustomPropertyDoesNotExistError,

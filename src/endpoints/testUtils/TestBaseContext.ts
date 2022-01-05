@@ -1,5 +1,18 @@
+import {
+    ICustomSelectionOption,
+    ICustomProperty,
+    ICustomPropertyValue,
+} from "../../mongo/custom-property/definitions";
+import { IEntityAttrValue } from "../../mongo/eav";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { IBaseContext } from "../contexts/BaseContext";
+import MemoryDataProvider from "../contexts/data-providers/MemoryDataProvider";
+import {
+    throwCustomOptionNotFoundError,
+    throwCustomPropertyNotFoundError,
+    throwCustomValueNotFoundError,
+} from "../customProperty/utils";
+import { throwEAVNotFoundError } from "../eav/utils";
 import { getTestAccessControlContext } from "./TestAccessControlContext";
 import { getTestAuditLogContext } from "./TestAuditLogContext";
 import { getTestBlockContext } from "./TestBlockContext";
@@ -70,6 +83,24 @@ export class TestBaseContext implements ITestBaseContext {
         confirmEmailAddressPath: `https://www.softkave.com/confirm-email-address`,
     };
     public webPushInstance = {} as any;
+    public data = {
+        customOption: new MemoryDataProvider<ICustomSelectionOption>(
+            [],
+            throwCustomOptionNotFoundError
+        ),
+        customProperty: new MemoryDataProvider<ICustomProperty>(
+            [],
+            throwCustomPropertyNotFoundError
+        ),
+        customValue: new MemoryDataProvider<ICustomPropertyValue>(
+            [],
+            throwCustomValueNotFoundError
+        ),
+        entityAttrValue: new MemoryDataProvider<IEntityAttrValue>(
+            [],
+            throwEAVNotFoundError
+        ),
+    };
 }
 
 export const getTestBaseContext = makeSingletonFn(() => new TestBaseContext());

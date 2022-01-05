@@ -51,20 +51,28 @@ import {
 import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
 import { getWebPushContext, IWebPushContext } from "./WebPushContext";
-import { ICustomSelectionOption, ICustomProperty, ICustomPropertyValue } from "../../mongo/custom-property/definitions";
+import {
+    ICustomSelectionOption,
+    ICustomProperty,
+    ICustomPropertyValue,
+} from "../../mongo/custom-property/definitions";
 import { IEntityAttrValue, getEntityAttrValueModel } from "../../mongo/eav";
 import { getTaskHistoryItemModel } from "../../mongo/task-history";
 import { throwCustomValueNotFoundError } from "../customProperty/utils";
-import { IDataProvider } from "./DataProvider";
-import MongoDataProvider from "./MongoDataProvider";
-import NotImplementedDataProvider from "./NotImplementedDataProvider";
-import { ITaskHistoryContext, getTaskHistoryContext } from "./TaskHistoryContext";
+import NotImplementedDataProvider from "./data-providers/NotImplementedDataProvider";
+import {
+    ITaskHistoryContext,
+    getTaskHistoryContext,
+} from "./TaskHistoryContext";
+import { IDataProvider } from "./data-providers/DataProvider";
+import MongoDataProvider from "./data-providers/MongoDataProvider";
+import { throwEAVNotFoundError } from "../eav/utils";
 
 export interface IBaseContextDataProviders {
-  customOption: IDataProvider<ICustomSelectionOption>;
-  customProperty: IDataProvider<ICustomProperty>;
-  customValue: IDataProvider<ICustomPropertyValue>;
-  entityAttrValue: IDataProvider<IEntityAttrValue>;
+    customOption: IDataProvider<ICustomSelectionOption>;
+    customProperty: IDataProvider<ICustomProperty>;
+    customValue: IDataProvider<ICustomPropertyValue>;
+    entityAttrValue: IDataProvider<IEntityAttrValue>;
 }
 
 export interface IBaseContext {
@@ -153,8 +161,8 @@ export default class BaseContext implements IBaseContext {
         customProperty: new NotImplementedDataProvider<ICustomProperty>(),
         customValue: new NotImplementedDataProvider<ICustomPropertyValue>(),
         entityAttrValue: new MongoDataProvider<IEntityAttrValue>(
-            getEntityAttrValueModel(),
-            throwCustomValueNotFoundError
+            getEntityAttrValueModel().model,
+            throwEAVNotFoundError
         ),
     };
 

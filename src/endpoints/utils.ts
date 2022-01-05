@@ -8,7 +8,7 @@ import { ParentResourceType, SystemResourceType } from "../models/system";
 import mongoConstants from "../mongo/constants";
 import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
-import cast, { indexArray } from "../utilities/fns";
+import { cast, indexArray } from "../utilities/fns";
 import { ConvertDatesToStrings } from "../utilities/types";
 import { IBaseContext } from "./contexts/BaseContext";
 import RequestData from "./RequestData";

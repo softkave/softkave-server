@@ -1,4 +1,4 @@
-import { methodNotImplemented } from "../../utilities/fns";
+import { methodNotImplemented } from "../../../utilities/fns";
 import { IDataProvider } from "./DataProvider";
 
 export default class NotImplementedDataProvider<T extends object>
@@ -17,4 +17,5 @@ export default class NotImplementedDataProvider<T extends object>
     bulkSaveItems = methodNotImplemented;
     bulkDeleteItems = methodNotImplemented;
     bulkUpdateItems = methodNotImplemented;
+    updateManyItems = methodNotImplemented;
 }
