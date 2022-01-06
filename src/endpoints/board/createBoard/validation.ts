@@ -6,7 +6,7 @@ export const newBoardJoiSchema = Joi.object().keys({
     name: organizationValidationSchemas.name.required(),
     description: organizationValidationSchemas.description
         .optional()
-        .allow([null]),
+        .allow(null),
     color: organizationValidationSchemas.color.required(),
     parent: boardValidationSchemas.parent.required(),
     boardStatuses: boardValidationSchemas.statusListSchema.required(),

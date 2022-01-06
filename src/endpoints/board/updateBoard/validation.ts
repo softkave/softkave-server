@@ -14,7 +14,7 @@ export const updateBoardJoiSchema = Joi.object()
                 name: organizationValidationSchemas.name,
                 description: organizationValidationSchemas.description
                     .optional()
-                    .allow([null]),
+                    .allow(null),
                 color: organizationValidationSchemas.color,
                 parent: boardValidationSchemas.parent,
                 boardStatuses: complexFieldJoiSchema(

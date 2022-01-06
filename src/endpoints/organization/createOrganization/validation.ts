@@ -8,7 +8,7 @@ export const createOrganizationJoiSchema = Joi.object()
                 name: organizationValidationSchemas.name.required(),
                 description: organizationValidationSchemas.description
                     .optional()
-                    .allow([null]),
+                    .allow(null),
                 color: organizationValidationSchemas.color.required(),
             })
             .required(),

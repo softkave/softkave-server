@@ -8,9 +8,9 @@ const permissionGroupJoiSchema = Joi.object().keys({
     name: accessControlValidationSchemas.name
         .invalid([DefaultPermissionGroupNames.Public])
         .required(),
-    description: accessControlValidationSchemas.description.allow([null, ""]),
-    prevId: validationSchemas.uuid.allow([null]),
-    nextId: validationSchemas.uuid.allow([null]),
+    description: accessControlValidationSchemas.description.allow(null, ""),
+    prevId: validationSchemas.uuid.allow(null),
+    nextId: validationSchemas.uuid.allow(null),
     users: accessControlValidationSchemas.userIds,
 });
 

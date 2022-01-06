@@ -12,15 +12,15 @@ import { customPropertyConstants } from "./constants";
 
 const name = Joi.string().max(customPropertyConstants.nameMax);
 const description = Joi.string().max(customPropertyConstants.descriptionMax);
-const type = Joi.string().valid([
+const type = Joi.string().valid(
     CustomPropertyType.Text,
     CustomPropertyType.Date,
     CustomPropertyType.Selection,
-    CustomPropertyType.Number,
-]);
+    CustomPropertyType.Number
+);
 
 const isRequired = Joi.bool();
-const textResourceType = Joi.string().valid([TextResourceTypes.Text]);
+const textResourceType = Joi.string().valid(TextResourceTypes.Text);
 
 const textMeta = Joi.object().keys({
     minChars: Joi.number().min(0).default(0),
@@ -44,13 +44,13 @@ const dateMeta = Joi.object().keys({
     defaultEndDate: defaultDate,
 });
 
-const selectionResourceType = Joi.string().valid([
+const selectionResourceType = Joi.string().valid(
     SelectionResourceTypes.Collaborator,
     SelectionResourceTypes.Board,
     SelectionResourceTypes.Task,
     SelectionResourceTypes.CollaborationRequest,
-    SelectionResourceTypes.CustomOptions,
-]);
+    SelectionResourceTypes.CustomOptions
+);
 
 const customSelectionOption = Joi.object().keys({
     description: description.allow(null),
@@ -60,17 +60,17 @@ const customSelectionOption = Joi.object().keys({
     nextOptionId: validationSchemas.uuid.allow(null),
 });
 
-const organizationChildrenTypes = Joi.string().valid([
+const organizationChildrenTypes = Joi.string().valid(
     SelectionResourceTypes.Collaborator,
     SelectionResourceTypes.Board,
     SelectionResourceTypes.CollaborationRequest,
-    SelectionResourceTypes.CustomOptions,
-]);
+    SelectionResourceTypes.CustomOptions
+);
 
-const boardChildrenTypes = Joi.string().valid([
+const boardChildrenTypes = Joi.string().valid(
     SelectionResourceTypes.Task,
-    SelectionResourceTypes.CustomOptions,
-]);
+    SelectionResourceTypes.CustomOptions
+);
 
 const selectionMeta = Joi.object().keys({
     // TODO: will the when check work cause we are referencing "selectFrom"
@@ -79,11 +79,11 @@ const selectionMeta = Joi.object().keys({
     type: selectionResourceType.required().when("selectFrom.type", {
         switch: [
             {
-                is: Joi.string().valid([BlockType.Organization]),
+                is: Joi.string().valid(BlockType.Organization),
                 then: organizationChildrenTypes.required(),
             },
             {
-                is: Joi.string().valid([BlockType.Board]),
+                is: Joi.string().valid(BlockType.Board),
                 then: boardChildrenTypes.required(),
             },
         ],
@@ -97,11 +97,11 @@ const selectionMeta = Joi.object().keys({
         .keys({
             customId: validationSchemas.uuid.required(),
             type: Joi.string()
-                .valid([BlockType.Organization, BlockType.Board])
+                .valid(BlockType.Organization, BlockType.Board)
                 .required(),
         })
         .when("type", {
-            is: Joi.string().valid([SelectionResourceTypes.CustomOptions]),
+            is: Joi.string().valid(SelectionResourceTypes.CustomOptions),
             then: Joi.valid(null),
             otherwise: Joi.required(),
         }),
@@ -110,17 +110,17 @@ const selectionMeta = Joi.object().keys({
             areOptionsUnique: Joi.boolean().allow(null),
         })
         .when("type", {
-            is: Joi.string().valid([SelectionResourceTypes.CustomOptions]),
+            is: Joi.string().valid(SelectionResourceTypes.CustomOptions),
             then: Joi.required(),
             otherwise: Joi.valid(null),
         }),
     defaultOptionId: validationSchemas.uuid.allow(null),
 });
 
-const numberType = Joi.string().valid([
+const numberType = Joi.string().valid(
     NumberTypes.Interger,
-    NumberTypes.Decimal,
-]);
+    NumberTypes.Decimal
+);
 
 const numberMeta = Joi.object().keys({
     type: numberType.required(),
@@ -140,19 +140,19 @@ const numberMeta = Joi.object().keys({
 const meta = Joi.object().when("type", {
     switch: [
         {
-            is: Joi.string().valid([CustomPropertyType.Text]),
+            is: Joi.string().valid(CustomPropertyType.Text),
             then: textMeta.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Date]),
+            is: Joi.string().valid(CustomPropertyType.Date),
             then: dateMeta.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Selection]),
+            is: Joi.string().valid(CustomPropertyType.Selection),
             then: selectionMeta.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Number]),
+            is: Joi.string().valid(CustomPropertyType.Number),
             then: numberMeta.required(),
         },
     ],
@@ -180,19 +180,19 @@ const numberValue = Joi.object().keys({
 const value = Joi.object().when("type", {
     switch: [
         {
-            is: Joi.string().valid([CustomPropertyType.Text]),
+            is: Joi.string().valid(CustomPropertyType.Text),
             then: textValue.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Date]),
+            is: Joi.string().valid(CustomPropertyType.Date),
             then: dateValue.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Selection]),
+            is: Joi.string().valid(CustomPropertyType.Selection),
             then: selectionValue.required(),
         },
         {
-            is: Joi.string().valid([CustomPropertyType.Number]),
+            is: Joi.string().valid(CustomPropertyType.Number),
             then: numberValue.required(),
         },
     ],

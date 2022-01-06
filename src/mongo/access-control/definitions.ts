@@ -130,7 +130,7 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
     [SystemResourceType.User]: [
         SystemActionType.Signup,
         SystemActionType.Login,
-        SystemActionType.ForganizationotPassword,
+        SystemActionType.ForgotPassword,
         SystemActionType.ChangePassword,
         SystemActionType.ChangePasswordWithToken,
     ],
@@ -173,6 +173,8 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
         SystemActionType.Read,
         SystemActionType.Update,
     ],
+    [SystemResourceType.CustomProperty]: [],
+    [SystemResourceType.CustomValue]: [],
 };
 
 export const organizationResourceTypesToActionsMap =

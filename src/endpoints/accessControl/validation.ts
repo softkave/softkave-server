@@ -9,25 +9,25 @@ const name = Joi.string()
     .max(accessControlConstants.maxPermissionGroupNameLength);
 
 const description = Joi.string()
-    .allow([null, ""])
+    .allow(null, "")
     .max(accessControlConstants.maxPermissionGroupDescriptionLength)
     .trim();
 
 const permissionGroupResourceType = Joi.string().valid(
-    accessControlConstants.permissionGroupResourceTypes
+    ...accessControlConstants.permissionGroupResourceTypes
 );
 
 const permissionResourceType = Joi.string().valid(
-    accessControlConstants.permissionResourceTypes
+    ...accessControlConstants.permissionResourceTypes
 );
 
 const permissionActionType = Joi.string().valid(
-    accessControlConstants.permissionActionTypes
+    ...accessControlConstants.permissionActionTypes
 );
 
-const permissionGroupId = validationSchemas.uuid.allow([
-    DefaultPermissionGroupNames.Public,
-]);
+const permissionGroupId = validationSchemas.uuid.allow(
+    DefaultPermissionGroupNames.Public
+);
 
 const userIds = Joi.array()
     .items(validationSchemas.uuid.required())

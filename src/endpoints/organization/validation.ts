@@ -5,7 +5,7 @@ import { organizationConstants } from "./constants";
 const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
 const name = Joi.string().trim().max(organizationConstants.maxNameLength);
 const description = Joi.string()
-    .allow([null, ""])
+    .allow(null, "")
     .max(organizationConstants.maxDescriptionLength)
     .trim();
 

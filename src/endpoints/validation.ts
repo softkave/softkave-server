@@ -29,13 +29,13 @@ const systemResourceTypeArray: SystemResourceType[] = [
     SystemResourceType.CustomValue,
 ];
 
-const systemResourceType = Joi.string().valid(systemResourceTypeArray);
+const systemResourceType = Joi.string().valid(...systemResourceTypeArray);
 const parentResourceTypeEnumArray: ParentResourceType[] = [
     ParentResourceType.Organization,
     ParentResourceType.Board,
 ];
 
-const parentResourceType = Joi.string().valid(parentResourceTypeEnumArray);
+const parentResourceType = Joi.string().valid(...parentResourceTypeEnumArray);
 const parent = Joi.object().keys({
     type: parentResourceType.required(),
     customId: validationSchemas.uuid.required(),

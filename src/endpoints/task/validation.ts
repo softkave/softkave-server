@@ -18,7 +18,7 @@ const subTaskSchema = Joi.object().keys({
 
 const name = Joi.string().trim().max(taskConstants.maxNameLength);
 const description = Joi.string()
-    .allow([null, ""])
+    .allow(null, "")
     .max(taskConstants.maxDescriptionLength)
     .trim();
 
@@ -30,7 +30,7 @@ const taskAssigneeList = Joi.array()
 
 const priority = Joi.string()
     .lowercase()
-    .valid(taskConstants.priorityValuesArray);
+    .valid(...taskConstants.priorityValuesArray);
 
 const subTasks = Joi.array()
     .items(subTaskSchema)

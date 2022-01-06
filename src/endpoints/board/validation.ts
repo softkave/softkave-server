@@ -13,7 +13,7 @@ const labelSchema = Joi.object().keys({
         .max(boardConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(boardConstants.maxLabelDescriptionLength)
         .optional(),
@@ -30,7 +30,7 @@ const statusSchema = Joi.object().keys({
         .max(boardConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(boardConstants.maxLabelDescriptionLength)
         .optional(),
@@ -45,7 +45,7 @@ const resolutionSchema = Joi.object().keys({
         .max(boardConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(boardConstants.maxLabelDescriptionLength)
         .optional(),

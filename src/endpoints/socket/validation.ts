@@ -3,12 +3,12 @@ import { SystemResourceType } from "../../models/system";
 
 const resourceType = Joi.string()
     .lowercase()
-    .valid([
+    .valid(
         SystemResourceType.Board,
         SystemResourceType.Note,
         SystemResourceType.Organization,
-        SystemResourceType.Room,
-    ]);
+        SystemResourceType.Room
+    );
 
 const incomingEventData = Joi.object()
     .keys({

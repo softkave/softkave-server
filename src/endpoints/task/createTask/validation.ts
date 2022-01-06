@@ -5,12 +5,12 @@ import taskValidationSchemas from "../validation";
 
 export const newTaskJoiSchema = Joi.object().keys({
     name: taskValidationSchemas.name.required(),
-    description: taskValidationSchemas.description.optional().allow([null]),
-    dueAt: taskValidationSchemas.dueAt.optional().allow([null]),
+    description: taskValidationSchemas.description.optional().allow(null),
+    dueAt: taskValidationSchemas.dueAt.optional().allow(null),
     parent: boardValidationSchemas.parent.required(),
     rootBlockId: boardValidationSchemas.rootBlockId.required(),
     priority: taskValidationSchemas.priority.required(),
-    taskSprint: taskValidationSchemas.taskSprint.optional().allow([null]),
+    taskSprint: taskValidationSchemas.taskSprint.optional().allow(null),
     subTasks: taskValidationSchemas.subTasks.required(),
     status: validationSchemas.uuid.allow(null),
     assignees: taskValidationSchemas.taskAssigneeList.required(),

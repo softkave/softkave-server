@@ -9,7 +9,7 @@ import taskValidationSchemas from "../validation";
 
 const taskInput = Joi.object().keys({
     name: taskValidationSchemas.name,
-    description: taskValidationSchemas.description.optional().allow([null]),
+    description: taskValidationSchemas.description.optional().allow(null),
     priority: taskValidationSchemas.priority,
     assignees: complexFieldJoiSchema(
         taskValidationSchemas.taskAssignee,
@@ -22,15 +22,15 @@ const taskInput = Joi.object().keys({
         taskConstants.maxSubTasks,
         "customId"
     ),
-    status: validationSchemas.uuid.optional().allow([null]),
-    dueAt: taskValidationSchemas.dueAt.optional().allow([null]),
-    taskResolution: validationSchemas.uuid.optional().allow([null]),
+    status: validationSchemas.uuid.optional().allow(null),
+    dueAt: taskValidationSchemas.dueAt.optional().allow(null),
+    taskResolution: validationSchemas.uuid.optional().allow(null),
     labels: complexFieldJoiSchema(
         taskValidationSchemas.blockAssignedLabel,
         taskConstants.maxAssignedLabels,
         "customId"
     ),
-    taskSprint: taskValidationSchemas.taskSprint.optional().allow([null]),
+    taskSprint: taskValidationSchemas.taskSprint.optional().allow(null),
 });
 
 export const updateTaskJoiSchema = Joi.object().keys({

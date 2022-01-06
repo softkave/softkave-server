@@ -9,7 +9,7 @@ export const updateBlockJoiSchema = Joi.object()
                 name: organizationValidationSchemas.name,
                 description: organizationValidationSchemas.description
                     .optional()
-                    .allow([null]),
+                    .allow(null),
                 color: organizationValidationSchemas.color,
             })
             .required(),
