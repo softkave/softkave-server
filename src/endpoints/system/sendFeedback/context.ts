@@ -1,15 +1,13 @@
 import makeSingletonFn from "../../../utilities/createSingletonFunc";
-import InternalAddBlockContext from "../../block/internalAddBlock/context";
-import internalAddBlock from "../../block/internalAddBlock/internalAddBlock";
+import createTask from "../../task/createTask/handler";
 import { ISendFeedbackContext } from "./types";
+import BaseContext from "../../contexts/BaseContext";
 
 export default class SendFeedbackContext
-    extends InternalAddBlockContext
+    extends BaseContext
     implements ISendFeedbackContext
 {
-    public async saveTask(context, instData) {
-        return await internalAddBlock(context, instData);
-    }
+    public saveTask = createTask;
 }
 
 export const getSendFeedbackContext = makeSingletonFn(

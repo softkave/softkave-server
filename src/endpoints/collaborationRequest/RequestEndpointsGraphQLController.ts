@@ -1,7 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { getBaseContext } from "../contexts/BaseContext";
-import RequestData from "../RequestData";
-import { wrapEndpoint } from "../utils";
+import { wrapEndpointREST } from "../utils";
 import addCollaborators from "./addCollaborators/handler";
 import AddCollaboratorsContext from "./addCollaborators/context";
 import getOrganizationRequests from "./getOrganizationRequests/handler";
@@ -12,84 +10,18 @@ import respondToRequest from "./respondToRequest/handler";
 import getUserRequests from "./getUserRequests/handler";
 
 export default class RequestsEndpointsGraphQLController {
-    public addCollaborators(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            // @ts-ignore
-            addCollaborators(
-                new AddCollaboratorsContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public revokeRequest(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            revokeRequest(
-                getRevokeCollaborationRequestContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public getOrganizationRequests(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            getOrganizationRequests(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public respondToRequest(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            respondToRequest(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public markRequestRead(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            markRequestRead(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public getUserRequests(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            getUserRequests(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
+    public addCollaborators = wrapEndpointREST(
+        addCollaborators,
+        new AddCollaboratorsContext()
+    );
+    public revokeRequest = wrapEndpointREST(
+        revokeRequest,
+        getRevokeCollaborationRequestContext()
+    );
+    public getOrganizationRequests = wrapEndpointREST(getOrganizationRequests);
+    public respondToRequest = wrapEndpointREST(respondToRequest);
+    public markRequestRead = wrapEndpointREST(markRequestRead);
+    public getUserRequests = wrapEndpointREST(getUserRequests);
 }
 
 export const getRequestsEndpointsGraphQLController = makeSingletonFn(

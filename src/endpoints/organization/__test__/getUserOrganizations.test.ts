@@ -1,14 +1,16 @@
 import RequestData from "../../RequestData";
 import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
+import { setupTestOrganizationWithEndpoint } from "../../testUtils/setupWithEndpoint/setupTestOrganizationWithEndpoint";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
-import { wrapEndpoint } from "../../utils";
+import { assertResultOk } from "../../testUtils/utils";
+import { wrapEndpointREST } from "../../utils";
 import getUserOrganizations from "../getUserOrganizations/handler";
 
 const context = getTestBaseContext();
 
 const endpoint = (data, req) => {
-    return wrapEndpoint(data, req, async () =>
+    return wrapEndpointREST(data, req, async () =>
         // @ts-ignore
         getUserOrganizations(
             context,
@@ -21,9 +23,19 @@ describe("get user organizations", () => {
     test("can get organizations", async () => {
         const { token } = await setupTestUser(context);
         const { req } = setupTestExpressRequestWithToken({ token });
+        const { organization: org01 } = await setupTestOrganizationWithEndpoint(
+            context,
+            req
+        );
+
+        const { organization: org02 } = await setupTestOrganizationWithEndpoint(
+            context,
+            req
+        );
+
         const result = await endpoint(undefined, req);
-        expect(result).toBeTruthy();
-        expect(result?.errors).toBeFalsy();
-        expect(result?.organizations).toBeTruthy();
+        assertResultOk(result);
+        expect(result?.organizations).toContain(org01);
+        expect(result?.organizations).toContain(org02);
     });
 });

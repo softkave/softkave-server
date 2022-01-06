@@ -1,7 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { getBaseContext } from "../contexts/BaseContext";
-import RequestData from "../RequestData";
-import { wrapEndpoint } from "../utils";
+import { wrapEndpointREST } from "../utils";
 import changeOptionPosition from "./changeOptionPosition/handler";
 import createOption from "./createOption/handler";
 import createProperty from "./createProperty/handler";
@@ -15,148 +13,17 @@ import updateOption from "./updateOption/handler";
 import updateProperty from "./updateProperty/handler";
 
 export default class CustomPropertyEndpointsGraphQLController {
-    public async createOption(data, req) {
-        // @ts-ignore
-        const instData = RequestData.fromExpressRequest(
-            getBaseContext(),
-            req,
-            data
-        );
-
-        return wrapEndpoint(data, req, async () =>
-            createOption(getBaseContext(), instData)
-        );
-    }
-
-    public changeOptionPosition(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            changeOptionPosition(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public createProperty(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            createProperty(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public deleteOption(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            deleteOption(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public deleteProperty(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            deleteProperty(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public getProperties(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            getProperties(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public getValues(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            getValues(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public insertCustomValue(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            insertCustomValue(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public updateCustomValue(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            updateCustomValue(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public updateOption(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            updateOption(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
-
-    public updateProperty(data, req) {
-        return wrapEndpoint(data, req, async () =>
-            updateProperty(
-                getBaseContext(),
-                await RequestData.fromExpressRequest(
-                    getBaseContext(),
-                    req,
-                    data
-                )
-            )
-        );
-    }
+    public createOption = wrapEndpointREST(createOption);
+    public changeOptionPosition = wrapEndpointREST(changeOptionPosition);
+    public createProperty = wrapEndpointREST(createProperty);
+    public deleteOption = wrapEndpointREST(deleteOption);
+    public deleteProperty = wrapEndpointREST(deleteProperty);
+    public getProperties = wrapEndpointREST(getProperties);
+    public getValues = wrapEndpointREST(getValues);
+    public insertCustomValue = wrapEndpointREST(insertCustomValue);
+    public updateCustomValue = wrapEndpointREST(updateCustomValue);
+    public updateOption = wrapEndpointREST(updateOption);
+    public updateProperty = wrapEndpointREST(updateProperty);
 }
 
 export const getCustomPropertyEndpointsGraphQLController = makeSingletonFn(

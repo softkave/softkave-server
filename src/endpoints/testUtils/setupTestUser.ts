@@ -32,7 +32,7 @@ export async function setupTestUser(
         email: testData.testUser00.email,
         hash: await argon2.hash(testData.testUser00.password),
         createdAt: getDateString(),
-        forganizationotPasswordHistory: [],
+        forgotPasswordHistory: [],
         passwordLastChangedAt: "",
         rootBlockId: "",
         orgs: [],

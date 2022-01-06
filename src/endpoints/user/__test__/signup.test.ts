@@ -9,7 +9,7 @@ import {
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { findErrorByName } from "../../testUtils/utils";
-import { wrapEndpoint } from "../../utils";
+import { wrapEndpointREST } from "../../utils";
 import { EmailAddressNotAvailableError } from "../errors";
 import signup from "../signup/signup";
 import { ISignupArgData } from "../signup/types";
