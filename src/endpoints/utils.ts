@@ -21,7 +21,7 @@ import {
     IUpdateComplexTypeArrayInput,
 } from "./types";
 
-export const wrapEndpointREST = async <
+export const wrapEndpointREST = <
     Params,
     Result,
     Context extends IBaseContext = IBaseContext

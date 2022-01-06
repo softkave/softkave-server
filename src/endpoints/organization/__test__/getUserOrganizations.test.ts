@@ -1,4 +1,3 @@
-import RequestData from "../../RequestData";
 import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { setupTestOrganizationWithEndpoint } from "../../testUtils/setupWithEndpoint/setupTestOrganizationWithEndpoint";
@@ -8,16 +7,7 @@ import { wrapEndpointREST } from "../../utils";
 import getUserOrganizations from "../getUserOrganizations/handler";
 
 const context = getTestBaseContext();
-
-const endpoint = (data, req) => {
-    return wrapEndpointREST(data, req, async () =>
-        // @ts-ignore
-        getUserOrganizations(
-            context,
-            await RequestData.fromExpressRequest(context, req, data)
-        )
-    );
-};
+const endpoint = wrapEndpointREST(getUserOrganizations);
 
 describe("get user organizations", () => {
     test("can get organizations", async () => {
