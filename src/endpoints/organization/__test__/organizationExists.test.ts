@@ -1,14 +1,14 @@
-import { chance } from "../../testUtils/data";
+import { getTestBaseContext } from "../../testUtils/contexts/TestBaseContext";
+import { chance } from "../../testUtils/data/data";
 import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { setupTestOrganizationWithEndpoint } from "../../testUtils/setupWithEndpoint/setupTestOrganizationWithEndpoint";
-import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { assertResultOk } from "../../testUtils/utils";
-import { wrapEndpointREST } from "../../utils";
+import { wrapEndpointREST } from "../../wrapEndpointREST";
 import organizationExists from "../organizationExists/handler";
 
 const context = getTestBaseContext();
-const endpoint = wrapEndpointREST(organizationExists);
+const endpoint = wrapEndpointREST(organizationExists, context);
 
 describe("organization exists", () => {
     test("organization exists if it does", async () => {

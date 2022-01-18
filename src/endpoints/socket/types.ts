@@ -1,4 +1,4 @@
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import RequestData from "../RequestData";
 
 export interface IIncomingSocketEventPacket<T> {

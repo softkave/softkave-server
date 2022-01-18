@@ -7,7 +7,7 @@ import RequestData from "../RequestData";
 import { JWTEndpoint } from "../types";
 import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
 import { tryCatch, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ISessionContext {
     getTokenData: (

@@ -13,7 +13,7 @@ export function findErrorByName(errors: OperationError[], name: string) {
 }
 
 export function assertResultOk(result: IBaseEndpointResult) {
-    if (result.errors) {
+    if (result?.errors) {
         throw result.errors;
     }
 }

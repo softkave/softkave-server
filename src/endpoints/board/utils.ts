@@ -1,9 +1,4 @@
-import { BlockType, IBlock } from "../../mongo/block";
-import {
-    CollaborationRequestStatusType,
-    ICollaborationRequest,
-} from "../../mongo/collaboration-request";
-import { getDateString } from "../../utilities/fns";
+import { getDateString, getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { BoardDoesNotExistError } from "./errors";
 import { IBoard, IPublicBoard } from "./types";
@@ -16,7 +11,7 @@ const publicBoardFields = getFields<IPublicBoard>({
     name: true,
     description: true,
     color: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
     parent: true,
     rootBlockId: true,
@@ -25,7 +20,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         updatedBy: true,
         color: true,
         name: true,
@@ -36,7 +31,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         updatedBy: true,
         color: true,
         name: true,
@@ -46,7 +41,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         createdBy: true,
         customId: true,
         description: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         updatedBy: true,
         name: true,
     },
@@ -55,7 +50,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         createdAt: getDateString,
         createdBy: true,
         duration: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         updatedBy: true,
     },
     lastSprintId: true,
@@ -74,4 +69,10 @@ export function getPublicBoardsArray(
 
 export function throwBoardNotFoundError() {
     throw new BoardDoesNotExistError();
+}
+
+export function assertBoard(board?: IBoard | null) {
+    if (!board) {
+        throwBoardNotFoundError();
+    }
 }

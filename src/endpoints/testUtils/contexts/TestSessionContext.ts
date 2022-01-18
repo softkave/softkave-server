@@ -1,5 +1,5 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import SessionContext from "../contexts/SessionContext";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import SessionContext from "../../contexts/SessionContext";
 
 class TestSessionContext extends SessionContext {}
 

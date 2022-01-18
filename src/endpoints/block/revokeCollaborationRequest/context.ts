@@ -7,8 +7,8 @@ export default class RevokeCollaborationRequestContext
     extends BaseContext
     implements IRevokeCollaborationRequestContext
 {
-    public async sendCollaborationRequestRevokedEmail(props) {
-        return sendCollaborationRequestRevokedEmail(props);
+    public async sendCollaborationRequestRevokedEmail(context, props) {
+        return sendCollaborationRequestRevokedEmail(context, props);
     }
 }
 

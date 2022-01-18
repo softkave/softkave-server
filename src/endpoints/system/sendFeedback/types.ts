@@ -1,4 +1,4 @@
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { CreateTaskEndpoint } from "../../task/createTask/types";
 import { Endpoint } from "../../types";
 

@@ -71,7 +71,7 @@ export interface ICollaborationRequest {
     body?: string;
     from: ICollaborationRequestFrom;
     createdAt: Date;
-    expiresAt: Date;
+    expiresAt?: Date;
     readAt?: Date;
     statusHistory?: ICollaborationRequestStatus[];
     sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];

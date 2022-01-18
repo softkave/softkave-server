@@ -1,6 +1,6 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { IAccessControlContext } from "../contexts/AccessControlContext";
-import { testNoop } from "./utils";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { IAccessControlContext } from "../../contexts/AccessControlContext";
+import { testNoop } from "../utils";
 
 class TestAccessControlContext implements IAccessControlContext {
     getPermissionGroupsById = testNoop;

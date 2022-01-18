@@ -1,6 +1,6 @@
 import { IAssignee, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint, IUpdateComplexTypeArrayInput } from "../../types";
 import { TransferBlockEndpoint } from "../transferBlock/types";
 import {

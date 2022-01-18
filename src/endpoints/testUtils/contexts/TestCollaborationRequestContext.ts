@@ -1,19 +1,19 @@
-import { ICollaborationRequest } from "../../mongo/collaboration-request";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { indexArray } from "../../utilities/fns";
-import getNewId from "../../utilities/getNewId";
-import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
-import { IBaseContext } from "../contexts/BaseContext";
-import { ICollaborationRequestContext } from "../contexts/CollaborationRequestContext";
-
-const requests: ICollaborationRequest[] = [];
+import { ICollaborationRequest } from "../../../mongo/collaboration-request";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { indexArray } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { ICollaborationRequestContext } from "../../contexts/CollaborationRequestContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { CollaborationRequestDoesNotExistError } from "../../user/errors";
 
 class TestCollaborationRequestContext implements ICollaborationRequestContext {
+    requests: ICollaborationRequest[] = [];
+
     public getCollaborationRequestById = async (
         ctx: IBaseContext,
         id: string
     ) => {
-        return requests.find((request) => request.customId === id);
+        return this.requests.find((request) => request.customId === id);
     };
 
     assertGetCollaborationRequestById = async (
@@ -35,13 +35,13 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
         customId: string,
         data: Partial<ICollaborationRequest>
     ) => {
-        const index = requests.findIndex(
+        const index = this.requests.findIndex(
             (request) => request.customId === customId
         );
 
         if (index !== -1) {
-            requests[index] = { ...requests[index], ...data };
-            return requests[index];
+            this.requests[index] = { ...this.requests[index], ...data };
+            return this.requests[index];
         }
     };
 
@@ -50,17 +50,19 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
         email: string
     ) => {
         email = email.toLowerCase();
-        return requests.filter((request) => request.to.email === email);
+        return this.requests.filter((request) => request.to.email === email);
     };
 
     public deleteCollaborationRequestById = async (
         ctx: IBaseContext,
         id: string
     ) => {
-        const index = requests.findIndex((request) => request.customId === id);
+        const index = this.requests.findIndex(
+            (request) => request.customId === id
+        );
 
         if (index !== -1) {
-            requests.splice(index, 1);
+            this.requests.splice(index, 1);
         }
     };
 
@@ -73,7 +75,7 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
             indexer: (email) => email.toLowerCase(),
         });
 
-        return requests.filter(
+        return this.requests.filter(
             (request) =>
                 emailMap[request.to.email] && request.from.blockId === blockId
         );
@@ -83,7 +85,7 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
         ctx: IBaseContext,
         collaborationRequests: ICollaborationRequest[]
     ) => {
-        collaborationRequests.forEach((request) => requests.push(request));
+        collaborationRequests.forEach((request) => this.requests.push(request));
         return collaborationRequests;
     };
 
@@ -91,19 +93,21 @@ class TestCollaborationRequestContext implements ICollaborationRequestContext {
         ctx: IBaseContext,
         blockId: string
     ) => {
-        return requests.filter((request) => request.from.blockId === blockId);
+        return this.requests.filter(
+            (request) => request.from.blockId === blockId
+        );
     };
 
     public async saveCollaborationRequest(
         ctx: IBaseContext,
         collaborationRequest: Omit<ICollaborationRequest, "customId">
     ) {
-        requests.push({
+        this.requests.push({
             ...collaborationRequest,
             customId: getNewId(),
         });
 
-        return requests[requests.length - 1];
+        return this.requests[this.requests.length - 1];
     }
 }
 

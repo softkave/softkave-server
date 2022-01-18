@@ -5,7 +5,7 @@ import {
     SelectionResourceTypes,
 } from "../../../mongo/custom-property/definitions";
 import { InvalidInputError } from "../../../utilities/errors";
-import cast, { getDate } from "../../../utilities/fns";
+import { cast, getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { InvalidRequestError } from "../../errors";
@@ -42,7 +42,7 @@ const createOption: CreateCustomSelectionOptionEndpoint = async (
         throw new InvalidRequestError();
     }
 
-    if (meta.customOptionsProps.areOptionsUnique) {
+    if (meta.areCustomOptionsUnique) {
         const optionExists = await context.data.customOption.checkItemExists(
             ReusableDataQueries.byName(data.data.name)
         );

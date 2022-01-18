@@ -38,7 +38,7 @@ import {
 } from "../socket/outgoingEventTypes";
 import { IPublicSprint } from "../sprints/types";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 import { IBroadcastResult } from "./RoomContext";
 
 interface IBroadcastBlockUpdateArgs {

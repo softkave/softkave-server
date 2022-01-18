@@ -1,8 +1,8 @@
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
+import { getPublicCollaborationRequestArray } from "../utils";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getOrganizationCollaborationRequestsJoiSchema } from "./validation";
 

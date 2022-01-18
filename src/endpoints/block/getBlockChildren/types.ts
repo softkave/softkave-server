@@ -1,5 +1,5 @@
 import { BlockType } from "../../../mongo/block";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { IPublicBlock } from "../types";
 

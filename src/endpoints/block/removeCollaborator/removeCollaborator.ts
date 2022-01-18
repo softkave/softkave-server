@@ -1,7 +1,6 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaboratorRemovedNotification } from "../../notifications/templates/collaborator";
 import { UserDoesNotExistError } from "../../user/errors";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";

@@ -110,7 +110,7 @@ export function getBlockRootBlockId(block: {
 
 export function getBlockTypeName(blockType: BlockType) {
     switch (blockType) {
-        case "organization":
+        case "org":
             return "Organization";
 
         case "task":

@@ -8,7 +8,7 @@ import { getDate, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { clientToClientUserView } from "../../client/utils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
@@ -54,7 +54,7 @@ const signup: SignupEndpoint = async (context, instData) => {
         name: data.name,
         color: data.color,
         createdAt: now,
-        forganizationotPasswordHistory: [],
+        forgotPasswordHistory: [],
         passwordLastChangedAt: now,
         rootBlockId: "",
         orgs: [],

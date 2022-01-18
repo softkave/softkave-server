@@ -5,7 +5,7 @@ import {
     ISelectionCustomTypeMeta,
     ITextCustomTypeMeta,
 } from "../../../mongo/custom-property/definitions";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomProperty } from "../types";
 

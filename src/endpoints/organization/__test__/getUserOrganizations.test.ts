@@ -1,13 +1,13 @@
+import { getTestBaseContext } from "../../testUtils/contexts/TestBaseContext";
 import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { setupTestOrganizationWithEndpoint } from "../../testUtils/setupWithEndpoint/setupTestOrganizationWithEndpoint";
-import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { assertResultOk } from "../../testUtils/utils";
-import { wrapEndpointREST } from "../../utils";
+import { wrapEndpointREST } from "../../wrapEndpointREST";
 import getUserOrganizations from "../getUserOrganizations/handler";
 
 const context = getTestBaseContext();
-const endpoint = wrapEndpointREST(getUserOrganizations);
+const endpoint = wrapEndpointREST(getUserOrganizations, context);
 
 describe("get user organizations", () => {
     test("can get organizations", async () => {
@@ -25,7 +25,7 @@ describe("get user organizations", () => {
 
         const result = await endpoint(undefined, req);
         assertResultOk(result);
-        expect(result?.organizations).toContain(org01);
-        expect(result?.organizations).toContain(org02);
+        expect(result?.organizations).toContainEqual(org01);
+        expect(result?.organizations).toContainEqual(org02);
     });
 });

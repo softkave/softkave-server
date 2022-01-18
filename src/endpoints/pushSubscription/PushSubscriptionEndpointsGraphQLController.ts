@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import getPushSubscriptionKeys from "./getPushSubscriptionKeys/handler";
 import pushSubscriptionExists from "./pushSubscriptionExists/handler";
 import subscribePushSubscription from "./subscribe/handler";

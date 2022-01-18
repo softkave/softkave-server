@@ -1,8 +1,8 @@
 import { RequestOptions } from "web-push";
-import { IClient } from "../../mongo/client";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { IBaseContext } from "../contexts/BaseContext";
-import { IWebPushContext } from "../contexts/WebPushContext";
+import { IClient } from "../../../mongo/client";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { IWebPushContext } from "../../contexts/WebPushContext";
 
 interface ITestWebPushContextListener {
     endpoint: string;

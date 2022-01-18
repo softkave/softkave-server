@@ -1,4 +1,4 @@
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { IBroadcastHistoryFetchResult } from "../../contexts/BroadcastHistoryContext";
 import { Endpoint } from "../../types";
 

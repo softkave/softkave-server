@@ -12,7 +12,7 @@ import getNewId from "../../utilities/getNewId";
 import { BlockDoesNotExistError } from "../block/errors";
 import { IOrganization } from "../organization/types";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IBlockContext {
     getBlockById: <T = IBlock>(
@@ -172,7 +172,6 @@ export default class BlockContext implements IBlockContext {
                 .exec();
         }
     );
-
 
     public getBlockChildren = wrapFireAndThrowErrorAsync(
         async <T = IBlock>(

@@ -1,6 +1,5 @@
 import { IBlock } from "../../../mongo/block";
 import { INotification } from "../../../mongo/notification";
-import { getTaskAssignedNotification } from "../../notifications/templates/task";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import diffAssignedUsers from "./diffAssignedUsers";

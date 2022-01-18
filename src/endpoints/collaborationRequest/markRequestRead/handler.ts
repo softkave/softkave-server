@@ -1,4 +1,4 @@
-import { getDateString, indexArray } from "../../../utilities/fns";
+import { getDate, getDateString, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
 import {
@@ -21,20 +21,28 @@ const markRequestRead: MarkRequestReadEndpoint = async (context, instData) => {
         throw new PermissionDeniedError();
     }
 
-    await context.collaborationRequest.u;
+    await context.collaborationRequest.updateCollaborationRequestById(
+        context,
+        request.customId,
+        {
+            readAt: getDate(),
+        }
+    );
 
     const userRoomName = context.room.getUserRoomName(user.customId);
-    const updatePacket: IOutgoingMarkNotificationsReadPacket = {
-        notifications: processedNotifications,
-    };
 
-    context.room.broadcast(
-        context,
-        instData,
-        userRoomName,
-        OutgoingSocketEvents.MarkNotificationsRead,
-        updatePacket
-    );
+    // TODO: Fix
+    // const updatePacket: IOutgoingMarkNotificationsReadPacket = {
+    //     notifications: processedNotifications,
+    // };
+
+    // context.room.broadcast(
+    //     context,
+    //     instData,
+    //     userRoomName,
+    //     OutgoingSocketEvents.MarkNotificationsRead,
+    //     updatePacket
+    // );
 };
 
 export default markRequestRead;

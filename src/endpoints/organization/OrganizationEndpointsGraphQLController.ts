@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import createOrganization from "./createOrganization/handler";
 import getUserOrganizations from "./getUserOrganizations/handler";
 import updateOrganization from "./updateOrganization/handler";

@@ -3,6 +3,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadOrganization from "../canReadBlock";
 import { IOrganization } from "../types";
 import {
+    assertOrganization,
     getPublicOrganizationData,
     throwOrganizationNotFoundError,
 } from "../utils";
@@ -34,6 +35,7 @@ const updateOrganization: UpdateOrganizationEndpoint = async (
             }
         );
 
+    assertOrganization(updatedOrganization);
     return { organization: getPublicOrganizationData(updatedOrganization) };
 };
 

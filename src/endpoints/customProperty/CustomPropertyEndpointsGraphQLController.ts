@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import changeOptionPosition from "./changeOptionPosition/handler";
 import createOption from "./createOption/handler";
 import createProperty from "./createProperty/handler";

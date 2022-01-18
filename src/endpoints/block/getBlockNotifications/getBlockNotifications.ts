@@ -1,5 +1,5 @@
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicCollaborationRequestArray } from "../../notifications/utils";
+import { getPublicCollaborationRequestArray } from "../../collaborationRequest/utils";
 import canReadBlock from "../canReadBlock";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";
@@ -17,10 +17,11 @@ const getBlockNotifications: GetBlockNotificationsEndpoint = async (
 
     await canReadBlock({ user, block });
 
-    const requests = await context.collaborationRequest.getCollaborationRequestsByBlockId(
-        context,
-        block.customId
-    );
+    const requests =
+        await context.collaborationRequest.getCollaborationRequestsByBlockId(
+            context,
+            block.customId
+        );
 
     return {
         requests: getPublicCollaborationRequestArray(requests),

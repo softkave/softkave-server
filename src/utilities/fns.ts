@@ -80,6 +80,15 @@ export function getDateString(initial?: any) {
     return new Date().toISOString();
 }
 
+export function getDateStringIfExists(
+    initial?: moment.Moment | Date | string | number
+) {
+    if (initial) {
+        const date = moment(initial);
+        return date.toISOString();
+    }
+}
+
 export function ternaryOp(a: any, b: any, c: any) {
     return a ? b : c;
 }

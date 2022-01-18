@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { validate } from "../../utilities/joiUtils";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import RequestData from "../RequestData";
 import { IIncomingSocketEventPacket, SocketEventHandler } from "./types";
 import socketValidationSchemas from "./validation";

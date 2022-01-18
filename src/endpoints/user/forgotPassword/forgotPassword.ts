@@ -48,13 +48,13 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
         query: { t: token },
     });
 
-    const forganizationotPasswordHistory = addEntryToPasswordDateLog(
-        user.forganizationotPasswordHistory
+    const forgotPasswordHistory = addEntryToPasswordDateLog(
+        user.forgotPasswordHistory
     );
 
     fireAndForgetPromise(
         context.user.updateUserById(context, user.customId, {
-            forganizationotPasswordHistory,
+            forgotPasswordHistory,
         })
     );
 };

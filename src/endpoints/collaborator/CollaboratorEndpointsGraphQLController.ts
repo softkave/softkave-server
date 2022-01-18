@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import getOrganizationCollaborators from "./getOrganizationCollaborators/handler";
 import removeCollaborator from "./removeCollaborator/handler";
 

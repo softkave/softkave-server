@@ -1,6 +1,6 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { IBaseContext } from "../contexts/BaseContext";
-import SocketContext, { ISocketContext } from "../contexts/SocketContext";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import SocketContext, { ISocketContext } from "../../contexts/SocketContext";
 
 interface ITestSocketContextListener {
     socketId: string;

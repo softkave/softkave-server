@@ -12,7 +12,7 @@ import { getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId } from "../../block/utils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import {
     IOutgoingUpdateBlockPermissionGroupsPacket,
     OutgoingSocketEvents,

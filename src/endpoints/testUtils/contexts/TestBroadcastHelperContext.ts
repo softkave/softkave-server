@@ -1,5 +1,5 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import BroadcastHelpers from "../contexts/BroadcastHelpers";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import BroadcastHelpers from "../../contexts/BroadcastHelpers";
 
 class TestBroadcastHelpers extends BroadcastHelpers {}
 

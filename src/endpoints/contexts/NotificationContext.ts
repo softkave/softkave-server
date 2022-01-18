@@ -5,7 +5,7 @@ import {
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface INotificationContext {
     // Notifications

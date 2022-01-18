@@ -3,9 +3,9 @@ import { IClient } from "../../mongo/client";
 import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import { getDateString } from "../../utilities/fns";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import { IBaseTokenData } from "../contexts/TokenContext";
-import { testData } from "./data";
+import { chance, testData } from "./data/data";
 import { setupTestClient } from "./setupTestClient";
 import { setupTestToken } from "./setupTestToken";
 
@@ -17,26 +17,19 @@ export interface ISetupTestUserResult {
     context: IBaseContext;
 }
 
-let prevResult: ISetupTestUserResult | null = null;
-
 export async function setupTestUser(
     context: IBaseContext
 ): Promise<ISetupTestUserResult> {
-    if (prevResult) {
-        console.log("using prev setupUser result");
-        return prevResult;
-    }
-
     const inputUser: Omit<IUser, "customId"> = {
-        name: testData.testUser00.name,
-        email: testData.testUser00.email,
+        name: chance.first(),
+        email: chance.email(),
         hash: await argon2.hash(testData.testUser00.password),
         createdAt: getDateString(),
         forgotPasswordHistory: [],
         passwordLastChangedAt: "",
         rootBlockId: "",
         orgs: [],
-        color: testData.testUser00.color,
+        color: chance.color({ format: "hex" }),
         notificationsLastCheckedAt: "",
     };
 
@@ -55,6 +48,5 @@ export async function setupTestUser(
         incomingTokenData,
     };
 
-    prevResult = result;
     return result;
 }

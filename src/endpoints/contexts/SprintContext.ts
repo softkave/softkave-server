@@ -3,7 +3,7 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ISprintContext {
     saveSprint: (

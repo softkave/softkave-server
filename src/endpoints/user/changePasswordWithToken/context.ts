@@ -1,5 +1,6 @@
 import makeSingletonFn from "../../../utilities/createSingletonFunc";
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
+import BaseContext from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import RequestData from "../../RequestData";
 import changePassword from "../changePassword/changePassword";
 import { IChangePasswordParameters } from "../changePassword/types";

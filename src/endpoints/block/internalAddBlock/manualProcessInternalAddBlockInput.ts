@@ -15,10 +15,6 @@ export default function manualProcessInternalAddBlockInput(
 
     const block: Omit<IBlock, "customId"> = {
         name: inputBlock.name,
-        lowerCasedName:
-            inputBlock.name && inputBlock.type !== BlockType.Task
-                ? inputBlock.name.toLowerCase()
-                : undefined,
         description: inputBlock.description,
         dueAt: inputBlock.dueAt ? getDate(inputBlock.dueAt) : undefined,
         createdAt: now,

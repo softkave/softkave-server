@@ -6,7 +6,7 @@ import {
 import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { fireAndForgetPromise } from "../../utils";
 import { BlockExistsError } from "../errors";
 import manualProcessInternalAddBlockInput from "./manualProcessInternalAddBlockInput";

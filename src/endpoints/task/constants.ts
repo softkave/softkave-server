@@ -1,15 +1,13 @@
-const priorityNotImportant = "not important";
-const priorityImportant = "important";
-const priorityVeryImportant = "very important";
+import { BlockPriority } from "../../mongo/block";
 
 const taskConstants = {
     maxNameLength: 300,
     maxDescriptionLength: 1000,
     maxTaskCollaboratorsLength: 20,
     priorityValuesArray: [
-        priorityNotImportant,
-        priorityImportant,
-        priorityVeryImportant,
+        BlockPriority.High,
+        BlockPriority.Low,
+        BlockPriority.Medium,
     ],
     maxSubTasks: 50,
     maxAssignedLabels: 20,

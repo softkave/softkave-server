@@ -1,5 +1,5 @@
 import { SprintDuration } from "../../../mongo/sprint";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { IPublicSprint } from "../types";
 

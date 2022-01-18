@@ -3,7 +3,11 @@ import { validate } from "../../../utilities/joiUtils";
 import { IBoard } from "../../board/types";
 import { throwBoardNotFoundError } from "../../board/utils";
 import { ITask } from "../types";
-import { getPublicTaskData, throwTaskNotFoundError } from "../utils";
+import {
+    assertTask,
+    getPublicTaskData,
+    throwTaskNotFoundError,
+} from "../utils";
 import { TransferTaskEndpoint } from "./types";
 import { transferTaskJoiSchema } from "./validation";
 
@@ -49,6 +53,7 @@ const transferTask: TransferTaskEndpoint = async (context, instData) => {
         taskUpdates
     );
 
+    assertTask(updatedTask);
     return {
         task: getPublicTaskData(updatedTask),
     };

@@ -40,7 +40,7 @@ const publicPermissionFields = getFields<IPublicPermission>({
     updatedBy: true,
     updatedAt: getDateString,
     available: true,
-    organizationId: true,
+    orgId: true,
 });
 
 const publicUserPermissionGroupMapFields =

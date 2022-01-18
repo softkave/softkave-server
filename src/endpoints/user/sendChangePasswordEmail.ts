@@ -5,7 +5,7 @@ import {
     forgotPasswordEmailText,
     forgotPasswordEmailTitle,
 } from "../../html/forgotPasswordEmail";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import sendEmail from "../sendEmail";
 
 export interface ISendChangePasswordEmailParameters {

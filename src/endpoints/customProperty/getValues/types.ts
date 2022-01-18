@@ -1,5 +1,5 @@
 import { IParentInformation } from "../../../mongo/definitions";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { IPublicCustomPropertyValue } from "../types";
 

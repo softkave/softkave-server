@@ -4,7 +4,7 @@ import { ClientDoesNotExistError } from "../client/errors";
 import { findUserEntryInClient } from "../client/utils";
 import RequestData from "../RequestData";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IClientContext {
     saveClient: (ctx: IBaseContext, client: IClient) => Promise<IClient>;

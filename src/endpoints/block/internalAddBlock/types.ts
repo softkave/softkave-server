@@ -3,7 +3,7 @@ import {
     initializeBoardPermissions,
     initializeOrganizationAccessControl,
 } from "../../accessControl/initializeBlockPermissions";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { INewBlockInput } from "../types";
 

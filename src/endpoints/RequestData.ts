@@ -3,7 +3,7 @@ import { IClient } from "../mongo/client";
 import { IToken } from "../mongo/token/definitions";
 import { IUser } from "../mongo/user";
 import { clientConstants } from "./client/constants";
-import { IBaseContext } from "./contexts/BaseContext";
+import { IBaseContext } from "./contexts/IBaseContext";
 import { IBaseTokenData, IGeneralTokenSubject } from "./contexts/TokenContext";
 import { IServerRequest } from "./contexts/types";
 import { IIncomingSocketEventPacket } from "./socket/types";

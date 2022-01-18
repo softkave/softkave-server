@@ -1,15 +1,15 @@
-import { chance } from "../../testUtils/data";
+import { getTestBaseContext } from "../../testUtils/contexts/TestBaseContext";
+import { chance } from "../../testUtils/data/data";
 import { setupTestExpressRequestWithToken } from "../../testUtils/setupTestExpressRequest";
 import { setupTestUser } from "../../testUtils/setupTestUser";
 import { setupTestOrganizationWithEndpoint } from "../../testUtils/setupWithEndpoint/setupTestOrganizationWithEndpoint";
-import { getTestBaseContext } from "../../testUtils/TestBaseContext";
 import { assertResultOk } from "../../testUtils/utils";
-import { wrapEndpointREST } from "../../utils";
+import { wrapEndpointREST } from "../../wrapEndpointREST";
 import updateOrganization from "../updateOrganization/handler";
 import { IUpdateOrganizationInput } from "../updateOrganization/types";
 
 const context = getTestBaseContext();
-const endpoint = wrapEndpointREST(updateOrganization);
+const endpoint = wrapEndpointREST(updateOrganization, context);
 
 describe("update organization", () => {
     test("can update organization", async () => {
@@ -17,8 +17,8 @@ describe("update organization", () => {
         const { req } = setupTestExpressRequestWithToken({ token });
         const input: IUpdateOrganizationInput = {
             name: chance.company(),
-            description: chance.paragraph(),
-            color: chance.color(),
+            description: chance.sentence({ words: 12 }),
+            color: chance.color({ format: "hex" }),
         };
 
         const { organization: org01 } = await setupTestOrganizationWithEndpoint(

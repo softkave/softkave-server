@@ -5,7 +5,7 @@ import { IUpdateItemById } from "../../utilities/types";
 import { ICollaborator } from "../collaborator/types";
 import { UserDoesNotExistError } from "../user/errors";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IUserContext {
     getUserByEmail: (ctx: IBaseContext, email: string) => Promise<IUser | null>;

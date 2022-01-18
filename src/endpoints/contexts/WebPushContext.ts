@@ -2,7 +2,7 @@ import { RequestOptions, SendResult } from "web-push";
 import { IClient } from "../../mongo/client";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IWebPushContext {
     sendNotification: (

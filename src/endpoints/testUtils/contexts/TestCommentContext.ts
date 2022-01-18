@@ -1,6 +1,6 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { ICommentContext } from "../contexts/CommentContext";
-import { notImplementFn } from "./utils";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { ICommentContext } from "../../contexts/CommentContext";
+import { notImplementFn } from "../utils";
 
 class TestCommentContext implements ICommentContext {
     createComment = notImplementFn;

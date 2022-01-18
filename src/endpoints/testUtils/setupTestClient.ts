@@ -2,23 +2,16 @@ import { ClientType } from "../../models/system";
 import { IClient } from "../../mongo/client";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 
 export interface ISetupTestClientResult {
     client: IClient;
     context: IBaseContext;
 }
 
-let prevResult: ISetupTestClientResult | null = null;
-
 export async function setupTestClient(
     context: IBaseContext
 ): Promise<ISetupTestClientResult> {
-    if (prevResult) {
-        console.log("using prev setupClient result");
-        return prevResult;
-    }
-
     let client: IClient = {
         clientId: getNewId(),
         createdAt: getDateString(),
@@ -39,6 +32,5 @@ export async function setupTestClient(
         client,
     };
 
-    prevResult = result;
     return result;
 }

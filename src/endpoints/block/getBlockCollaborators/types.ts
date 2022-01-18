@@ -1,5 +1,5 @@
 import { ICollaborator } from "../../collaborator/types";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockCollaboratorsParameters {

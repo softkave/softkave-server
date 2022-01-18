@@ -1,11 +1,11 @@
 import assert from "assert";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { IServerRequest } from "../../contexts/types";
 import createOrganization from "../../organization/createOrganization/handler";
 import { ICreateOrganizationParameters } from "../../organization/createOrganization/types";
 import { INewOrganizationInput } from "../../organization/types";
 import RequestData from "../../RequestData";
-import { chance } from "../data";
+import { chance } from "../data/data";
 import { assertResultOk } from "../utils";
 
 export async function setupTestOrganizationWithEndpoint(
@@ -21,8 +21,8 @@ export async function setupTestOrganizationWithEndpoint(
             {
                 organization: {
                     name: chance.company(),
-                    description: chance.paragraph(),
-                    color: chance.color(),
+                    description: chance.sentence({ words: 10 }),
+                    color: chance.color({ format: "hex" }),
                     ...base,
                 },
             }

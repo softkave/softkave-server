@@ -3,7 +3,7 @@ import {
     collaborationRequestRevokedEmailText,
     ICollaborationRequestRevokedEmailProps,
 } from "../../html/collaborationRequestRevokedEmail";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import sendEmail from "../sendEmail";
 
 export interface ISendCollaborationRequestRevokedEmailProps

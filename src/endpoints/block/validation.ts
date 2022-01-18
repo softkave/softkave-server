@@ -7,17 +7,17 @@ const taskCollaboratorSchema = Joi.object().keys({
     userId: validationSchemas.uuid.required(),
 });
 
-const userUpdateableTypes = [
+const userUpdateableblockTypeSchema = Joi.string()
+    .lowercase()
+    .valid(BlockType.Organization, BlockType.Board, BlockType.Task);
+
+const fullBlockTypes = [
     BlockType.Organization,
     BlockType.Board,
     BlockType.Task,
+    BlockType.Root,
 ] as BlockType[];
 
-const userUpdateableblockTypeSchema = Joi.string()
-    .lowercase()
-    .valid(...userUpdateableTypes);
-
-const fullBlockTypes = [...userUpdateableTypes, BlockType.Root] as BlockType[];
 const fullBlockTypeSchema = Joi.string()
     .lowercase()
     .valid(...fullBlockTypes);

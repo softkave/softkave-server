@@ -5,7 +5,6 @@ import {
 } from "../../../mongo/collaboration-request/definitions";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaborationRequestRevokedNotification } from "../../notifications/templates/collaborationRequest";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
@@ -33,18 +32,18 @@ async function notifyRecipient(
     );
 
     if (recipient) {
-        const notification = getCollaborationRequestRevokedNotification(
-            organization,
-            recipient,
-            request
-        );
-
-        fireAndForgetPromise(
-            context.notification.bulkSaveNotifications(context, [notification])
-        );
+        // TODO: Fix
+        // const notification = getCollaborationRequestRevokedNotification(
+        //     organization,
+        //     recipient,
+        //     request
+        // );
+        // fireAndForgetPromise(
+        //     context.notification.bulkSaveNotifications(context, [notification])
+        // );
     } else {
         try {
-            await context.sendCollaborationRequestRevokedEmail({
+            await context.sendCollaborationRequestRevokedEmail(context, {
                 email: request.to.email,
                 senderName: organization.name,
                 title: `Collaboration request from ${organization.name} revoked`,

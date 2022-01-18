@@ -2,10 +2,6 @@ import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import {
-    getPublicCollaborationRequestArray,
-    getPublicNotificationsArray,
-} from "../../notifications/utils";
 import { getBlockRootBlockId } from "../utils";
 import { GetBlockNotificationsEndpoint } from "./types";
 import { getBlockCollaborationRequestsJoiSchema } from "./validation";
@@ -71,8 +67,8 @@ const getOrganizationNotifications: GetBlockNotificationsEndpoint = async (
     }
 
     return {
-        notifications: getPublicNotificationsArray(notifications),
-        requests: getPublicCollaborationRequestArray(requests),
+        notifications: [],
+        requests: [],
     };
 };
 

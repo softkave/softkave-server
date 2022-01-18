@@ -3,7 +3,7 @@ import { assertBlock } from "../../../mongo/block/utils";
 import { IUser } from "../../../mongo/user";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";

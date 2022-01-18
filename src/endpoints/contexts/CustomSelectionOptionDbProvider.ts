@@ -1,7 +1,7 @@
 import { ICustomSelectionOption } from "../../mongo/custom-property/definitions";
 import { IParentInformation } from "../../mongo/definitions";
 import { IUpdateItemById } from "../../utilities/types";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ICustomSelectionOptionDbProvider {
     saveOption: (

@@ -1,5 +1,5 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import RoomContext from "../contexts/RoomContext";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import RoomContext from "../../contexts/RoomContext";
 
 class TestRoomContext extends RoomContext {}
 

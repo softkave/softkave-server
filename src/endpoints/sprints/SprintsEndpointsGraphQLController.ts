@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import addSprint from "./addSprint/addSprint";
 import deleteSprint from "./deleteSprint/deleteSprint";
 import endSprint from "./endSprint/endSprint";

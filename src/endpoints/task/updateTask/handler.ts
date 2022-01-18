@@ -5,7 +5,11 @@ import { IBoard } from "../../board/types";
 import canReadOrganization from "../../organization/canReadBlock";
 import { fireAndForgetPromise } from "../../utils";
 import { ITask } from "../types";
-import { getPublicTaskData, throwTaskNotFoundError } from "../utils";
+import {
+    assertTask,
+    getPublicTaskData,
+    throwTaskNotFoundError,
+} from "../utils";
 import processUpdateTaskInput from "./processUpdateBlockInput";
 import sendNewlyAssignedTaskEmail from "./sendNewAssignedTaskEmail";
 import { UpdateTaskEndpoint } from "./types";
@@ -74,7 +78,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         newSprint
     );
 
-    if (update.assignees.length > 0) {
+    if (update.assignees?.length > 0) {
         const users = await context.user.bulkGetUsersById(
             context,
             update.assignees.map((a) => a.userId)
@@ -100,6 +104,7 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         update
     );
 
+    assertTask(updatedTask);
     fireAndForgetPromise(
         sendNewlyAssignedTaskEmail(context, instData, task, update, updatedTask)
     );

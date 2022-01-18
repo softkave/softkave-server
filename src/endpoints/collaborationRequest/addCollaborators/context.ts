@@ -6,7 +6,7 @@ export default class AddCollaboratorsContext
     extends BaseContext
     implements IAddCollaboratorsContext
 {
-    public async sendCollaborationRequestEmail(props) {
-        return sendCollaborationRequestsEmail(props);
+    public async sendCollaborationRequestEmail(context, props) {
+        return sendCollaborationRequestsEmail(context, props);
     }
 }

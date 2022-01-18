@@ -1,18 +1,3 @@
-import {
-    ICustomSelectionOption,
-    ICustomProperty,
-    ICustomPropertyValue,
-} from "../../mongo/custom-property/definitions";
-import { IEntityAttrValue } from "../../mongo/eav";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { IBaseContext } from "../contexts/BaseContext";
-import MemoryDataProvider from "../contexts/data-providers/MemoryDataProvider";
-import {
-    throwCustomOptionNotFoundError,
-    throwCustomPropertyNotFoundError,
-    throwCustomValueNotFoundError,
-} from "../customProperty/utils";
-import { throwEAVNotFoundError } from "../eav/utils";
 import { getTestAccessControlContext } from "./TestAccessControlContext";
 import { getTestAuditLogContext } from "./TestAuditLogContext";
 import { getTestBlockContext } from "./TestBlockContext";
@@ -33,7 +18,22 @@ import {
     getTestWebPushContext,
     ITestWebPushContext,
 } from "./TestWebPushContext";
-import { getTestCollaborationRequestContext } from "./TetsCollaborationRequestContext";
+import { getTestCollaborationRequestContext } from "./TestCollaborationRequestContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import {
+    ICustomSelectionOption,
+    ICustomProperty,
+    ICustomPropertyValue,
+} from "../../../mongo/custom-property/definitions";
+import { IEntityAttrValue } from "../../../mongo/eav";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import MemoryDataProvider from "../../contexts/data-providers/MemoryDataProvider";
+import {
+    throwCustomOptionNotFoundError,
+    throwCustomPropertyNotFoundError,
+    throwCustomValueNotFoundError,
+} from "../../customProperty/utils";
+import { throwEAVNotFoundError } from "../../eav/utils";
 
 export interface ITestBaseContext extends IBaseContext {
     socket: ITestSocketContext;
@@ -103,4 +103,6 @@ export class TestBaseContext implements ITestBaseContext {
     };
 }
 
-export const getTestBaseContext = makeSingletonFn(() => new TestBaseContext());
+export const getTestBaseContext = () => {
+    return new TestBaseContext();
+};

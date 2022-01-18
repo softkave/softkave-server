@@ -12,7 +12,7 @@ import { IUpdateItemById } from "../../utilities/types";
 import { PermissionDeniedError } from "../errors";
 import { GetMongoUpdateType } from "../types";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 interface IPermissionQuery {
     organizationId: string;

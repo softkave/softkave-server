@@ -5,12 +5,12 @@ import {
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicCollaborationRequestArray } from "../../notifications/utils";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
 import { fireAndForgetPromise } from "../../utils";
-import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrganizationAndExistingUsers";
+import { getPublicCollaborationRequestArray } from "../utils";
+import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrgAndExistingUsers";
 import filterNewCollaborators from "./filterNewCollaborators";
 import sendEmails from "./sendEmails";
 import { AddCollaboratorEndpoint } from "./types";
@@ -56,6 +56,10 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
                 },
             ],
             sentEmailHistory: [],
+            body: `
+              You have a new collaboration request from
+              ${user.name} of ${organization.name}.
+            `,
         };
 
         return newRequest;

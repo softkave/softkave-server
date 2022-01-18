@@ -1,6 +1,6 @@
 import { PromiseResult } from "aws-sdk/lib/request";
 import aws from "../resources/aws";
-import { IBaseContext } from "./contexts/BaseContext";
+import { IBaseContext } from "./contexts/IBaseContext";
 
 const ses = new aws.SES();
 

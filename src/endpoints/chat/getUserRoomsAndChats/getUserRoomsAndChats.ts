@@ -1,5 +1,4 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
-import { getPublicChatsArray, getPublicRoomsArray } from "../utils";
+import { getPublicRoomsArray, getPublicChatsArray } from "../utils";
 import { GetUserRoomsAndChatsEndpoint } from "./type";
 
 const getUserRoomsAndChats: GetUserRoomsAndChatsEndpoint = async (

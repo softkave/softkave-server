@@ -57,12 +57,15 @@ export const appVariables: IAppVariables = {
     confirmEmailAddressPath: `${clientDomain}/confirm-email-address`,
 };
 
-function checkVariablesExist() {
+// TODO: Move check to when a BaseContext is created
+// OR check in the variables in context, not the ones from env variables
+export function checkVariablesExist() {
     let requiredVariablesMissing = false;
+    const messages = [];
 
     const logIfMissing = (key, value) => {
         if (!value) {
-            console.log(`Env variable ${key} not set`);
+            messages.push(`Env variable ${key} not set`);
             requiredVariablesMissing = true;
         }
     };
@@ -77,9 +80,9 @@ function checkVariablesExist() {
     logIfMissing("VAPID_PUBLIC_KEY", appVariables.vapidPublicKey);
     logIfMissing("VAPID_PRIVATE_KEY", appVariables.vapidPrivateKey);
 
-    if (requiredVariablesMissing) {
-        throw new Error("Required env variables missing");
+    if (messages.length > 0) {
+        throw new Error(
+            ["Required env variables missing"].concat(messages).join("\n")
+        );
     }
 }
-
-checkVariablesExist();

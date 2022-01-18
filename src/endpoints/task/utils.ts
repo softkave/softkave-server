@@ -60,3 +60,9 @@ export function getPublicTasksArray(
 export function throwTaskNotFoundError() {
     throw new TaskDoesNotExistError();
 }
+
+export function assertTask(board?: ITask | null) {
+    if (!board) {
+        throwTaskNotFoundError();
+    }
+}

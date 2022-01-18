@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import { getSendFeedbackContext } from "./sendFeedback/context";
 import sendFeedback from "./sendFeedback/sendFeedback";
 

@@ -1,17 +1,17 @@
-import { IChat } from "../../mongo/chat";
-import { IRoom, IRoomMemberReadCounter } from "../../mongo/room";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { getDate } from "../../utilities/fns";
-import getNewId from "../../utilities/getNewId";
-import { IBaseContext } from "../contexts/BaseContext";
-import { IChatContext } from "../contexts/ChatContext";
-
-const chats: IChat[] = [];
-const rooms: IRoom[] = [];
+import { IChat } from "../../../mongo/chat";
+import { IRoom, IRoomMemberReadCounter } from "../../../mongo/room";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { getDate } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { IChatContext } from "../../contexts/ChatContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 
 class TestChatContext implements IChatContext {
+    chats: IChat[] = [];
+    rooms: IRoom[] = [];
+
     public getMessages = async (ctx: IBaseContext, roomIds: string[]) => {
-        return chats.filter((chat) => roomIds.includes(chat.roomId));
+        return this.chats.filter((chat) => roomIds.includes(chat.roomId));
     };
 
     public getRooms = async (
@@ -19,7 +19,7 @@ class TestChatContext implements IChatContext {
         userId: string,
         organizationIds: string[]
     ) => {
-        return rooms.filter(
+        return this.rooms.filter(
             (room) =>
                 room.members.find((member) => member.userId === userId) &&
                 organizationIds.includes(room.orgId)
@@ -27,7 +27,7 @@ class TestChatContext implements IChatContext {
     };
 
     public getRoomById = async (ctx: IBaseContext, roomId: string) => {
-        return rooms.find((room) => room.customId === roomId);
+        return this.rooms.find((room) => room.customId === roomId);
     };
 
     public addMemberToRoom = async (
@@ -35,10 +35,10 @@ class TestChatContext implements IChatContext {
         roomId: string,
         userId: string
     ) => {
-        const index = rooms.findIndex((room) => room.customId === roomId);
+        const index = this.rooms.findIndex((room) => room.customId === roomId);
 
         if (index !== -1) {
-            rooms[index].members.push({
+            this.rooms[index].members.push({
                 userId,
                 readCounter: getDate(),
             });
@@ -51,15 +51,16 @@ class TestChatContext implements IChatContext {
         userId: string,
         readCounter: Date | string
     ) => {
-        const index = rooms.findIndex((room) => room.customId === roomId);
+        const index = this.rooms.findIndex((room) => room.customId === roomId);
 
         if (index !== -1) {
-            const mIndex = rooms[index].members.findIndex(
+            const mIndex = this.rooms[index].members.findIndex(
                 (member) => member.userId === userId
             );
 
             if (mIndex !== -1) {
-                rooms[index].members[mIndex].readCounter = getDate(readCounter);
+                this.rooms[index].members[mIndex].readCounter =
+                    getDate(readCounter);
             }
         }
     };
@@ -77,7 +78,7 @@ class TestChatContext implements IChatContext {
 
         const roomId = getNewId();
         const roomName = name || ctx.room.getChatRoomName(roomId);
-        rooms.push({
+        this.rooms.push({
             orgId: organizationId,
             members,
             customId: roomId,
@@ -86,7 +87,7 @@ class TestChatContext implements IChatContext {
             createdBy: userId,
         });
 
-        return rooms[rooms.length - 1];
+        return this.rooms[this.rooms.length - 1];
     };
 
     public insertMessage = async (
@@ -96,7 +97,7 @@ class TestChatContext implements IChatContext {
         roomId: string,
         message: string
     ) => {
-        chats.push({
+        this.chats.push({
             customId: getNewId(),
             orgId: organizationId,
             message,
@@ -105,7 +106,7 @@ class TestChatContext implements IChatContext {
             createdAt: getDate(),
         });
 
-        return chats[chats.length - 1];
+        return this.chats[this.chats.length - 1];
     };
 
     public getUserRoomReadCounter = async (
@@ -113,15 +114,15 @@ class TestChatContext implements IChatContext {
         userId: string,
         roomId: string
     ) => {
-        const index = rooms.findIndex((room) => room.customId === roomId);
+        const index = this.rooms.findIndex((room) => room.customId === roomId);
 
         if (index !== -1) {
-            const mIndex = rooms[index].members.findIndex(
+            const mIndex = this.rooms[index].members.findIndex(
                 (member) => member.userId === userId
             );
 
             if (mIndex !== -1) {
-                return rooms[index].members[mIndex];
+                return this.rooms[index].members[mIndex];
             }
         }
     };

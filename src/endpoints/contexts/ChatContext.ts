@@ -4,7 +4,7 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IChatContext {
     getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;

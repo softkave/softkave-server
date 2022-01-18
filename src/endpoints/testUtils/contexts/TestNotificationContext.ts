@@ -1,6 +1,6 @@
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { INotificationContext } from "../contexts/NotificationContext";
-import { notImplementFn } from "./utils";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { INotificationContext } from "../../contexts/NotificationContext";
+import { notImplementFn } from "../utils";
 
 class TestNotificationContext implements INotificationContext {
     // Notifications

@@ -3,7 +3,7 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 import moment from "moment";
 
 export interface IUnseenChatsContext {

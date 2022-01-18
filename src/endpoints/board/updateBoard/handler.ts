@@ -9,7 +9,11 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadOrganization from "../../organization/canReadBlock";
 import { fireAndForgetPromise, getComplexTypeArrayInput } from "../../utils";
 import { IBoard } from "../types";
-import { getPublicBoardData, throwBoardNotFoundError } from "../utils";
+import {
+    assertBoard,
+    getPublicBoardData,
+    throwBoardNotFoundError,
+} from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
@@ -196,6 +200,8 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
         data.boardId,
         update
     );
+
+    assertBoard(updatedBoard);
 
     // TODO: should we wait for these to complete, cause a user can reload while they're pending
     // and get incomplete/incorrect data

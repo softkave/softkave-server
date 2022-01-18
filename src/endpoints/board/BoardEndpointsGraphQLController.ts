@@ -1,11 +1,12 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import createBoard from "./createBoard/handler";
 import boardExists from "./boardExists/handler";
 import deleteBoard from "./deleteBoard/handler";
-import UpdateBoardContext from "./updateBoard/context";
 import updateBoard from "./updateBoard/handler";
 import getOrganizationBoards from "./getOrganizationBoards/handler";
+import { makeUpdateBoardContext } from "./updateBoard/context";
+import { getBaseContext } from "../contexts/BaseContext";
 
 export default class BoardEndpointsGraphQLController {
     public createBoard = wrapEndpointREST(createBoard);
@@ -14,7 +15,7 @@ export default class BoardEndpointsGraphQLController {
     public getOrganizationBoards = wrapEndpointREST(getOrganizationBoards);
     public updateBoard = wrapEndpointREST(
         updateBoard,
-        new UpdateBoardContext()
+        makeUpdateBoardContext(getBaseContext())
     );
 }
 

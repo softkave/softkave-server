@@ -1,18 +1,21 @@
-import { IUser } from "../../mongo/user";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { indexArray } from "../../utilities/fns";
-import getNewId from "../../utilities/getNewId";
-import { IUpdateItemById } from "../../utilities/types";
-import { IBaseContext } from "../contexts/BaseContext";
-import { IUserContext } from "../contexts/UserContext";
-import { UserDoesNotExistError } from "../user/errors";
-
-const users: IUser[] = [];
+import { IUser } from "../../../mongo/user";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { indexArray } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { IUpdateItemById } from "../../../utilities/types";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { IUserContext } from "../../contexts/UserContext";
+import { UserDoesNotExistError } from "../../user/errors";
 
 class TestUserContext implements IUserContext {
+    users: IUser[] = [];
+
     getUserByEmail = async (ctx: IBaseContext, email: string) => {
         email = email.toLowerCase();
-        return users.find((user) => user.email.toLowerCase() === email) || null;
+        return (
+            this.users.find((user) => user.email.toLowerCase() === email) ||
+            null
+        );
     };
 
     bulkGetUsersByEmail = async (ctx: IBaseContext, emails: string[]) => {
@@ -20,11 +23,11 @@ class TestUserContext implements IUserContext {
             indexer: (email) => email.toLowerCase(),
         });
 
-        return users.filter((user) => emailMap[user.email.toLowerCase()]);
+        return this.users.filter((user) => emailMap[user.email.toLowerCase()]);
     };
 
     getUserById = async (ctx: IBaseContext, customId: string) => {
-        return users.find((user) => user.customId === customId) || null;
+        return this.users.find((user) => user.customId === customId) || null;
     };
 
     assertGetUserById = async (ctx: IBaseContext, customId: string) => {
@@ -42,18 +45,20 @@ class TestUserContext implements IUserContext {
         customId: string,
         data: Partial<IUser>
     ) => {
-        const index = users.findIndex((user) => user.customId === customId);
+        const index = this.users.findIndex(
+            (user) => user.customId === customId
+        );
 
         if (index === -1) {
             return null;
         }
 
-        users[index] = { ...users[index], ...data };
-        return users[index];
+        this.users[index] = { ...this.users[index], ...data };
+        return this.users[index];
     };
 
     bulkGetUsersById = async (ctx: IBaseContext, ids: string[]) => {
-        const usersMap = indexArray(users, { path: "customId" });
+        const usersMap = indexArray(this.users, { path: "customId" });
         const data: IUser[] = [];
         ids.forEach((id) => {
             if (usersMap[id]) {
@@ -65,12 +70,12 @@ class TestUserContext implements IUserContext {
     };
 
     saveUser = async (ctx: IBaseContext, user: Omit<IUser, "customId">) => {
-        users.push({
+        this.users.push({
             ...user,
             customId: getNewId(),
         });
 
-        return users[users.length - 1];
+        return this.users[this.users.length - 1];
     };
 
     userExists = async (ctx: IBaseContext, email: string) => {
@@ -78,7 +83,7 @@ class TestUserContext implements IUserContext {
     };
 
     getBlockCollaborators = async (ctx: IBaseContext, blockId: string) => {
-        return users.filter((user) => {
+        return this.users.filter((user) => {
             return (
                 user.orgs &&
                 user.orgs.findIndex(
@@ -89,7 +94,7 @@ class TestUserContext implements IUserContext {
     };
 
     getOrganizationUsers = async (ctx: IBaseContext, blockId: string) => {
-        return users.filter((user) => {
+        return this.users.filter((user) => {
             return (
                 user.orgs &&
                 user.orgs.findIndex(
@@ -103,7 +108,7 @@ class TestUserContext implements IUserContext {
         ctx: IBaseContext,
         inputUsers: Array<IUpdateItemById<IUser>>
     ) => {
-        const usersMap = indexArray(users, {
+        const usersMap = indexArray(this.users, {
             path: "customId",
             reducer: (user, arr, index) => ({ user, index }),
         });
@@ -112,7 +117,10 @@ class TestUserContext implements IUserContext {
             const userEntry = usersMap[id];
 
             if (userEntry) {
-                users[userEntry.index] = { ...users[userEntry.index], ...data };
+                this.users[userEntry.index] = {
+                    ...this.users[userEntry.index],
+                    ...data,
+                };
             }
         });
     };

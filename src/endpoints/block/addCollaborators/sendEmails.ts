@@ -6,8 +6,9 @@ import {
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import { IUpdateItemById } from "../../../utilities/types";
-import waitOnPromises, {
+import {
     IPromiseWithId,
+    waitOnPromisesWithId,
 } from "../../../utilities/waitOnPromises";
 import { IPublicCollaborationRequest } from "../../collaborationRequest/types";
 import { getPublicCollaborationRequest } from "../../collaborationRequest/utils";
@@ -32,7 +33,7 @@ export default async function sendEmails(
     // TODO: should we send emails only to people who aren't users?
     const sendEmailPromises: IPromiseWithId[] = requests.map(
         (request, index) => {
-            const promise = context.sendCollaborationRequestEmail({
+            const promise = context.sendCollaborationRequestEmail(context, {
                 email: request.to.email,
                 senderName: user.name,
                 senderOrganization: block.name,
@@ -51,9 +52,9 @@ export default async function sendEmails(
 
     // TODO: Resend collaboration requests that have not been sent or that failed
 
-    const settledPromises = await waitOnPromises(sendEmailPromises);
+    const settledPromises = await waitOnPromisesWithId(sendEmailPromises);
     const successfulRequests: ICollaborationRequest[] = settledPromises
-        .filter(({ fulfilled }) => fulfilled)
+        .filter(({ resolved }) => resolved)
         .map(({ id }) => {
             return requests[id];
         });

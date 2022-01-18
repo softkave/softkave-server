@@ -15,7 +15,7 @@ const publicNotificationSubscriptionFields =
         resourceType: true,
         resourceId: true,
         type: true,
-        organizationId: true,
+        orgId: true,
     });
 
 export function getPublicNotificationSubscriptionData(

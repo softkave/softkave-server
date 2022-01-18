@@ -3,7 +3,7 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ISocketEntry {
     userId: string;

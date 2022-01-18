@@ -1,14 +1,12 @@
 import { ICustomPropertyValue } from "../../../mongo/custom-property/definitions";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint, IUpdateComplexTypeArrayInput } from "../../types";
 import { IPublicCustomPropertyValue } from "../types";
 
 export interface IUpdateCustomValueEndpointParams {
     customId: string;
     data: {
-        value:
-            | IUpdateComplexTypeArrayInput<string>
-            | ICustomPropertyValue["value"];
+        value: IUpdateComplexTypeArrayInput<ICustomPropertyValue["value"]>;
     };
 }
 

@@ -32,3 +32,9 @@ export function getPublicOrganizationsArray(
 export function throwOrganizationNotFoundError() {
     throw new OrganizationDoesNotExistError();
 }
+
+export function assertOrganization(board?: IOrganization | null) {
+    if (!board) {
+        throwOrganizationNotFoundError();
+    }
+}

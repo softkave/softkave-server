@@ -1,6 +1,6 @@
 import { ICustomProperty } from "../../mongo/custom-property/definitions";
 import { IUpdateItemById } from "../../utilities/types";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ICustomPropertyDbProvider {
     saveCustomProperty: (

@@ -1,4 +1,4 @@
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import addComment from "./addComment/addComment";
 import getComments from "./getComments/getComments";
 

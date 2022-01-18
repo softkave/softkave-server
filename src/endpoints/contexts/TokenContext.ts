@@ -6,7 +6,7 @@ import {
     wrapFireAndThrowErrorAsync,
     wrapFireAndThrowErrorRegular,
 } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 import jwt from "jsonwebtoken";
 import { CredentialsExpiredError } from "../user/errors";
 

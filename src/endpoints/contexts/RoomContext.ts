@@ -4,7 +4,7 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import RequestData from "../RequestData";
 import { OutgoingSocketEvents } from "../socket/outgoingEventTypes";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 import { ISocketEntry } from "./SocketContext";
 
 /**

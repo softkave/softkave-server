@@ -1,26 +1,28 @@
 import moment from "moment";
-import { IUnseenChats } from "../../mongo/unseen-chats";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { getDateString } from "../../utilities/fns";
-import getNewId from "../../utilities/getNewId";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IUnseenChats } from "../../../mongo/unseen-chats";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { getDateString } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import UnseenChatsContext, {
     IUnseenChatsContext,
-} from "../contexts/UnseenChatsContext";
-
-const unseenChats: IUnseenChats[] = [];
+} from "../../contexts/UnseenChatsContext";
 
 class TestUnseenChatsContext
     extends UnseenChatsContext
     implements IUnseenChatsContext
 {
+    unseenChats: IUnseenChats[] = [];
+
     public addEntry = async (
         ctx: IBaseContext,
         userId: string,
         roomId: string
     ) => {
-        const index = unseenChats.findIndex((item) => item.userId === userId);
-        let data = unseenChats[index];
+        const index = this.unseenChats.findIndex(
+            (item) => item.userId === userId
+        );
+        let data = this.unseenChats[index];
 
         if (index !== -1) {
             data = {
@@ -30,7 +32,7 @@ class TestUnseenChatsContext
                 customId: getNewId(),
             };
 
-            unseenChats.push(data);
+            this.unseenChats.push(data);
         }
 
         data.rooms[roomId] = (data.rooms[roomId] || 0) + 1;
@@ -38,7 +40,7 @@ class TestUnseenChatsContext
     };
 
     public removeEntry = async (ctx: IBaseContext, userId: string) => {
-        unseenChats
+        this.unseenChats
             .reduce((indexes, item, i) => {
                 if (item.userId === userId) {
                     indexes.push(i);
@@ -46,7 +48,7 @@ class TestUnseenChatsContext
 
                 return indexes;
             }, [])
-            .forEach((index) => unseenChats.splice(index, 1));
+            .forEach((index) => this.unseenChats.splice(index, 1));
     };
 
     public consume = async (
@@ -58,15 +60,15 @@ class TestUnseenChatsContext
         const data: IUnseenChats[] = [];
         let i = 0;
 
-        for (; i < unseenChats.length && data.length <= count; i++) {
-            const item = unseenChats[i];
+        for (; i < this.unseenChats.length && data.length <= count; i++) {
+            const item = this.unseenChats[i];
 
             if (moment(item.createdAt) >= fromDateMoment) {
                 data.push(item);
             }
         }
 
-        unseenChats.splice(0, i + 1);
+        this.unseenChats.splice(0, i + 1);
         return data;
     };
 }

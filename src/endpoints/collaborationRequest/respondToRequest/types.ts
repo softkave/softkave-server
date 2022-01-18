@@ -1,5 +1,5 @@
 import { CollaborationRequestResponse } from "../../../mongo/collaboration-request";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { IPublicOrganization } from "../../organization/types";
 import { Endpoint } from "../../types";
 

@@ -10,54 +10,12 @@ import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
 import { cast, indexArray } from "../utilities/fns";
 import { ConvertDatesToStrings } from "../utilities/types";
-import { getBaseContext, IBaseContext } from "./contexts/BaseContext";
-import { IServerRequest } from "./contexts/types";
-import RequestData from "./RequestData";
 import {
-    Endpoint,
     ExtractFieldsDefaultScalarTypes,
     ExtractFieldsFrom,
     IObjectPaths,
     IUpdateComplexTypeArrayInput,
 } from "./types";
-
-export const wrapEndpointREST = <
-    Params,
-    Result,
-    Context extends IBaseContext = IBaseContext
->(
-    endpoint: Endpoint<Context, Params, Result>,
-    context?: Context
-) => {
-    return async (
-        data: Params,
-        req: IServerRequest
-    ): Promise<ReturnType<Endpoint<IBaseContext, Params, Result>>> => {
-        try {
-            // When the context the endpoint uses differ from IBaseContext,
-            // make sure to privide yours cause it could cause unexpected behaviour
-            // during runtime
-            const ctx = context || getBaseContext();
-            return await endpoint(
-                // Casting here is not particularly okay, but okay if calling functions
-                // provide their context if different from IBaseContext
-                cast(ctx),
-                RequestData.fromExpressRequest(ctx, req, data)
-            );
-        } catch (error) {
-            const errors = Array.isArray(error) ? error : [error];
-            console.error(error);
-            return cast({
-                errors: errors.map((err) => ({
-                    name: err.name,
-                    message: err.message,
-                    action: err.action,
-                    field: err.field,
-                })),
-            });
-        }
-    };
-};
 
 export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     fn: Fn,

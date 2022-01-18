@@ -5,7 +5,7 @@ import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
 import { getBlockRootBlockId } from "../../block/utils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import {
     IOutgoingUpdateBlockPermissionGroupsPacket,
     OutgoingSocketEvents,

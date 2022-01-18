@@ -1,12 +1,12 @@
-import { IAuditLog } from "../../mongo/audit-log";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
+import { IAuditLog } from "../../../mongo/audit-log";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
 import {
-    getLogFromEntry,
     IAuditLogContext,
     IAuditLogInsertEntry,
-} from "../contexts/AuditLogContext";
-import { IBaseContext } from "../contexts/BaseContext";
-import RequestData from "../RequestData";
+    getLogFromEntry,
+} from "../../contexts/AuditLogContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import RequestData from "../../RequestData";
 
 const auditLogs: IAuditLog[] = [];
 
@@ -28,7 +28,8 @@ class TestAuditLogContext implements IAuditLogContext {
         data: RequestData,
         log: IAuditLogInsertEntry
     ) {
-        return ctx.auditLog.insertMany(ctx, data, [log]);
+        // TODO
+        // return ctx.auditLog.insertMany(ctx, data, [log]);
     }
 }
 

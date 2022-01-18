@@ -1,5 +1,5 @@
 import OperationError from "../utilities/OperationError";
-import { IBaseContext } from "./contexts/BaseContext";
+import { IBaseContext } from "./contexts/IBaseContext";
 import RequestData from "./RequestData";
 
 export interface IBaseEndpointResult {

@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import changePasswordWithToken from "./changePasswordWithToken/changePasswordWithToken";
 import { getChangePasswordWithTokenContext } from "./changePasswordWithToken/context";
 import getUserData from "./getUserData/getUserData";

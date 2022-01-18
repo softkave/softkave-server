@@ -8,7 +8,6 @@ import {
 } from "../../../mongo/collaboration-request/definitions";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaborationRequestRevokedNotification } from "../../notifications/templates/collaborationRequest";
 import {
     CollaborationRequestAcceptedError,
     CollaborationRequestDeclinedError,
@@ -33,38 +32,38 @@ async function notifyRecipient(
         request.to.email
     );
 
-    if (recipient) {
-        const notification = getCollaborationRequestRevokedNotification(
-            organization,
-            recipient,
-            request
-        );
+    // if (recipient) {
+    //     const notification = getCollaborationRequestRevokedNotification(
+    //         organization,
+    //         recipient,
+    //         request
+    //     );
 
-        fireAndForgetPromise(
-            context.notification.bulkSaveNotifications(context, [notification])
-        );
-    } else {
-        try {
-            await context.sendCollaborationRequestRevokedEmail({
-                email: request.to.email,
-                senderName: organization.name,
-                title: `Collaboration request from ${organization.name} revoked`,
-            });
+    //     fireAndForgetPromise(
+    //         context.notification.bulkSaveNotifications(context, [notification])
+    //     );
+    // } else {
+    //     try {
+    //         await context.sendCollaborationRequestRevokedEmail({
+    //             email: request.to.email,
+    //             senderName: organization.name,
+    //             title: `Collaboration request from ${organization.name} revoked`,
+    //         });
 
-            context.collaborationRequest.updateCollaborationRequestById(
-                context,
-                request.customId,
-                {
-                    sentEmailHistory: request.sentEmailHistory.concat({
-                        date: getDate(),
-                        reason: CollaborationRequestEmailReason.RequestRevoked,
-                    }),
-                }
-            );
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    //         context.collaborationRequest.updateCollaborationRequestById(
+    //             context,
+    //             request.customId,
+    //             {
+    //                 sentEmailHistory: request.sentEmailHistory.concat({
+    //                     date: getDate(),
+    //                     reason: CollaborationRequestEmailReason.RequestRevoked,
+    //                 }),
+    //             }
+    //         );
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 }
 
 const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (

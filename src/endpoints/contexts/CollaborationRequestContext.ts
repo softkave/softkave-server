@@ -3,7 +3,7 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ICollaborationRequestContext {
     getCollaborationRequestById: (

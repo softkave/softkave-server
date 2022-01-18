@@ -1,6 +1,6 @@
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import canReadOrganization from "../../organization/canReadBlock";
 import ReusableDataQueries from "../../ReuseableDataQueries";
 import ToPublicCustomData from "../utils";

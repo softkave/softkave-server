@@ -7,7 +7,7 @@ import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import canReadOrganization from "../../organization/canReadBlock";
 import ReusableDataQueries from "../../ReuseableDataQueries";
 import { IUpdateComplexTypeArrayInput } from "../../types";
@@ -62,15 +62,25 @@ async function updateSelectionValues(
     }
 
     if (input?.remove.length > 0) {
-        await context.data.entityAttrValue.bulkDeleteItems(
-            input.update.map((item) => ({
-                filter: CustomDataQueries.bySelectionEntityAttrAndValue(
-                    value.customId,
-                    item
-                ),
-                deleteFirstItemOnly: true,
-            }))
-        );
+        // TODO: Fix
+        // await context.data.entityAttrValue.bulkDeleteItems(
+        //     input.update.map((item) => ({
+        //         filter: CustomDataQueries.bySelectionEntityAttrAndValue(
+        //             value.customId,
+        //             item
+        //         ),
+        //         deleteFirstItemOnly: true,
+        //     }))
+        // );
+        // await context.data.entityAttrValue.deleteManyItems(
+        //     input.update.map((item) => ({
+        //         filter: CustomDataQueries.bySelectionEntityAttrAndValue(
+        //             value.customId,
+        //             item
+        //         ),
+        //         deleteFirstItemOnly: true,
+        //     }))
+        // );
     }
 }
 

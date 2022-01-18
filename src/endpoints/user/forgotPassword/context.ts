@@ -1,4 +1,5 @@
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
+import BaseContext from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import sendChangePasswordEmail, {
     ISendChangePasswordEmailParameters,
 } from "../sendChangePasswordEmail";

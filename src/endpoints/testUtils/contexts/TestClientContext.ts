@@ -1,20 +1,20 @@
-import { IClient, IClientUserEntry } from "../../mongo/client";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { ClientDoesNotExistError } from "../client/errors";
-import { findUserEntryInClient } from "../client/utils";
-import { IBaseContext } from "../contexts/BaseContext";
-import { IClientContext } from "../contexts/ClientContext";
-import RequestData from "../RequestData";
-
-const clients: IClient[] = [];
+import { IClient, IClientUserEntry } from "../../../mongo/client";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { ClientDoesNotExistError } from "../../client/errors";
+import { findUserEntryInClient } from "../../client/utils";
+import { IClientContext } from "../../contexts/ClientContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import RequestData from "../../RequestData";
 
 class TestClientContext implements IClientContext {
+    clients: IClient[] = [];
+
     public getClientByPushSubscription = async (
         ctx: IBaseContext,
         endpoint: string,
         keys: IClient["keys"]
     ) => {
-        return clients.find((client) => {
+        return this.clients.find((client) => {
             return (
                 client.endpoint === endpoint &&
                 client.keys?.auth === keys.auth &&
@@ -24,19 +24,19 @@ class TestClientContext implements IClientContext {
     };
 
     public saveClient = async (ctx: IBaseContext, data: IClient) => {
-        clients.push(data);
-        return clients[clients.length - 1];
+        this.clients.push(data);
+        return this.clients[this.clients.length - 1];
     };
 
     public getClientById = async (ctx: IBaseContext, clientId: string) => {
-        return clients.find((client) => client.clientId === clientId);
+        return this.clients.find((client) => client.clientId === clientId);
     };
 
     public getPushSubscribedClients = async (
         ctx: IBaseContext,
         userId: string
     ) => {
-        return clients.filter((client) => {
+        return this.clients.filter((client) => {
             return (
                 client.endpoint &&
                 client.keys &&
@@ -88,13 +88,13 @@ class TestClientContext implements IClientContext {
         clientId: string,
         data: Partial<IClient>
     ) => {
-        const index = clients.findIndex(
+        const index = this.clients.findIndex(
             (client) => client.clientId === clientId
         );
 
         if (index !== -1) {
-            clients[index] = { ...clients[index], ...data };
-            return clients[index];
+            this.clients[index] = { ...this.clients[index], ...data };
+            return this.clients[index];
         }
     };
 }

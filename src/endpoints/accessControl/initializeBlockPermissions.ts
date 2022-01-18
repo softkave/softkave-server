@@ -11,7 +11,7 @@ import { IBlock } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import { getDate, getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 
 export async function initializeBoardPermissions(
     ctx: IBaseContext,
@@ -38,7 +38,7 @@ export async function initializeBoardPermissions(
         const permission: IPermission = {
             ...p,
             customId: getNewId(),
-            organizationId: board.rootBlockId,
+            orgId: board.rootBlockId,
             permissionGroups: organizationPermission.permissionGroups,
             users: organizationPermission.users,
             permissionOwnerId: board.customId,
@@ -295,7 +295,7 @@ export function makeDefaultPermissions(
             createdBy: userId,
             createdAt: getDate(),
             available: true,
-            organizationId: organization.customId,
+            orgId: organization.customId,
         };
 
         return permission;

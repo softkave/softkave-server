@@ -57,8 +57,7 @@ const createBoard: CreateBoardEndpoint = async (context, instData) => {
         })),
     };
 
-    const savedBoard = await context.block.saveBlock(context, board);
-
+    const savedBoard = await context.block.saveBlock<IBoard>(context, board);
     return {
         board: getPublicBoardData(savedBoard),
     };

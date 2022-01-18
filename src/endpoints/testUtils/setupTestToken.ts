@@ -4,7 +4,7 @@ import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import { getDateString } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { IBaseContext } from "../contexts/BaseContext";
+import { IBaseContext } from "../contexts/IBaseContext";
 import {
     CURRENT_USER_TOKEN_VERSION,
     IBaseTokenData,
@@ -22,17 +22,10 @@ export interface ISetupTestTokenProps {
     user: IUser;
 }
 
-let prevResult: ISetupTestTokenResult | null = null;
-
 export async function setupTestToken(
     context: IBaseContext,
     props: ISetupTestTokenProps
 ): Promise<ISetupTestTokenResult> {
-    if (prevResult) {
-        console.log("using prev setupToken result");
-        return prevResult;
-    }
-
     let token: IToken = {
         customId: getNewId(),
         userId: props.user.customId,
@@ -71,6 +64,5 @@ export async function setupTestToken(
         incomingTokenData,
     };
 
-    prevResult = result;
     return result;
 }

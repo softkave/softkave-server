@@ -1,21 +1,21 @@
-import { ISprint } from "../../mongo/sprint";
-import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { indexArray } from "../../utilities/fns";
-import getNewId from "../../utilities/getNewId";
-import { IUpdateItemById } from "../../utilities/types";
-import { IBaseContext } from "../contexts/BaseContext";
-import { ISprintContext } from "../contexts/SprintContext";
-
-let sprints: ISprint[] = [];
+import { ISprint } from "../../../mongo/sprint";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
+import { indexArray } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
+import { IUpdateItemById } from "../../../utilities/types";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { ISprintContext } from "../../contexts/SprintContext";
 
 class TestSprintContext implements ISprintContext {
+    sprints: ISprint[] = [];
+
     public getSprintById = async (ctx: IBaseContext, customId: string) => {
-        return sprints.find((sprint) => sprint.customId === customId);
+        return this.sprints.find((sprint) => sprint.customId === customId);
     };
 
     public getMany = async (ctx: IBaseContext, ids: string[]) => {
         const idsMap = indexArray(ids);
-        return sprints.filter((sprint) => idsMap[sprint.customId]);
+        return this.sprints.filter((sprint) => idsMap[sprint.customId]);
     };
 
     public updateSprintById = async (
@@ -23,13 +23,13 @@ class TestSprintContext implements ISprintContext {
         customId: string,
         data: Partial<ISprint>
     ) => {
-        const index = sprints.findIndex(
+        const index = this.sprints.findIndex(
             (sprint) => sprint.customId === customId
         );
 
         if (index !== -1) {
-            sprints[index] = { ...sprints[index], ...data };
-            return sprints[index];
+            this.sprints[index] = { ...this.sprints[index], ...data };
+            return this.sprints[index];
         }
     };
 
@@ -38,9 +38,9 @@ class TestSprintContext implements ISprintContext {
         data: Array<IUpdateItemById<ISprint>>
     ) => {
         const updatesMap = indexArray(data, { path: "id" });
-        sprints.forEach((sprint, i) => {
+        this.sprints.forEach((sprint, i) => {
             if (updatesMap[sprint.customId]) {
-                sprints[i] = {
+                this.sprints[i] = {
                     ...sprint,
                     ...updatesMap[sprint.customId].data,
                 };
@@ -49,7 +49,7 @@ class TestSprintContext implements ISprintContext {
     };
 
     public getSprintsByBoardId = async (ctx: IBaseContext, boardId: string) => {
-        return sprints.filter((sprint) => sprint.boardId === boardId);
+        return this.sprints.filter((sprint) => sprint.boardId === boardId);
     };
 
     public sprintExists = async (
@@ -58,18 +58,18 @@ class TestSprintContext implements ISprintContext {
         boardId: string
     ) => {
         name = name.toLowerCase();
-        return !!sprints.find(
+        return !!this.sprints.find(
             (sprint) => sprint.name === name && sprint.boardId === boardId
         );
     };
 
     public deleteSprint = async (ctx: IBaseContext, sprintId: string) => {
-        const index = sprints.findIndex(
+        const index = this.sprints.findIndex(
             (sprint) => sprint.customId === sprintId
         );
 
         if (index !== -1) {
-            sprints.splice(index, 1);
+            this.sprints.splice(index, 1);
         }
     };
 
@@ -78,9 +78,9 @@ class TestSprintContext implements ISprintContext {
         boardId: string,
         data: Partial<ISprint>
     ) => {
-        sprints.forEach((sprint, i) => {
+        this.sprints.forEach((sprint, i) => {
             if (sprint.boardId === boardId && !sprint.startDate) {
-                sprints[i] = { ...sprint, ...data };
+                this.sprints[i] = { ...sprint, ...data };
             }
         });
     };
@@ -89,19 +89,19 @@ class TestSprintContext implements ISprintContext {
         ctx: IBaseContext,
         sprint: Omit<ISprint, "customId">
     ) {
-        sprints.push({
+        this.sprints.push({
             ...sprint,
             customId: getNewId(),
         });
 
-        return sprints[sprints.length - 1];
+        return this.sprints[this.sprints.length - 1];
     }
 
     public deleteSprintByBoardId = async (
         ctx: IBaseContext,
         boardId: string
     ) => {
-        sprints = sprints.filter((sprint) => {
+        this.sprints = this.sprints.filter((sprint) => {
             return sprint.boardId !== boardId;
         });
     };

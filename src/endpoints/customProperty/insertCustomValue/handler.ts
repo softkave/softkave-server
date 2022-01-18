@@ -15,7 +15,7 @@ import { getDate, pluralize, same } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { throwBoardNotFoundError } from "../../board/utils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import canReadOrganization from "../../organization/canReadBlock";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
 import CustomDataQueries from "../CustomDataQueries";

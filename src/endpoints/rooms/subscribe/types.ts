@@ -1,5 +1,5 @@
 import { SystemResourceType } from "../../../models/system";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
 interface ISubscriptionableResource {

@@ -1,5 +1,5 @@
 import makeSingletonFn from "../../utilities/createSingletonFunc";
-import { wrapEndpointREST } from "../utils";
+import { wrapEndpointREST } from "../wrapEndpointREST";
 import addPermissionGroups from "./addPermissionGroups/addPermissionGroups";
 import deletePermissionGroups from "./deletePermissionGroups/deletePermissionGroups";
 import getResourcePermissions from "./getResourcePermissions/getResourcePermissions";

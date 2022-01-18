@@ -3,7 +3,7 @@ import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { IBroadcastResult } from "../../contexts/RoomContext";
 import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
 import {

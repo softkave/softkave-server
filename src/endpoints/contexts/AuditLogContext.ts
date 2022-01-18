@@ -6,7 +6,7 @@ import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import RequestData from "../RequestData";
 import { wrapFireAndThrowErrorAsync } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IAuditLogInsertEntry {
     action: SystemActionType;
