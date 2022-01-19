@@ -1,4 +1,4 @@
-import { getDateString } from "../../utilities/fns";
+import { getDateString, getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { TaskDoesNotExistError } from "./errors";
 import { IPublicTask, ITask } from "./types";
@@ -6,42 +6,42 @@ import { IPublicTask, ITask } from "./types";
 const taskFields = getFields<IPublicTask>({
     customId: true,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     name: true,
     description: true,
     dueAt: true,
     type: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
     parent: true,
     rootBlockId: true,
     assignees: {
-        assignedAt: getDateString,
+        assignedAt: getDateStringIfExists,
         assignedBy: true,
         userId: true,
     },
     priority: true,
     subTasks: {
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         createdBy: true,
         customId: true,
         description: true,
-        completedAt: getDateString,
+        completedAt: getDateStringIfExists,
         completedBy: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         updatedBy: true,
     },
     status: true,
     statusAssignedBy: true,
-    statusAssignedAt: getDateString,
+    statusAssignedAt: getDateStringIfExists,
     taskResolution: true,
     labels: {
-        assignedAt: getDateString,
+        assignedAt: getDateStringIfExists,
         assignedBy: true,
         customId: true,
     },
     taskSprint: {
-        assignedAt: getDateString,
+        assignedAt: getDateStringIfExists,
         assignedBy: true,
         sprintId: true,
     },

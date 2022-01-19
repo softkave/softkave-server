@@ -1,5 +1,5 @@
 import { INotificationSubscription } from "../../mongo/notification";
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicNotificationSubscription } from "./types";
 
@@ -10,7 +10,7 @@ const publicNotificationSubscriptionFields =
             userId: true,
             reason: true,
             addedBy: true,
-            addedAt: getDateString,
+            addedAt: getDateStringIfExists,
         },
         resourceType: true,
         resourceId: true,

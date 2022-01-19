@@ -1,4 +1,4 @@
-import { getDateString, getDateStringIfExists } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { BoardDoesNotExistError } from "./errors";
 import { IBoard, IPublicBoard } from "./types";
@@ -6,7 +6,7 @@ import { IBoard, IPublicBoard } from "./types";
 const publicBoardFields = getFields<IPublicBoard>({
     customId: true,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     type: true,
     name: true,
     description: true,
@@ -16,7 +16,7 @@ const publicBoardFields = getFields<IPublicBoard>({
     parent: true,
     rootBlockId: true,
     boardStatuses: {
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         createdBy: true,
         customId: true,
         description: true,
@@ -27,7 +27,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         position: true,
     },
     boardLabels: {
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         createdBy: true,
         customId: true,
         description: true,
@@ -37,7 +37,7 @@ const publicBoardFields = getFields<IPublicBoard>({
         name: true,
     },
     boardResolutions: {
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         createdBy: true,
         customId: true,
         description: true,
@@ -47,7 +47,7 @@ const publicBoardFields = getFields<IPublicBoard>({
     },
     currentSprintId: true,
     sprintOptions: {
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         createdBy: true,
         duration: true,
         updatedAt: getDateStringIfExists,

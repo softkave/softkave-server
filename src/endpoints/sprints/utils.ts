@@ -1,5 +1,5 @@
 import { IBoardSprintOptions, ISprint } from "../../mongo/sprint";
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicSprint, IPublicSprintOptions } from "./types";
 
@@ -8,17 +8,17 @@ const publicSprintFields = getFields<IPublicSprint>({
     boardId: true,
     orgId: true,
     duration: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     createdBy: true,
     name: true,
     sprintIndex: true,
     prevSprintId: true,
     nextSprintId: true,
-    startDate: getDateString,
+    startDate: getDateStringIfExists,
     startedBy: true,
-    endDate: getDateString,
+    endDate: getDateStringIfExists,
     endedBy: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
 });
 

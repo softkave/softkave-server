@@ -4,7 +4,7 @@ import {
     IUserAssignedPermissionGroup,
 } from "../../mongo/access-control/definitions";
 import { BlockType, IBlock } from "../../mongo/block";
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { InvalidRequestError } from "../errors";
 import { extractFields, getFields } from "../utils";
 import {
@@ -18,9 +18,9 @@ const publicPermissionGroupFields = getFields<IPublicPermissionGroup>({
     name: true,
     description: true,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     updatedBy: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     resourceId: true,
     resourceType: true,
     lowerCasedName: true,
@@ -36,9 +36,9 @@ const publicPermissionFields = getFields<IPublicPermission>({
     permissionOwnerId: true,
     resourceType: true,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     updatedBy: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     available: true,
     orgId: true,
 });
@@ -50,7 +50,7 @@ const publicUserPermissionGroupMapFields =
         resourceId: true,
         resourceType: true,
         permissionGroupId: true,
-        addedAt: true,
+        addedAt: getDateStringIfExists,
         addedBy: true,
         customId: true,
     });

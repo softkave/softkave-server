@@ -2,7 +2,7 @@ import {
     ICollaborationRequest,
     CollaborationRequestStatusType,
 } from "../../mongo/collaboration-request";
-import { getDateString, getDateStringIfExists } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicCollaborationRequest } from "./types";
 
@@ -19,15 +19,15 @@ const publicCollaborationRequestFields = getFields<IPublicCollaborationRequest>(
             blockName: true,
             blockType: true,
         },
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         readAt: getDateStringIfExists,
         statusHistory: {
             status: true,
-            date: getDateString,
+            date: getDateStringIfExists,
         },
         sentEmailHistory: {
             reason: true,
-            date: getDateString,
+            date: getDateStringIfExists,
         },
         title: true,
         body: true,

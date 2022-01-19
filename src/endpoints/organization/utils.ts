@@ -1,4 +1,4 @@
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { OrganizationDoesNotExistError } from "./errors";
 import { IOrganization, IPublicOrganization } from "./types";
@@ -6,11 +6,11 @@ import { IOrganization, IPublicOrganization } from "./types";
 const publicOrganizationFields = getFields<IPublicOrganization>({
     customId: true,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     type: true,
     name: true,
     description: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
     color: true,
 });

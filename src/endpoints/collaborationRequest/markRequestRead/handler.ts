@@ -1,10 +1,6 @@
-import { getDate, getDateString, indexArray } from "../../../utilities/fns";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { PermissionDeniedError } from "../../errors";
-import {
-    IOutgoingMarkNotificationsReadPacket,
-    OutgoingSocketEvents,
-} from "../../socket/outgoingEventTypes";
 import { MarkRequestReadEndpoint } from "./types";
 import { markRequestReadJoiSchema } from "./validation";
 

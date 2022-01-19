@@ -3,7 +3,7 @@ import {
     ICustomPropertyValue,
     ICustomSelectionOption,
 } from "../../mongo/custom-property/definitions";
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import {
     CustomPropertyDoesNotExistError,
@@ -28,9 +28,9 @@ const publicCustomPropertyFields = getFields<IPublicCustomProperty>({
     isRequired: true,
     meta: (item) => item,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     updatedBy: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
 });
 
 const publicCustomPropertyValueFields = getFields<IPublicCustomPropertyValue>({
@@ -43,9 +43,9 @@ const publicCustomPropertyValueFields = getFields<IPublicCustomPropertyValue>({
     type: true,
     value: (item) => item,
     createdBy: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     updatedBy: true,
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
 });
 
 const publicCustomSelectionOptionFields =
@@ -57,9 +57,9 @@ const publicCustomSelectionOptionFields =
             customId: true,
         },
         createdBy: true,
-        createdAt: getDateString,
+        createdAt: getDateStringIfExists,
         updatedBy: true,
-        updatedAt: getDateString,
+        updatedAt: getDateStringIfExists,
         color: true,
         description: true,
         name: true,

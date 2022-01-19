@@ -1,4 +1,3 @@
-import { string } from "joi";
 import {
     CustomPropertyType,
     IDateCustomTypeMeta,

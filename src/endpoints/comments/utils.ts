@@ -1,5 +1,5 @@
 import { IComment } from "../../mongo/comment";
-import { getDateString } from "../../utilities/fns";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicCommentData } from "./types";
 
@@ -8,8 +8,8 @@ const publicCommentFields = getFields<IPublicCommentData>({
     taskId: true,
     comment: true,
     createdBy: true,
-    createdAt: getDateString,
-    updatedAt: getDateString,
+    createdAt: getDateStringIfExists,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
 });
 

@@ -1,5 +1,5 @@
 import { IUser } from "../../mongo/user";
-import { getDateString } from "../../utilities/fns";
+import { getDateString, getDateStringIfExists } from "../../utilities/fns";
 import { ICollaborator } from "../collaborator/types";
 import { extractFields, getFields } from "../utils";
 import { IPublicUserData } from "./types";
@@ -18,13 +18,13 @@ const publicUserFields = getFields<IPublicUserData>({
     customId: true,
     name: true,
     email: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     rootBlockId: true,
     organizations: {
         customId: true,
     },
     color: true,
-    notificationsLastCheckedAt: getDateString,
+    notificationsLastCheckedAt: getDateStringIfExists,
 });
 
 export const getPublicUserData = (user: IUser): IPublicUserData => {

@@ -1,18 +1,15 @@
-import makeSingletonFn from "../../../utilities/createSingletonFunc";
-import BaseContext from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import sendCollaborationRequestRevokedEmail from "../sendCollaborationRequestRevokedEmail";
 import { IRevokeCollaborationRequestContext } from "./types";
 
-// @ts-ignore
-export default class RevokeCollaborationRequestContext
-    extends BaseContext
-    implements IRevokeCollaborationRequestContext
-{
-    public async sendCollaborationRequestRevokedEmail(context, props) {
-        return sendCollaborationRequestRevokedEmail(context, props);
-    }
-}
+export function makeRevokeRequestContext(
+    context: IBaseContext
+): IRevokeCollaborationRequestContext {
+    return {
+        ...context,
 
-export const getRevokeCollaborationRequestContext = makeSingletonFn(
-    () => new RevokeCollaborationRequestContext()
-);
+        async sendCollaborationRequestRevokedEmail(context, props) {
+            return sendCollaborationRequestRevokedEmail(context, props);
+        },
+    };
+}
