@@ -7,11 +7,11 @@ import expressJwt from "express-jwt";
 import http from "http";
 import { Server } from "socket.io";
 import { indexSchema } from "./endpoints";
+import { getBaseContext } from "./endpoints/contexts/BaseContext";
 import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
 import { setupSocketServer } from "./endpoints/socket/server";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
-import { getAuditLogModel } from "./mongo/audit-log";
 import { getBlockModel } from "./mongo/block";
 import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
@@ -38,7 +38,6 @@ const connection = getDefaultConnection();
 const userModel = getUserModel();
 const blockModel = getBlockModel();
 const notificationModel = getNotificationModel();
-const auditLogModel = getAuditLogModel();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -92,7 +91,7 @@ const io = new Server(httpServer, {
     cors: corsOption,
 });
 
-setupSocketServer(io);
+setupSocketServer(io, getBaseContext());
 app.use(handleErrors);
 
 connection.wait().then(async () => {

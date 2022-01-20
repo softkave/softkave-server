@@ -6,10 +6,11 @@ export interface IOperationErrorParameters {
 }
 
 class OperationError extends Error {
-    public field: string;
     public message: string;
-    public action: string;
-    public value: string;
+    public field?: string;
+    public action?: string;
+    public value?: string;
+    public isPublic = true;
 
     constructor(p: IOperationErrorParameters = {}) {
         super(p.message);

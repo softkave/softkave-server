@@ -1,21 +1,22 @@
-import { pick } from "lodash";
-import isArray from "lodash/isArray";
-import isDate from "lodash/isDate";
-import isFunction from "lodash/isFunction";
-import isNull from "lodash/isNull";
-import isObject from "lodash/isObject";
+import { pick, isArray, isFunction, isNull, isObject, isDate } from "lodash";
+import { Request, Response } from "express";
 import { ParentResourceType, SystemResourceType } from "../models/system";
 import mongoConstants from "../mongo/constants";
 import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
 import { cast, indexArray } from "../utilities/fns";
 import { ConvertDatesToStrings } from "../utilities/types";
+import { IBaseContext } from "./contexts/IBaseContext";
+import { IServerRequest } from "./contexts/types";
+import RequestData from "./RequestData";
 import {
+    Endpoint,
     ExtractFieldsDefaultScalarTypes,
     ExtractFieldsFrom,
     IObjectPaths,
     IUpdateComplexTypeArrayInput,
 } from "./types";
+import OperationError from "../utilities/OperationError";
 
 export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     fn: Fn,
@@ -314,3 +315,61 @@ export function assertGetParentByType(
 
     return parent;
 }
+
+export const wrapEndpointREST = <
+    Context extends IBaseContext,
+    EndpointType extends Endpoint<Context>
+>(
+    endpoint: EndpointType,
+    context: Context,
+    handleResponse?: (
+        res: Response,
+        result: Awaited<ReturnType<EndpointType>>
+    ) => void
+): ((req: Request, res: Response) => any) => {
+    return async (req: Request, res: Response) => {
+        try {
+            const data = req.body;
+            const instData = RequestData.fromExpressRequest(
+                context,
+                req as unknown as IServerRequest,
+                data
+            );
+
+            const result = await endpoint(context, instData);
+
+            if (handleResponse) {
+                handleResponse(res, result);
+            } else {
+                res.status(200).json(result || {});
+            }
+        } catch (error) {
+            const errors = Array.isArray(error) ? error : [error];
+
+            // TODO: move to winston
+            console.error(error);
+            console.log(); // for spacing
+
+            // We are mapping errors cause some values don't show if we don't
+            // or was it errors, not sure anymore, this is old code.
+            // TODO: Feel free to look into it, cause it could help performance.
+            const preppedErrors: Omit<OperationError, "isPublic">[] = [];
+            cast<OperationError[]>(errors).forEach(
+                (err) =>
+                    err.isPublic &&
+                    preppedErrors.push({
+                        name: err.name,
+                        message: err.message,
+                        action: err.action,
+                        field: err.field,
+                    })
+            );
+
+            const result = {
+                errors: preppedErrors,
+            };
+
+            res.status(500).json(result);
+        }
+    };
+};
