@@ -6,6 +6,7 @@ import createBoard from "./createBoard/handler";
 import deleteBoard from "./deleteBoard/handler";
 import getOrganizationBoards from "./getOrganizationBoards/handler";
 import updateBoard from "./updateBoard/handler";
+import getBoard from "./getBoard/handler";
 
 const baseURL = "/api/boards";
 
@@ -19,6 +20,7 @@ export default function setupBoardsRESTEndpoints(
         deleteBoard: wrapEndpointREST(deleteBoard, ctx),
         getOrganizationBoards: wrapEndpointREST(getOrganizationBoards, ctx),
         updateBoard: wrapEndpointREST(updateBoard, ctx),
+        getBoard: wrapEndpointREST(getBoard, ctx),
     };
 
     app.post(`${baseURL}/boardExists`, endpoints.boardExists);
@@ -29,4 +31,5 @@ export default function setupBoardsRESTEndpoints(
         endpoints.getOrganizationBoards
     );
     app.post(`${baseURL}/updateBoard`, endpoints.updateBoard);
+    app.post(`${baseURL}/getBoard`, endpoints.getBoard);
 }

@@ -7,6 +7,7 @@ import updateBoard from "./updateBoard/handler";
 import getOrganizationBoards from "./getOrganizationBoards/handler";
 import { makeUpdateBoardContext } from "./updateBoard/context";
 import { getBaseContext } from "../contexts/BaseContext";
+import getBoard from "./getBoard/handler";
 
 export default class BoardEndpointsGraphQLController {
     public createBoard = wrapEndpointREST(createBoard);
@@ -17,6 +18,7 @@ export default class BoardEndpointsGraphQLController {
         updateBoard,
         makeUpdateBoardContext(getBaseContext())
     );
+    public getBoard = wrapEndpointREST(getBoard);
 }
 
 export const getBoardEndpointsGraphQLController = makeSingletonFn(
