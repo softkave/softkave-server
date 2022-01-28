@@ -6,6 +6,7 @@ import { wrapFireAndThrowError } from "../utils";
 import { IBaseContext } from "./BaseContext";
 import jwt from "jsonwebtoken";
 import { CredentialsExpiredError } from "../user/errors";
+import cast from "../../utilities/fns";
 
 export const CURRENT_USER_TOKEN_VERSION = 5;
 
@@ -17,12 +18,9 @@ export interface IUserTokenSubject extends IGeneralTokenSubject {}
 
 export interface IBaseTokenData<
     Sub extends IGeneralTokenSubject = IGeneralTokenSubject
-> {
+> extends Omit<jwt.JwtPayload, "sub"> {
     version: number;
     sub: Sub;
-    iat: number;
-    // aud: string[];
-    exp?: number;
 }
 
 export type IUserTokenData = IBaseTokenData<IUserTokenSubject>;
@@ -161,10 +159,9 @@ export default class TokenContext implements ITokenContext {
 
     public decodeToken = wrapFireAndThrowError(
         (ctx: IBaseContext, token: string) => {
-            const tokenData = jwt.verify(
-                token,
-                ctx.appVariables.jwtSecret
-            ) as IBaseTokenData<IGeneralTokenSubject>;
+            const tokenData = cast<IBaseTokenData<IGeneralTokenSubject>>(
+                jwt.verify(token, ctx.appVariables.jwtSecret)
+            );
 
             if (tokenData.version < CURRENT_USER_TOKEN_VERSION) {
                 throw new CredentialsExpiredError();
