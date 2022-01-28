@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node";
 import bodyParser from "body-parser";
 import cors, { CorsOptions } from "cors";
 import express from "express";
-import graphqlHTTP from "express-graphql";
+import { graphqlHTTP } from "express-graphql";
 import expressJwt from "express-jwt";
 import http from "http";
 import { Server } from "socket.io";
@@ -66,6 +66,7 @@ app.use(
     expressJwt({
         secret: appVariables.jwtSecret,
         credentialsRequired: false,
+        algorithms: ["HS256"],
     })
 );
 
