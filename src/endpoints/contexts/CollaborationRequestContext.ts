@@ -112,7 +112,9 @@ export default class CollaborationRequestContext
                 return ctx.models.collaborationRequestModel.model
                     .find({
                         "to.email": {
-                            $in: emails,
+                            $in: emails.map(
+                                (item) => new RegExp(`^${item}$`, "i")
+                            ),
                         },
                         "from.blockId": blockId,
                     })

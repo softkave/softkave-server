@@ -316,6 +316,7 @@ export function assertGetParentByType(
     return parent;
 }
 
+// TODO: there are two wrap endpoints, find a fix
 export const wrapEndpointREST = <
     Context extends IBaseContext,
     EndpointType extends Endpoint<Context>

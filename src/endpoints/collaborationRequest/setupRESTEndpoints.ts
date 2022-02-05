@@ -10,7 +10,7 @@ import revokeRequest from "./revokeRequest/handler";
 
 const baseURL = "/api/collaborationRequests";
 
-export default function setupBoardsRESTEndpoints(
+export default function setupCollaborationRequestsRESTEndpoints(
     ctx: IBaseContext,
     app: Express
 ) {

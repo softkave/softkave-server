@@ -9,7 +9,7 @@ import updateTask from "./updateTask/handler";
 
 const baseURL = "/api/tasks";
 
-export default function setupBoardsRESTEndpoints(
+export default function setupTasksRESTEndpoints(
     ctx: IBaseContext,
     app: Express
 ) {

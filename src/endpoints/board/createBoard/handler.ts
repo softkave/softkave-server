@@ -12,13 +12,11 @@ import { addBoardJoiSchema } from "./validation";
 const createBoard: CreateBoardEndpoint = async (context, instData) => {
     const data = validate(instData.data, addBoardJoiSchema);
     const user = await context.session.getUser(context, instData);
-
     await context.block.assertBlockById(context, data.board.parent, () => {
         throw new OrganizationDoesNotExistError();
     });
 
     canReadOrganization(data.board.parent, user);
-
     const boardExists = await context.block.blockExists(
         context,
         data.board.name.toLowerCase(),
@@ -35,7 +33,6 @@ const createBoard: CreateBoardEndpoint = async (context, instData) => {
         createdAt: getDate(),
         type: BlockType.Board,
         name: data.board.name,
-        lowerCasedName: data.board.name.toLowerCase(),
         description: data.board.description,
         parent: data.board.parent,
         rootBlockId: data.board.parent,

@@ -56,10 +56,10 @@ export default class RequestData<T = any> {
             userAgent: socket.handshake.headers
                 ? socket.handshake.headers["user-agent"]
                 : undefined,
-            incomingTokenData: data.token
+            incomingTokenData: data?.token
                 ? ctx.token.decodeToken(ctx, data.token)
                 : null,
-            clientId: data.clientId,
+            clientId: data?.clientId,
         });
 
         return requestData;

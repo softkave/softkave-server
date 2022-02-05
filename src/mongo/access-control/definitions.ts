@@ -14,7 +14,6 @@ export enum DefaultPermissionGroupNames {
 export interface IPermissionGroup {
     customId: string;
     name: string;
-    lowerCasedName: string;
     description?: string;
     createdBy: string;
     createdAt: string;
@@ -29,7 +28,6 @@ export interface IPermissionGroup {
 export const permissionGroupMongoSchema = {
     customId: { type: String, unique: true },
     name: { type: String },
-    lowerCasedName: { type: String },
     description: { type: String },
     createdBy: { type: String },
     createdAt: { type: Date },

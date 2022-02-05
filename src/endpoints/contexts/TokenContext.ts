@@ -9,7 +9,7 @@ import {
 import { IBaseContext } from "./IBaseContext";
 import jwt from "jsonwebtoken";
 import { CredentialsExpiredError } from "../user/errors";
-import cast from "../../utilities/fns";
+import { cast } from "../../utilities/fns";
 
 export const CURRENT_USER_TOKEN_VERSION = 5;
 

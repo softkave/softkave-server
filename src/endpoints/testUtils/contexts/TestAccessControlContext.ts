@@ -5,7 +5,7 @@ import { testNoop } from "../utils";
 class TestAccessControlContext implements IAccessControlContext {
     getPermissionGroupsById = testNoop;
     getPermissionGroupsByResourceId = testNoop;
-    getPermissionGroupsByLowerCasedNames = testNoop;
+    getPermissionGroupsByNames = testNoop;
     savePermissionGroups = testNoop;
     updatePermissionGroup = testNoop;
     deletePermissionGroups = testNoop;

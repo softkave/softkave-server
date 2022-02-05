@@ -23,11 +23,8 @@ async function onConnection(ctx: IBaseContext, socket: Socket) {
 
 let socketServer: Server = null;
 
-export function setupSocketServer(io: Server, ctx: IBaseContext) {
+export function setSocketServer(io: Server) {
     socketServer = io;
-    io.on("connection", (socket) => {
-        onConnection(ctx, socket);
-    });
 }
 
 export function getSocketServer() {

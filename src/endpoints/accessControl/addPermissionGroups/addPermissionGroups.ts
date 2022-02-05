@@ -40,7 +40,7 @@ function processNewPermissionGroupsInput(
         createdAt: getDateString(),
         createdBy: user.customId,
         customId: getNewId(),
-        lowerCasedName: permissionGroupInput.name.toLowerCase(),
+
         resourceId: block.customId,
         resourceType: getBlockAuditLogResourceType(block),
     };
@@ -60,7 +60,7 @@ export async function getIndexesWithDuplicateNames(
     }
 
     const permissionGroups =
-        await context.accessControl.getPermissionGroupsByLowerCasedNames(
+        await context.accessControl.getPermissionGroupsByNames(
             context,
             resourceIds,
             names
@@ -68,7 +68,7 @@ export async function getIndexesWithDuplicateNames(
 
     const permissionGroupNamesMap: Record<string, IPermissionGroup> =
         indexArray(permissionGroups, {
-            path: "lowerCasedName",
+            indexer: (item) => item.name.toLowerCase(),
         });
 
     const indexesWithDuplicateNames: number[] = [];

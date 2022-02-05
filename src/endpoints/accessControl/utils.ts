@@ -23,7 +23,6 @@ const publicPermissionGroupFields = getFields<IPublicPermissionGroup>({
     updatedAt: getDateStringIfExists,
     resourceId: true,
     resourceType: true,
-    lowerCasedName: true,
     nextId: true,
     prevId: true,
 });

@@ -7,7 +7,6 @@ export interface IOrganization {
     createdAt: Date;
     type: BlockType.Organization;
     name: string;
-    lowerCasedName: string;
     description?: string;
     updatedAt?: Date;
     updatedBy?: string;

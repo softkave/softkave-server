@@ -8,7 +8,7 @@ import updateOrganization from "./updateOrganization/handler";
 
 const baseURL = "/api/organizations";
 
-export default function setupBoardsRESTEndpoints(
+export default function setupOrganizationsRESTEndpoints(
     ctx: IBaseContext,
     app: Express
 ) {

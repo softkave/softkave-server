@@ -36,7 +36,7 @@ export interface IBlockContext {
     updateBlockById: <T = IBlock>(
         ctx: IBaseContext,
         customId: string,
-        data: Partial<IBlock>
+        data: Partial<T>
     ) => Promise<T | undefined>;
     saveBlock: <T = IBlock>(
         ctx: IBaseContext,
@@ -274,7 +274,7 @@ export default class BlockContext implements IBlockContext {
         ) => {
             const query: FilterQuery<IBlockDocument> = {
                 type,
-                lowerCasedName: name.toLowerCase(),
+                name: new RegExp(`^${name}$`, "i"),
                 isDeleted: false,
             };
 

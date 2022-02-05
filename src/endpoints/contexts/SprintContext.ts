@@ -110,7 +110,7 @@ export default class SprintContext implements ISprintContext {
         (ctx: IBaseContext, name: string, boardId: string) => {
             return ctx.models.sprintModel.model.exists({
                 boardId,
-                name: name.toLowerCase(),
+                name: new RegExp(`^${name}$`, "i"),
             });
         }
     );

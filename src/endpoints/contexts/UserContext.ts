@@ -45,7 +45,7 @@ export default class UserContext implements IUserContext {
         (ctx: IBaseContext, email: string) => {
             return ctx.models.userModel.model
                 .findOne({
-                    email,
+                    email: new RegExp(`^${email}$`, "i"),
                 })
                 .lean()
                 .exec();

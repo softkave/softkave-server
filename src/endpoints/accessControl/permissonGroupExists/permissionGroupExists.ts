@@ -28,7 +28,7 @@ const permissionGroupExists: PermissionGroupExistsEndpoint = async (
     );
 
     const permissionGroups =
-        await context.accessControl.getPermissionGroupsByLowerCasedNames(
+        await context.accessControl.getPermissionGroupsByNames(
             context,
             [block.customId],
             [data.name.toLowerCase()]

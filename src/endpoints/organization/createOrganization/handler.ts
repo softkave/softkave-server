@@ -30,7 +30,6 @@ const createOrganization: CreateOrganizationEndpoint = async (
         createdAt: getDate(),
         type: BlockType.Organization,
         name: data.organization.name,
-        lowerCasedName: data.organization.name.toLowerCase(),
         description: data.organization.description,
         color: data.organization.color,
     };

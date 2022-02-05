@@ -1,4 +1,7 @@
+import { defaultTo } from "lodash";
 import { cast } from "../utilities/fns";
+import OperationError from "../utilities/OperationError";
+import { getBaseContext } from "./contexts/BaseContext";
 import { IBaseContext } from "./contexts/IBaseContext";
 import { IServerRequest } from "./contexts/types";
 import RequestData from "./RequestData";
@@ -23,19 +26,26 @@ export const wrapEndpointREST = <
             return await endpoint(
                 // Casting here is not particularly okay, but okay if calling functions
                 // provide their context if different from IBaseContext
-                context,
+                defaultTo(context, cast<Context>(getBaseContext())),
                 RequestData.fromExpressRequest(context, req, data)
             );
         } catch (error) {
-            const errors = Array.isArray(error) ? error : [error];
             console.error(error);
+            const errors = Array.isArray(error) ? error : [error];
+            const preppedErrors: Omit<OperationError, "isPublic">[] = [];
+            cast<OperationError[]>(errors).forEach(
+                (err) =>
+                    err.isPublic &&
+                    preppedErrors.push({
+                        name: err.name,
+                        message: err.message,
+                        action: err.action,
+                        field: err.field,
+                    })
+            );
+
             return cast({
-                errors: errors.map((err) => ({
-                    name: err.name,
-                    message: err.message,
-                    action: err.action,
-                    field: err.field,
-                })),
+                errors: preppedErrors,
             });
         }
     };

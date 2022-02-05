@@ -1,7 +1,7 @@
 import { validate } from "../../../utilities/joiUtils";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
-import { getCollaboratorsArray } from "../../user/utils";
+import { getCollaboratorsArray } from "../utils";
 import { GetOrganizationCollaboratorsEndpoint } from "./types";
 import { getOrganizationCollaboratorsJoiSchema } from "./validation";
 

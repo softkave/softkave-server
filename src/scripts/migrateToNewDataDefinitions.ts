@@ -4,36 +4,24 @@ import {
     blockLabelSchema,
     BlockPriority,
     blockStatusSchema,
-    BlockType,
     boardStatusResolutionSchema,
     getBlockModel,
     IBlock,
-    IBlockDocument,
-    ITaskSprint,
     subTaskSchema,
     taskSprintSchema,
 } from "../mongo/block";
-import { getChatModel, IChat } from "../mongo/chat";
 import { getDefaultConnection } from "../mongo/defaultConnection";
 import MongoModel from "../mongo/MongoModel";
-import { getRoomModel, IRoom } from "../mongo/room";
-import {
-    boardSprintOptionsSchema,
-    getSprintModel,
-    IBoardSprintOptions,
-    ISprint,
-} from "../mongo/sprint";
+import { boardSprintOptionsSchema } from "../mongo/sprint";
 import {
     logScriptFailed,
     logScriptStarted,
     logScriptSuccessful,
 } from "./utils";
 import { Document } from "mongoose";
-import { omit } from "lodash";
 import { getDate } from "../utilities/fns";
 import {
     getCollaborationRequestModel,
-    ICollaborationRequest,
     ICollaborationRequestDocument,
 } from "../mongo/collaboration-request";
 import collaborationRequestSchema from "../mongo/collaboration-request/definitions";

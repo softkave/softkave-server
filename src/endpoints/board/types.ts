@@ -12,9 +12,8 @@ export interface IBoard {
     customId: string;
     createdBy: string;
     createdAt: Date;
-    type: BlockType.Board;
+    type: BlockType;
     name: string;
-    lowerCasedName: string;
     description?: string;
     updatedAt?: Date;
     updatedBy?: string;
@@ -66,7 +65,7 @@ export type IPublicBoard = ConvertDatesToStrings<{
     customId: string;
     createdBy: string;
     createdAt: Date;
-    type: BlockType.Board;
+    type: BlockType;
     name: string;
     description?: string;
     updatedAt?: Date;

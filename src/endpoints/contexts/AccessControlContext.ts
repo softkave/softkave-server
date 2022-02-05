@@ -31,10 +31,10 @@ export interface IAccessControlContext {
         ctx: IBaseContext,
         resourceId: string
     ) => Promise<IPermissionGroup[]>;
-    getPermissionGroupsByLowerCasedNames: (
+    getPermissionGroupsByNames: (
         ctx: IBaseContext,
         resourceIds: string[],
-        lowerCasedNames: string[]
+        names: string[]
     ) => Promise<IPermissionGroup[]>;
     savePermissionGroups: (
         ctx: IBaseContext,
@@ -193,16 +193,14 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public getPermissionGroupsByLowerCasedNames = wrapFireAndThrowErrorAsync(
-        (
-            ctx: IBaseContext,
-            resourceIds: string[],
-            lowerCasedNames: string[]
-        ) => {
+    public getPermissionGroupsByNames = wrapFireAndThrowErrorAsync(
+        (ctx: IBaseContext, resourceIds: string[], names: string[]) => {
             return ctx.models.permissionGroup.model
                 .find({
                     resourceId: { $in: resourceIds },
-                    lowerCasedName: { $in: lowerCasedNames },
+                    name: {
+                        $in: names.map((name) => new RegExp(`^${name}$`, "i")),
+                    },
                 })
                 .lean()
                 .exec();
@@ -243,7 +241,7 @@ export default class AccessControlContext implements IAccessControlContext {
     public permissionGroupExists = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, name: string, resourceId: string) => {
             return ctx.models.permissionGroup.model.exists({
-                name,
+                name: new RegExp(`^${name}$`, "i"),
                 resourceId,
             });
         }

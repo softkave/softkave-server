@@ -6,7 +6,7 @@ import removeCollaborator from "./removeCollaborator/handler";
 
 const baseURL = "/api/collaborators";
 
-export default function setupBoardsRESTEndpoints(
+export default function setupCollaboratorsRESTEndpoints(
     ctx: IBaseContext,
     app: Express
 ) {

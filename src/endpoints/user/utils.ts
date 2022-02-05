@@ -31,13 +31,6 @@ export const getPublicUserData = (user: IUser): IPublicUserData => {
     return extractFields(user, publicUserFields);
 };
 
-export function getCollaboratorsArray(
-    users: Array<ICollaborator>
-): ICollaborator[] {
-    // @ts-ignore
-    return users.map((user) => extractFields(user, collaboratorFields));
-}
-
 export const userIsPartOfOrganization = (user: IUser, orgId: string) => {
     return user.orgs.findIndex((org) => org.customId === orgId) !== -1;
 };

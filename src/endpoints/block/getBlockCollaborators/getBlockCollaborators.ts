@@ -1,9 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaboratorsArray } from "../../user/utils";
+import { getCollaboratorsArray } from "../../collaborator/utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId } from "../utils";
 import { GetBlockCollaboratorsEndpoint } from "./types";
 import { getBlockCollaboratorsJoiSchema } from "./validation";
 

@@ -76,7 +76,7 @@ export function getDefaultOrganizationPermissionGroups(
     const publicPermissionGroup: IPermissionGroup = {
         customId: getNewId(),
         name: publicPermissionGroupName,
-        lowerCasedName: publicPermissionGroupName,
+
         description: publicPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
@@ -87,7 +87,7 @@ export function getDefaultOrganizationPermissionGroups(
     const collaboratorPermissionGroup: IPermissionGroup = {
         customId: getNewId(),
         name: collaboratorPermissionGroupName,
-        lowerCasedName: collaboratorPermissionGroupName,
+
         description: collaboratorPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
@@ -99,7 +99,7 @@ export function getDefaultOrganizationPermissionGroups(
     const adminPermissionGroup: IPermissionGroup = {
         customId: getNewId(),
         name: adminPermissionGroupName,
-        lowerCasedName: adminPermissionGroupName,
+
         description: adminPermissionGroupDescription,
         createdBy: userId,
         createdAt: getDateString(),
@@ -326,10 +326,9 @@ export async function initializeOrganizationAccessControl(
     const p2 = ctx.accessControl.savePermissions(ctx, permissions);
 
     await Promise.all([p1, p2]);
-
-    organization = await ctx.block.updateBlockById(ctx, organization.customId, {
-        publicPermissionGroupId: publicPermissionGroup.customId,
-    });
+    // organization = await ctx.block.updateBlockById(ctx, organization.customId, {
+    //     publicPermissionGroupId: publicPermissionGroup.customId,
+    // });
 
     return {
         permissionGroups,

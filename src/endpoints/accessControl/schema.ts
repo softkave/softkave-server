@@ -17,7 +17,6 @@ const accessControlGraphQLSchema = `
     type PermissionGroup {
         customId: String
         name: String
-        lowerCasedName: String
         description: String
         createdBy: String
         createdAt: String

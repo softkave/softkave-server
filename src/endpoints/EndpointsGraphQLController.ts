@@ -3,8 +3,10 @@ import { getBoardEndpointsGraphQLController } from "./board";
 import { getClientsEndpointsGraphQLController } from "./client";
 import { getRequestsEndpointsGraphQLController } from "./collaborationRequest/RequestEndpointsGraphQLController";
 import { getCollaboratorEndpointsGraphQLController } from "./collaborator";
-import { getCustomPropertyEndpointsGraphQLController } from "./customProperty/CustomPropertyEndpointsGraphQLController";
 import { getOrganizationEndpointsGraphQLController } from "./organization";
+import PushSubscriptionsEndpointsGraphQLController, {
+    getPushSubscriptionsEndpointsGraphQLController,
+} from "./pushSubscription/PushSubscriptionEndpointsGraphQLController";
 import { getSprintsEndpointsGraphQLController } from "./sprints/SprintsEndpointsGraphQLController";
 import { getSystemEndpointsGraphQLController } from "./system/SystemEndpointsGraphQLController";
 import { getTaskEndpointsGraphQLController } from "./task";
@@ -20,6 +22,8 @@ export default class EndpointsGraphQLController {
     public organization = getOrganizationEndpointsGraphQLController();
     public board = getBoardEndpointsGraphQLController();
     public task = getTaskEndpointsGraphQLController();
+    public pushSubscription: PushSubscriptionsEndpointsGraphQLController =
+        getPushSubscriptionsEndpointsGraphQLController();
     // public customProperty = getCustomPropertyEndpointsGraphQLController();
 }
 

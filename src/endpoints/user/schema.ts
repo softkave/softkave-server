@@ -9,7 +9,7 @@ const userSchema = `
         email: String
         createdAt: String
         rootBlockId: String
-        organizations: [UserOrganization]
+        orgs: [UserOrganization]
         color: String
         notificationsLastCheckedAt: String
     }

@@ -7,14 +7,28 @@ import expressJwt from "express-jwt";
 import http from "http";
 import { Server } from "socket.io";
 import { indexSchema } from "./endpoints";
+import setupBoardsRESTEndpoints from "./endpoints/board/setupRESTEndpoints";
+import setupCollaborationRequestsRESTEndpoints from "./endpoints/collaborationRequest/setupRESTEndpoints";
+import setupCollaboratorsRESTEndpoints from "./endpoints/collaborator/setupRESTEndpoints";
 import { getBaseContext } from "./endpoints/contexts/BaseContext";
 import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
-import { setupSocketServer } from "./endpoints/socket/server";
+import setupOrganizationsRESTEndpoints from "./endpoints/organization/setupRESTEndpoints";
+import { getSocketServer, setSocketServer } from "./endpoints/socket/server";
+import { setupSocketEndpoints } from "./endpoints/socket/setupEndpoints";
+import setupTasksRESTEndpoints from "./endpoints/task/setupRESTEndpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
+import { getAuditLogModel } from "./mongo/audit-log";
 import { getBlockModel } from "./mongo/block";
+import { getChatModel } from "./mongo/chat";
+import { getClientModel } from "./mongo/client";
+import { getCollaborationRequestModel } from "./mongo/collaboration-request";
 import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
+import { getRoomModel } from "./mongo/room";
+import { getSprintModel } from "./mongo/sprint";
+import { getTokenModel } from "./mongo/token";
+import { getUnseenChatsModel } from "./mongo/unseen-chats";
 import { getUserModel } from "./mongo/user";
 import { appVariables } from "./resources/appVariables";
 import { script_MigrateToNewDataDefinitions } from "./scripts/migrateToNewDataDefinitions";
@@ -37,14 +51,20 @@ const connection = getDefaultConnection();
 // TODO: wait for all the other models before opening up the port
 const userModel = getUserModel();
 const blockModel = getBlockModel();
-const notificationModel = getNotificationModel();
+const auditLogModel = getAuditLogModel();
+const chatModel = getChatModel();
+const clientModel = getClientModel();
+const collaborationRequestModel = getCollaborationRequestModel();
+const roomModel = getRoomModel();
+const sprintModel = getSprintModel();
+const tokenModel = getTokenModel();
+const unseenChatsModel = getUnseenChatsModel();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
-const graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
     whiteListedCorsOrigins.push(/localhost/);
@@ -56,12 +76,20 @@ const corsOption: CorsOptions = {
     credentials: true,
 };
 
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    path: "/socket",
+    serveClient: false,
+    cors: corsOption,
+});
+
+setSocketServer(io);
+
 if (process.env.NODE_ENV === "production") {
     app.use(httpToHttps);
 }
 
 app.use(cors(corsOption));
-
 app.use(
     expressJwt({
         secret: appVariables.jwtSecret,
@@ -79,30 +107,38 @@ app.use(
 app.use(
     "/graphql",
     graphqlHTTP({
-        graphiql,
+        graphiql: false,
         schema: indexSchema,
         rootValue: getEndpointsGraphQLController(),
     })
 );
 
-const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-    path: "/socket",
-    serveClient: false,
-    cors: corsOption,
+getSocketServer().on("connection", (socket) => {
+    setupSocketEndpoints(getBaseContext(), socket);
 });
 
-setupSocketServer(io, getBaseContext());
+setupBoardsRESTEndpoints(getBaseContext(), app);
+setupCollaborationRequestsRESTEndpoints(getBaseContext(), app);
+setupTasksRESTEndpoints(getBaseContext(), app);
+setupOrganizationsRESTEndpoints(getBaseContext(), app);
+setupCollaboratorsRESTEndpoints(getBaseContext(), app);
 app.use(handleErrors);
 
 connection.wait().then(async () => {
     // TODO: move index creation to DB pipeline
     await userModel.waitTillReady();
     await blockModel.waitTillReady();
-    await notificationModel.waitTillReady();
+    await auditLogModel.waitTillReady();
+    await chatModel.waitTillReady();
+    await clientModel.waitTillReady();
+    await collaborationRequestModel.waitTillReady();
+    await roomModel.waitTillReady();
+    await sprintModel.waitTillReady();
+    await tokenModel.waitTillReady();
+    await unseenChatsModel.waitTillReady();
 
     // scripts
-    await script_MigrateToNewDataDefinitions();
+    // await script_MigrateToNewDataDefinitions();
 
     httpServer.listen(port, () => {
         logger.info(appVariables.appName);

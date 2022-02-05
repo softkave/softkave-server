@@ -16,6 +16,5 @@ export function getCollaboratorDataFromUser(user: IUser): ICollaborator {
 export function getCollaboratorsArray(
     users: Array<ICollaborator | IUser>
 ): ICollaborator[] {
-    // @ts-ignore
     return users.map((user) => extractFields(user, collaboratorFields));
 }

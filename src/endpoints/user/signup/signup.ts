@@ -2,7 +2,7 @@ import argon2 from "argon2";
 import randomColor from "randomcolor";
 import uuid from "uuid/v4";
 import { ClientType } from "../../../models/system";
-import { BlockType } from "../../../mongo/block";
+import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
 import { getDate, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
@@ -12,13 +12,12 @@ import { IBaseContext } from "../../contexts/IBaseContext";
 import { CURRENT_USER_TOKEN_VERSION } from "../../contexts/TokenContext";
 import { JWTEndpoint } from "../../types";
 import { EmailAddressNotAvailableError } from "../errors";
-import { IUserRootBlock } from "../types";
 import { getPublicUserData } from "../utils";
 import { SignupEndpoint } from "./types";
 import { newUserInputSchema } from "./validation";
 
 async function createRootBlock(context: IBaseContext, user: IUser) {
-    const newRootBlock: Omit<IUserRootBlock, "customId"> = {
+    const newRootBlock: Omit<IBlock, "customId"> = {
         name: `root_${user.customId}`,
         color: randomColor(),
         type: BlockType.Root,
