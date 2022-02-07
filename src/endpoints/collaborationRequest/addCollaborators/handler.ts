@@ -27,7 +27,6 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
     );
 
     canReadOrganization(organization.customId, user);
-
     const { indexedExistingUsers } = await filterNewCollaborators(context, {
         organization,
         collaborators,

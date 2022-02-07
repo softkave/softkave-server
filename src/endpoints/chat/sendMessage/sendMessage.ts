@@ -86,7 +86,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     const data = validate(instaData.data, sendMessageJoiSchema);
     const organization = await context.block.assertGetBlockById(
         context,
-        data.organizationId
+        data.orgId
     );
 
     // await context.accessControl.assertPermission(
@@ -111,7 +111,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
     } else if (data.recipientId) {
         room = await context.chat.insertRoom(
             context,
-            data.organizationId,
+            data.orgId,
             user.customId,
             null,
             [data.recipientId]
@@ -133,7 +133,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     const chat = await context.chat.insertMessage(
         context,
-        data.organizationId,
+        data.orgId,
         user.customId,
         room.customId,
         data.message

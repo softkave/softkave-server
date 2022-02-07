@@ -7,6 +7,7 @@ import deleteBoard from "./deleteBoard/handler";
 import getOrganizationBoards from "./getOrganizationBoards/handler";
 import updateBoard from "./updateBoard/handler";
 import getBoard from "./getBoard/handler";
+import { makeUpdateBoardContext } from "./updateBoard/context";
 
 const baseURL = "/api/boards";
 
@@ -19,7 +20,7 @@ export default function setupBoardsRESTEndpoints(
         createBoard: wrapEndpointREST(createBoard, ctx),
         deleteBoard: wrapEndpointREST(deleteBoard, ctx),
         getOrganizationBoards: wrapEndpointREST(getOrganizationBoards, ctx),
-        updateBoard: wrapEndpointREST(updateBoard, ctx),
+        updateBoard: wrapEndpointREST(updateBoard, makeUpdateBoardContext(ctx)),
         getBoard: wrapEndpointREST(getBoard, ctx),
     };
 

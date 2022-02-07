@@ -39,8 +39,8 @@ export function collaborationRequestEmailHTML(
             To respond to this request,
             ${
                 props.recipientIsUser
-                    ? `<a href="${props.loginLink}">Login to your account here</a>`
-                    : `<a href="${props.signupLink}">Signup here</a>`
+                    ? `<a href="${props.loginLink}">Login to your account here</a>.`
+                    : `<a href="${props.signupLink}">Signup here</a>.`
             }
         </p>
         <p>
@@ -67,9 +67,9 @@ export function collaborationRequestEmailText(
 
     You have a new collaboration request from ${props.senderName} of ${
         props.senderOrganization
-    }
+    }.
 
-    To respond to this request, ${getLink()}
+    To respond to this request, ${getLink()}.
 
     ${getEndGreeting()}
     `;

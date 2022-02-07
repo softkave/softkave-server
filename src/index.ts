@@ -172,6 +172,6 @@ process.on("uncaughtException", (exp, origin) => {
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-    logger.info(promise);
+    promise?.catch(logger.info);
     logger.info(reason);
 });

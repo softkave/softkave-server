@@ -3,7 +3,7 @@ import { Endpoint } from "../../types";
 import { IPublicChatData } from "../types";
 
 export interface ISendMessageParameters {
-    organizationId: string;
+    orgId: string;
     message: string;
     roomId?: string;
     recipientId?: string;

@@ -6,6 +6,7 @@ import deleteTask from "./deleteTask/handler";
 import getBoardTasks from "./getBoardTasks/handler";
 import transferTask from "./transferTask/handler";
 import updateTask from "./updateTask/handler";
+import { makeUpdateTaskContext } from "./updateTask/context";
 
 const baseURL = "/api/tasks";
 
@@ -18,7 +19,7 @@ export default function setupTasksRESTEndpoints(
         deleteTask: wrapEndpointREST(deleteTask, ctx),
         getBoardTasks: wrapEndpointREST(getBoardTasks, ctx),
         transferTask: wrapEndpointREST(transferTask, ctx),
-        updateTask: wrapEndpointREST(updateTask, ctx),
+        updateTask: wrapEndpointREST(updateTask, makeUpdateTaskContext(ctx)),
     };
 
     app.post(`${baseURL}/createTask`, endpoints.createTask);

@@ -355,16 +355,18 @@ export const wrapEndpointREST = <
             // or was it errors, not sure anymore, this is old code.
             // TODO: Feel free to look into it, cause it could help performance.
             const preppedErrors: Omit<OperationError, "isPublic">[] = [];
-            cast<OperationError[]>(errors).forEach(
-                (err) =>
-                    err.isPublic &&
+            cast<OperationError[]>(errors).forEach((err) => {
+                if (err.isPublic) {
                     preppedErrors.push({
                         name: err.name,
                         message: err.message,
                         action: err.action,
                         field: err.field,
-                    })
-            );
+                    });
+                } else {
+                    preppedErrors.push(new ServerError());
+                }
+            });
 
             const result = {
                 errors: preppedErrors,

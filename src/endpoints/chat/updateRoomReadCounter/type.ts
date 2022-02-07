@@ -2,7 +2,7 @@ import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
 export interface IUpdateRoomReadCounterParameters {
-    organizationId: string;
+    orgId: string;
     roomId: string;
     readCounter?: number;
 }

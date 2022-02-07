@@ -101,7 +101,7 @@ export default class UserContext implements IUserContext {
     public bulkGetUsersByEmail = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, emails: string[]) => {
             return ctx.models.userModel.model
-                .find({ email: { $in: emails } }, "email organizations")
+                .find({ email: { $in: emails } }, "email orgs")
                 .lean()
                 .exec();
         }

@@ -7,6 +7,8 @@ import getUserRequests from "./getUserRequests/handler";
 import markRequestRead from "./markRequestRead/handler";
 import respondToRequest from "./respondToRequest/handler";
 import revokeRequest from "./revokeRequest/handler";
+import { makeAddCollaboratorContext } from "./addCollaborators/context";
+import { makeRevokeRequestContext } from "./revokeRequest/context";
 
 const baseURL = "/api/collaborationRequests";
 
@@ -15,12 +17,18 @@ export default function setupCollaborationRequestsRESTEndpoints(
     app: Express
 ) {
     const endpoints = {
-        addCollaborators: wrapEndpointREST(addCollaborators, ctx),
+        addCollaborators: wrapEndpointREST(
+            addCollaborators,
+            makeAddCollaboratorContext(ctx)
+        ),
         getOrganizationRequests: wrapEndpointREST(getOrganizationRequests, ctx),
         getUserRequests: wrapEndpointREST(getUserRequests, ctx),
         markRequestRead: wrapEndpointREST(markRequestRead, ctx),
         respondToRequest: wrapEndpointREST(respondToRequest, ctx),
-        revokeRequest: wrapEndpointREST(revokeRequest, ctx),
+        revokeRequest: wrapEndpointREST(
+            revokeRequest,
+            makeRevokeRequestContext(ctx)
+        ),
     };
 
     app.post(`${baseURL}/addCollaborators`, endpoints.addCollaborators);

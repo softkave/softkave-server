@@ -1,9 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { UpdateRoomReadCounterEndpoint } from "./type";
 import { updateRoomReadCounterJoiSchema } from "./validation";
 
@@ -16,10 +14,7 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
     context.socket.assertSocket(instaData);
 
     const data = validate(instaData.data, updateRoomReadCounterJoiSchema);
-    const organization = await context.block.getBlockById(
-        context,
-        data.organizationId
-    );
+    const organization = await context.block.getBlockById(context, data.orgId);
 
     assertBlock(organization);
     // await context.accessControl.assertPermission(
