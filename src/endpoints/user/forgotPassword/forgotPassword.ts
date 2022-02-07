@@ -42,7 +42,7 @@ const forgotPassword: ForgotPasswordEndpoint = async (context, instData) => {
         tokenData.expires
     );
 
-    await context.sendChangePasswordEmail({
+    await context.sendChangePasswordEmail(context, {
         expiration,
         emailAddress: user.email,
         query: { t: token },

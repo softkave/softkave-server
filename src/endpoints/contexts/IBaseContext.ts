@@ -1,0 +1,50 @@
+import { Server } from "socket.io";
+import { IAppVariables } from "../../resources/appVariables";
+import { IAccessControlContext } from "./AccessControlContext";
+import { IBlockContext } from "./BlockContext";
+import { IBroadcastHelpers } from "./BroadcastHelpers";
+import { IBroadcastHistoryContext } from "./BroadcastHistoryContext";
+import { IChatContext } from "./ChatContext";
+import { ICollaborationRequestContext } from "./CollaborationRequestContext";
+import { ICommentContext } from "./CommentContext";
+import { INotificationContext } from "./NotificationContext";
+import { IRoomContext } from "./RoomContext";
+import { ISessionContext } from "./SessionContext";
+import { ISocketContext } from "./SocketContext";
+import { ISprintContext } from "./SprintContext";
+import { IContextModels } from "./types";
+import { IUserContext } from "./UserContext";
+import { IClientContext } from "./ClientContext";
+import { ITokenContext } from "./TokenContext";
+import { IUnseenChatsContext } from "./UnseenChatsContext";
+import webPush from "web-push";
+import { IWebPushContext } from "./WebPushContext";
+import { ITaskHistoryContext } from "./TaskHistoryContext";
+import { IBaseContextDataProviders } from "./BaseContext";
+
+export interface IBaseContext {
+    block: IBlockContext;
+    user: IUserContext;
+    collaborationRequest: ICollaborationRequestContext;
+    notification: INotificationContext;
+    session: ISessionContext;
+    socket: ISocketContext;
+    room: IRoomContext;
+    broadcastHistory: IBroadcastHistoryContext;
+    models: IContextModels;
+    comment: ICommentContext;
+    sprint: ISprintContext;
+    chat: IChatContext;
+    accessControl: IAccessControlContext;
+    client: IClientContext;
+    token: ITokenContext;
+    unseenChats: IUnseenChatsContext;
+    taskHistory: ITaskHistoryContext;
+    webPush: IWebPushContext;
+    broadcastHelpers: IBroadcastHelpers;
+    appVariables: IAppVariables;
+    socketServerInstance: Server;
+    webPushInstance: typeof webPush;
+
+    data: IBaseContextDataProviders;
+}

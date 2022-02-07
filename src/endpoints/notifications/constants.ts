@@ -1,7 +1,7 @@
 import { SystemResourceType } from "../../models/system";
 
 const subscriptionResourceTypes: SystemResourceType[] = [
-    SystemResourceType.Org,
+    SystemResourceType.Organization,
     SystemResourceType.Board,
     SystemResourceType.Task,
     SystemResourceType.CollaborationRequest,

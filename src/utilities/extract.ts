@@ -1,6 +1,6 @@
 import isFunction from "lodash/isFunction";
 import pick from "lodash/pick";
-import cast from "./fns";
+import { cast } from "./fns";
 
 export type ExtractFieldTransformer<
     T,
@@ -125,7 +125,7 @@ export function extractFields<
         result = paths.finalize(data, result, extraArgs);
     }
 
-    return (result as unknown) as ObjectPaths["result"];
+    return result as unknown as ObjectPaths["result"];
 }
 
 export function makeExtract<T extends IObjectPaths<any>>(fields: T) {

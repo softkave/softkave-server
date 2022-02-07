@@ -1,11 +1,11 @@
 import { IUser } from "../../mongo/user";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
+import { ICollaborator } from "../collaborator/types";
 import { UserDoesNotExistError } from "../user/errors";
-import { ICollaborator } from "../user/types";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IUserContext {
     getUserByEmail: (ctx: IBaseContext, email: string) => Promise<IUser | null>;
@@ -30,7 +30,10 @@ export interface IUserContext {
         ctx: IBaseContext,
         blockId: string
     ) => Promise<ICollaborator[]>;
-    getOrgUsers: (ctx: IBaseContext, blockId: string) => Promise<IUser[]>;
+    getOrganizationUsers: (
+        ctx: IBaseContext,
+        blockId: string
+    ) => Promise<IUser[]>;
     bulkUpdateUsersById: (
         ctx: IBaseContext,
         users: Array<IUpdateItemById<IUser>>
@@ -38,18 +41,18 @@ export interface IUserContext {
 }
 
 export default class UserContext implements IUserContext {
-    public getUserByEmail = wrapFireAndThrowError(
+    public getUserByEmail = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.userModel.model
                 .findOne({
-                    email,
+                    email: new RegExp(`^${email}$`, "i"),
                 })
                 .lean()
                 .exec();
         }
     );
 
-    public getUserById = wrapFireAndThrowError(
+    public getUserById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string) => {
             return ctx.models.userModel.model
                 .findOne({
@@ -60,7 +63,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public assertGetUserById = wrapFireAndThrowError(
+    public assertGetUserById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, customId: string) => {
             const user = await ctx.user.getUserById(ctx, customId);
 
@@ -72,7 +75,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public updateUserById = wrapFireAndThrowError(
+    public updateUserById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string, data: Partial<IUser>) => {
             return ctx.models.userModel.model
                 .findOneAndUpdate({ customId }, data, { new: true })
@@ -81,7 +84,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public bulkGetUsersById = wrapFireAndThrowError(
+    public bulkGetUsersById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, ids: string[]) => {
             return ctx.models.userModel.model
                 .find({ customId: { $in: ids } })
@@ -89,13 +92,13 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public userExists = wrapFireAndThrowError(
+    public userExists = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.userModel.model.exists({ email });
         }
     );
 
-    public bulkGetUsersByEmail = wrapFireAndThrowError(
+    public bulkGetUsersByEmail = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, emails: string[]) => {
             return ctx.models.userModel.model
                 .find({ email: { $in: emails } }, "email orgs")
@@ -104,7 +107,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getBlockCollaborators = wrapFireAndThrowError(
+    public getBlockCollaborators = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find(
@@ -112,7 +115,7 @@ export default class UserContext implements IUserContext {
                         orgs: { $elemMatch: { customId: blockId } },
                     },
                     {
-                        orgs: { $elemMatch: { customId: blockId } },
+                        organizations: { $elemMatch: { customId: blockId } },
                         name: 1,
                         email: 1,
                         createdAt: 1,
@@ -125,7 +128,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public getOrgUsers = wrapFireAndThrowError(
+    public getOrganizationUsers = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.userModel.model
                 .find({
@@ -136,7 +139,7 @@ export default class UserContext implements IUserContext {
         }
     );
 
-    public bulkUpdateUsersById = wrapFireAndThrowError(
+    public bulkUpdateUsersById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, users: Array<IUpdateItemById<IUser>>) => {
             const opts = users.map((item) => ({
                 updateOne: { filter: { customId: item.id }, update: item.data },
@@ -156,4 +159,4 @@ export default class UserContext implements IUserContext {
     }
 }
 
-export const getUserContext = makeSingletonFunc(() => new UserContext());
+export const getUserContext = makeSingletonFn(() => new UserContext());

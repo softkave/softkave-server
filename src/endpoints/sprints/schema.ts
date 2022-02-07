@@ -85,15 +85,18 @@ const sprintSchema = `
     }
 
     type SprintQuery {
+        getSprints (boardId: String!): GetSprintsResult
+        sprintExists (boardId: String!, name: String!): SprintExistsResult
+    }
+
+    type SprintMutation {
         addSprint (boardId: String!, data: NewSprintInput!): AddSprintResult
         updateSprint (sprintId: String!, data: UpdateSprintInput!): UpdateSprintResult
         deleteSprint (sprintId: String!): ErrorOnlyResponse
         startSprint (sprintId: String!): StartSprintResult
         endSprint (sprintId: String!): EndSprintResult
-        getSprints (boardId: String!): GetSprintsResult
         updateSprintOptions (boardId: String!, data: UpdateSprintOptionsInput): UpdateSprintOptionsResult
         setupSprints (boardId: String!, data: SprintOptionsInput!): SetupSprintsResult
-        sprintExists (boardId: String!, name: String!): SprintExistsResult
     }
 `;
 

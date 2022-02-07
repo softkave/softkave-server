@@ -19,8 +19,8 @@ export class BlockExistsError extends OperationError {
 }
 
 // tslint:disable-next-line: max-classes-per-file
-export class CollaboratorExistsInOrgError extends OperationError {
-    public name = "CollaboratorExistsInOrgError";
+export class CollaboratorExistsInOrganizationError extends OperationError {
+    public name = "CollaboratorExistsInOrganizationError";
     public message =
         "A collaborator with this email address exists in this organization";
 }

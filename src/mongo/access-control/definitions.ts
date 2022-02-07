@@ -14,7 +14,6 @@ export enum DefaultPermissionGroupNames {
 export interface IPermissionGroup {
     customId: string;
     name: string;
-    lowerCasedName: string;
     description?: string;
     createdBy: string;
     createdAt: string;
@@ -29,7 +28,6 @@ export interface IPermissionGroup {
 export const permissionGroupMongoSchema = {
     customId: { type: String, unique: true },
     name: { type: String },
-    lowerCasedName: { type: String },
     description: { type: String },
     createdBy: { type: String },
     createdAt: { type: Date },
@@ -70,14 +68,14 @@ export const permissionMongoSchema = {
     updatedBy: { type: String },
     updatedAt: { type: Date },
     available: { type: Boolean },
-    orgId: { type: String },
+    organizationId: { type: String },
 };
 
 export interface IPermissionDocument extends IPermission, Document {}
 
-export const orgResourceTypes: SystemResourceType[] = [
+export const organizationResourceTypes: SystemResourceType[] = [
     SystemResourceType.Collaborator,
-    SystemResourceType.Org,
+    SystemResourceType.Organization,
     SystemResourceType.Board,
     SystemResourceType.Task,
     SystemResourceType.Status,
@@ -136,7 +134,7 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
     ],
     [SystemResourceType.Collaborator]: [SystemActionType.RemoveCollaborator],
     [SystemResourceType.RootBlock]: [],
-    [SystemResourceType.Org]: [
+    [SystemResourceType.Organization]: [
         SystemActionType.Read,
         SystemActionType.Update,
         SystemActionType.Delete,
@@ -173,23 +171,25 @@ export const resourceTypesToActionsMap: IResourceTypeToActionsMap = {
         SystemActionType.Read,
         SystemActionType.Update,
     ],
+    [SystemResourceType.CustomProperty]: [],
+    [SystemResourceType.CustomValue]: [],
 };
 
-export const orgResourceTypesToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
-    orgResourceTypes
-);
+export const organizationResourceTypesToActionsMap =
+    getResourceTypeToActionsMapByResourceTypeList(organizationResourceTypes);
 
-export const boardResourceTypesToActionsMap = getResourceTypeToActionsMapByResourceTypeList(
-    boardResourceTypes
-);
+export const boardResourceTypesToActionsMap =
+    getResourceTypeToActionsMapByResourceTypeList(boardResourceTypes);
 
-export const orgResourceTypesToActionList = getPermissionsListFromResourceTypeToActionsMap(
-    orgResourceTypesToActionsMap
-);
+export const organizationResourceTypesToActionList =
+    getPermissionsListFromResourceTypeToActionsMap(
+        organizationResourceTypesToActionsMap
+    );
 
-export const boardResourceTypesToActionList = getPermissionsListFromResourceTypeToActionsMap(
-    boardResourceTypesToActionsMap
-);
+export const boardResourceTypesToActionList =
+    getPermissionsListFromResourceTypeToActionsMap(
+        boardResourceTypesToActionsMap
+    );
 
 export interface IPermissionLikeObject {
     resourceType: SystemResourceType;
@@ -210,7 +210,7 @@ export interface IFreezedPermissionDocument
 export interface IUserAssignedPermissionGroup {
     customId: string;
     userId: string;
-    orgId: string;
+    organizationId: string;
     resourceId: string;
     resourceType: SystemResourceType;
     permissionGroupId: string;
@@ -221,7 +221,7 @@ export interface IUserAssignedPermissionGroup {
 export const userAssignedPermissionGroupMongoSchema = {
     customId: { type: String },
     userId: { type: String },
-    orgId: { type: String },
+    organizationId: { type: String },
     resourceId: { type: String },
     resourceType: { type: String },
     permissionGroupId: { type: String },

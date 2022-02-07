@@ -1,7 +1,8 @@
 import { IUser } from "../../mongo/user";
-import { getDateString } from "../../utilities/fns";
+import { getDateString, getDateStringIfExists } from "../../utilities/fns";
+import { ICollaborator } from "../collaborator/types";
 import { extractFields, getFields } from "../utils";
-import { ICollaborator, IPublicUserData } from "./types";
+import { IPublicUserData } from "./types";
 
 export function addEntryToPasswordDateLog(arr: string[]) {
     arr.push(getDateString());
@@ -17,37 +18,19 @@ const publicUserFields = getFields<IPublicUserData>({
     customId: true,
     name: true,
     email: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     rootBlockId: true,
-    orgs: {
+    organizations: {
         customId: true,
     },
     color: true,
-    notificationsLastCheckedAt: getDateString,
-});
-
-const collaboratorFields = getFields<ICollaborator>({
-    customId: true,
-    name: true,
-    email: true,
-    color: true,
+    notificationsLastCheckedAt: getDateStringIfExists,
 });
 
 export const getPublicUserData = (user: IUser): IPublicUserData => {
     return extractFields(user, publicUserFields);
 };
 
-export function getCollaboratorDataFromUser(user: IUser): ICollaborator {
-    return extractFields(user, collaboratorFields);
-}
-
-export function getCollaboratorsArray(
-    users: Array<ICollaborator>
-): ICollaborator[] {
-    // @ts-ignore
-    return users.map((user) => extractFields(user, collaboratorFields));
-}
-
-export const userIsPartOfOrg = (user: IUser, orgId: string) => {
+export const userIsPartOfOrganization = (user: IUser, orgId: string) => {
     return user.orgs.findIndex((org) => org.customId === orgId) !== -1;
 };

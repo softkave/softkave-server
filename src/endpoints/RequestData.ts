@@ -2,39 +2,32 @@ import { Socket } from "socket.io";
 import { IClient } from "../mongo/client";
 import { IToken } from "../mongo/token/definitions";
 import { IUser } from "../mongo/user";
-import { IBaseContext } from "./contexts/BaseContext";
-import { IBaseTokenData } from "./contexts/TokenContext";
+import { clientConstants } from "./client/constants";
+import { IBaseContext } from "./contexts/IBaseContext";
+import { IBaseTokenData, IGeneralTokenSubject } from "./contexts/TokenContext";
 import { IServerRequest } from "./contexts/types";
 import { IIncomingSocketEventPacket } from "./socket/types";
 
-export interface IRequestContructorParams<
-    T = any,
-    TokenData = IToken,
-    IncomingTokenData extends IBaseTokenData = IBaseTokenData
-> {
+export interface IRequestContructorParams<T = any> {
     req?: IServerRequest;
     socket?: Socket;
     data?: T;
-    tokenData?: TokenData;
-    incomingTokenData?: IncomingTokenData | null;
+    tokenData?: IToken;
+    incomingTokenData?: IBaseTokenData<IGeneralTokenSubject> | null;
     incomingSocketData?: IIncomingSocketEventPacket<any> | null;
     userAgent?: string;
     ips?: string[];
     user?: IUser | null;
+    clientId?: string | null;
     client?: IClient | null;
-    internalInfo?: Record<string, any> | null;
 }
 
-export default class RequestData<
-    T = any,
-    TokenData extends IToken = IToken,
-    IncomingTokenData extends IBaseTokenData = IBaseTokenData
-> {
-    public static async fromExpressRequest<DataType>(
+export default class RequestData<T = any> {
+    public static fromExpressRequest<DataType>(
         ctx: IBaseContext,
         req: IServerRequest,
         data?: DataType
-    ): Promise<RequestData> {
+    ): RequestData<DataType> {
         const requestData = new RequestData({
             req,
             data,
@@ -44,6 +37,7 @@ export default class RequestData<
                     : [req.ip],
             userAgent: req.headers["user-agent"],
             incomingTokenData: req.user,
+            clientId: req.headers[clientConstants.clientIdHeaderKey] as string,
         });
 
         return requestData;
@@ -62,24 +56,33 @@ export default class RequestData<
             userAgent: socket.handshake.headers
                 ? socket.handshake.headers["user-agent"]
                 : undefined,
+            incomingTokenData: data?.token
+                ? ctx.token.decodeToken(ctx, data.token)
+                : null,
+            clientId: data?.clientId,
         });
 
         return requestData;
     }
 
+    // TODO: make an abstraction for req and socket, and replace
+    // with all uses of socket and req
+    // CAUTION: do not use socket or req directly
     public req?: IServerRequest | null;
     public socket?: Socket | null;
+
     public incomingSocketData?: IIncomingSocketEventPacket<any>;
     public data?: T;
-    public incomingTokenData?: IncomingTokenData | null;
-    public tokenData?: TokenData | null;
+    public incomingTokenData?: IBaseTokenData<IGeneralTokenSubject> | null;
+    public tokenData?: IToken | null;
     public userAgent?: string;
     public ips: string[];
     public user?: IUser | null;
+    public clientId?: string | null;
     public client?: IClient | null;
-    public internalInfo?: Record<string, any> | null;
+    public reqType?: "express" | "socket";
 
-    public constructor(arg?: IRequestContructorParams<T, TokenData>) {
+    public constructor(arg?: IRequestContructorParams<T>) {
         if (!arg) {
             return;
         }
@@ -88,12 +91,18 @@ export default class RequestData<
         this.socket = arg.socket;
         this.data = arg.data;
         this.tokenData = arg.tokenData;
-        this.incomingTokenData = arg.incomingTokenData as IncomingTokenData;
+        this.incomingTokenData = arg.incomingTokenData;
         this.userAgent = arg.userAgent;
         this.ips = arg.ips;
         this.user = arg.user;
+        this.clientId = arg.clientId;
         this.client = arg.client;
         this.incomingSocketData = arg.incomingSocketData;
-        this.internalInfo = arg.internalInfo;
+
+        if (arg.req) {
+            this.reqType = "express";
+        } else {
+            this.reqType = "socket";
+        }
     }
 }

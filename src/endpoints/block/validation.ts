@@ -7,18 +7,20 @@ const taskCollaboratorSchema = Joi.object().keys({
     userId: validationSchemas.uuid.required(),
 });
 
-const userUpdateableTypes = [
-    BlockType.Org,
-    BlockType.Board,
-    BlockType.Task,
-] as BlockType[];
-
 const userUpdateableblockTypeSchema = Joi.string()
     .lowercase()
-    .valid(userUpdateableTypes);
+    .valid(BlockType.Organization, BlockType.Board, BlockType.Task);
 
-const fullBlockTypes = [...userUpdateableTypes, BlockType.Root] as BlockType[];
-const fullBlockTypeSchema = Joi.string().lowercase().valid(fullBlockTypes);
+const fullBlockTypes = [
+    BlockType.Organization,
+    BlockType.Board,
+    BlockType.Task,
+    BlockType.Root,
+] as BlockType[];
+
+const fullBlockTypeSchema = Joi.string()
+    .lowercase()
+    .valid(...fullBlockTypes);
 const color = Joi.string().trim().lowercase().regex(regEx.hexColorPattern);
 
 const subTasksSchema = Joi.object().keys({
@@ -41,7 +43,7 @@ const labelSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -58,7 +60,7 @@ const statusSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -73,7 +75,7 @@ const resolutionSchema = Joi.object().keys({
         .max(blockConstants.maxLabelNameLength)
         .required(),
     description: Joi.string()
-        .allow(["", null])
+        .allow("", null)
         .trim()
         .max(blockConstants.maxLabelDescriptionLength)
         .optional(),
@@ -108,7 +110,7 @@ const blockTypesSchema = Joi.array()
 const name = Joi.string().trim().max(blockConstants.maxNameLength);
 
 const description = Joi.string()
-    .allow([null, ""])
+    .allow(null, "")
     .max(blockConstants.maxDescriptionLength)
     .trim();
 
@@ -125,7 +127,7 @@ const taskAssignees = Joi.array()
 
 const priority = Joi.string()
     .lowercase()
-    .valid(blockConstants.priorityValuesArray);
+    .valid(...blockConstants.priorityValuesArray);
 
 const subTasks = Joi.array()
     .items(subTasksSchema)

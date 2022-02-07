@@ -8,7 +8,6 @@ import {
 } from "../../../mongo/collaboration-request/definitions";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaborationRequestRevokedNotification } from "../../notifications/templates/collaborationRequest";
 import {
     CollaborationRequestAcceptedError,
     CollaborationRequestDeclinedError,
@@ -25,7 +24,7 @@ import { revokeRequestJoiSchema } from "./validation";
 
 async function notifyRecipient(
     context: IRevokeCollaborationRequestContext,
-    org: IBlock,
+    organization: IBlock,
     request: ICollaborationRequest
 ) {
     const recipient = await context.user.getUserByEmail(
@@ -33,38 +32,38 @@ async function notifyRecipient(
         request.to.email
     );
 
-    if (recipient) {
-        const notification = getCollaborationRequestRevokedNotification(
-            org,
-            recipient,
-            request
-        );
+    // if (recipient) {
+    //     const notification = getCollaborationRequestRevokedNotification(
+    //         organization,
+    //         recipient,
+    //         request
+    //     );
 
-        fireAndForgetPromise(
-            context.notification.bulkSaveNotifications(context, [notification])
-        );
-    } else {
-        try {
-            await context.sendCollaborationRequestRevokedEmail({
-                email: request.to.email,
-                senderName: org.name,
-                title: `Collaboration request from ${org.name} revoked`,
-            });
+    //     fireAndForgetPromise(
+    //         context.notification.bulkSaveNotifications(context, [notification])
+    //     );
+    // } else {
+    //     try {
+    //         await context.sendCollaborationRequestRevokedEmail({
+    //             email: request.to.email,
+    //             senderName: organization.name,
+    //             title: `Collaboration request from ${organization.name} revoked`,
+    //         });
 
-            context.collaborationRequest.updateCollaborationRequestById(
-                context,
-                request.customId,
-                {
-                    sentEmailHistory: request.sentEmailHistory.concat({
-                        date: getDate(),
-                        reason: CollaborationRequestEmailReason.RequestRevoked,
-                    }),
-                }
-            );
-        } catch (error) {
-            console.error(error);
-        }
-    }
+    //         context.collaborationRequest.updateCollaborationRequestById(
+    //             context,
+    //             request.customId,
+    //             {
+    //                 sentEmailHistory: request.sentEmailHistory.concat({
+    //                     date: getDate(),
+    //                     reason: CollaborationRequestEmailReason.RequestRevoked,
+    //                 }),
+    //             }
+    //         );
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
 }
 
 const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
@@ -73,28 +72,32 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
 ) => {
     const data = validate(instData.data, revokeRequestJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.blockId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.blockId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.CollaborationRequest,
     //         action: SystemActionType.RevokeRequest,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
-    let request = await context.collaborationRequest.getCollaborationRequestById(
-        context,
-        data.requestId
-    );
+    let request =
+        await context.collaborationRequest.getCollaborationRequestById(
+            context,
+            data.requestId
+        );
 
-    if (!request || request.from.blockId !== org.customId) {
+    if (!request || request.from.blockId !== organization.customId) {
         throw new CollaborationRequestDoesNotExistError();
     }
 
@@ -121,7 +124,7 @@ const revokeCollaborationRequest: RevokeCollaborationRequestsEndpoint = async (
         }
     );
 
-    fireAndForgetPromise(notifyRecipient(context, org, request));
+    fireAndForgetPromise(notifyRecipient(context, organization, request));
 };
 
 export default revokeCollaborationRequest;

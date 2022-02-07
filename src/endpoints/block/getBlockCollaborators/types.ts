@@ -1,6 +1,6 @@
-import { IBaseContext } from "../../contexts/BaseContext";
+import { ICollaborator } from "../../collaborator/types";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
-import { ICollaborator } from "../../user/types";
 
 export interface IGetBlockCollaboratorsParameters {
     blockId: string;

@@ -5,7 +5,7 @@ import { IInternalAddBlockNewBlockInput } from "./types";
 
 // TODO: check if resources used exist and are valid
 // for example, check if assignees or sprint exists,
-// check if assignees exist in the org, etc.
+// check if assignees exist in the organization, etc.
 
 export default function manualProcessInternalAddBlockInput(
     inputBlock: IInternalAddBlockNewBlockInput,
@@ -15,10 +15,6 @@ export default function manualProcessInternalAddBlockInput(
 
     const block: Omit<IBlock, "customId"> = {
         name: inputBlock.name,
-        lowerCasedName:
-            inputBlock.name && inputBlock.type !== BlockType.Task
-                ? inputBlock.name.toLowerCase()
-                : undefined,
         description: inputBlock.description,
         dueAt: inputBlock.dueAt ? getDate(inputBlock.dueAt) : undefined,
         createdAt: now,

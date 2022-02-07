@@ -1,7 +1,7 @@
 import { BlockType, IBlock } from "../../mongo/block";
 import { IUser } from "../../mongo/user";
 import { PermissionDeniedError } from "../errors";
-import { userIsPartOfOrg } from "../user/utils";
+import { userIsPartOfOrganization } from "../user/utils";
 import { BlockDoesNotExistError } from "./errors";
 
 export interface ICanReadBlockParameters {
@@ -22,16 +22,16 @@ async function canReadBlock({ block, user }: ICanReadBlockParameters) {
         return true;
     }
 
-    let orgId = null;
+    let organizationId = null;
 
-    if (block.type === BlockType.Org) {
-        orgId = block.customId;
+    if (block.type === BlockType.Organization) {
+        organizationId = block.customId;
     } else {
-        orgId = block.rootBlockId;
+        organizationId = block.rootBlockId;
     }
 
-    if (orgId) {
-        if (userIsPartOfOrg(user, orgId)) {
+    if (organizationId) {
+        if (userIsPartOfOrganization(user, organizationId)) {
             return true;
         }
     }

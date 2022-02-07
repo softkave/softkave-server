@@ -1,6 +1,4 @@
 const notificationsGraphQLSchema = `
-
-
     type NotificationsQuery {
 
     }

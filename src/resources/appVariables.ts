@@ -1,6 +1,41 @@
+import assert from "assert";
+
 const clientDomain = process.env.CLIENT_DOMAIN || "https://www.softkave.com";
 
-export const appVariables = {
+function getBoolean(value: string = "") {
+    return value.toLowerCase() === "true";
+}
+
+function getNumber(value: string = "", envName: string) {
+    const num = Number(value);
+    assert.ok(Number.isNaN(num), `${envName} is not a number`);
+    return num;
+}
+
+export interface IAppVariables {
+    // environment variables
+    clientDomain: string;
+    mongoDbURI: string;
+    jwtSecret: string;
+    nodeEnv: string;
+    feedbackBoardId: string;
+    feedbackUserId: string;
+    port: string;
+    vapidPublicKey: string;
+    vapidPrivateKey: string;
+    disableEmail: boolean;
+
+    appName: string;
+    emailSendFrom: string;
+    emailEncoding: string;
+    dateFormat: string;
+    signupPath: string;
+    loginPath: string;
+    changePasswordPath: string;
+    confirmEmailAddressPath: string;
+}
+
+export const appVariables: IAppVariables = {
     clientDomain,
     mongoDbURI: process.env.MONGODB_URI,
     jwtSecret: process.env.JWT_SECRET,
@@ -10,6 +45,7 @@ export const appVariables = {
     port: process.env.PORT,
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
+    disableEmail: getBoolean(process.env.DISABLE_EMAIL),
 
     appName: "Softkave",
     emailSendFrom: "hello@softkave.com",
@@ -21,12 +57,15 @@ export const appVariables = {
     confirmEmailAddressPath: `${clientDomain}/confirm-email-address`,
 };
 
-function checkVariablesExist() {
+// TODO: Move check to when a BaseContext is created
+// OR check in the variables in context, not the ones from env variables
+export function checkVariablesExist() {
     let requiredVariablesMissing = false;
+    const messages = [];
 
     const logIfMissing = (key, value) => {
         if (!value) {
-            console.log(`Env variable ${key} not set`);
+            messages.push(`Env variable ${key} not set`);
             requiredVariablesMissing = true;
         }
     };
@@ -41,11 +80,9 @@ function checkVariablesExist() {
     logIfMissing("VAPID_PUBLIC_KEY", appVariables.vapidPublicKey);
     logIfMissing("VAPID_PRIVATE_KEY", appVariables.vapidPrivateKey);
 
-    if (requiredVariablesMissing) {
-        throw new Error("Required env variables missing");
+    if (messages.length > 0) {
+        throw new Error(
+            ["Required env variables missing"].concat(messages).join("\n")
+        );
     }
 }
-
-checkVariablesExist();
-
-export type IAppVariables = typeof appVariables;

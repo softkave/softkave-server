@@ -10,14 +10,14 @@ export interface IAddCollaboratorsBroadcastFnData {
     indexedExistingUsers: { [key: string]: IUser };
 }
 
-export function broadcastToOrgsAndExistingUsers(
+export function broadcastToOrganizationsAndExistingUsers(
     context: IAddCollaboratorsContext,
     instData: RequestData,
     data: IAddCollaboratorsBroadcastFnData
 ) {
     const { collaborationRequests, block, indexedExistingUsers } = data;
 
-    context.broadcastHelpers.broadcastNewOrgCollaborationRequests(
+    context.broadcastHelpers.broadcastNewOrganizationCollaborationRequests(
         context,
         instData,
         block,

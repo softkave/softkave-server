@@ -5,23 +5,33 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import expressJwt from "express-jwt";
 import http from "http";
-// import aws from "./res/aws";
 import { Server } from "socket.io";
-// import multer from "multer";
-// import multerS3 from "multer-s3";
-// import { nanoid } from "nanoid";
 import { indexSchema } from "./endpoints";
+import setupBoardsRESTEndpoints from "./endpoints/board/setupRESTEndpoints";
+import setupCollaborationRequestsRESTEndpoints from "./endpoints/collaborationRequest/setupRESTEndpoints";
+import setupCollaboratorsRESTEndpoints from "./endpoints/collaborator/setupRESTEndpoints";
+import { getBaseContext } from "./endpoints/contexts/BaseContext";
 import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
-import { setupSocketServer } from "./endpoints/socket/server";
+import setupOrganizationsRESTEndpoints from "./endpoints/organization/setupRESTEndpoints";
+import { getSocketServer, setSocketServer } from "./endpoints/socket/server";
+import { setupSocketEndpoints } from "./endpoints/socket/setupEndpoints";
+import setupTasksRESTEndpoints from "./endpoints/task/setupRESTEndpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import { getAuditLogModel } from "./mongo/audit-log";
 import { getBlockModel } from "./mongo/block";
+import { getChatModel } from "./mongo/chat";
+import { getClientModel } from "./mongo/client";
+import { getCollaborationRequestModel } from "./mongo/collaboration-request";
 import { getDefaultConnection } from "./mongo/defaultConnection";
 import { getNotificationModel } from "./mongo/notification";
+import { getRoomModel } from "./mongo/room";
+import { getSprintModel } from "./mongo/sprint";
+import { getTokenModel } from "./mongo/token";
+import { getUnseenChatsModel } from "./mongo/unseen-chats";
 import { getUserModel } from "./mongo/user";
-import appInfo from "./resources/appInfo";
 import { appVariables } from "./resources/appVariables";
+import { script_MigrateToNewDataDefinitions } from "./scripts/migrateToNewDataDefinitions";
 import logger from "./utilities/logger";
 
 if (process.env.NODE_ENV === "production") {
@@ -41,15 +51,20 @@ const connection = getDefaultConnection();
 // TODO: wait for all the other models before opening up the port
 const userModel = getUserModel();
 const blockModel = getBlockModel();
-const notificationModel = getNotificationModel();
 const auditLogModel = getAuditLogModel();
+const chatModel = getChatModel();
+const clientModel = getClientModel();
+const collaborationRequestModel = getCollaborationRequestModel();
+const roomModel = getRoomModel();
+const sprintModel = getSprintModel();
+const tokenModel = getTokenModel();
+const unseenChatsModel = getUnseenChatsModel();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // TODO: Define better white-listed CORS origins. Maybe from a DB.
 const whiteListedCorsOrigins = [/^https?:\/\/www.softkave.com$/];
-const graphiql = false;
 
 if (process.env.NODE_ENV !== "production") {
     whiteListedCorsOrigins.push(/localhost/);
@@ -61,12 +76,20 @@ const corsOption: CorsOptions = {
     credentials: true,
 };
 
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+    path: "/socket",
+    serveClient: false,
+    cors: corsOption,
+});
+
+setSocketServer(io);
+
 if (process.env.NODE_ENV === "production") {
     app.use(httpToHttps);
 }
 
 app.use(cors(corsOption));
-
 app.use(
     expressJwt({
         secret: appVariables.jwtSecret,
@@ -74,39 +97,6 @@ app.use(
         algorithms: ["HS256"],
     })
 );
-
-// 3 months in secs -- 60 secs * 60 mins * 24 hours * 30 days * 3 months
-// const maxAge = 60 * 60 * 24 * 30 * 3;
-
-// // 5 mb in bytes -- 1024 bytes * 1024 kb * 5 mb
-// const maxFileSize = 1024 * 1024 * 5;
-// const s3 = new aws.S3();
-// const multerS3Storage = multerS3({
-//   s3,
-//   bucket:
-//     process.env.NODE_ENV === "production"
-//       ? "softkave-files"
-//       : "softkave-files-dev",
-//   acl: "private",
-//   cacheControl: `max-age=${maxAge}`,
-//   contentType: multerS3.AUTO_CONTENT_TYPE,
-//   key(req, file, cb) {
-//     const fileKey = file.filename + `-${nanoid()}`;
-//     cb(null, fileKey);
-//   },
-// });
-
-// const upload = multer({
-//   storage: multerS3Storage,
-//   limits: {
-//     fileSize: maxFileSize,
-//   },
-// });
-
-// app.post("/upload", upload.array("files", 5), (req, res, next) => {
-//   // req.files is array of `photos` files
-//   // req.body will contain the text fields, if there were any
-// });
 
 app.use(
     bodyParser.json({
@@ -117,33 +107,41 @@ app.use(
 app.use(
     "/graphql",
     graphqlHTTP({
-        graphiql,
+        graphiql: false,
         schema: indexSchema,
         rootValue: getEndpointsGraphQLController(),
     })
 );
 
-const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-    path: "/socket",
-    serveClient: false,
-    cors: corsOption,
+getSocketServer().on("connection", (socket) => {
+    setupSocketEndpoints(getBaseContext(), socket);
 });
 
-setupSocketServer(io);
+setupBoardsRESTEndpoints(getBaseContext(), app);
+setupCollaborationRequestsRESTEndpoints(getBaseContext(), app);
+setupTasksRESTEndpoints(getBaseContext(), app);
+setupOrganizationsRESTEndpoints(getBaseContext(), app);
+setupCollaboratorsRESTEndpoints(getBaseContext(), app);
 app.use(handleErrors);
 
 connection.wait().then(async () => {
     // TODO: move index creation to DB pipeline
     await userModel.waitTillReady();
     await blockModel.waitTillReady();
-    await notificationModel.waitTillReady();
     await auditLogModel.waitTillReady();
+    await chatModel.waitTillReady();
+    await clientModel.waitTillReady();
+    await collaborationRequestModel.waitTillReady();
+    await roomModel.waitTillReady();
+    await sprintModel.waitTillReady();
+    await tokenModel.waitTillReady();
+    await unseenChatsModel.waitTillReady();
 
     // scripts
+    // await script_MigrateToNewDataDefinitions();
 
     httpServer.listen(port, () => {
-        logger.info(appInfo.appName);
+        logger.info(appVariables.appName);
         logger.info("server started");
         logger.info("port: " + port);
     });
@@ -174,6 +172,6 @@ process.on("uncaughtException", (exp, origin) => {
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-    logger.info(promise);
+    promise?.catch(logger.info);
     logger.info(reason);
 });

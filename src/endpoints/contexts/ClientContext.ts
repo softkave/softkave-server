@@ -1,10 +1,10 @@
 import { IClient, IClientUserEntry } from "../../mongo/client";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { ClientDoesNotExistError } from "../client/errors";
 import { findUserEntryInClient } from "../client/utils";
 import RequestData from "../RequestData";
-import { wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IClientContext {
     saveClient: (ctx: IBaseContext, client: IClient) => Promise<IClient>;
@@ -40,7 +40,7 @@ export interface IClientContext {
 }
 
 export default class ClientContext implements IClientContext {
-    public getClientByPushSubscription = wrapFireAndThrowError(
+    public getClientByPushSubscription = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, endpoint: string, keys: IClient["keys"]) => {
             return ctx.models.clientModel.model
                 .findOne({
@@ -53,14 +53,14 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public saveClient = wrapFireAndThrowError(
+    public saveClient = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, data: IClient) => {
             const client = new ctx.models.clientModel.model(data);
             return client.save();
         }
     );
 
-    public getClientById = wrapFireAndThrowError(
+    public getClientById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, clientId: string) => {
             return ctx.models.clientModel.model
                 .findOne({
@@ -71,7 +71,7 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public getPushSubscribedClients = wrapFireAndThrowError(
+    public getPushSubscribedClients = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, userId: string) => {
             return ctx.models.clientModel.model
                 .find({
@@ -90,7 +90,7 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public assertGetClientById = wrapFireAndThrowError(
+    public assertGetClientById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, clientId: string) => {
             const client = await ctx.client.getClientById(ctx, clientId);
 
@@ -102,7 +102,7 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public updateUserEntry = wrapFireAndThrowError(
+    public updateUserEntry = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             reqData: RequestData,
@@ -150,7 +150,7 @@ export default class ClientContext implements IClientContext {
         }
     );
 
-    public updateClientById = wrapFireAndThrowError(
+    public updateClientById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, clientId: string, data: Partial<IClient>) => {
             return await ctx.models.clientModel.model
                 .findOneAndUpdate(
@@ -166,4 +166,4 @@ export default class ClientContext implements IClientContext {
     );
 }
 
-export const getClientContext = makeSingletonFunc(() => new ClientContext());
+export const getClientContext = makeSingletonFn(() => new ClientContext());

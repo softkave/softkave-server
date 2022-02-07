@@ -15,8 +15,8 @@ export enum NotificationType {
     NewCollaborationRequest = "newCollaborationRequest",
     CollaborationRequestResponse = "collaborationRequestResponse",
 
-    OrgUpdated = "orgUpdated",
-    OrgDeleted = "orgDeleted",
+    OrganizationUpdated = "orgUpdated",
+    OrganizationDeleted = "orgDeleted",
 
     CollaboratorRemoved = "collaboratorRemoved",
     CollaboratorPermissionsUpdated = "collaboratorPermissionsUpdated",

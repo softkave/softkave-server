@@ -1,17 +1,15 @@
 const endpointSchema = `
     type Query {
         user: UserQuery
-        block: BlockQuery
         sprint: SprintQuery
-        system: SystemQuery
         pushSubscription: PushSubscriptionQuery
     }
 
     type Mutation {
-        user: UserQuery
-        block: BlockQuery
-        sprint: SprintQuery
-        system: SystemQuery
+        user: UserMutation
+        sprint: SprintMutation
+        system: SystemMutation
+        client: ClientMutation
         pushSubscription: PushSubscriptionQuery
     }
 `;

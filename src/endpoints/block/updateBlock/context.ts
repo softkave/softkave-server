@@ -1,16 +1,18 @@
 import { BlockType, IBlock } from "../../../mongo/block";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../resources/appInfo";
 import { ServerError } from "../../../utilities/errors";
 import { getDate } from "../../../utilities/fns";
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
+import BaseContext from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import transferBlock from "../transferBlock/transferBlock";
 import sendAssignedTaskEmailNotification from "./sendAssignedTaskEmailNotification";
 import { IUpdateBlockContext } from "./types";
 
+// @ts-ignore
 export default class UpdateBlockContext
     extends BaseContext
-    implements IUpdateBlockContext {
+    implements IUpdateBlockContext
+{
     public async transferBlock(context, instData) {
         return await transferBlock(context, instData);
     }
@@ -22,15 +24,16 @@ export default class UpdateBlockContext
         assigner: IUser,
         assignee: IUser
     ) {
-        return sendAssignedTaskEmailNotification({
-            taskName,
-            taskDescription,
-            email: assignee.email,
-            board: board.name,
-            assignee: assignee.name,
-            assigner: assigner.name,
-            loginLink: appInfo.loginLink,
-        });
+        throw new Error("do not use code");
+        // return sendAssignedTaskEmailNotification({
+        //     taskName,
+        //     taskDescription,
+        //     email: assignee.email,
+        //     board: board.name,
+        //     assignee: assignee.name,
+        //     assigner: assigner.name,
+        //     loginLink: this.appVariables.loginPath,
+        // });
     }
 
     public async bulkUpdateDeletedStatusInTasks(

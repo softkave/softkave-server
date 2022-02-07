@@ -1,5 +1,5 @@
 import { IBlock } from "../../../mongo/block";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
 export interface ITransferBlockParameters {

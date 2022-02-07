@@ -95,10 +95,6 @@ export default function processInternalAddBlockInput(
         createdBy: user.customId,
     };
 
-    if (block.name && block.type !== BlockType.Task) {
-        block.lowerCasedName = block.name.toLowerCase();
-    }
-
     if (block.status) {
         block.statusAssignedBy = user.customId;
         block.statusAssignedAt = getDate();

@@ -1,5 +1,5 @@
 What are we retooling?
-- Separating org, board, and task into different models.
+- Separating organization, board, and task into different models.
 - Define all data entry and updates in Quill.js deltas.
 New entries will be 'insert' operations,
 Updates will be 'retain' operations,

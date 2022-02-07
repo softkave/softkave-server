@@ -1,7 +1,0 @@
-- use regex to search for names, not lowercased texts
-- audio and video calls
-- vs code client with full capabs
-- integration with github
-- events and calendars
-- audit log
-- deltas

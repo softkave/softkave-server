@@ -3,10 +3,8 @@ import {
     collaborationRequestRevokedEmailText,
     ICollaborationRequestRevokedEmailProps,
 } from "../../html/collaborationRequestRevokedEmail";
-import appInfo from "../../resources/appInfo";
-import aws from "../../resources/aws";
-
-const ses = new aws.SES();
+import { IBaseContext } from "../contexts/IBaseContext";
+import sendEmail from "../sendEmail";
 
 export interface ISendCollaborationRequestRevokedEmailProps
     extends ICollaborationRequestRevokedEmailProps {
@@ -14,42 +12,18 @@ export interface ISendCollaborationRequestRevokedEmailProps
 }
 
 async function sendCollaborationRequestRevokedEmail(
+    ctx: IBaseContext,
     props: ISendCollaborationRequestRevokedEmailProps
 ) {
-    try {
-        const htmlContent = collaborationRequestRevokedEmailHTML(props);
-        const textContent = collaborationRequestRevokedEmailText(props);
+    const htmlContent = collaborationRequestRevokedEmailHTML(props);
+    const textContent = collaborationRequestRevokedEmailText(props);
 
-        const result = await ses
-            .sendEmail({
-                Destination: {
-                    ToAddresses: [props.email],
-                },
-                Source: appInfo.defaultEmailSender,
-                Message: {
-                    Subject: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: props.title,
-                    },
-                    Body: {
-                        Html: {
-                            Charset: appInfo.defaultEmailEncoding,
-                            Data: htmlContent,
-                        },
-                        Text: {
-                            Charset: appInfo.defaultEmailEncoding,
-                            Data: textContent,
-                        },
-                    },
-                },
-            })
-            .promise();
-
-        return result;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    return await sendEmail(ctx, {
+        htmlContent,
+        textContent,
+        emailAddresses: [props.email],
+        title: props.title,
+    });
 }
 
 export default sendCollaborationRequestRevokedEmail;

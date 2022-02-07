@@ -11,6 +11,7 @@
     -   PORT
     -   VAPID_PUBLIC_KEY
     -   VAPID_PRIVATE_KEY
+    -   CLIENT_DOMAIN
 -   For MONGODB_URI:
     -   Follow this manual "https://docs.mongodb.com/manual/installation/" to install MongoDb community edition if you don't already have it setup already.
     -   Follow this manual "https://docs.mongodb.com/mongodb-shell/install/" to install Mongosh.
@@ -26,3 +27,4 @@
     -   Any port number you want to run the server on.
 -   For VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY:
     -   Run "npm run gen-vapid-keys", it should generate your vapid pubic key and private key. Copy the public for the public, and the private for the private respectively. They are used for the push notifcation service. More can be found here "https://blog.mozilla.org/services/2016/08/23/sending-vapid-identified-webpush-notifications-via-mozillas-push-service/".
+-   For CLIENT_DOMAIN, use your local running Softkave client's domain. Mine is "localhost:3000".

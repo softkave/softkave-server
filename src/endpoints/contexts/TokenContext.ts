@@ -1,12 +1,15 @@
 import { IToken } from "../../mongo/token";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { TokenDoesNotExistError } from "../token/errors";
 import { JWTEndpoint } from "../types";
-import { wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import {
+    wrapFireAndThrowErrorAsync,
+    wrapFireAndThrowErrorRegular,
+} from "../utils";
+import { IBaseContext } from "./IBaseContext";
 import jwt from "jsonwebtoken";
 import { CredentialsExpiredError } from "../user/errors";
-import cast from "../../utilities/fns";
+import { cast } from "../../utilities/fns";
 
 export const CURRENT_USER_TOKEN_VERSION = 5;
 
@@ -69,14 +72,14 @@ export interface ITokenContext {
 }
 
 export default class TokenContext implements ITokenContext {
-    public saveToken = wrapFireAndThrowError(
+    public saveToken = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, data: IToken) => {
             const token = new ctx.models.tokenModel.model(data);
             return token.save();
         }
     );
 
-    public getTokenById = wrapFireAndThrowError(
+    public getTokenById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string) => {
             return ctx.models.tokenModel.model
                 .findOne({
@@ -87,7 +90,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public getTokenByUserAndClientId = wrapFireAndThrowError(
+    public getTokenByUserAndClientId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, userId: string, clientId: string) => {
             return ctx.models.tokenModel.model
                 .findOne({
@@ -99,7 +102,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public assertGetTokenById = wrapFireAndThrowError(
+    public assertGetTokenById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, customId: string) => {
             const token = await ctx.token.getTokenById(ctx, customId);
 
@@ -111,7 +114,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public updateTokenById = wrapFireAndThrowError(
+    public updateTokenById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, customId: string, data: Partial<IToken>) => {
             return ctx.models.tokenModel.model
                 .findOneAndUpdate(
@@ -126,7 +129,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public deleteTokenByUserAndClientId = wrapFireAndThrowError(
+    public deleteTokenByUserAndClientId = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, clientId: string, userId: string) => {
             await ctx.models.tokenModel.model
                 .deleteOne({
@@ -137,7 +140,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public deleteTokenById = wrapFireAndThrowError(
+    public deleteTokenById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, tokenId: string) => {
             await ctx.models.tokenModel.model
                 .deleteOne({
@@ -147,7 +150,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public deleteTokensByUserId = wrapFireAndThrowError(
+    public deleteTokensByUserId = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, userId: string) => {
             await ctx.models.tokenModel.model
                 .deleteMany({
@@ -157,7 +160,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public decodeToken = wrapFireAndThrowError(
+    public decodeToken = wrapFireAndThrowErrorRegular(
         (ctx: IBaseContext, token: string) => {
             const tokenData = cast<IBaseTokenData<IGeneralTokenSubject>>(
                 jwt.verify(token, ctx.appVariables.jwtSecret)
@@ -171,7 +174,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public containsAudience = wrapFireAndThrowError(
+    public containsAudience = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, tokenData: IToken, inputAud: JWTEndpoint) => {
             const audience = tokenData.audience;
             const hasAudience = !!audience.find(
@@ -183,7 +186,7 @@ export default class TokenContext implements ITokenContext {
         }
     );
 
-    public encodeToken = wrapFireAndThrowError(
+    public encodeToken = wrapFireAndThrowErrorRegular(
         (ctx: IBaseContext, tokenId: string, expires?: number) => {
             const payload: Omit<IBaseTokenData, "iat"> = {
                 // aud: audience || [],
@@ -202,4 +205,4 @@ export default class TokenContext implements ITokenContext {
     );
 }
 
-export const getTokenContext = makeSingletonFunc(() => new TokenContext());
+export const getTokenContext = makeSingletonFn(() => new TokenContext());

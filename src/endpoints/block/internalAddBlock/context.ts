@@ -1,30 +1,32 @@
 import { IBlock } from "../../../mongo/block/definitions";
 import { IUser } from "../../../mongo/user/definitions";
-import makeSingletonFunc from "../../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../../utilities/createSingletonFunc";
 import {
     initializeBoardPermissions,
-    initializeOrgAccessControl,
-} from "../../access-control/initializeBlockPermissions";
-import BaseContext, { IBaseContext } from "../../contexts/BaseContext";
-import { wrapFireAndThrowError } from "../../utils";
+    initializeOrganizationAccessControl,
+} from "../../accessControl/initializeBlockPermissions";
+import BaseContext from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { wrapFireAndThrowErrorAsync } from "../../utils";
 import { IInternalAddBlockContext } from "./types";
 
 export default class InternalAddBlockContext
     extends BaseContext
-    implements IInternalAddBlockContext {
-    public initializeBoardPermissions = wrapFireAndThrowError(
+    implements IInternalAddBlockContext
+{
+    public initializeBoardPermissions = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
             return initializeBoardPermissions(ctx, user, block);
         }
     );
 
-    public initializeOrgAccessControl = wrapFireAndThrowError(
+    public initializeOrganizationAccessControl = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, user: IUser, block: IBlock) => {
-            return initializeOrgAccessControl(ctx, user, block);
+            return initializeOrganizationAccessControl(ctx, user, block);
         }
     );
 }
 
-export const getInternalAddBlockContext = makeSingletonFunc(
+export const getInternalAddBlockContext = makeSingletonFn(
     () => new InternalAddBlockContext()
 );

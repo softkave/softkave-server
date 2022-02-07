@@ -1,17 +1,17 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom, IRoomMemberReadCounter } from "../../mongo/room";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface IChatContext {
     getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;
     getRooms: (
         ctx: IBaseContext,
         userId: string,
-        orgIds: string[]
+        organizationIds: string[]
     ) => Promise<IRoom[]>;
     getRoomById: (
         ctx: IBaseContext,
@@ -30,14 +30,14 @@ export interface IChatContext {
     ) => Promise<void>;
     insertMessage: (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         senderId: string,
         roomId: string,
         message: string
     ) => Promise<IChat>;
     insertRoom: (
         ctx: IBaseContext,
-        orgId: string,
+        organizationId: string,
         userId: string,
         name: string,
         initialMembers?: string[]
@@ -50,7 +50,7 @@ export interface IChatContext {
 }
 
 export default class ChatContext implements IChatContext {
-    public getMessages = wrapFireAndThrowError(
+    public getMessages = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, roomIds: string[]) => {
             return ctx.models.chatModel.model
                 .find({
@@ -61,11 +61,15 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public getRooms = wrapFireAndThrowError(
-        async (ctx: IBaseContext, userId: string, orgIds: string[]) => {
+    public getRooms = wrapFireAndThrowErrorAsync(
+        async (
+            ctx: IBaseContext,
+            userId: string,
+            organizationIds: string[]
+        ) => {
             return ctx.models.roomModel.model
                 .find({
-                    orgId: { $in: orgIds },
+                    orgId: { $in: organizationIds },
                     members: { $elemMatch: { userId } },
                 })
                 .lean()
@@ -73,7 +77,7 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public getRoomById = wrapFireAndThrowError(
+    public getRoomById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, roomId: string) => {
             return ctx.models.roomModel.model
                 .findOne({
@@ -84,7 +88,7 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public addMemberToRoom = wrapFireAndThrowError(
+    public addMemberToRoom = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, roomId: string, userId: string) => {
             await ctx.models.roomModel.model
                 .updateOne(
@@ -102,7 +106,7 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public updateMemberReadCounter = wrapFireAndThrowError(
+    public updateMemberReadCounter = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             roomId: string,
@@ -125,10 +129,10 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public insertRoom = wrapFireAndThrowError(
+    public insertRoom = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
-            orgId: string,
+            organizationId: string,
             userId: string,
             name: string | null,
             initialMembers?: string[]
@@ -141,7 +145,7 @@ export default class ChatContext implements IChatContext {
                 const roomId = getNewId();
                 const roomName = name || ctx.room.getChatRoomName(roomId);
                 const newRoom = new ctx.models.roomModel.model({
-                    orgId,
+                    organizationId,
                     members,
                     customId: roomId,
                     name: roomName,
@@ -155,10 +159,10 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public insertMessage = wrapFireAndThrowError(
+    public insertMessage = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
-            orgId: string,
+            organizationId: string,
             senderId: string,
             roomId: string,
             message: string
@@ -166,7 +170,7 @@ export default class ChatContext implements IChatContext {
             return saveNewItemToDb(async () => {
                 const newMessage = new ctx.models.chatModel.model({
                     customId: getNewId(),
-                    orgId,
+                    organizationId,
                     message,
                     roomId,
                     sender: senderId,
@@ -179,7 +183,7 @@ export default class ChatContext implements IChatContext {
         }
     );
 
-    public getUserRoomReadCounter = wrapFireAndThrowError(
+    public getUserRoomReadCounter = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, userId: string, roomId: string) => {
             const room = await ctx.models.roomModel.model
                 .findOne(
@@ -200,4 +204,4 @@ export default class ChatContext implements IChatContext {
     );
 }
 
-export const getChatContext = makeSingletonFunc(() => new ChatContext());
+export const getChatContext = makeSingletonFn(() => new ChatContext());

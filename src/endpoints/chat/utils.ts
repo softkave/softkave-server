@@ -1,7 +1,7 @@
 import { IChat } from "../../mongo/chat";
 import { IRoom } from "../../mongo/room";
-import { IUnseenChats } from "../../mongo/unseenChats";
-import { getDateString } from "../../utilities/fns";
+import { IUnseenChats } from "../../mongo/unseen-chats";
+import { getDateStringIfExists } from "../../utilities/fns";
 import { extractFields, getFields } from "../utils";
 import { IPublicChatData, IPublicRoomData } from "./types";
 
@@ -9,13 +9,13 @@ const publicRoomFields = getFields<IPublicRoomData>({
     customId: true,
     name: true,
     orgId: true,
-    createdAt: getDateString,
+    createdAt: getDateStringIfExists,
     createdBy: true,
     members: {
         userId: true,
-        readCounter: getDateString,
+        readCounter: getDateStringIfExists,
     },
-    updatedAt: getDateString,
+    updatedAt: getDateStringIfExists,
     updatedBy: true,
 });
 
@@ -25,8 +25,8 @@ const publicChatFields = getFields<IPublicChatData>({
     message: true,
     sender: true,
     roomId: true,
-    createdAt: getDateString,
-    updatedAt: getDateString,
+    createdAt: getDateStringIfExists,
+    updatedAt: getDateStringIfExists,
 });
 
 export function getPublicRoomData(room: IRoom): IPublicRoomData {

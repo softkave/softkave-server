@@ -1,5 +1,5 @@
-import { IBaseContext } from "../../contexts/BaseContext";
-import { IPublicCollaborationRequest } from "../../notifications/types";
+import { IPublicCollaborationRequest } from "../../collaborationRequest/types";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
 export interface IGetBlockNotificationsParameters {

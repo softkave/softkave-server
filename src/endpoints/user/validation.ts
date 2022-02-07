@@ -19,10 +19,10 @@ const name = Joi.string()
 const collaborationRequestResponse = Joi.string()
     .trim()
     .lowercase()
-    .valid([
+    .valid(
         CollaborationRequestStatusType.Accepted,
-        CollaborationRequestStatusType.Declined,
-    ]);
+        CollaborationRequestStatusType.Declined
+    );
 
 const userValidationSchemas = {
     name,

@@ -1,18 +1,17 @@
-import moment from "moment";
 import { IBlock } from "../../../mongo/block/definitions";
 import {
     CollaborationRequestEmailReason,
     ICollaborationRequest,
 } from "../../../mongo/collaboration-request";
 import { IUser } from "../../../mongo/user";
-import appInfo from "../../../resources/appInfo";
 import { getDate } from "../../../utilities/fns";
 import { IUpdateItemById } from "../../../utilities/types";
-import waitOnPromises, {
+import {
     IPromiseWithId,
+    waitOnPromisesWithId,
 } from "../../../utilities/waitOnPromises";
-import { IPublicCollaborationRequest } from "../../notifications/types";
-import { getPublicCollaborationRequest } from "../../notifications/utils";
+import { IPublicCollaborationRequest } from "../../collaborationRequest/types";
+import { getPublicCollaborationRequest } from "../../collaborationRequest/utils";
 import RequestData from "../../RequestData";
 import { fireAndForgetPromise } from "../../utils";
 import { IAddCollaboratorsContext } from "./types";
@@ -34,14 +33,14 @@ export default async function sendEmails(
     // TODO: should we send emails only to people who aren't users?
     const sendEmailPromises: IPromiseWithId[] = requests.map(
         (request, index) => {
-            const promise = context.sendCollaborationRequestEmail({
+            const promise = context.sendCollaborationRequestEmail(context, {
                 email: request.to.email,
                 senderName: user.name,
-                senderOrg: block.name,
+                senderOrganization: block.name,
                 title: request.title,
-                loginLink: `${appInfo.clientDomain}/login`,
+                loginLink: context.appVariables.loginPath,
                 recipientIsUser: !!indexedExistingUsers[request.to.email],
-                signupLink: `${appInfo.clientDomain}/signup`,
+                signupLink: context.appVariables.signupPath,
             });
 
             return {
@@ -53,9 +52,9 @@ export default async function sendEmails(
 
     // TODO: Resend collaboration requests that have not been sent or that failed
 
-    const settledPromises = await waitOnPromises(sendEmailPromises);
+    const settledPromises = await waitOnPromisesWithId(sendEmailPromises);
     const successfulRequests: ICollaborationRequest[] = settledPromises
-        .filter(({ fulfilled }) => fulfilled)
+        .filter(({ resolved }) => resolved)
         .map(({ id }) => {
             return requests[id];
         });

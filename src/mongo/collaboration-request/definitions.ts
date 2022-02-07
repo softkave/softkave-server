@@ -68,11 +68,13 @@ export interface ICollaborationRequest {
     customId: string;
     to: ICollaborationRequestRecipient;
     title: string;
+    body?: string;
     from: ICollaborationRequestFrom;
     createdAt: Date;
+    expiresAt?: Date;
     readAt?: Date;
-    statusHistory?: ICollaborationRequestStatus[];
-    sentEmailHistory?: ICollaborationRequestSentEmailHistoryItem[];
+    statusHistory: ICollaborationRequestStatus[];
+    sentEmailHistory: ICollaborationRequestSentEmailHistoryItem[];
 }
 
 const collaborationRequestSchema = {
@@ -84,8 +86,14 @@ const collaborationRequestSchema = {
     createdAt: { type: Date, default: () => getDate() },
     expiresAt: { type: Date },
     readAt: { type: Date },
-    statusHistory: { type: [collaborationRequestStatusHistorySchema] },
-    sentEmailHistory: { type: [notificationSentEmailHistorySchema] },
+    statusHistory: {
+        type: [collaborationRequestStatusHistorySchema],
+        default: [],
+    },
+    sentEmailHistory: {
+        type: [notificationSentEmailHistorySchema],
+        default: [],
+    },
 };
 
 export default collaborationRequestSchema;

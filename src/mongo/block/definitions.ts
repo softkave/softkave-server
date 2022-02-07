@@ -86,15 +86,15 @@ export const blockStatusSchema = {
 
 export enum BlockType {
     Root = "root",
-    Org = "org",
+    Organization = "org",
     Board = "board",
     Task = "task",
 }
 
 export enum BlockPriority {
-    Important = "important",
-    NotImportant = "not important",
-    VeryImportant = "very important",
+    Medium = "medium",
+    Low = "low",
+    High = "high",
 }
 
 export interface IBlockAssignedLabel {
@@ -135,7 +135,7 @@ export interface ITaskSprint {
     assignedBy: string;
 }
 
-const taskSprintSchema = {
+export const taskSprintSchema = {
     sprintId: { type: String },
     assignedAt: { type: Date },
     assignedBy: { type: String },
@@ -148,7 +148,6 @@ export interface IBlock {
     createdAt: Date;
     type: BlockType;
     name?: string;
-    lowerCasedName?: string;
     description?: string;
     updatedAt?: Date;
     updatedBy?: string;
@@ -159,7 +158,7 @@ export interface IBlock {
     deletedBy?: string;
     permissionResourceId?: string;
 
-    // Orgs and boards
+    // Organizations and boards
     color?: string;
     publicPermissionGroupId?: string;
     // newPermissionsManagerId?: string;
@@ -190,7 +189,6 @@ const blockSchema = {
     // General
     customId: { type: String, unique: true, index: true },
     name: { type: String },
-    lowerCasedName: { type: String, index: true },
     description: { type: String },
     createdAt: { type: Date, default: () => getDate() },
     createdBy: { type: String },
@@ -204,26 +202,26 @@ const blockSchema = {
     deletedBy: { type: String },
     permissionResourceId: { type: String },
 
-    // Orgs and boards
+    // Organizations and boards
     color: { type: String },
     publicPermissionGroupId: { type: String },
 
     // Tasks
-    assignees: { type: [blockAssigneeSchema] },
+    assignees: { type: [blockAssigneeSchema], default: [] },
     priority: { type: String },
-    subTasks: { type: [subTaskSchema] },
+    subTasks: { type: [subTaskSchema], default: [] },
     dueAt: { type: Date },
     status: { type: String },
     statusAssignedBy: { type: String },
     statusAssignedAt: { type: Date },
     taskResolution: { type: String },
-    labels: { type: [blockAssignedLabelSchema] },
+    labels: { type: [blockAssignedLabelSchema], default: [] },
     taskSprint: { type: taskSprintSchema },
 
     // Boards
-    boardStatuses: { type: [blockStatusSchema] },
-    boardLabels: { type: [blockLabelSchema] },
-    boardResolutions: { type: boardStatusResolutionSchema },
+    boardStatuses: { type: [blockStatusSchema], default: [] },
+    boardLabels: { type: [blockLabelSchema], default: [] },
+    boardResolutions: { type: boardStatusResolutionSchema, default: [] },
     currentSprintId: { type: String },
     sprintOptions: { type: boardSprintOptionsSchema },
     lastSprintId: { type: String },

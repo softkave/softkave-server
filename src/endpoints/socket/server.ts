@@ -1,17 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { ServerError } from "../../utilities/errors";
-import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
-import sendMessage from "../chat/sendMessage/sendMessage";
-import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
-import { getBaseContext, IBaseContext } from "../contexts/BaseContext";
-import fetchBroadcasts from "../rooms/fetchBroadcasts/fetchBroadcasts";
-import subscribe from "../rooms/subscribe/subscribe";
-import unsubscribe from "../rooms/unsubscribe/unsubscribe";
-import authSocketHandler from "./incoming/authSocketHandler";
-import disconnectSocketHandler from "./incoming/disconnectSocketHandler";
-import updateSocketEntry from "./incoming/updateSocketEntry";
-import { IncomingSocketEvents } from "./incomingEventTypes";
-import { makeSocketHandler } from "./utils";
+import { IBaseContext } from "../contexts/IBaseContext";
+import { setupSocketEndpoints } from "./setupEndpoints";
 
 // REMINDER
 // The current implementation authenticates once, then accepts all other requests
@@ -28,63 +18,13 @@ import { makeSocketHandler } from "./utils";
 // TODO: disconnect sockets that don't auth in 5 minutes
 
 async function onConnection(ctx: IBaseContext, socket: Socket) {
-    socket.on(
-        IncomingSocketEvents.Auth,
-        makeSocketHandler(ctx, socket, authSocketHandler)
-    );
-
-    socket.on(
-        "disconnect",
-        makeSocketHandler(ctx, socket, disconnectSocketHandler, {
-            skipDataValidation: true,
-        })
-    );
-
-    socket.on(
-        IncomingSocketEvents.Subscribe,
-        makeSocketHandler(ctx, socket, subscribe)
-    );
-
-    socket.on(
-        IncomingSocketEvents.Unsubscribe,
-        makeSocketHandler(ctx, socket, unsubscribe)
-    );
-
-    // TODO: waiting to implement access control
-
-    // socket.on(
-    //     IncomingSocketEvents.FetchMissingBroadcasts,
-    //     makeSocketHandler(ctx, socket, fetchBroadcasts)
-    // );
-
-    socket.on(
-        IncomingSocketEvents.GetUserRoomsAndChats,
-        makeSocketHandler(ctx, socket, getUserRoomsAndChats)
-    );
-
-    socket.on(
-        IncomingSocketEvents.SendMessage,
-        makeSocketHandler(ctx, socket, sendMessage)
-    );
-
-    socket.on(
-        IncomingSocketEvents.UpdateRoomReadCounter,
-        makeSocketHandler(ctx, socket, updateRoomReadCounter)
-    );
-
-    socket.on(
-        IncomingSocketEvents.UpdateSocketEntry,
-        makeSocketHandler(ctx, socket, updateSocketEntry)
-    );
+    setupSocketEndpoints(ctx, socket);
 }
 
 let socketServer: Server = null;
 
-export function setupSocketServer(io: Server) {
+export function setSocketServer(io: Server) {
     socketServer = io;
-    io.on("connection", (socket) => {
-        onConnection(getBaseContext(), socket);
-    });
 }
 
 export function getSocketServer() {

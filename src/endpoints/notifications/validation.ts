@@ -3,7 +3,7 @@ import { NotificationReason, NotificationType } from "../../mongo/notification";
 import { notificationConstants } from "./constants";
 
 const subscriptionResourceType = Joi.string().valid(
-    notificationConstants.subscriptionResourceTypes
+    ...notificationConstants.subscriptionResourceTypes
 );
 
 const reasonsArr: NotificationReason[] = [
@@ -14,10 +14,10 @@ const reasonsArr: NotificationReason[] = [
     NotificationReason.UserIsResourceRecipient,
 ];
 
-const notificationReason = Joi.string().valid(reasonsArr);
+const notificationReason = Joi.string().valid(...reasonsArr);
 
 const typeArr: NotificationType[] = [
-    // NotificationType.OrgDeleted,
+    // NotificationType.OrganizationDeleted,
 
     NotificationType.CollaboratorRemoved,
     NotificationType.CollaboratorPermissionsUpdated,
@@ -35,7 +35,7 @@ const typeArr: NotificationType[] = [
     NotificationType.TaskUnassigned,
 ];
 
-const notificationType = Joi.string().valid(typeArr);
+const notificationType = Joi.string().valid(...typeArr);
 
 const notificationsValidationSchemas = {
     notificationReason,

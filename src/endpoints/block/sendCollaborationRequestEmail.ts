@@ -3,51 +3,27 @@ import {
     collaborationRequestEmailText,
     ICollaborationRequestEmailProps,
 } from "../../html/collaborationRequestEmail";
-import appInfo from "../../resources/appInfo";
-import aws from "../../resources/aws";
-
-const ses = new aws.SES();
+import { IBaseContext } from "../contexts/IBaseContext";
+import sendEmail from "../sendEmail";
 
 export interface ISendCollaborationRequestEmailProps
     extends ICollaborationRequestEmailProps {
     email: string;
 }
 
-async function sendCollabReqEmail(props: ISendCollaborationRequestEmailProps) {
-    try {
-        const htmlContent = collaborationRequestEmailHTML(props);
-        const textContent = collaborationRequestEmailText(props);
+async function sendCollabReqEmail(
+    ctx: IBaseContext,
+    props: ISendCollaborationRequestEmailProps
+) {
+    const htmlContent = collaborationRequestEmailHTML(props);
+    const textContent = collaborationRequestEmailText(props);
 
-        const result = await ses
-            .sendEmail({
-                Destination: {
-                    ToAddresses: [props.email],
-                },
-                Source: appInfo.defaultEmailSender,
-                Message: {
-                    Subject: {
-                        Charset: appInfo.defaultEmailEncoding,
-                        Data: props.title,
-                    },
-                    Body: {
-                        Html: {
-                            Charset: appInfo.defaultEmailEncoding,
-                            Data: htmlContent,
-                        },
-                        Text: {
-                            Charset: appInfo.defaultEmailEncoding,
-                            Data: textContent,
-                        },
-                    },
-                },
-            })
-            .promise();
-
-        return result;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+    return await sendEmail(ctx, {
+        htmlContent,
+        textContent,
+        emailAddresses: [props.email],
+        title: props.title,
+    });
 }
 
 export default sendCollabReqEmail;

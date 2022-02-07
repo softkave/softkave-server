@@ -7,6 +7,7 @@ import {
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import { ITask } from "../../task/types";
 import { systemConstants } from "../constants";
 import { SendFeedbackEndpoint } from "./types";
 import { sendFeedbackJoiSchema } from "./validation";
@@ -40,30 +41,33 @@ const sendFeedback: SendFeedbackEndpoint = async (context, instData) => {
         });
     }
 
-    const savedTaskResult = await context.saveTask(context, {
-        ...instData,
-        data: {
-            block: {
-                subTasks,
-                type: BlockType.Task,
-                name: data.feedback,
-                description: data.description,
-                parent: feedbackBoard.customId,
-                rootBlockId: feedbackBoard.rootBlockId,
-                priority: BlockPriority.Important,
-                status: status0 ? status0.customId : undefined,
-                statusAssignedBy: systemConstants.feedbackUserId,
-            },
-        },
-    });
+    // TODO: consolidate task creation and propagation into one function reused
+    // by sendFeedback and createTask
+    const task: Omit<ITask, "customId"> = {
+        subTasks,
+        name: data.feedback,
+        description: data.description,
+        parent: feedbackBoard.customId,
+        rootBlockId: feedbackBoard.rootBlockId,
+        priority: BlockPriority.Medium,
+        status: status0 ? status0.customId : undefined,
+        statusAssignedBy: systemConstants.feedbackUserId,
+        createdBy: user.customId,
+        createdAt: getDate(),
+        type: BlockType.Task,
+        assignees: [],
+        labels: [],
+    };
+
+    const savedTask = await context.block.saveBlock<ITask>(context, task);
 
     context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
-        blockId: savedTaskResult.block.customId,
+        blockId: savedTask.customId,
         updateType: { isNew: true },
         blockType: BlockType.Task,
-        data: savedTaskResult.block,
+        data: savedTask,
         parentId: feedbackBoard.customId,
-        block: savedTaskResult.block,
+        block: savedTask,
     });
 };
 

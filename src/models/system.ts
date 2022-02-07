@@ -2,7 +2,7 @@ export enum SystemResourceType {
     User = "user",
     Collaborator = "collaborator",
     RootBlock = "root",
-    Org = "org",
+    Organization = "org",
     Board = "board",
     Task = "task",
     Status = "status",
@@ -20,6 +20,14 @@ export enum SystemResourceType {
     Team = "team",
     PermissionGroup = "permissionGroup",
     Permission = "permission",
+    CustomProperty = "customProperty",
+    CustomValue = "customValue",
+}
+
+export enum ParentResourceType {
+    Organization = "org",
+    Board = "board",
+    Task = "task",
 }
 
 export enum NotificationTypes {
@@ -45,11 +53,6 @@ export enum SystemActionType {
     ForgotPassword = "forgot-password",
     ChangePassword = "change-password",
     ChangePasswordWithToken = "change-password-with-token",
-}
-
-export enum TextResourceTypes {
-    Text = "Text",
-    Note = "Note",
 }
 
 export enum ClientType {

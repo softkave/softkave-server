@@ -1,9 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { getPublicCommentData } from "../utils";
 import { AddCommentEndpoint } from "./types";
 import { newComment } from "./validation";
@@ -17,7 +15,7 @@ const addComment: AddCommentEndpoint = async (context, instData) => {
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(task),
+    //         organizationId: getBlockRootBlockId(task),
     //         resourceType: SystemResourceType.Comment,
     //         action: SystemActionType.Create,
     //         permissionResourceId: task.permissionResourceId,
@@ -33,14 +31,6 @@ const addComment: AddCommentEndpoint = async (context, instData) => {
         comment: data.comment,
         createdBy: user.customId,
         createdAt: now,
-    });
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Create,
-        resourceId: savedComment.customId,
-        resourceType: SystemResourceType.Comment,
-        organizationId: getBlockRootBlockId(task),
-        resourceOwnerId: task.customId,
     });
 
     return {

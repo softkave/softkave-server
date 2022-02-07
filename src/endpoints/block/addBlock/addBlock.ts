@@ -12,43 +12,40 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     const newBlock = data.block;
     let user = await context.session.getUser(context, instData);
 
-    if (newBlock.type === BlockType.Org) {
-        const orgSaveResult = await context.addBlock(context, {
+    if (newBlock.type === BlockType.Organization) {
+        const organizationSaveResult = await context.addBlock(context, {
             ...instData,
             data,
         });
 
-        const org = orgSaveResult.block;
+        const organization = organizationSaveResult.block;
 
-        // TODO: scrub for orgs that are not added to user and add or clean them
+        // TODO: scrub for organizations that are not added to user and add or clean them
         //    you can do this when user tries to read them, or add them again
         // TODO: scrub all data that failed it's pipeline
 
-        const userOrgs = user.orgs.concat({ customId: org.customId });
+        const userOrganizations = user.orgs.concat({
+            customId: organization.customId,
+        });
         user = await context.user.updateUserById(context, user.customId, {
-            orgs: userOrgs,
+            orgs: userOrganizations,
         });
 
         instData.user = user;
-        context.auditLog.insert(context, instData, {
-            action: SystemActionType.Create,
-            resourceId: org.customId,
-            resourceType: SystemResourceType.Org,
-            organizationId: org.customId,
-        });
 
         context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
             updateType: { isNew: true },
-            data: org,
-            block: org,
-            blockId: org.customId,
-            blockType: org.type,
+            data: organization,
+            block: organization,
+            blockId: organization.customId,
+            blockType: organization.type,
         });
 
         return {
-            block: getPublicBlockData(org),
+            block: getPublicBlockData(organization),
         };
     }
+
 
     canReadBlock({ user, block: newBlock });
     const result = await context.addBlock(context, {
@@ -57,13 +54,6 @@ const addBlock: AddBlockEndpoint = async (context, instData) => {
     });
 
     const block = result.block;
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Create,
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
-        organizationId: getBlockRootBlockId(block),
-    });
-
     context.broadcastHelpers.broadcastBlockUpdate(context, instData, {
         block,
         updateType: { isNew: true },

@@ -1,7 +1,5 @@
-import {
-    IInternalAddBlockContext,
-    InternalAddBlockEndpoint,
-} from "../../block/internalAddBlock/types";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import { CreateTaskEndpoint } from "../../task/createTask/types";
 import { Endpoint } from "../../types";
 
 export interface ISendFeedbackParameters {
@@ -10,8 +8,8 @@ export interface ISendFeedbackParameters {
     notifyEmail?: string;
 }
 
-export interface ISendFeedbackContext extends IInternalAddBlockContext {
-    saveTask: InternalAddBlockEndpoint;
+export interface ISendFeedbackContext extends IBaseContext {
+    saveTask: CreateTaskEndpoint;
 }
 
 export type SendFeedbackEndpoint = Endpoint<

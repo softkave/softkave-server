@@ -1,9 +1,9 @@
 import { Socket } from "socket.io";
 import { IUser } from "../../mongo/user";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
-import { IBaseContext } from "./BaseContext";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ISocketEntry {
     userId: string;
@@ -186,4 +186,4 @@ export default class SocketContext implements ISocketContext {
     };
 }
 
-export const getSocketContext = makeSingletonFunc(() => new SocketContext());
+export const getSocketContext = makeSingletonFn(() => new SocketContext());

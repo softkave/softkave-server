@@ -3,40 +3,82 @@ export interface IPromiseWithId<T = any> {
     id: string | number;
 }
 
-export interface ISettledPromise<V = any, R = any> {
-    fulfilled: boolean;
+export interface ISettledPromise<Value = any, Reason = any> {
+    resolved: boolean;
     rejected: boolean;
-    id: string | number;
-    value?: V;
-    reason?: R;
+    value?: Value;
+    reason?: Reason;
 }
 
-const waitOnPromises = (
-    promises: IPromiseWithId[]
-): Promise<ISettledPromise[]> => {
-    return Promise.all(
-        promises.map((promise) => {
-            return new Promise<ISettledPromise>((resolve) => {
-                promise.promise
-                    .then((result) =>
-                        resolve({
-                            fulfilled: true,
-                            rejected: false,
-                            value: result,
-                            id: promise.id,
-                        })
-                    )
-                    .catch((error) =>
-                        resolve({
-                            fulfilled: false,
-                            rejected: true,
-                            reason: error,
-                            id: promise.id,
-                        })
-                    );
-            });
-        })
-    );
+export interface ISettledPromiseWithId<Value = any, Reason = any>
+    extends ISettledPromise<Value, Reason> {
+    id: string | number;
+}
+
+function wrapPromiseWithId<T = any>(p: IPromiseWithId<T>) {
+    return new Promise<ISettledPromiseWithId<T>>((resolve) => {
+        p.promise
+            .then((result) =>
+                resolve({
+                    resolved: true,
+                    rejected: false,
+                    value: result,
+                    id: p.id,
+                })
+            )
+            .catch((error) =>
+                resolve({
+                    resolved: false,
+                    rejected: true,
+                    reason: error,
+                    id: p.id,
+                })
+            );
+    });
+}
+
+export const waitOnPromisesWithId = <ProvidedPromise extends IPromiseWithId[]>(
+    promises: ProvidedPromise
+): Promise<
+    ISettledPromiseWithId<
+        ReturnType<ProvidedPromise[number]["promise"]["then"]>,
+        ReturnType<ProvidedPromise[number]["promise"]["catch"]>
+    >[]
+> => {
+    const mappedPromises = promises.map(wrapPromiseWithId);
+    return Promise.all(mappedPromises);
 };
 
-export default waitOnPromises;
+function wrapPromise<T = any>(p: Promise<T>) {
+    return new Promise<ISettledPromise<T>>((resolve) => {
+        p.then((result) =>
+            resolve({
+                resolved: true,
+                rejected: false,
+                value: result,
+            })
+        ).catch((error) =>
+            resolve({
+                resolved: false,
+                rejected: true,
+                reason: error,
+            })
+        );
+    });
+}
+
+export const waitOnPromises = <ProvidedPromise extends Promise<any>[]>(
+    promises: ProvidedPromise
+): Promise<
+    ISettledPromise<
+        Parameters<
+            NonNullable<Parameters<ProvidedPromise[number]["then"]>[0]>
+        >[0],
+        Parameters<
+            NonNullable<Parameters<ProvidedPromise[number]["catch"]>[0]>
+        >[0]
+    >[]
+> => {
+    const mappedPromises = promises.map(wrapPromise);
+    return Promise.all(mappedPromises);
+};

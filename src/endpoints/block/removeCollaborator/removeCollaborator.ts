@@ -1,7 +1,6 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
-import { getCollaboratorRemovedNotification } from "../../notifications/templates/collaborator";
 import { UserDoesNotExistError } from "../../user/errors";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
@@ -15,21 +14,24 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
 ) => {
     const data = validate(instData.data, removeCollaboratorJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.blockId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.blockId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
     // await context.accessControl.assertPermission(
     //     context,
     //     {
-    //         orgId: getBlockRootBlockId(org),
+    //         organizationId: getBlockRootBlockId(organization),
     //         resourceType: SystemResourceType.Collaborator,
     //         action: SystemActionType.Delete,
-    //         permissionResourceId: org.permissionResourceId,
+    //         permissionResourceId: organization.permissionResourceId,
     //     },
     //     user
     // );
 
-    canReadBlock({ user, block: org });
+    canReadBlock({ user, block: organization });
 
     const collaborator = await context.user.getUserById(
         context,
@@ -40,25 +42,27 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
         throw new UserDoesNotExistError();
     }
 
-    const collaboratorOrgs = [...collaborator.orgs];
-    const index = collaboratorOrgs.findIndex((o) => o.customId === o.customId);
+    const collaboratorOrganizations = [...collaborator.orgs];
+    const index = collaboratorOrganizations.findIndex(
+        (o) => o.customId === o.customId
+    );
 
     if (index === -1) {
         return;
     }
 
-    collaboratorOrgs.splice(index, 1);
+    collaboratorOrganizations.splice(index, 1);
     await context.user.updateUserById(context, collaborator.customId, {
-        orgs: collaboratorOrgs,
+        orgs: collaboratorOrganizations,
     });
 
     // const notification = getCollaboratorRemovedNotification(
-    //     org,
+    //     organization,
     //     collaborator,
     //     user
     // );
 
-    // fireAndForgetPromise(
+    // fireAndForganizationetPromise(
     //     context.notification.bulkSaveNotifications(context, [notification])
     // );
 };

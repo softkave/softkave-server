@@ -1,16 +1,20 @@
 import OperationError from "../utilities/OperationError";
-import { IBaseContext } from "./contexts/BaseContext";
+import { IBaseContext } from "./contexts/IBaseContext";
 import RequestData from "./RequestData";
 
 export interface IBaseEndpointResult {
     errors?: OperationError[];
 }
 
-export type Endpoint<C extends IBaseContext = IBaseContext, T = any, R = any> =
-    (
-        context: C,
-        instData: RequestData<T>
-    ) => Promise<(R & IBaseEndpointResult) | undefined>;
+// TODO: R (Result) should be put into data field in IBaseEndpointResult
+export type Endpoint<
+    C extends IBaseContext = IBaseContext,
+    T = any,
+    R = any
+> = (
+    context: C,
+    instData: RequestData<T>
+) => Promise<NonNullable<R & IBaseEndpointResult> | undefined>;
 
 export type ExtractFieldTransformer<T, Result = any, ExtraArgs = any> = (
     val: T,
@@ -48,7 +52,9 @@ export type ExtractFieldsFrom<
                         ExtraArgs
                     >
         : T[Key] extends object
-        ? ExtractFieldsFrom<T[Key]>
+        ?
+              | ExtractFieldsFrom<T[Key]>
+              | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>
         : boolean | ExtractFieldTransformer<T[Key], Result[Key], ExtraArgs>;
 };
 

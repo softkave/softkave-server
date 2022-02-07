@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import { getPermissionModel } from "../../mongo/access-control/PermissionModel";
 import { getPermissionGroupsModel } from "../../mongo/access-control/PermissionGroupsModel";
 import { getUserAssignedPermissionGroupsModel } from "../../mongo/access-control/UserAssignedPermissionGroupsModel";
-import { getAuditLogModel } from "../../mongo/audit-log";
 import { getBlockModel } from "../../mongo/block";
 import { getChatModel } from "../../mongo/chat";
 import { getCollaborationRequestModel } from "../../mongo/collaboration-request";
@@ -12,26 +11,22 @@ import { getNotificationSubscriptionModel } from "../../mongo/notification/Notif
 import { getRoomModel } from "../../mongo/room";
 import { getSprintModel } from "../../mongo/sprint";
 import { getUserModel } from "../../mongo/user";
-import { appVariables, IAppVariables } from "../../resources/appVariables";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import {
+    appVariables,
+    checkVariablesExist,
+} from "../../resources/appVariables";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
-import {
-    getAccessControlContext,
-    IAccessControlContext,
-} from "./AccessControlContext";
-import { getAuditLogContext, IAuditLogContext } from "./AuditLogContext";
+import { getAccessControlContext } from "./AccessControlContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
-import { getBroadcastHelpers, IBroadcastHelpers } from "./BroadcastHelpers";
-import {
-    getBroadcastHistoryContext,
-    IBroadcastHistoryContext,
-} from "./BroadcastHistoryContext";
-import { getChatContext, IChatContext } from "./ChatContext";
+import { getBroadcastHelpers } from "./BroadcastHelpers";
+import { getBroadcastHistoryContext } from "./BroadcastHistoryContext";
+import { getChatContext } from "./ChatContext";
 import {
     getCollaborationRequestContext,
     ICollaborationRequestContext,
 } from "./CollaborationRequestContext";
-import { getCommentContext, ICommentContext } from "./CommentContext";
+import { getCommentContext } from "./CommentContext";
 import {
     getNotificationContext,
     INotificationContext,
@@ -39,50 +34,36 @@ import {
 import { getRoomContext, IRoomContext } from "./RoomContext";
 import { getSessionContext, ISessionContext } from "./SessionContext";
 import { getSocketContext, ISocketContext } from "./SocketContext";
-import { getSprintContext, ISprintContext } from "./SprintContext";
+import { getSprintContext } from "./SprintContext";
 import { IContextModels } from "./types";
 import { getUserContext, IUserContext } from "./UserContext";
-import { getClientContext, IClientContext } from "./ClientContext";
-import { getTokenContext, ITokenContext } from "./TokenContext";
+import { getClientContext } from "./ClientContext";
+import { getTokenContext } from "./TokenContext";
 import { getClientModel } from "../../mongo/client";
 import { getTokenModel } from "../../mongo/token";
-import {
-    getUnseenChatsContext,
-    IUnseenChatsContext,
-} from "./UnseenChatsContext";
-import { getUnseenChatsModel } from "../../mongo/unseenChats";
+import { getUnseenChatsContext } from "./UnseenChatsContext";
+import { getUnseenChatsModel } from "../../mongo/unseen-chats";
 import webPush from "web-push";
-import { getWebPushContext, IWebPushContext } from "./WebPushContext";
+import { getWebPushContext } from "./WebPushContext";
 import {
-    getTaskHistoryContext,
-    ITaskHistoryContext,
-} from "./TaskHistoryContext";
+    ICustomSelectionOption,
+    ICustomProperty,
+    ICustomPropertyValue,
+} from "../../mongo/custom-property/definitions";
+import { IEntityAttrValue, getEntityAttrValueModel } from "../../mongo/eav";
 import { getTaskHistoryItemModel } from "../../mongo/task-history";
+import NotImplementedDataProvider from "./data-providers/NotImplementedDataProvider";
+import { getTaskHistoryContext } from "./TaskHistoryContext";
+import { IDataProvider } from "./data-providers/DataProvider";
+import MongoDataProvider from "./data-providers/MongoDataProvider";
+import { throwEAVNotFoundError } from "../eav/utils";
+import { IBaseContext } from "./IBaseContext";
 
-export interface IBaseContext {
-    block: IBlockContext;
-    user: IUserContext;
-    collaborationRequest: ICollaborationRequestContext;
-    notification: INotificationContext;
-    auditLog: IAuditLogContext;
-    session: ISessionContext;
-    socket: ISocketContext;
-    room: IRoomContext;
-    broadcastHistory: IBroadcastHistoryContext;
-    models: IContextModels;
-    comment: ICommentContext;
-    sprint: ISprintContext;
-    chat: IChatContext;
-    accessControl: IAccessControlContext;
-    client: IClientContext;
-    token: ITokenContext;
-    unseenChats: IUnseenChatsContext;
-    taskHistory: ITaskHistoryContext;
-    webPush: IWebPushContext;
-    broadcastHelpers: IBroadcastHelpers;
-    appVariables: IAppVariables;
-    socketServerInstance: Server;
-    webPushInstance: typeof webPush;
+export interface IBaseContextDataProviders {
+    customOption: IDataProvider<ICustomSelectionOption>;
+    customProperty: IDataProvider<ICustomProperty>;
+    customValue: IDataProvider<ICustomPropertyValue>;
+    entityAttrValue: IDataProvider<IEntityAttrValue>;
 }
 
 export default class BaseContext implements IBaseContext {
@@ -91,7 +72,6 @@ export default class BaseContext implements IBaseContext {
     public collaborationRequest: ICollaborationRequestContext =
         getCollaborationRequestContext();
     public notification: INotificationContext = getNotificationContext();
-    public auditLog: IAuditLogContext = getAuditLogContext();
     public session: ISessionContext = getSessionContext();
     public socket: ISocketContext = getSocketContext();
     public room: IRoomContext = getRoomContext();
@@ -109,7 +89,6 @@ export default class BaseContext implements IBaseContext {
         userModel: getUserModel(),
         blockModel: getBlockModel(),
         notificationModel: getNotificationModel(),
-        auditLogModel: getAuditLogModel(),
         commentModel: getCommentModel(),
         sprintModel: getSprintModel(),
         chatModel: getChatModel(),
@@ -129,6 +108,28 @@ export default class BaseContext implements IBaseContext {
     public appVariables = appVariables;
     public webPushInstance = webPush;
 
+    public data: IBaseContextDataProviders = {
+        // customOption: new MongoDataProvider<ICustomSelectionOption>(
+        //     getCustomSelectionOptionModel(),
+        //     throwCustomOptionNotFoundError
+        // ),
+        // customProperty: new MongoDataProvider<ICustomProperty>(
+        //     getCustomPropertyModel(),
+        //     throwCustomPropertyNotFoundError
+        // ),
+        // customValue: new MongoDataProvider<ICustomPropertyValue>(
+        //     getCustomPropertyValueModel(),
+        //     throwCustomValueNotFoundError
+        // ),
+        customOption: new NotImplementedDataProvider<ICustomSelectionOption>(),
+        customProperty: new NotImplementedDataProvider<ICustomProperty>(),
+        customValue: new NotImplementedDataProvider<ICustomPropertyValue>(),
+        entityAttrValue: new MongoDataProvider<IEntityAttrValue>(
+            getEntityAttrValueModel().model,
+            throwEAVNotFoundError
+        ),
+    };
+
     constructor() {
         webPush.setVapidDetails(
             "mailto:abayomi@softkave.com",
@@ -138,4 +139,7 @@ export default class BaseContext implements IBaseContext {
     }
 }
 
-export const getBaseContext = makeSingletonFunc(() => new BaseContext());
+export const getBaseContext = makeSingletonFn(() => {
+    checkVariablesExist();
+    return new BaseContext();
+});

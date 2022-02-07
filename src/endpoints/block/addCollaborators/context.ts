@@ -4,8 +4,10 @@ import { IAddCollaboratorsContext } from "./types";
 
 export default class AddCollaboratorsContext
     extends BaseContext
-    implements IAddCollaboratorsContext {
+    implements IAddCollaboratorsContext
+{
+    // @ts-ignore
     public async sendCollaborationRequestEmail(props) {
-        return sendCollabReqEmail(props);
+        // return sendCollabReqEmail(props);
     }
 }

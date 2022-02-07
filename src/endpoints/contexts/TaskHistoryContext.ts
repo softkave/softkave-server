@@ -5,8 +5,8 @@ import {
     TaskHistoryAction,
 } from "../../mongo/task-history";
 import makeSingletonFunc from "../../utilities/createSingletonFunc";
-import { wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ITaskHistoryItemContextFnQuery {
     boardId?: string;
@@ -38,7 +38,7 @@ export interface ITaskHistoryContext {
 }
 
 export default class TaskHistoryContext implements ITaskHistoryContext {
-    public getMany = wrapFireAndThrowError(
+    public getMany = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             query: ITaskHistoryItemContextFnQuery,
@@ -59,7 +59,7 @@ export default class TaskHistoryContext implements ITaskHistoryContext {
         }
     );
 
-    public count = wrapFireAndThrowError(
+    public count = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, query: ITaskHistoryItemContextFnQuery) => {
             return await ctx.models.taskHistory.model
                 .countDocuments(query)
@@ -67,7 +67,7 @@ export default class TaskHistoryContext implements ITaskHistoryContext {
         }
     );
 
-    public deleteTaskHistoryItems = wrapFireAndThrowError(
+    public deleteTaskHistoryItems = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, query: ITaskHistoryItemContextFnQuery) => {
             const mongoQuery: FilterQuery<ITaskHistoryItemDocument> = query;
             await ctx.models.taskHistory.model.deleteMany(mongoQuery).exec();

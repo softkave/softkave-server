@@ -125,8 +125,6 @@ async function persistBoardResolutionsChanges(
             deletedResolutionIds
         )
     );
-
-    context.auditLog.insertMany(context, instData, logEntries);
 }
 
 export default persistBoardResolutionsChanges;

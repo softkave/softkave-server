@@ -1,17 +1,17 @@
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 import { IPublicBlock } from "../types";
 
-export interface IGetOrgBoardsParameters {
-    orgId: string;
+export interface IGetOrganizationBoardsParameters {
+    organizationId: string;
 }
 
-export interface IGetOrgBoardsResult {
+export interface IGetOrganizationBoardsResult {
     boards: IPublicBlock[];
 }
 
-export type GetOrgBoardsEndpoint = Endpoint<
+export type GetOrganizationBoardsEndpoint = Endpoint<
     IBaseContext,
-    IGetOrgBoardsParameters,
-    IGetOrgBoardsResult
+    IGetOrganizationBoardsParameters,
+    IGetOrganizationBoardsResult
 >;

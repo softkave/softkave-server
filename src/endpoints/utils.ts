@@ -1,35 +1,22 @@
-import { pick } from "lodash";
-import isArray from "lodash/isArray";
-import isDate from "lodash/isDate";
-import isFunction from "lodash/isFunction";
-import isNull from "lodash/isNull";
-import isObject from "lodash/isObject";
+import { pick, isArray, isFunction, isNull, isObject, isDate } from "lodash";
+import { Request, Response } from "express";
+import { ParentResourceType, SystemResourceType } from "../models/system";
 import mongoConstants from "../mongo/constants";
+import { IParentInformation } from "../mongo/definitions";
 import { ServerError } from "../utilities/errors";
-import cast, { indexArray } from "../utilities/fns";
+import { cast, indexArray } from "../utilities/fns";
+import { ConvertDatesToStrings } from "../utilities/types";
+import { IBaseContext } from "./contexts/IBaseContext";
+import { IServerRequest } from "./contexts/types";
+import RequestData from "./RequestData";
 import {
+    Endpoint,
     ExtractFieldsDefaultScalarTypes,
     ExtractFieldsFrom,
     IObjectPaths,
     IUpdateComplexTypeArrayInput,
 } from "./types";
-
-export const wrapEndpoint = async (data: any, req: any, endpoint: any) => {
-    try {
-        return await endpoint(data, req);
-    } catch (error) {
-        const errors = Array.isArray(error) ? error : [error];
-        console.error(error);
-        return {
-            errors: errors.map((err) => ({
-                name: err.name,
-                message: err.message,
-                action: err.action,
-                field: err.field,
-            })),
-        };
-    }
-};
+import OperationError from "../utilities/OperationError";
 
 export const fireAndForgetFn = <Fn extends (...args: any) => any>(
     fn: Fn,
@@ -52,7 +39,7 @@ export const fireAndForgetPromise = async <T>(promise: Promise<T>) => {
     }
 };
 
-export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
+export const wrapFireAndThrowErrorAsync = <Fn extends (...args: any) => any>(
     fn: Fn,
     throwError = true
 ): Fn => {
@@ -69,8 +56,27 @@ export const wrapFireAndThrowError = <Fn extends (...args: any) => any>(
     });
 };
 
-export const wrapFireAndDontThrow: typeof wrapFireAndThrowError = (fn) => {
-    return wrapFireAndThrowError(fn, false);
+export const wrapFireAndThrowErrorRegular = <Fn extends (...args: any) => any>(
+    fn: Fn,
+    throwError = true
+): Fn => {
+    return cast<Fn>((...args) => {
+        try {
+            return fn(...args);
+        } catch (error) {
+            console.error(error);
+
+            if (throwError) {
+                throw error;
+            }
+        }
+    });
+};
+
+export const wrapFireAndDontThrowAsync: typeof wrapFireAndThrowErrorAsync = (
+    fn
+) => {
+    return wrapFireAndThrowErrorAsync(fn, false);
 };
 
 export async function tryCatch<T extends (...args: any) => any>(
@@ -234,4 +240,139 @@ export function getComplexTypeArrayInputGraphQLSchema(
     `;
 }
 
-export function assertField(data: any, field: string) {}
+const publicParentInformationFields = getFields<IParentInformation>({
+    type: true,
+    customId: true,
+});
+
+export type IPublicParentInformation = ConvertDatesToStrings<{
+    type: ParentResourceType;
+    customId: string;
+}>;
+
+export function getPublicParentInformation(
+    parent: IParentInformation
+): IPublicParentInformation {
+    return extractFields(parent, publicParentInformationFields);
+}
+
+export function getPublicParentInformationArray(
+    parents: IParentInformation[]
+): IPublicParentInformation[] {
+    return parents.map((parent) =>
+        extractFields(parent, publicParentInformationFields)
+    );
+}
+
+export function getParentIndexByType(
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    return parents.findIndex((parent) => parent.type === type);
+}
+
+export function getParentByType(
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    return parents.find((parent) => parent.type === type);
+}
+
+export function assertGetParentIndexByType(
+    resourceId: string,
+    resourceType: SystemResourceType,
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    const index = parents.findIndex((parent) => parent.type === type);
+
+    if (index === -1) {
+        console.error(
+            `${resourceType}:${resourceId} parent of type ${type} not found`
+        );
+
+        throw new ServerError();
+    }
+
+    return index;
+}
+
+export function assertGetParentByType(
+    resourceId: string,
+    resourceType: SystemResourceType,
+    parents: IParentInformation[],
+    type: ParentResourceType
+) {
+    const parent = parents.find((parent) => parent.type === type);
+
+    if (!parent) {
+        console.error(
+            `${resourceType}:${resourceId} parent of type ${type} not found`
+        );
+
+        throw new ServerError();
+    }
+
+    return parent;
+}
+
+// TODO: there are two wrap endpoints, find a fix
+export const wrapEndpointREST = <
+    Context extends IBaseContext,
+    EndpointType extends Endpoint<Context>
+>(
+    endpoint: EndpointType,
+    context: Context,
+    handleResponse?: (
+        res: Response,
+        result: Awaited<ReturnType<EndpointType>>
+    ) => void
+): ((req: Request, res: Response) => any) => {
+    return async (req: Request, res: Response) => {
+        try {
+            const data = req.body;
+            const instData = RequestData.fromExpressRequest(
+                context,
+                req as unknown as IServerRequest,
+                data
+            );
+
+            const result = await endpoint(context, instData);
+
+            if (handleResponse) {
+                handleResponse(res, result);
+            } else {
+                res.status(200).json(result || {});
+            }
+        } catch (error) {
+            const errors = Array.isArray(error) ? error : [error];
+
+            // TODO: move to winston
+            console.error(error);
+            console.log(); // for spacing
+
+            // We are mapping errors cause some values don't show if we don't
+            // or was it errors, not sure anymore, this is old code.
+            // TODO: Feel free to look into it, cause it could help performance.
+            const preppedErrors: Omit<OperationError, "isPublic">[] = [];
+            cast<OperationError[]>(errors).forEach((err) => {
+                if (err.isPublic) {
+                    preppedErrors.push({
+                        name: err.name,
+                        message: err.message,
+                        action: err.action,
+                        field: err.field,
+                    });
+                } else {
+                    preppedErrors.push(new ServerError());
+                }
+            });
+
+            const result = {
+                errors: preppedErrors,
+            };
+
+            res.status(500).json(result);
+        }
+    };
+};

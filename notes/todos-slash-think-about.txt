@@ -1,0 +1,42 @@
+- bots.
+  - should be tied to particular users (should perform operations on behalf of)
+  - check if organization or group or project allows bots (set bot scope in it's token)
+  - organization level bots require permission from stakeholders (owners or collection of admins)
+- add restrictions to getting a block's notifications
+
+Automatic subscriptions:
+- when you are assigned to a task
+- if you created an organization or a board
+- if you sent a collaboration request
+
+- Accepted collaborators take lowest from public by default
+- Some resource types require more work on their permissions
+chat, comment (delete and update only if I created it), 
+subscription (should I be able to remove someone else?)
+I think we can solve some by adding specific permissions, and others
+by letting the item itself be it's own permission provider, but then
+it's permission won't be updateable from  it's parent? or
+just make special accomodations for them
+
+- How do we group notifications
+- User read counter or individual notifications
+- Jobs ( email & notifications grouping & sending )
+- Notifications template functions
+- Resolve notification attachements or annotations or resources?
+- Cache some notifications before sending them out, so as to group them
+- Time sensitive vs non-time sensitive notifications
+- pagination & new counts
+
+- 2 types of subscriptions, on resource, and on authoritative parent
+- prevent too many notifications, like if I created a board
+- delete all mark deleted blocks
+- delete all the audit logs & pause logs in code
+
+// TODO: drop older models and collections
+
+- Text search & indexing, elastic search
+- File upload
+- Payment
+
+Subscription edge cases
+- when comments in a task are updated, let user know

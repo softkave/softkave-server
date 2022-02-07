@@ -288,10 +288,6 @@ export default function processUpdateBlockInput(
         user,
     });
 
-    if (update.name && block.type !== BlockType.Task) {
-        update.lowerCasedName = update.name.toLowerCase();
-    }
-
     if (update.status && update.status !== block.status) {
         const assignees = update.assignees || block.assignees || [];
 

@@ -7,15 +7,15 @@ import {
     IUserAssignedPermissionGroup,
 } from "../../mongo/access-control/definitions";
 import { IUser } from "../../mongo/user";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { IUpdateItemById } from "../../utilities/types";
 import { PermissionDeniedError } from "../errors";
 import { GetMongoUpdateType } from "../types";
-import { wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 interface IPermissionQuery {
-    orgId: string;
+    organizationId: string;
     permissionResourceId: string;
     resourceType: SystemResourceType;
     action: SystemActionType;
@@ -31,10 +31,10 @@ export interface IAccessControlContext {
         ctx: IBaseContext,
         resourceId: string
     ) => Promise<IPermissionGroup[]>;
-    getPermissionGroupsByLowerCasedNames: (
+    getPermissionGroupsByNames: (
         ctx: IBaseContext,
         resourceIds: string[],
-        lowerCasedNames: string[]
+        names: string[]
     ) => Promise<IPermissionGroup[]>;
     savePermissionGroups: (
         ctx: IBaseContext,
@@ -128,7 +128,7 @@ export interface IAccessControlContext {
 }
 
 export default class AccessControlContext implements IAccessControlContext {
-    public static preparePermissionsQuery = wrapFireAndThrowError(
+    public static preparePermissionsQuery = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, qs: IPermissionQuery[], user?: IUser) => {
             const userAssignedPermissionGroups: Record<string, string[]> = {};
             const queries: Array<FilterQuery<IPermission>> = [];
@@ -154,9 +154,8 @@ export default class AccessControlContext implements IAccessControlContext {
                             )
                         ).map((d) => d.permissionGroupId);
 
-                    userAssignedPermissionGroups[
-                        q.permissionResourceId
-                    ] = permissionGroupIds;
+                    userAssignedPermissionGroups[q.permissionResourceId] =
+                        permissionGroupIds;
                 }
 
                 permissionGroupIds.push(DefaultPermissionGroupNames.Public);
@@ -174,7 +173,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public getPermissionGroupsById = wrapFireAndThrowError(
+    public getPermissionGroupsById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, permissionGroupIds: string[]) => {
             return ctx.models.permissionGroup.model
                 .find({
@@ -185,7 +184,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public getPermissionGroupsByResourceId = wrapFireAndThrowError(
+    public getPermissionGroupsByResourceId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, resourceId: string) => {
             return ctx.models.permissionGroup.model
                 .find({ resourceId })
@@ -194,23 +193,21 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public getPermissionGroupsByLowerCasedNames = wrapFireAndThrowError(
-        (
-            ctx: IBaseContext,
-            resourceIds: string[],
-            lowerCasedNames: string[]
-        ) => {
+    public getPermissionGroupsByNames = wrapFireAndThrowErrorAsync(
+        (ctx: IBaseContext, resourceIds: string[], names: string[]) => {
             return ctx.models.permissionGroup.model
                 .find({
                     resourceId: { $in: resourceIds },
-                    lowerCasedName: { $in: lowerCasedNames },
+                    name: {
+                        $in: names.map((name) => new RegExp(`^${name}$`, "i")),
+                    },
                 })
                 .lean()
                 .exec();
         }
     );
 
-    public savePermissionGroups = wrapFireAndThrowError(
+    public savePermissionGroups = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, permissionGroups: IPermissionGroup[]) => {
             return ctx.models.permissionGroup.model.insertMany(
                 permissionGroups
@@ -218,7 +215,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public updatePermissionGroup = wrapFireAndThrowError(
+    public updatePermissionGroup = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             permissionGroupId: string,
@@ -233,7 +230,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public deletePermissionGroups = wrapFireAndThrowError(
+    public deletePermissionGroups = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, permissionGroupIds: string[]) => {
             await ctx.models.permissionGroup.model
                 .deleteMany({ customId: { $in: permissionGroupIds } })
@@ -241,16 +238,16 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public permissionGroupExists = wrapFireAndThrowError(
+    public permissionGroupExists = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, name: string, resourceId: string) => {
             return ctx.models.permissionGroup.model.exists({
-                name,
+                name: new RegExp(`^${name}$`, "i"),
                 resourceId,
             });
         }
     );
 
-    public getResourcePermissions = wrapFireAndThrowError(
+    public getResourcePermissions = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, resourceId: string) => {
             return ctx.models.permissions.model
                 .find({ permissionOwnerId: resourceId })
@@ -259,7 +256,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public queryPermission = wrapFireAndThrowError(
+    public queryPermission = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, query: IPermissionQuery, user?: IUser) => {
             return await ctx.models.permissions.model.findOne(
                 AccessControlContext.preparePermissionsQuery(ctx, [query], user)
@@ -267,7 +264,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public queryPermissions = wrapFireAndThrowError(
+    public queryPermissions = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             queries: IPermissionQuery[],
@@ -279,7 +276,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public assertPermission = wrapFireAndThrowError(
+    public assertPermission = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, query: IPermissionQuery, user?: IUser) => {
             const permission = await ctx.accessControl.queryPermission(
                 ctx,
@@ -295,7 +292,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public assertPermissions = wrapFireAndThrowError(
+    public assertPermissions = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             queries: IPermissionQuery[],
@@ -335,13 +332,13 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public savePermissions = wrapFireAndThrowError(
+    public savePermissions = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, permissions: IPermission[]) => {
             return ctx.models.permissions.model.insertMany(permissions);
         }
     );
 
-    public updatePermission = wrapFireAndThrowError(
+    public updatePermission = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             permissionId: string,
@@ -356,7 +353,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public deletePermissions = wrapFireAndThrowError(
+    public deletePermissions = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, permissionIds: string[]) => {
             await ctx.models.permissions.model
                 .deleteMany({ customId: { $in: permissionIds } })
@@ -364,7 +361,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public getPermissionsByResourceId = wrapFireAndThrowError(
+    public getPermissionsByResourceId = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, resourceId: string, fullAccess: boolean) => {
             if (fullAccess) {
                 return ctx.models.permissions.model
@@ -381,7 +378,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public bulkUpdatePermissionsById = wrapFireAndThrowError(
+    public bulkUpdatePermissionsById = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             data: Array<IUpdateItemById<IPermission>>
@@ -397,7 +394,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    public bulkUpdatePermissionGroupsById = wrapFireAndThrowError(
+    public bulkUpdatePermissionGroupsById = wrapFireAndThrowErrorAsync(
         async (
             ctx: IBaseContext,
             data: Array<IUpdateItemById<IPermissionGroup>>
@@ -413,7 +410,7 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    saveUserAssignedPermissionGroup = wrapFireAndThrowError(
+    saveUserAssignedPermissionGroup = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             userAssignedPermissionGroups: IUserAssignedPermissionGroup[]
@@ -424,35 +421,39 @@ export default class AccessControlContext implements IAccessControlContext {
         }
     );
 
-    deleteUserAssignedPermissionGroupsByPermissionGroupId = wrapFireAndThrowError(
-        async (ctx: IBaseContext, permissionGroupIds: string[]) => {
-            await ctx.models.userAssignedPermissionGroup.model
-                .deleteMany({ permissionGroupId: { $in: permissionGroupIds } })
-                .exec();
-        }
-    );
+    deleteUserAssignedPermissionGroupsByPermissionGroupId =
+        wrapFireAndThrowErrorAsync(
+            async (ctx: IBaseContext, permissionGroupIds: string[]) => {
+                await ctx.models.userAssignedPermissionGroup.model
+                    .deleteMany({
+                        permissionGroupId: { $in: permissionGroupIds },
+                    })
+                    .exec();
+            }
+        );
 
-    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds = wrapFireAndThrowError(
-        async (
-            ctx: IBaseContext,
-            qs: Array<{ userIds: string[]; permissionGroupId: string }>
-        ) => {
-            await ctx.models.userAssignedPermissionGroup.model.bulkWrite(
-                qs.map((q) => {
-                    return {
-                        deleteMany: {
-                            filter: {
-                                permissionGroupId: q.permissionGroupId,
-                                userId: { $in: q.userIds },
+    deleteUserAssignedPermissionGroupsByUserAndPermissionGroupIds =
+        wrapFireAndThrowErrorAsync(
+            async (
+                ctx: IBaseContext,
+                qs: Array<{ userIds: string[]; permissionGroupId: string }>
+            ) => {
+                await ctx.models.userAssignedPermissionGroup.model.bulkWrite(
+                    qs.map((q) => {
+                        return {
+                            deleteMany: {
+                                filter: {
+                                    permissionGroupId: q.permissionGroupId,
+                                    userId: { $in: q.userIds },
+                                },
                             },
-                        },
-                    };
-                })
-            );
-        }
-    );
+                        };
+                    })
+                );
+            }
+        );
 
-    getUserAssignedPermissionGroups = wrapFireAndThrowError(
+    getUserAssignedPermissionGroups = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, userId: string, resourceId?: string) => {
             return ctx.models.userAssignedPermissionGroup.model
                 .find({ userId, resourceId })
@@ -462,6 +463,6 @@ export default class AccessControlContext implements IAccessControlContext {
     );
 }
 
-export const getAccessControlContext = makeSingletonFunc(
+export const getAccessControlContext = makeSingletonFn(
     () => new AccessControlContext()
 );

@@ -1,8 +1,8 @@
 import { IComment } from "../../mongo/comment";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ICommentContext {
     createComment: (
@@ -13,7 +13,7 @@ export interface ICommentContext {
 }
 
 export default class CommentContext implements ICommentContext {
-    public createComment = wrapFireAndThrowError(
+    public createComment = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, data: Omit<IComment, "customId">) => {
             const comment = new ctx.models.commentModel.model(data);
             return saveNewItemToDb(async () => {
@@ -24,7 +24,7 @@ export default class CommentContext implements ICommentContext {
         }
     );
 
-    public getComments = wrapFireAndThrowError(
+    public getComments = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, taskId: string) => {
             return ctx.models.commentModel.model
                 .find({
@@ -37,4 +37,4 @@ export default class CommentContext implements ICommentContext {
     );
 }
 
-export const getCommentContext = makeSingletonFunc(() => new CommentContext());
+export const getCommentContext = makeSingletonFn(() => new CommentContext());

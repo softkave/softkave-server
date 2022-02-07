@@ -1,0 +1,36 @@
+Relatively simple work items:
+- Run cron jobs to remove tokens and clients not used after 2 months
+- Browser notifications should be shown in 2 ways. First is when the user is logged in, 
+  but not viewing the chat room. A notification should show the name of the person or the room, 
+  and the message. If the user is currently not active, then we'd show a browser-level notification.
+
+Massive work items:
+-   Split Block API
+-   Error logs to Sentry
+-   Diff updates and save deltas
+-   Pagination across the board
+-   Re-implement real-time update across the board
+-   Fetch broadcast updates
+-   Delete organization
+-   Access control
+-   Delete organization process
+-   Leave organization process
+-   Revoke request
+-   Unit tests across the board
+-   Audit log, mark delete and restore
+-   Transactions
+-   TODO comments app
+-   Send email/notification for remove collaborator
+-   vscode extension for reading todos (commented "TODO" or todo\*)
+-   make inter, and intra organizations, projects, groups possible
+-   allow organizations to create email template for requests
+-   allow chat in requests
+-   notify requester when request has been responded to
+-   keep the history of all updates
+-   user must be able read a task to be assigned when access control is implemented
+-   audio and video calls
+-   vs code client with full capabs
+-   integration with github
+-   events and calendars
+-   audit log
+-   deltas

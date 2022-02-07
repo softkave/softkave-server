@@ -1,5 +1,5 @@
 const userSchema = `
-    type UserOrg {
+    type UserOrganization {
         customId: String
     }
 
@@ -9,7 +9,7 @@ const userSchema = `
         email: String
         createdAt: String
         rootBlockId: String
-        orgs: [UserOrg]
+        orgs: [UserOrganization]
         color: String
         notificationsLastCheckedAt: String
     }
@@ -28,14 +28,6 @@ const userSchema = `
         email: String
     }
 
-    type Client {
-        clientId: String
-        hasUserSeenNotificationsPermissionDialog: Boolean
-        muteChatNotifications: Boolean
-        isSubcribedToPushNotifications: Boolean
-        isLoggedIn: Boolean
-    }
-
     type UserQueryResult {
         user: User
         token: String
@@ -48,46 +40,21 @@ const userSchema = `
         exists: Boolean
     }
 
-    type RespondToCollaborationRequestResponse {
-        errors: [Error]
-        block: Block
-        respondedAt: String
-    }
-
-    input UpdateClientDataInput {
-        hasUserSeenNotificationsPermissionDialog: Boolean
-        muteChatNotifications: Boolean
-        isSubcribedToPushNotifications: Boolean
-        isLoggedIn: Boolean
-    }
-
-    type UpdateClientResponse {
-        errors: [Error]
-        client: Client
-    }
-
     type UserQuery {
         userExists (email: String!) : UserExistsResult
+        getUserData: UserQueryResult
+    }
+
+    type UserMutation {
         signup (user: UserSignupInput!) : UserQueryResult
         login (email: String!, password: String!) : UserQueryResult
-        forgotPassword (email: String!) : ErrorOnlyResponse
+        forganizationotPassword (email: String!) : ErrorOnlyResponse
         changePassword (
             currentPassword: String!, 
             password: String!
         ) : UserQueryResult
         updateUser (data: UserUpdateInput!): UserQueryResult
         changePasswordWithToken (password: String!) : UserQueryResult
-        getUserNotifications: GetNotificationsResponse
-        respondToCollaborationRequest (
-            requestId: String!, 
-            response: String!
-        ): RespondToCollaborationRequestResponse
-        markNotificationRead (
-            notificationId: String!,
-            readAt: String!
-        ): ErrorOnlyResponse
-        getUserData: UserQueryResult
-        updateClient (data: UpdateClientDataInput!) : UpdateClientResponse
     }
 `;
 

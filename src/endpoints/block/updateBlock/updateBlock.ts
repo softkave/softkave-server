@@ -1,6 +1,3 @@
-import pick from "lodash/pick";
-import { SystemActionType } from "../../../models/system";
-import { getBlockAuditLogResourceType } from "../../../mongo/audit-log/utils";
 import { IBlock, BlockType } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
@@ -9,13 +6,13 @@ import {
     TaskHistoryAction,
 } from "../../../mongo/task-history";
 import { IUser } from "../../../mongo/user";
-import { getDateString, indexArray } from "../../../utilities/fns";
+import { indexArray, getDateString } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
-import { IBaseContext } from "../../contexts/BaseContext";
+import { IBaseContext } from "../../contexts/IBaseContext";
 import { fireAndForgetPromise } from "../../utils";
 import canReadBlock from "../canReadBlock";
-import { getBlockRootBlockId, getPublicBlockData } from "../utils";
+import { getPublicBlockData } from "../utils";
 import persistBoardLabelChanges from "./persistBoardLabelChanges";
 import persistBoardResolutionsChanges from "./persistBoardResolutionsChanges";
 import persistBoardStatusChanges from "./persistBoardStatusChanges";
@@ -138,21 +135,6 @@ const updateBlock: UpdateBlockEndpoint = async (context, instData) => {
     // fireAndForgetPromise(
     //     insertTaskHistoryItem(context, user, block, updateData)
     // );
-
-    context.auditLog.insert(context, instData, {
-        action: SystemActionType.Update,
-        resourceId: block.customId,
-        resourceType: getBlockAuditLogResourceType(block),
-        change: {
-            oldValue: pick(block, Object.keys(data.data)),
-            newValue: data.data,
-            customId: getNewId(),
-        },
-
-        // TODO: write a script to add orgId to existing update block audit logs without one
-        // it was omitted prior
-        organizationId: getBlockRootBlockId(block),
-    });
 
     if (parentInput && block.parent !== parentInput) {
         const result = await context.transferBlock(context, {

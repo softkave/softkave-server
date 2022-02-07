@@ -4,25 +4,33 @@ import { assertBlock } from "../../../mongo/block/utils";
 import { indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { getBlockRootBlockId, getPublicBlocksArray } from "../utils";
-import { GetOrgBoardsEndpoint } from "./types";
+import { GetOrganizationBoardsEndpoint } from "./types";
 import { getBlockChildrenJoiSchema } from "./validation";
 
-const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
+const getOrganizationBoards: GetOrganizationBoardsEndpoint = async (
+    context,
+    instData
+) => {
     const data = validate(instData.data, getBlockChildrenJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const org = await context.block.getBlockById(context, data.orgId);
+    const organization = await context.block.getBlockById(
+        context,
+        data.organizationId
+    );
 
-    assertBlock(org);
+    assertBlock(organization);
 
-    const boards = await context.block.getBlockChildren(context, data.orgId, [
-        BlockType.Board,
-    ]);
+    const boards = await context.block.getBlockChildren(
+        context,
+        data.organizationId,
+        [BlockType.Board]
+    );
 
     const permissions = await context.accessControl.queryPermissions(
         context,
         boards.map((b) => {
             return {
-                orgId: getBlockRootBlockId(org),
+                organizationId: getBlockRootBlockId(organization),
                 permissionResourceId: b.permissionResourceId,
                 action: SystemActionType.Read,
                 resourceType: SystemResourceType.Board,
@@ -44,4 +52,4 @@ const getOrgBoards: GetOrgBoardsEndpoint = async (context, instData) => {
     };
 };
 
-export default getOrgBoards;
+export default getOrganizationBoards;

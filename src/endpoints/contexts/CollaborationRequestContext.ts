@@ -1,14 +1,19 @@
 import { ICollaborationRequest } from "../../mongo/collaboration-request";
-import makeSingletonFunc from "../../utilities/createSingletonFunc";
+import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
-import { saveNewItemToDb, wrapFireAndThrowError } from "../utils";
-import { IBaseContext } from "./BaseContext";
+import { CollaborationRequestDoesNotExistError } from "../collaborationRequest/errors";
+import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
+import { IBaseContext } from "./IBaseContext";
 
 export interface ICollaborationRequestContext {
     getCollaborationRequestById: (
         ctx: IBaseContext,
         id: string
     ) => Promise<ICollaborationRequest | undefined>;
+    assertGetCollaborationRequestById: (
+        ctx: IBaseContext,
+        id: string
+    ) => Promise<ICollaborationRequest>;
     getUserCollaborationRequests: (
         ctx: IBaseContext,
         email: string
@@ -42,8 +47,9 @@ export interface ICollaborationRequestContext {
 }
 
 export default class CollaborationRequestContext
-    implements ICollaborationRequestContext {
-    public getCollaborationRequestById = wrapFireAndThrowError(
+    implements ICollaborationRequestContext
+{
+    public getCollaborationRequestById = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, id: string) => {
             return ctx.models.collaborationRequestModel.model
                 .findOne({ customId: id })
@@ -52,7 +58,23 @@ export default class CollaborationRequestContext
         }
     );
 
-    public updateCollaborationRequestById = wrapFireAndThrowError(
+    public assertGetCollaborationRequestById = wrapFireAndThrowErrorAsync(
+        async (ctx: IBaseContext, id: string) => {
+            const request =
+                await ctx.collaborationRequest.getCollaborationRequestById(
+                    ctx,
+                    id
+                );
+
+            if (!request) {
+                throw new CollaborationRequestDoesNotExistError();
+            }
+
+            return request;
+        }
+    );
+
+    public updateCollaborationRequestById = wrapFireAndThrowErrorAsync(
         (
             ctx: IBaseContext,
             customId: string,
@@ -65,7 +87,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getUserCollaborationRequests = wrapFireAndThrowError(
+    public getUserCollaborationRequests = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, email: string) => {
             return ctx.models.collaborationRequestModel.model
                 .find({
@@ -76,7 +98,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public deleteCollaborationRequestById = wrapFireAndThrowError(
+    public deleteCollaborationRequestById = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, id: string) => {
             await ctx.models.collaborationRequestModel.model
                 .deleteOne({ customId: id })
@@ -84,21 +106,24 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getCollaborationRequestsByRecipientEmail = wrapFireAndThrowError(
-        (ctx: IBaseContext, emails: string[], blockId: string) => {
-            return ctx.models.collaborationRequestModel.model
-                .find({
-                    "to.email": {
-                        $in: emails,
-                    },
-                    "from.blockId": blockId,
-                })
-                .lean()
-                .exec();
-        }
-    );
+    public getCollaborationRequestsByRecipientEmail =
+        wrapFireAndThrowErrorAsync(
+            (ctx: IBaseContext, emails: string[], blockId: string) => {
+                return ctx.models.collaborationRequestModel.model
+                    .find({
+                        "to.email": {
+                            $in: emails.map(
+                                (item) => new RegExp(`^${item}$`, "i")
+                            ),
+                        },
+                        "from.blockId": blockId,
+                    })
+                    .lean()
+                    .exec();
+            }
+        );
 
-    public bulkSaveCollaborationRequests = wrapFireAndThrowError(
+    public bulkSaveCollaborationRequests = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, collaborationRequests: ICollaborationRequest[]) => {
             return ctx.models.collaborationRequestModel.model.insertMany(
                 collaborationRequests
@@ -106,7 +131,7 @@ export default class CollaborationRequestContext
         }
     );
 
-    public getCollaborationRequestsByBlockId = wrapFireAndThrowError(
+    public getCollaborationRequestsByBlockId = wrapFireAndThrowErrorAsync(
         (ctx: IBaseContext, blockId: string) => {
             return ctx.models.collaborationRequestModel.model
                 .find({
@@ -121,9 +146,10 @@ export default class CollaborationRequestContext
         ctx: IBaseContext,
         collaborationRequest: Omit<ICollaborationRequest, "customId">
     ) {
-        const collaborationRequestDoc = new ctx.models.collaborationRequestModel.model(
-            collaborationRequest
-        );
+        const collaborationRequestDoc =
+            new ctx.models.collaborationRequestModel.model(
+                collaborationRequest
+            );
 
         return saveNewItemToDb(() => {
             collaborationRequestDoc.customId = getNewId();
@@ -133,6 +159,6 @@ export default class CollaborationRequestContext
     }
 }
 
-export const getCollaborationRequestContext = makeSingletonFunc(
+export const getCollaborationRequestContext = makeSingletonFn(
     () => new CollaborationRequestContext()
 );
