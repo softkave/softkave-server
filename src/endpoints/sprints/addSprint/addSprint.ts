@@ -1,4 +1,3 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
@@ -6,7 +5,6 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";

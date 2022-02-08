@@ -1,7 +1,5 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { SprintExistsEndpoint } from "./types";
 import { sprintExistsJoiSchema } from "./validation";
 

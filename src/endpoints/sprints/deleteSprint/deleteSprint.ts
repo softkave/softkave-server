@@ -1,11 +1,9 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,

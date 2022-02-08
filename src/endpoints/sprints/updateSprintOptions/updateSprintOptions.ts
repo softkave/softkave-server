@@ -1,10 +1,8 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { IBoardSprintOptions } from "../../../mongo/sprint";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
 import { SprintsNotSetupYetError } from "../errors";
 import { getPublicSprintOptions } from "../utils";
 import { UpdateSprintOptionsEndpoint } from "./types";

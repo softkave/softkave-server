@@ -1,9 +1,9 @@
 import Joi from "joi";
-import blockValidationSchemas from "../../block/validation";
+import taskValidationSchemas from "../../task/validation";
 import userValidationSchemas from "../../user/validation";
 
 export const sendFeedbackJoiSchema = Joi.object().keys({
-    feedback: blockValidationSchemas.name.lowercase().required(),
-    description: blockValidationSchemas.description,
+    feedback: taskValidationSchemas.name.lowercase().required(),
+    description: taskValidationSchemas.description,
     notifyEmail: userValidationSchemas.email.allow(null),
 });

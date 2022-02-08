@@ -1,7 +1,6 @@
 import { CollaborationRequestStatusType } from "../../../mongo/collaboration-request";
 import { getDate, getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
-import { getPublicBlockData } from "../../block/utils";
 import { PermissionDeniedError } from "../../errors";
 import {
     CollaborationRequestAcceptedError,
@@ -12,7 +11,10 @@ import { userIsPartOfOrganization } from "../../user/utils";
 import { RespondToCollaborationRequestEndpoint } from "./types";
 import { respondToCollaborationRequestJoiSchema } from "./validation";
 import { IOrganization } from "../../organization/types";
-import { throwOrganizationNotFoundError } from "../../organization/utils";
+import {
+    getPublicOrganizationData,
+    throwOrganizationNotFoundError,
+} from "../../organization/utils";
 
 // @ts-ignore
 const respondToRequest: RespondToCollaborationRequestEndpoint = async (
@@ -78,8 +80,7 @@ const respondToRequest: RespondToCollaborationRequestEndpoint = async (
         throwOrganizationNotFoundError
     );
 
-    const publicOrganization = getPublicBlockData(organization);
-
+    const publicOrganization = getPublicOrganizationData(organization);
     context.broadcastHelpers.broadcastCollaborationRequestResponse(
         context,
         instData,
