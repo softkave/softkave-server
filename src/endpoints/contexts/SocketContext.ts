@@ -95,15 +95,6 @@ export default class SocketContext implements ISocketContext {
     ) {
         if (socketEntries[socketId]) {
             let entry = { ...socketEntries[socketId], ...update };
-
-            // console.log("update socket entry");
-            // console.log(
-            //     `${socketEntries[socketId].userId} -> old is inactive = ${socketEntries[socketId].isInactive}`
-            // );
-            // console.log(
-            //     `${entry.userId} -> new is inactive = ${entry.isInactive}`
-            // );
-
             socketEntries[socketId] = entry;
         }
     }
@@ -141,10 +132,6 @@ export default class SocketContext implements ISocketContext {
         }
 
         socketEntries[socket.id] = entry;
-
-        // console.log("insert socket entry");
-        // console.log(`${entry.userId} -> is inactive = ${entry.isInactive}`);
-
         const userEntries = userIdToEntriesMap[user.customId] || {};
         userEntries[socket.id] = true;
         userIdToEntriesMap[user.customId] = userEntries;

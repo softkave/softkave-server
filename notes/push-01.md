@@ -2,8 +2,13 @@
 
 ## Goals
 
-1. Notifications
-2. Improved real-time system
-3. Improved chat system
-4. Pagination and virtualization
-5. Access control
+-   Notifications & collaboration requests
+    -   Revoke request
+-   Improved real-time system
+    -   Fetch missing updates
+    -   Move to single channel/event model with update/event types
+    -   Send diff for updates with timestamp
+    -   Socket update on all endpoints / sync
+-   Improved chat system
+    -   Rich text support
+-   Pagination and virtualization on all endpoints with lists
