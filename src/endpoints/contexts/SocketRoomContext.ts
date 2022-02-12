@@ -27,7 +27,8 @@ export interface ISocketRoomContext {
         ctx: IBaseContext,
         roomName: string,
         event: string,
-        data: any
+        data: any,
+        skipSocketId?: string
     ) => void;
     getRoom: (roomName: string) => ISocketRoom | null;
 }
@@ -73,7 +74,8 @@ export class SocketRoomContext implements ISocketRoomContext {
         ctx: IBaseContext,
         roomName: string,
         event: string,
-        data: any
+        data: any,
+        skipSocketId: string
     ) {
         const room = this.rooms[roomName];
         const removeSocketIds: string[] = [];
@@ -91,6 +93,10 @@ export class SocketRoomContext implements ISocketRoomContext {
             : room.socketIds;
 
         for (const socketId in socketIds) {
+            if (skipSocketId && skipSocketId === socketId) {
+                continue;
+            }
+
             const socket = ctx.socketMap.getSocket(socketId);
 
             if (!socket) {
@@ -110,6 +116,10 @@ export class SocketRoomContext implements ISocketRoomContext {
                     ? room.useSocketIdsFromRoom
                     : room.name
             );
+        } else {
+            this.internalUpdateRoom(roomName, {
+                lastBroadcastTimestamp: Date.now(),
+            });
         }
     }
 
@@ -151,5 +161,15 @@ export class SocketRoomContext implements ISocketRoomContext {
         Object.keys(room.roomsUsingSocketIdsFromRoom).forEach((name) =>
             this.internalRemoveRoom(name)
         );
+    }
+
+    private internalUpdateRoom(roomName: string, update: Partial<ISocketRoom>) {
+        const room = this.rooms[roomName];
+
+        if (!room) {
+            return;
+        }
+
+        this.rooms[roomName] = { ...room, ...update };
     }
 }
