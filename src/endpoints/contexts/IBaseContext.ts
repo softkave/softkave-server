@@ -21,6 +21,7 @@ import webPush from "web-push";
 import { IWebPushContext } from "./WebPushContext";
 import { ITaskHistoryContext } from "./TaskHistoryContext";
 import { IBaseContextDataProviders } from "./BaseContext";
+import { ISocketMapContext } from "./SocketMapContext";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -40,6 +41,7 @@ export interface IBaseContext {
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
     taskHistory: ITaskHistoryContext;
+    socketMap: ISocketMapContext;
     webPush: IWebPushContext;
     broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;

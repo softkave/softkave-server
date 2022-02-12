@@ -7,18 +7,6 @@ import { wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./IBaseContext";
 import { ISocketEntry } from "./SocketContext";
 
-/**
- * RoomContext
- * RoomContext handles the joining, leaving, and broadcasting of data in rooms
- * to connected client sockets. It also provides functions to generate 'pure'
- * ( meaning the same arguments always produce the same results ) room names for
- * resource types.
- *
- * We are currently using our own rooms implementation, and not the one from
- * socket.io ( the underlying socket library we're using ), because the socket.io
- * version of rooms was inconsistent and error prone.
- */
-
 export interface IBroadcastResult {
     endpoints: Array<{
         didBroadcast: boolean;

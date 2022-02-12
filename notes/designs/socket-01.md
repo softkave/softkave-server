@@ -65,8 +65,11 @@ interface IRoomContext {
 interface ISocketRoomNameHelpers {
     getUserRoomName: (resourceId: string) => string;
     getClientRoomName: (resourceId: string) => string;
-    getClientRoomName: (resourceId: string) => string;
-    getClientRoomName: (resourceId: string) => string;
+    getOrganizationRoomName: (resourceId: string) => string;
+    getBoardRoomName: (resourceId: string) => string;
+    getBoardTasksRoomName: (resourceId: string) => string;
+    getBoardSprintsRoomName: (resourceId: string) => string;
+    getChatRoomName: (member01: string, member02: string) => string;
 }
 
 // we will only have one incoming event type.
