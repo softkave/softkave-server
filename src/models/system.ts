@@ -1,5 +1,6 @@
 export enum SystemResourceType {
     User = "user",
+    Client = "client",
     Collaborator = "collaborator",
     RootBlock = "root",
     Organization = "org",
