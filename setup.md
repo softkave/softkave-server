@@ -5,7 +5,7 @@
 -   Create a '.env' file in the root directory and add the following:
     -   MONGODB_URI
     -   JWT_SECRET
-    -   NODE_ENV="dev"
+    -   NODE_ENV="development"
     -   FEEDBACK_BOARD_ID
     -   FEEDBACK_USER_ID
     -   PORT

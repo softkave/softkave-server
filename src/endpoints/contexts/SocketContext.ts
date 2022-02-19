@@ -3,6 +3,7 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
+import { SocketOnlyEndpointError } from "../socket/errors";
 import { IBaseContext } from "./IBaseContext";
 
 export interface ISocketEntry {
@@ -51,17 +52,14 @@ export interface ISocketContext {
 export default class SocketContext implements ISocketContext {
     public assertSocket(data: RequestData) {
         if (!data.socket) {
-            throw new InvalidRequestError();
+            throw new SocketOnlyEndpointError();
         }
 
         return true;
     }
 
     public assertGetSocket(data: RequestData) {
-        if (!data.socket) {
-            throw new InvalidRequestError();
-        }
-
+        this.assertSocket(data);
         return data.socket;
     }
 

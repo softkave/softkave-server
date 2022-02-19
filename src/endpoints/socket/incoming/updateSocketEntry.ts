@@ -6,12 +6,12 @@ import { SocketEventHandler } from "../types";
 
 const validationSchema = Joi.object()
     .keys({
-        isInactive: Joi.bool(),
+        isActive: Joi.bool(),
     })
     .required();
 
 interface IUpdateSocketEntryData {
-    isInactive?: boolean;
+    isActive?: boolean;
 }
 
 const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
@@ -21,10 +21,12 @@ const updateSocketEntry: SocketEventHandler<IUpdateSocketEntryData> = async (
 ) => {
     const incomingData = validate(data.data, validationSchema);
     const user = await ctx.session.getUser(ctx, data, JWTEndpoint.Login);
-    ctx.socket.assertSocket(data);
-    ctx.socket.updateSocketEntry(ctx, data.socket.id, incomingData);
+    const socket = ctx.session.assertGetSocket(data);
+    ctx.socketMap.updateSocketDetails(socket.id, {
+        isActive: incomingData.isActive,
+    });
 
-    if (!incomingData.isInactive) {
+    if (incomingData.isActive) {
         fireAndForgetPromise(ctx.unseenChats.removeEntry(ctx, user.customId));
     }
 };

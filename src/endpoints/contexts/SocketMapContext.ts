@@ -2,7 +2,7 @@ import { Socket } from "socket.io";
 
 export interface ISocketDetails {
     socket: Socket;
-    clientId: string;
+    // clientId: string;
     userId: string;
 
     // whether the user is currently on the app or not.
@@ -21,6 +21,10 @@ export interface ISocketMapContext {
     // inserts a socket using the id. If the socket exists,
     // merge the data.
     addSocket: (socketDetails: ISocketDetails) => void;
+    updateSocketDetails: (
+        id: string,
+        socketDetails: Partial<ISocketDetails>
+    ) => void;
 }
 
 export class SocketMapContext implements ISocketMapContext {
@@ -36,5 +40,11 @@ export class SocketMapContext implements ISocketMapContext {
 
     addSocket(socketDetails: ISocketDetails) {
         this.sockets[socketDetails.socket.id] = socketDetails;
+    }
+
+    updateSocketDetails(id: string, socketDetails: Partial<ISocketDetails>) {
+        if (this.sockets[id]) {
+            this.sockets[id] = { ...this.sockets[id], ...socketDetails };
+        }
     }
 }

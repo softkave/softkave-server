@@ -5,6 +5,7 @@ import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./IBaseContext";
+import SocketRoomNameHelpers from "./SocketRoomNameHelpers";
 
 export interface IChatContext {
     getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;
@@ -40,7 +41,7 @@ export interface IChatContext {
         organizationId: string,
         userId: string,
         name: string,
-        initialMembers?: string[]
+        otherMembers?: string[]
     ) => Promise<IRoom>;
     getUserRoomReadCounter: (
         ctx: IBaseContext,
@@ -135,15 +136,16 @@ export default class ChatContext implements IChatContext {
             organizationId: string,
             userId: string,
             name: string | null,
-            initialMembers?: string[]
+            otherMembers?: string[]
         ) => {
             const members: IRoomMemberReadCounter[] = [userId]
-                .concat(initialMembers)
+                .concat(otherMembers)
                 .map((id) => ({ userId: id, readCounter: getDate() }));
 
             return saveNewItemToDb(async () => {
                 const roomId = getNewId();
-                const roomName = name || ctx.room.getChatRoomName(roomId);
+                const roomName =
+                    name || SocketRoomNameHelpers.getChatRoomName(roomId);
                 const newRoom = new ctx.models.roomModel.model({
                     organizationId,
                     members,

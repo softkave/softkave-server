@@ -5,19 +5,15 @@ import canReadBlock from "../../block/canReadBlock";
 import { checkBlockAccess } from "../../block/checkBlockAccess";
 import { RoomDoesNotExistError } from "../../chat/errors";
 import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
-import { SubscribeEndpoint } from "./types";
-import { subscribeJoiSchema } from "./validation";
+import { subscribeJoiSchema } from "../subscribe/validation";
+import { GetRoomStateEndpoint } from "./types";
 
-const subscribe: SubscribeEndpoint = async (context, instData) => {
+const getRoomState: GetRoomStateEndpoint = async (context, instData) => {
     const data = validate(instData.data, subscribeJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const socket = context.socket.assertGetSocket(instData);
     const promises = data.rooms.map(async (item) => {
         switch (item.type) {
             case SystemResourceType.Organization: {
-                // TODO: can we batch fetch the resources, rather
-                // than querying one at a time?
-                // same for other room endpoints  that follow the same pattern.
                 const block = await checkBlockAccess(
                     context,
                     item.customId,
@@ -27,8 +23,8 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                 const roomName = SocketRoomNameHelpers.getOrganizationRoomName(
                     block.customId
                 );
-                context.socketRooms.addToRoom(roomName, socket.id);
-                return;
+
+                return context.socketRooms.getRoom(roomName);
             }
 
             case SystemResourceType.Board: {
@@ -48,23 +44,17 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                             block.customId
                         );
 
-                    context.socketRooms.addToRoom(roomName, socket.id, {
-                        useSocketIdsFromRoom: baordRoomName,
-                    });
+                    return context.socketRooms.getRoom(roomName);
                 } else if (item.subRoom === SystemResourceType.Sprint) {
                     const roomName =
                         SocketRoomNameHelpers.getBoardSprintsRoomName(
                             block.customId
                         );
 
-                    context.socketRooms.addToRoom(roomName, socket.id, {
-                        useSocketIdsFromRoom: baordRoomName,
-                    });
+                    return context.socketRooms.getRoom(roomName);
                 } else {
-                    context.socketRooms.addToRoom(baordRoomName, socket.id);
+                    return context.socketRooms.getRoom(baordRoomName);
                 }
-
-                return;
             }
 
             case SystemResourceType.Room: {
@@ -88,29 +78,19 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                     (member) => member.userId === user.customId
                 );
 
-                // if (!isUserInRoom) {
-                //     await context.chat.addMemberToRoom(
-                //         context,
-                //         room.customId,
-                //         user.customId
-                //     );
-                // }
-
                 if (isUserInRoom) {
-                    context.socketRooms.addToRoom(
-                        SocketRoomNameHelpers.getChatRoomName(room.customId),
-                        socket.id
+                    return context.socketRooms.getRoom(
+                        SocketRoomNameHelpers.getChatRoomName(room.customId)
                     );
                 }
 
-                return;
+                break;
             }
         }
     });
 
-    // TODO: can we return individual errors, not combined or the first to occur?
-    // same for other room endpoints
-    await Promise.all(promises);
+    const rooms = await Promise.all(promises);
+    return { rooms };
 };
 
-export default subscribe;
+export default getRoomState;

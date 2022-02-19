@@ -1,46 +1,52 @@
 import { SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import { SubscribeEndpoint } from "../subscribe/types";
 import { subscribeJoiSchema } from "../subscribe/validation";
 
 const unsubscribe: SubscribeEndpoint = async (context, instData) => {
     const data = validate(instData.data, subscribeJoiSchema);
-    const user = await context.session.getUser(context, instData);
+    await context.session.assertUser(context, instData);
+    const socket = context.session.assertGetSocket(instData);
+    let roomName = "";
+    data.rooms.forEach((item) => {
+        switch (item.type) {
+            case SystemResourceType.Organization: {
+                roomName = SocketRoomNameHelpers.getOrganizationRoomName(
+                    item.customId
+                );
 
-    context.socket.assertSocket(instData);
+                break;
+            }
 
-    const promises = data.items.map(async (dt) => {
-        switch (dt.type) {
-            // TODO: when the block is deleted, the block will not exist
-            // causing an error and memory leak
-            case SystemResourceType.Organization:
             case SystemResourceType.Board: {
-                const block = await context.block.getBlockById(
-                    context,
-                    dt.customId
-                );
-                const roomName = context.room.getBlockRoomName(
-                    block.type,
-                    block.customId
-                );
+                if (item.subRoom === SystemResourceType.Task) {
+                    roomName = SocketRoomNameHelpers.getBoardTasksRoomName(
+                        item.customId
+                    );
+                } else if (item.subRoom === SystemResourceType.Sprint) {
+                    roomName = SocketRoomNameHelpers.getBoardSprintsRoomName(
+                        item.customId
+                    );
+                } else {
+                    roomName = SocketRoomNameHelpers.getBoardRoomName(
+                        item.customId
+                    );
+                }
 
-                context.room.leave(instData, roomName);
                 break;
             }
 
             case SystemResourceType.Room: {
-                const room = await context.chat.getRoomById(
-                    context,
-                    dt.customId
-                );
-
-                context.room.unSubscribeUser(context, room.name, user.customId);
+                roomName = SocketRoomNameHelpers.getChatRoomName(item.customId);
                 break;
             }
         }
-    });
 
-    await Promise.all(promises);
+        if (roomName) {
+            context.socketRooms.removeFromRoom(roomName, socket.id);
+        }
+    });
 };
 
 export default unsubscribe;

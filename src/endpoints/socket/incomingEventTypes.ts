@@ -6,6 +6,7 @@ export enum IncomingSocketEvents {
     SendMessage = "sendMessage",
     GetUserRoomsAndChats = "getUserRoomsAndChats",
     UpdateRoomReadCounter = "updateRoomReadCounter",
+    Connection = "connection",
     Disconnect = "disconnect",
     UpdateSocketEntry = "updateSocketEntry",
 }

@@ -4,7 +4,7 @@ import socketValidationSchemas from "../../socket/validation";
 import { roomEndpointConstants } from "../constants";
 
 export const subscribeJoiSchema = Joi.object().keys({
-    items: Joi.array()
+    rooms: Joi.array()
         .items(
             Joi.object().keys({
                 customId: validationSchemas.uuid.required(),

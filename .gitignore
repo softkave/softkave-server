@@ -32,3 +32,6 @@ yarn-error.log*
 
 # generated email templates code
 /email-templates/code
+
+# AWS config
+aws-config.json

@@ -1,35 +1,37 @@
 import { SystemResourceType } from "../../models/system";
 
 export default class SocketRoomNameHelpers {
-    getUserRoomName = (resourceId: string) => {
+    static getUserRoomName = (resourceId: string) => {
         return `${SystemResourceType.User}/${resourceId}`;
     };
 
-    getClientRoomName = (resourceId: string) => {
+    static getClientRoomName = (resourceId: string) => {
         return `${SystemResourceType.Client}/${resourceId}`;
     };
 
-    getOrganizationRoomName = (resourceId: string) => {
+    static getOrganizationRoomName = (resourceId: string) => {
         return `${SystemResourceType.Organization}/${resourceId}`;
     };
 
-    getBoardRoomName = (resourceId: string) => {
+    static getBoardRoomName = (resourceId: string) => {
         return `${SystemResourceType.Board}/${resourceId}`;
     };
 
-    getBoardTasksRoomName = (resourceId: string) => {
+    static getBoardTasksRoomName = (resourceId: string) => {
         return `${this.getBoardRoomName(resourceId)}/${
             SystemResourceType.Task
         }`;
     };
 
-    getBoardSprintsRoomName = (resourceId: string) => {
+    static getBoardSprintsRoomName = (resourceId: string) => {
         return `${this.getBoardRoomName(resourceId)}/${
             SystemResourceType.Sprint
         }`;
     };
 
-    getChatRoomName = (member01: string, member02: string) => {
-        return `${SystemResourceType.Chat}/${member01}--${member02}`;
+    static getChatRoomName = (roomId: string) => {
+        // using '-' cause existing chat rooms use it and
+        // we don't want to break them.
+        return `${SystemResourceType.Room}-${roomId}`;
     };
 }

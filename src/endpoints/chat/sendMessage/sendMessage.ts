@@ -1,3 +1,4 @@
+import { forEach } from "lodash";
 import { IRoom } from "../../../mongo/room";
 import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
@@ -5,6 +6,7 @@ import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { IBroadcastResult } from "../../contexts/RoomContext";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
@@ -126,8 +128,8 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     if (data.recipientId && !data.roomId) {
         // It's a new room/chat
-        context.room.subscribeUser(context, room.name, user.customId);
-        context.room.subscribeUser(context, room.name, data.recipientId);
+        addUserToRoom(context, room.name, user.customId);
+        addUserToRoom(context, room.name, data.recipientId);
         context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
     }
 
@@ -174,5 +176,19 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
 
     return { chat: getPublicChatData(chat) };
 };
+
+function addUserToRoom(ctx: IBaseContext, roomName: string, userId: string) {
+    const userRoom = ctx.socketRooms.getRoom(
+        SocketRoomNameHelpers.getUserRoomName(userId)
+    );
+
+    if (!userRoom) {
+        return;
+    }
+
+    Object.keys(userRoom.socketIds).forEach((id) =>
+        ctx.socketRooms.addToRoom(roomName, id)
+    );
+}
 
 export default sendMessage;

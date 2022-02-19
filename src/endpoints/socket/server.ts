@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io";
 import { ServerError } from "../../utilities/errors";
+import { getBaseContext } from "../contexts/BaseContext";
 import { IBaseContext } from "../contexts/IBaseContext";
+import { IncomingSocketEvents } from "./incomingEventTypes";
 import { setupSocketEndpoints } from "./setupEndpoints";
 
 // REMINDER
@@ -25,6 +27,9 @@ let socketServer: Server = null;
 
 export function setSocketServer(io: Server) {
     socketServer = io;
+    io.on(IncomingSocketEvents.Connection, (socket) =>
+        onConnection(getBaseContext(), socket)
+    );
 }
 
 export function getSocketServer() {

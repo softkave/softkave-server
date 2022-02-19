@@ -24,6 +24,9 @@ export interface IAppVariables {
     vapidPublicKey: string;
     vapidPrivateKey: string;
     disableEmail: boolean;
+    awsAccessKeyId: string;
+    awsSecretAccessKey: string;
+    awsRegion: string;
 
     appName: string;
     emailSendFrom: string;
@@ -45,6 +48,9 @@ export const appVariables: IAppVariables = {
     port: process.env.PORT,
     vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
     vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
+    awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    awsRegion: process.env.AWS_REGION,
     disableEmail: getBoolean(process.env.DISABLE_EMAIL),
 
     appName: "Softkave",
@@ -79,6 +85,9 @@ export function checkVariablesExist() {
     logIfMissing("PORT", appVariables.port);
     logIfMissing("VAPID_PUBLIC_KEY", appVariables.vapidPublicKey);
     logIfMissing("VAPID_PRIVATE_KEY", appVariables.vapidPrivateKey);
+    logIfMissing("AWS_ACCESS_KEY_ID", appVariables.vapidPrivateKey);
+    logIfMissing("AWS_SECRET_ACCESS_KEY", appVariables.vapidPrivateKey);
+    logIfMissing("AWS_REGION", appVariables.vapidPrivateKey);
 
     if (messages.length > 0) {
         throw new Error(

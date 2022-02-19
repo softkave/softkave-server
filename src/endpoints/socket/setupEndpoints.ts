@@ -18,7 +18,7 @@ export async function setupSocketEndpoints(ctx: IBaseContext, socket: Socket) {
     );
 
     socket.on(
-        "disconnect",
+        IncomingSocketEvents.Disconnect,
         makeSocketHandler(ctx, socket, disconnectSocketHandler, {
             skipDataValidation: true,
         })
@@ -33,13 +33,6 @@ export async function setupSocketEndpoints(ctx: IBaseContext, socket: Socket) {
         IncomingSocketEvents.Unsubscribe,
         makeSocketHandler(ctx, socket, unsubscribe)
     );
-
-    // TODO: waiting to implement access control
-
-    // socket.on(
-    //     IncomingSocketEvents.FetchMissingBroadcasts,
-    //     makeSocketHandler(ctx, socket, fetchBroadcasts)
-    // );
 
     socket.on(
         IncomingSocketEvents.GetUserRoomsAndChats,

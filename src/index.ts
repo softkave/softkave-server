@@ -24,7 +24,6 @@ import { getChatModel } from "./mongo/chat";
 import { getClientModel } from "./mongo/client";
 import { getCollaborationRequestModel } from "./mongo/collaboration-request";
 import { getDefaultConnection } from "./mongo/defaultConnection";
-import { getNotificationModel } from "./mongo/notification";
 import { getRoomModel } from "./mongo/room";
 import { getSprintModel } from "./mongo/sprint";
 import { getTokenModel } from "./mongo/token";
