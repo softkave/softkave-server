@@ -1,7 +1,6 @@
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { ServerError } from "../../utilities/errors";
 import { getBaseContext } from "../contexts/BaseContext";
-import { IBaseContext } from "../contexts/IBaseContext";
 import { IncomingSocketEvents } from "./incomingEventTypes";
 import { setupSocketEndpoints } from "./setupEndpoints";
 
@@ -19,16 +18,12 @@ import { setupSocketEndpoints } from "./setupEndpoints";
 
 // TODO: disconnect sockets that don't auth in 5 minutes
 
-async function onConnection(ctx: IBaseContext, socket: Socket) {
-    setupSocketEndpoints(ctx, socket);
-}
-
 let socketServer: Server = null;
 
 export function setSocketServer(io: Server) {
     socketServer = io;
     io.on(IncomingSocketEvents.Connection, (socket) =>
-        onConnection(getBaseContext(), socket)
+        setupSocketEndpoints(getBaseContext(), socket)
     );
 }
 

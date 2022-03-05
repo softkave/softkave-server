@@ -13,8 +13,6 @@ import setupCollaboratorsRESTEndpoints from "./endpoints/collaborator/setupRESTE
 import { getBaseContext } from "./endpoints/contexts/BaseContext";
 import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
 import setupOrganizationsRESTEndpoints from "./endpoints/organization/setupRESTEndpoints";
-import { getSocketServer, setSocketServer } from "./endpoints/socket/server";
-import { setupSocketEndpoints } from "./endpoints/socket/setupEndpoints";
 import setupTasksRESTEndpoints from "./endpoints/task/setupRESTEndpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
@@ -111,10 +109,6 @@ app.use(
         rootValue: getEndpointsGraphQLController(),
     })
 );
-
-getSocketServer().on("connection", (socket) => {
-    setupSocketEndpoints(getBaseContext(), socket);
-});
 
 setupBoardsRESTEndpoints(getBaseContext(), app);
 setupCollaborationRequestsRESTEndpoints(getBaseContext(), app);

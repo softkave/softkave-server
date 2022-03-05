@@ -12,6 +12,7 @@ import { IncomingSocketEvents } from "./incomingEventTypes";
 import { makeSocketHandler } from "./utils";
 
 export async function setupSocketEndpoints(ctx: IBaseContext, socket: Socket) {
+    // TODO: move auth to on connection
     socket.on(
         IncomingSocketEvents.Auth,
         makeSocketHandler(ctx, socket, authSocketHandler)
