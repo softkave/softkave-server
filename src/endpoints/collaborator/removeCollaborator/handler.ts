@@ -10,60 +10,60 @@ import { RemoveCollaboratorEndpoint } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";
 
 const removeCollaborator: RemoveCollaboratorEndpoint = async (
-    context,
-    instData
+  context,
+  instData
 ) => {
-    const data = validate(instData.data, removeCollaboratorJoiSchema);
-    const user = await context.session.getUser(context, instData);
-    const organization = await context.block.assertGetBlockById<IOrganization>(
-        context,
-        data.organizationId,
-        throwOrganizationNotFoundError
-    );
+  const data = validate(instData.data, removeCollaboratorJoiSchema);
+  const user = await context.session.getUser(context, instData);
+  const organization = await context.block.assertGetBlockById<IOrganization>(
+    context,
+    data.organizationId,
+    throwOrganizationNotFoundError
+  );
 
-    canReadOrganization(organization.customId, user);
-    const collaborator = await context.user.getUserById(
-        context,
-        data.collaboratorId
-    );
+  canReadOrganization(organization.customId, user);
+  const collaborator = await context.user.getUserById(
+    context,
+    data.collaboratorId
+  );
 
-    if (!collaborator) {
-        throw new UserDoesNotExistError();
+  if (!collaborator) {
+    throw new UserDoesNotExistError();
+  }
+
+  const collaboratorOrganizations = [...collaborator.orgs];
+  const index = collaboratorOrganizations.findIndex(
+    (o) => o.customId === o.customId
+  );
+
+  if (index === -1) {
+    return;
+  }
+
+  collaboratorOrganizations.splice(index, 1);
+  await context.user.updateUserById(context, collaborator.customId, {
+    orgs: collaboratorOrganizations,
+  });
+
+  outgoingEventFn(
+    context,
+    SocketRoomNameHelpers.getUserRoomName(collaborator.customId),
+    {
+      actionType: SystemActionType.Delete,
+      resourceType: SystemResourceType.Organization,
+      resource: { customId: organization.customId },
     }
+  );
 
-    const collaboratorOrganizations = [...collaborator.orgs];
-    const index = collaboratorOrganizations.findIndex(
-        (o) => o.customId === o.customId
-    );
-
-    if (index === -1) {
-        return;
+  outgoingEventFn(
+    context,
+    SocketRoomNameHelpers.getOrganizationRoomName(organization.customId),
+    {
+      actionType: SystemActionType.Delete,
+      resourceType: SystemResourceType.Collaborator,
+      resource: { customId: collaborator.customId },
     }
-
-    collaboratorOrganizations.splice(index, 1);
-    await context.user.updateUserById(context, collaborator.customId, {
-        orgs: collaboratorOrganizations,
-    });
-
-    outgoingEventFn(
-        context,
-        SocketRoomNameHelpers.getUserRoomName(collaborator.customId),
-        {
-            actionType: SystemActionType.Delete,
-            resourceType: SystemResourceType.Organization,
-            resource: { customId: organization.customId },
-        }
-    );
-
-    outgoingEventFn(
-        context,
-        SocketRoomNameHelpers.getOrganizationRoomName(organization.customId),
-        {
-            actionType: SystemActionType.Delete,
-            resourceType: SystemResourceType.Collaborator,
-            resource: { customId: collaborator.customId },
-        }
-    );
+  );
 };
 
 export default removeCollaborator;
