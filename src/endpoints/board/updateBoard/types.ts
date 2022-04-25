@@ -1,3 +1,4 @@
+import { SprintDuration } from "../../../mongo/sprint";
 import { IUser } from "../../../mongo/user";
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint, IUpdateComplexTypeArrayInput } from "../../types";
@@ -15,6 +16,9 @@ export interface IUpdateBoardInput {
     boardStatuses?: IUpdateComplexTypeArrayInput<IBlockStatusInput>;
     boardLabels?: IUpdateComplexTypeArrayInput<IBlockLabelInput>;
     boardResolutions?: IUpdateComplexTypeArrayInput<IBoardStatusResolutionInput>;
+    sprintOptions?: {
+        duration: SprintDuration;
+    };
 }
 
 export interface IUpdateBoardParameters {

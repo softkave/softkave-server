@@ -1,39 +1,47 @@
-import { forEach } from "lodash";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IRoom } from "../../../mongo/room";
 import { IUser } from "../../../mongo/user";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/IBaseContext";
-import { IBroadcastResult } from "../../contexts/RoomContext";
 import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
 import {
     NoRoomOrRecipientProvidedError,
     RoomDoesNotExistError,
 } from "../errors";
-import { getPublicChatData, sumUnseenChatsAndRooms } from "../utils";
+import {
+    getPublicChatData,
+    getPublicRoomData,
+    sumUnseenChatsAndRooms,
+} from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
 async function sendPushNotification(
     context: IBaseContext,
     sender: IUser,
-    room: IRoom,
-    broadcastResultPromise: Promise<IBroadcastResult>
+    room: IRoom
 ) {
-    const broadcastResult = await broadcastResultPromise;
     const members = room.members;
-    const activeUsersMap = broadcastResult.endpoints.reduce(
-        (map, endpoint) => {
-            if (!endpoint.entry.isInactive) {
-                map[endpoint.entry.userId] = true;
-            }
-
-            return map;
-        },
-        { [sender.customId]: true } as Record<string, boolean>
+    const socketRoom = context.socketRooms.getRoom(
+        SocketRoomNameHelpers.getChatRoomName(room.customId)
     );
+
+    if (!socketRoom) {
+        return;
+    }
+
+    const activeUsersMap: Record<string, boolean> = { [sender.customId]: true };
+    Object.keys(socketRoom.socketIds).forEach((id) => {
+        const socket = context.socketMap.getSocket(id);
+
+        if (socket && socket.isActive) {
+            activeUsersMap[socket.userId] = true;
+        }
+    });
 
     const inactiveMemberIds = members
         .filter((member) => !activeUsersMap[member.userId])
@@ -91,20 +99,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.orgId
     );
 
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(organization),
-    //         resourceType: SystemResourceType.Chat,
-    //         action: SystemActionType.Create,
-    //         permissionResourceId: organization.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block: organization });
-
-    // TODO: how can we eliminate OR make the room fetching faster?
     let room: IRoom;
 
     if (data.roomId) {
@@ -130,7 +125,15 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         // It's a new room/chat
         addUserToRoom(context, room.name, user.customId);
         addUserToRoom(context, room.name, data.recipientId);
-        context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
+        outgoingEventFn(
+            context,
+            SocketRoomNameHelpers.getUserRoomName(data.recipientId),
+            {
+                actionType: SystemActionType.Create,
+                resourceType: SystemResourceType.Room,
+                resource: getPublicRoomData(room),
+            }
+        );
     }
 
     const chat = await context.chat.insertMessage(
@@ -141,35 +144,30 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
         data.message
     );
 
-    const broadcastResultPromise = context.broadcastHelpers.broadcastNewMessage(
+    const chatData = getPublicChatData(chat);
+    outgoingEventFn(
         context,
-        instaData,
-        room,
-        chat
+        SocketRoomNameHelpers.getChatRoomName(room.customId),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.Chat,
+            resource: chatData,
+        }
     );
 
     // TODO: implement a scheduler that can run a task after a task is completed
 
-    // TODO: our fire and forganizationets are running immediately
+    // TODO: our fire and forget are running immediately
     // go through them and update the ones you want to run
     // after the main request is done
-    fireAndForgetFn(() =>
-        sendPushNotification(context, user, room, broadcastResultPromise)
-    );
+    fireAndForgetFn(() => sendPushNotification(context, user, room));
 
     if (data.roomId) {
         const readCounter = getDateString();
         await context.chat.updateMemberReadCounter(
             context,
             data.roomId,
-            user.customId
-        );
-
-        context.broadcastHelpers.broadcastRoomReadCounterUpdate(
-            context,
-            instaData,
-            user,
-            room.customId,
+            user.customId,
             readCounter
         );
     }

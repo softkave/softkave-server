@@ -1,8 +1,11 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
 import { OrganizationDoesNotExistError } from "../../organization/errors";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { BoardExistsError } from "../errors";
 import { IBoard } from "../types";
 import { getPublicBoardData } from "../utils";
@@ -55,8 +58,19 @@ const createBoard: CreateBoardEndpoint = async (context, instData) => {
     };
 
     const savedBoard = await context.block.saveBlock<IBoard>(context, board);
+    const boardData = getPublicBoardData(savedBoard);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getOrganizationRoomName(board.rootBlockId),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.Board,
+            resource: boardData,
+        }
+    );
+
     return {
-        board: getPublicBoardData(savedBoard),
+        board: boardData,
     };
 };
 

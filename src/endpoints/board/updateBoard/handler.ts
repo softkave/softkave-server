@@ -1,5 +1,11 @@
+import { merge } from "lodash";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { IBoardSprintOptions, SprintDuration } from "../../../mongo/sprint";
+import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
 import {
@@ -30,6 +36,40 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
         user
     );
 
+    if (data.data.sprintOptions) {
+        let sprintOptions: IBoardSprintOptions;
+        const sprintOptionsUpdate: Partial<IBoardSprintOptions> = {
+            ...data.data,
+            updatedAt: getDate(),
+            updatedBy: user.customId,
+        };
+
+        if (board.sprintOptions) {
+            sprintOptions = merge({}, sprintOptionsUpdate, board.sprintOptions);
+
+            if (sprintOptions.duration !== board.sprintOptions.duration) {
+                await context.sprint.updateUnstartedSprints(
+                    context,
+                    board.customId,
+                    {
+                        duration: sprintOptions.duration,
+                    }
+                );
+            }
+        } else {
+            const newOptions: IBoardSprintOptions = {
+                duration:
+                    data.data.sprintOptions.duration || SprintDuration.TwoWeeks,
+                createdAt: getDate(),
+                createdBy: user.customId,
+            };
+
+            sprintOptions = merge({}, newOptions, sprintOptionsUpdate);
+        }
+
+        update.sprintOptions = sprintOptions;
+    }
+
     const updatedBoard = await context.block.updateBlockById<IBoard>(
         context,
         data.boardId,
@@ -50,7 +90,18 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
         persistBoardLabelChanges(context, instData, board, update)
     );
 
-    return { board: getPublicBoardData(updatedBoard) };
+    const boardData = getPublicBoardData(updatedBoard);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getBoardRoomName(board.customId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.Board,
+            resource: boardData,
+        }
+    );
+
+    return { board: boardData };
 };
 
 export default updateBoard;

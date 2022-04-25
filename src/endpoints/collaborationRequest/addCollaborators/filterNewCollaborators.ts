@@ -45,7 +45,7 @@ export default async function filterNewCollaborators(
     const existingUsersInOrganization = [];
 
     existingUsers.forEach((existingUser: IUser) => {
-        indexedExistingUsers[existingUser.email] = existingUser;
+        indexedExistingUsers[existingUser.email.toLowerCase()] = existingUser;
 
         if (userIsPartOfOrganization(existingUser, organization.customId)) {
             existingUsersInOrganization.push(existingUser);

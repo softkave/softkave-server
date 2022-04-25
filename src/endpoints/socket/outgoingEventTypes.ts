@@ -1,3 +1,4 @@
+import { SystemActionType, SystemResourceType } from "../../models/system";
 import { CollaborationRequestResponse } from "../../mongo/collaboration-request/definitions";
 import { SprintDuration } from "../../mongo/sprint";
 import { IPublicPermissionGroup } from "../accessControl/types";
@@ -23,6 +24,14 @@ export enum OutgoingSocketEvents {
 
     MarkNotificationsRead = "markNotificationsRead",
     UpdateBlockPermissionGroups = "updateBlockPermissionGroups",
+
+    ResourceUpdate = "ResourceUpdate",
+}
+
+export interface IOutgoingResourceUpdatePacket<T = any> {
+    actionType: SystemActionType;
+    resourceType: SystemResourceType;
+    resource: T;
 }
 
 export interface IOutgoingBlockUpdatePacket {

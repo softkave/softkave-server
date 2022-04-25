@@ -8,6 +8,8 @@ export const updateSprintJoiSchema = Joi.object().keys({
         .keys({
             name: sprintValidationSchemas.name,
             duration: sprintValidationSchemas.sprintDuration,
+            startDate: Joi.date().iso().allow(null),
+            endDate: Joi.date().iso().allow(null),
         })
         .required(),
 });

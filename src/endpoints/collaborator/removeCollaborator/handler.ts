@@ -1,7 +1,10 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { UserDoesNotExistError } from "../../user/errors";
 import { RemoveCollaboratorEndpoint } from "./types";
 import { removeCollaboratorJoiSchema } from "./validation";
@@ -19,7 +22,6 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
     );
 
     canReadOrganization(organization.customId, user);
-
     const collaborator = await context.user.getUserById(
         context,
         data.collaboratorId
@@ -42,6 +44,26 @@ const removeCollaborator: RemoveCollaboratorEndpoint = async (
     await context.user.updateUserById(context, collaborator.customId, {
         orgs: collaboratorOrganizations,
     });
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getUserRoomName(collaborator.customId),
+        {
+            actionType: SystemActionType.Delete,
+            resourceType: SystemResourceType.Organization,
+            resource: { customId: organization.customId },
+        }
+    );
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getOrganizationRoomName(organization.customId),
+        {
+            actionType: SystemActionType.Delete,
+            resourceType: SystemResourceType.Collaborator,
+            resource: { customId: collaborator.customId },
+        }
+    );
 };
 
 export default removeCollaborator;

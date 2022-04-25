@@ -1,3 +1,4 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import {
     CollaborationRequestStatusType,
     ICollaborationRequest,
@@ -5,9 +6,11 @@ import {
 import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetPromise } from "../../utils";
 import { getPublicCollaborationRequestArray } from "../utils";
 import { broadcastToOrganizationsAndExistingUsers } from "./broadcastToOrgAndExistingUsers";
@@ -85,8 +88,39 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         })
     );
 
+    const requestListData = getPublicCollaborationRequestArray(
+        collaborationRequests
+    );
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getOrganizationRoomName(organization.customId),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.CollaborationRequest,
+            resource: requestListData,
+        }
+    );
+
+    requestListData.forEach((request) => {
+        const existingUser =
+            indexedExistingUsers[request.to.email.toLowerCase()];
+
+        if (existingUser) {
+            outgoingEventFn(
+                context,
+                SocketRoomNameHelpers.getUserRoomName(existingUser.customId),
+                {
+                    actionType: SystemActionType.Create,
+                    resourceType: SystemResourceType.CollaborationRequest,
+                    resource: request,
+                }
+            );
+        }
+    });
+
     return {
-        requests: getPublicCollaborationRequestArray(collaborationRequests),
+        requests: requestListData,
     };
 };
 

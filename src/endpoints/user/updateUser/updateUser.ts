@@ -1,6 +1,9 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { clientToClientUserView } from "../../client/utils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import {
     IOutgoingUserUpdatePacket,
     OutgoingSocketEvents,
@@ -57,6 +60,16 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     const tokenData = await context.session.getTokenData(context, instData);
     const client = await context.session.getClient(context, instData);
     const token = context.token.encodeToken(context, tokenData.customId);
+    const userData = getPublicUserData(updatedUser);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getUserRoomName(user.customId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.User,
+            resource: userData,
+        }
+    );
 
     return {
         token,

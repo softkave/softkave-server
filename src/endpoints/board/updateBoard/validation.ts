@@ -4,6 +4,7 @@ import {
     validationSchemas,
 } from "../../../utilities/validationUtils";
 import organizationValidationSchemas from "../../organization/validation";
+import sprintValidationSchemas from "../../sprints/validation";
 import { boardConstants } from "../constants";
 import boardValidationSchemas from "../validation";
 
@@ -32,6 +33,9 @@ export const updateBoardJoiSchema = Joi.object()
                     boardConstants.maxResolutions,
                     "customId"
                 ),
+                sprintOptions: Joi.object().keys({
+                    duration: sprintValidationSchemas.sprintDuration,
+                }),
             })
             .required(),
         boardId: validationSchemas.uuid.required(),

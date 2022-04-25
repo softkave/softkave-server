@@ -1,13 +1,17 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import { PermissionDeniedError } from "../../errors";
+import outgoingEventFn from "../../socket/outgoingEventFn";
+import { getPublicCollaborationRequest } from "../utils";
 import { MarkRequestReadEndpoint } from "./types";
 import { markRequestReadJoiSchema } from "./validation";
 
 const markRequestRead: MarkRequestReadEndpoint = async (context, instData) => {
     const data = validate(instData.data, markRequestReadJoiSchema);
     const user = await context.session.getUser(context, instData);
-    const request =
+    let request =
         await context.collaborationRequest.assertGetCollaborationRequestById(
             context,
             data.requestId
@@ -17,7 +21,7 @@ const markRequestRead: MarkRequestReadEndpoint = async (context, instData) => {
         throw new PermissionDeniedError();
     }
 
-    await context.collaborationRequest.updateCollaborationRequestById(
+    request = await context.collaborationRequest.updateCollaborationRequestById(
         context,
         request.customId,
         {
@@ -25,20 +29,18 @@ const markRequestRead: MarkRequestReadEndpoint = async (context, instData) => {
         }
     );
 
-    const userRoomName = context.room.getUserRoomName(user.customId);
+    const requestData = getPublicCollaborationRequest(request);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getUserRoomName(user.customId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.CollaborationRequest,
+            resource: requestData,
+        }
+    );
 
-    // TODO: Fix
-    // const updatePacket: IOutgoingMarkNotificationsReadPacket = {
-    //     notifications: processedNotifications,
-    // };
-
-    // context.room.broadcast(
-    //     context,
-    //     instData,
-    //     userRoomName,
-    //     OutgoingSocketEvents.MarkNotificationsRead,
-    //     updatePacket
-    // );
+    return { request: requestData };
 };
 
 export default markRequestRead;

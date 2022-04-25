@@ -1,8 +1,11 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { throwBoardNotFoundError } from "../../board/utils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { ITask } from "../types";
 import { getPublicTaskData } from "../utils";
 import { CreateTaskEndpoint } from "./types";
@@ -20,7 +23,6 @@ const createTask: CreateTaskEndpoint = async (context, instData) => {
     );
 
     const task: Omit<ITask, "customId"> = {
-        // customId: getNewId(),
         createdBy: user.customId,
         createdAt: getDate(),
         name: data.task.name,
@@ -62,6 +64,17 @@ const createTask: CreateTaskEndpoint = async (context, instData) => {
     };
 
     const savedTask = await context.block.saveBlock<ITask>(context, task);
+    const taskData = getPublicTaskData(savedTask);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getBoardRoomName(savedTask.parent),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.Task,
+            resource: taskData,
+        }
+    );
+
     return {
         task: getPublicTaskData(savedTask),
     };

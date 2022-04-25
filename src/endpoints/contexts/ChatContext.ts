@@ -28,7 +28,7 @@ export interface IChatContext {
         roomId: string,
         userId: string,
         readCounter?: Date | string
-    ) => Promise<void>;
+    ) => Promise<IRoom>;
     insertMessage: (
         ctx: IBaseContext,
         organizationId: string,
@@ -114,8 +114,8 @@ export default class ChatContext implements IChatContext {
             userId: string,
             readCounter: Date | string
         ) => {
-            await ctx.models.roomModel.model
-                .updateOne(
+            return await ctx.models.roomModel.model
+                .findOneAndUpdate(
                     {
                         customId: roomId,
                         members: { $elemMatch: { userId } },
@@ -124,7 +124,8 @@ export default class ChatContext implements IChatContext {
                         $set: {
                             "members.$.readCounter": getDate(readCounter),
                         },
-                    }
+                    },
+                    { new: true, lean: true }
                 )
                 .exec();
         }

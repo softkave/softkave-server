@@ -15,8 +15,12 @@ import {
     getPublicOrganizationData,
     throwOrganizationNotFoundError,
 } from "../../organization/utils";
+import { getPublicCollaborationRequest } from "../utils";
+import outgoingEventFn from "../../socket/outgoingEventFn";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { getCollaboratorDataFromUser } from "../../collaborator/utils";
 
-// @ts-ignore
 const respondToRequest: RespondToCollaborationRequestEndpoint = async (
     context,
     instData
@@ -81,14 +85,25 @@ const respondToRequest: RespondToCollaborationRequestEndpoint = async (
     );
 
     const publicOrganization = getPublicOrganizationData(organization);
-    context.broadcastHelpers.broadcastCollaborationRequestResponse(
+    const requestData = getPublicCollaborationRequest(request);
+    outgoingEventFn(
         context,
-        instData,
-        user,
-        request,
-        data.response,
-        respondedAtStr,
-        publicOrganization
+        SocketRoomNameHelpers.getUserRoomName(user.customId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.CollaborationRequest,
+            resource: requestData,
+        }
+    );
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getOrganizationRoomName(request.from.blockId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.CollaborationRequest,
+            resource: requestData,
+        }
     );
 
     if (userAccepted) {
@@ -100,15 +115,24 @@ const respondToRequest: RespondToCollaborationRequestEndpoint = async (
             user = await context.user.updateUserById(context, user.customId, {
                 orgs: userOrganizations,
             });
-
-            return {
-                organization: publicOrganization,
-                respondedAt: respondedAtStr,
-            };
         }
+
+        outgoingEventFn(
+            context,
+            SocketRoomNameHelpers.getOrganizationRoomName(request.from.blockId),
+            {
+                actionType: SystemActionType.Create,
+                resourceType: SystemResourceType.Collaborator,
+                resource: getCollaboratorDataFromUser(user),
+            }
+        );
     }
 
-    return { respondedAt: respondedAtStr };
+    return {
+        respondedAt: respondedAtStr,
+        organization: userAccepted ? publicOrganization : undefined,
+        request: requestData,
+    };
 };
 
 export default respondToRequest;

@@ -1,9 +1,12 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IBlock } from "../../../mongo/block";
 import { assertBlock } from "../../../mongo/block/utils";
 import { ISprint } from "../../../mongo/sprint";
 import { validate } from "../../../utilities/joiUtils";
 import { IUpdateItemById } from "../../../utilities/types";
 import canReadBlock from "../../block/canReadBlock";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import {
     CannotDeleteCurrentOrPastSprintError,
     SprintDoesNotExistError,
@@ -21,19 +24,7 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     }
 
     const board = await context.block.getBlockById(context, sprint.boardId);
-
     assertBlock(board);
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(board),
-    //         resourceType: SystemResourceType.Sprint,
-    //         action: SystemActionType.Delete,
-    //         permissionResourceId: board.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block: board });
 
     if (!!sprint.startDate) {
@@ -49,7 +40,6 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
 
     // TODO: bulk update and delete the sprints
     await context.sprint.deleteSprint(context, data.sprintId);
-
     const bulkSprintUpdates: Array<IUpdateItemById<ISprint>> = [];
 
     if (sprint.prevSprintId) {
@@ -71,7 +61,6 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
     }
 
     await context.sprint.bulkUpdateSprintsById(context, bulkSprintUpdates);
-
     const boardUpdates: Partial<IBlock> = {};
 
     if (sprint.customId === board.lastSprintId) {
@@ -87,11 +76,14 @@ const deleteSprint: DeleteSprintEndpoint = async (context, instData) => {
         );
     }
 
-    context.broadcastHelpers.broadcastDeleteSprint(
+    outgoingEventFn(
         context,
-        instData,
-        board,
-        sprint
+        SocketRoomNameHelpers.getBoardRoomName(board.customId),
+        {
+            actionType: SystemActionType.Delete,
+            resourceType: SystemResourceType.Sprint,
+            resource: { customId: sprint.customId },
+        }
     );
 };
 

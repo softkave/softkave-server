@@ -1,3 +1,4 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import {
     CollaborationRequestEmailReason,
     CollaborationRequestStatusType,
@@ -5,9 +6,11 @@ import {
 } from "../../../mongo/collaboration-request/definitions";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
 import { IOrganization } from "../../organization/types";
 import { throwOrganizationNotFoundError } from "../../organization/utils";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import {
     CollaborationRequestAcceptedError,
     CollaborationRequestDeclinedError,
@@ -32,15 +35,6 @@ async function notifyRecipient(
     );
 
     if (recipient) {
-        // TODO: Fix
-        // const notification = getCollaborationRequestRevokedNotification(
-        //     organization,
-        //     recipient,
-        //     request
-        // );
-        // fireAndForgetPromise(
-        //     context.notification.bulkSaveNotifications(context, [notification])
-        // );
     } else {
         try {
             await context.sendCollaborationRequestRevokedEmail(context, {
@@ -78,7 +72,6 @@ const revokeRequest: RevokeCollaborationRequestsEndpoint = async (
     );
 
     canReadOrganization(organization.customId, user);
-
     let request =
         await context.collaborationRequest.assertGetCollaborationRequestById(
             context,
@@ -90,7 +83,6 @@ const revokeRequest: RevokeCollaborationRequestsEndpoint = async (
     }
 
     const statusHistory = request.statusHistory;
-
     statusHistory.find((status) => {
         if (status.status === CollaborationRequestStatusType.Accepted) {
             throw new CollaborationRequestAcceptedError();
@@ -113,8 +105,36 @@ const revokeRequest: RevokeCollaborationRequestsEndpoint = async (
             }
         );
 
+    const requestData = getPublicCollaborationRequest(request);
+    const recipient = await context.user.getUserByEmail(
+        context,
+        request.to.email
+    );
+
+    if (recipient) {
+        outgoingEventFn(
+            context,
+            SocketRoomNameHelpers.getUserRoomName(recipient.customId),
+            {
+                actionType: SystemActionType.Update,
+                resourceType: SystemResourceType.CollaborationRequest,
+                resource: requestData,
+            }
+        );
+    }
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getOrganizationRoomName(request.from.blockId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.CollaborationRequest,
+            resource: requestData,
+        }
+    );
+
     fireAndForgetPromise(notifyRecipient(context, organization, savedRequest));
-    return { request: getPublicCollaborationRequest(savedRequest) };
+    return { request: requestData };
 };
 
 export default revokeRequest;

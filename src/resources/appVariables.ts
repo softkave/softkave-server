@@ -54,7 +54,7 @@ export const appVariables: IAppVariables = {
     disableEmail: getBoolean(process.env.DISABLE_EMAIL),
 
     appName: "Softkave",
-    emailSendFrom: "hello@softkave.com",
+    emailSendFrom: "Boards@softkave.com",
     emailEncoding: "UTF-8",
     dateFormat: "MMM DD, YYYY",
     signupPath: `${clientDomain}/signup`,
