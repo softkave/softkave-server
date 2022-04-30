@@ -35,7 +35,7 @@ const updateBoard: UpdateBoardEndpoint = async (context, instData) => {
 
   if (
     update.sprintOptions &&
-    update.sprintOptions.duration !== board.sprintOptions.duration
+    update.sprintOptions.duration !== board.sprintOptions?.duration
   ) {
     await context.sprint.updateUnstartedSprints(context, board.customId, {
       duration: update.sprintOptions.duration,
