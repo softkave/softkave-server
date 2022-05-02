@@ -57,10 +57,7 @@ const addCollaborators: AddCollaboratorEndpoint = async (context, instData) => {
         },
       ],
       sentEmailHistory: [],
-      body: `
-              You have a new collaboration request from
-              ${user.name} of ${organization.name}.
-            `,
+      body: `You have a new collaboration request from ${user.name} of ${organization.name}.`,
     };
 
     return newRequest;

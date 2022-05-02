@@ -21,16 +21,16 @@ import { setupSocketEndpoints } from "./setupEndpoints";
 let socketServer: Server = null;
 
 export function setSocketServer(io: Server) {
-    socketServer = io;
-    io.on(IncomingSocketEvents.Connection, (socket) =>
-        setupSocketEndpoints(getBaseContext(), socket)
-    );
+  socketServer = io;
+  io.on(IncomingSocketEvents.Connection, (socket) =>
+    setupSocketEndpoints(getBaseContext(), socket)
+  );
 }
 
 export function getSocketServer() {
-    if (!socketServer) {
-        throw new ServerError();
-    }
+  if (!socketServer) {
+    throw new ServerError();
+  }
 
-    return socketServer;
+  return socketServer;
 }

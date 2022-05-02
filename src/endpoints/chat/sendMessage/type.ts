@@ -3,18 +3,17 @@ import { Endpoint } from "../../types";
 import { IPublicChatData } from "../types";
 
 export interface ISendMessageParameters {
-    orgId: string;
-    message: string;
-    roomId?: string;
-    recipientId?: string;
+  orgId: string;
+  message: string;
+  roomId: string;
 }
 
 export interface ISendMessageEndpointResult {
-    chat: IPublicChatData;
+  chat: IPublicChatData;
 }
 
 export type SendMessageEndpoint = Endpoint<
-    IBaseContext,
-    ISendMessageParameters,
-    ISendMessageEndpointResult
+  IBaseContext,
+  ISendMessageParameters,
+  ISendMessageEndpointResult
 >;
