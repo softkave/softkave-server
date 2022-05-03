@@ -65,25 +65,6 @@ const sprintSchema = `
         exists: Boolean
     }
 
-    input SprintOptionsInput {
-        duration: String
-    }
-
-    type SetupSprintsResult {
-        errors: [Error]
-        sprintOptions: SprintOptions
-    }
-
-    type StartSprintResult {
-        errors: [Error]
-        startDate: String
-    }
-
-    type EndSprintResult {
-        errors: [Error]
-        endDate: String
-    }
-
     type SprintQuery {
         getSprints (boardId: String!): GetSprintsResult
         sprintExists (boardId: String!, name: String!): SprintExistsResult
@@ -93,10 +74,6 @@ const sprintSchema = `
         addSprint (boardId: String!, data: NewSprintInput!): AddSprintResult
         updateSprint (sprintId: String!, data: UpdateSprintInput!): UpdateSprintResult
         deleteSprint (sprintId: String!): ErrorOnlyResponse
-        startSprint (sprintId: String!): StartSprintResult
-        endSprint (sprintId: String!): EndSprintResult
-        updateSprintOptions (boardId: String!, data: UpdateSprintOptionsInput): UpdateSprintOptionsResult
-        setupSprints (boardId: String!, data: SprintOptionsInput!): SetupSprintsResult
     }
 `;
 

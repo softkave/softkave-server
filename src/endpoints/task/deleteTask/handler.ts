@@ -1,5 +1,8 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { ITask } from "../types";
 import { throwTaskNotFoundError } from "../utils";
 import { DeleteTaskEndpoint } from "./types";
@@ -16,6 +19,15 @@ const deleteTask: DeleteTaskEndpoint = async (context, instData) => {
 
     canReadOrganization(task.rootBlockId, user);
     await context.block.deleteBlockAndChildren(context, task.customId);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getBoardRoomName(task.parent),
+        {
+            actionType: SystemActionType.Delete,
+            resourceType: SystemResourceType.Task,
+            resource: { customId: task.customId },
+        }
+    );
 };
 
 export default deleteTask;

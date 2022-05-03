@@ -1,6 +1,9 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { BlockType } from "../../../mongo/block";
 import { getDate } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { OrganizationExistsError } from "../errors";
 import { IOrganization } from "../types";
 import { getPublicOrganizationData } from "../utils";
@@ -52,8 +55,19 @@ const createOrganization: CreateOrganizationEndpoint = async (
     });
 
     instData.user = user;
+    const orgData = getPublicOrganizationData(savedOrganization);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getUserRoomName(user.customId),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.Organization,
+            resource: orgData,
+        }
+    );
+
     return {
-        organization: getPublicOrganizationData(savedOrganization),
+        organization: orgData,
     };
 };
 

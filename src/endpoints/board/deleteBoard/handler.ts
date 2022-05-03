@@ -1,5 +1,8 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetPromise } from "../../utils";
 import { IBoard } from "../types";
 import { throwBoardNotFoundError } from "../utils";
@@ -19,6 +22,16 @@ const deleteBoard: DeleteBoardEndpoint = async (context, instData) => {
     await context.block.deleteBlockAndChildren(context, board.customId);
     fireAndForgetPromise(
         context.sprint.deleteSprintByBoardId(context, board.customId)
+    );
+
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getBoardRoomName(board.rootBlockId),
+        {
+            actionType: SystemActionType.Delete,
+            resourceType: SystemResourceType.Board,
+            resource: { customId: board.customId },
+        }
     );
 };
 

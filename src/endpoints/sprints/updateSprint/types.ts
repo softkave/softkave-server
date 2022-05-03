@@ -8,6 +8,8 @@ export interface IUpdateSprintParameters {
     data: {
         name?: string;
         duration?: SprintDuration;
+        startDate?: string;
+        endDate?: string;
     };
 }
 

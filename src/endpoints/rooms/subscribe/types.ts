@@ -2,13 +2,14 @@ import { SystemResourceType } from "../../../models/system";
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
 
-interface ISubscriptionableResource {
-    type: SystemResourceType;
-    customId: string;
+export interface IAddToRoomInput {
+  type: SystemResourceType;
+  customId: string;
+  subRoom?: SystemResourceType.Sprint | SystemResourceType.Task;
 }
 
 export interface ISubscribeParameters {
-    items: ISubscriptionableResource[];
+  rooms: IAddToRoomInput[];
 }
 
 export type SubscribeEndpoint = Endpoint<IBaseContext, ISubscribeParameters>;

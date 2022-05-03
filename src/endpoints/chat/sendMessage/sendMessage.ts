@@ -1,178 +1,151 @@
+import assert from "assert";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IRoom } from "../../../mongo/room";
 import { IUser } from "../../../mongo/user";
-import { getDateString } from "../../../utilities/fns";
+import { getDate } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/IBaseContext";
-import { IBroadcastResult } from "../../contexts/RoomContext";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetFn, fireAndForgetPromise } from "../../utils";
+import { RoomDoesNotExistError } from "../errors";
 import {
-    NoRoomOrRecipientProvidedError,
-    RoomDoesNotExistError,
-} from "../errors";
-import { getPublicChatData, sumUnseenChatsAndRooms } from "../utils";
+  getPublicChatData,
+  getPublicRoomData,
+  sumUnseenChatsAndRooms,
+} from "../utils";
 import { SendMessageEndpoint } from "./type";
 import { sendMessageJoiSchema } from "./validation";
 
 async function sendPushNotification(
-    context: IBaseContext,
-    sender: IUser,
-    room: IRoom,
-    broadcastResultPromise: Promise<IBroadcastResult>
+  context: IBaseContext,
+  sender: IUser,
+  room: IRoom
 ) {
-    const broadcastResult = await broadcastResultPromise;
-    const members = room.members;
-    const activeUsersMap = broadcastResult.endpoints.reduce(
-        (map, endpoint) => {
-            if (!endpoint.entry.isInactive) {
-                map[endpoint.entry.userId] = true;
-            }
+  const members = room.members;
+  const socketRoom = context.socketRooms.getRoom(
+    SocketRoomNameHelpers.getChatRoomName(room.customId)
+  );
 
-            return map;
-        },
-        { [sender.customId]: true } as Record<string, boolean>
+  if (!socketRoom) {
+    return;
+  }
+
+  const activeUsersMap: Record<string, boolean> = { [sender.customId]: true };
+  Object.keys(socketRoom.socketIds).forEach((id) => {
+    const socket = context.socketMap.getSocket(id);
+
+    if (socket && socket.isActive) {
+      activeUsersMap[socket.userId] = true;
+    }
+  });
+
+  const inactiveMemberIds = members
+    .filter((member) => !activeUsersMap[member.userId])
+    .map((member) => member.userId);
+
+  inactiveMemberIds.forEach(async (userId) => {
+    // TODO: what happens when the user gets another message in the same room
+    // while the current one is processing
+
+    // TODO: maybe only log the unseen chats
+    // then lock ( still accept updates but only send the current amount )
+    // and send in intervals
+    const unseenChats = await context.unseenChats.addEntry(
+      context,
+      userId,
+      room.customId
     );
 
-    const inactiveMemberIds = members
-        .filter((member) => !activeUsersMap[member.userId])
-        .map((member) => member.userId);
+    // TODO: chats count is flaky and sometimes, inactiveSockets count is flaky
+    const { roomsCount, chatsCount } = sumUnseenChatsAndRooms(unseenChats);
+    const clients = await context.client.getPushSubscribedClients(
+      context,
+      userId
+    );
 
-    inactiveMemberIds.forEach(async (userId) => {
-        // TODO: what happens when the user gets another message in the same room
-        // while the current one is processing
+    if (clients.length === 0) {
+      return;
+    }
 
-        // TODO: maybe only log the unseen chats
-        // then lock ( still accept updates but only send the current amount )
-        // and send in intervals
-        const unseenChats = await context.unseenChats.addEntry(
-            context,
-            userId,
-            room.customId
-        );
+    const message = `You have ${chatsCount} ${
+      chatsCount === 1 ? "message" : "messages"
+    } from ${roomsCount} ${roomsCount === 1 ? "chat" : "chats"}`;
 
-        // TODO: chats count is flaky and sometimes, inactiveSockets count is flaky
-        const { roomsCount, chatsCount } = sumUnseenChatsAndRooms(unseenChats);
-        const clients = await context.client.getPushSubscribedClients(
-            context,
-            userId
-        );
-
-        if (clients.length === 0) {
-            return;
-        }
-
-        const message = `You have ${chatsCount} ${
-            chatsCount === 1 ? "message" : "messages"
-        } from ${roomsCount} ${roomsCount === 1 ? "chat" : "chats"}`;
-
-        clients.forEach((client) => {
-            const endpoint = client.endpoint!;
-            const keys = client.keys!;
-            fireAndForgetPromise(
-                context.webPush.sendNotification(
-                    context,
-                    endpoint,
-                    keys,
-                    message
-                )
-            );
-        });
+    clients.forEach((client) => {
+      const endpoint = client.endpoint!;
+      const keys = client.keys!;
+      fireAndForgetPromise(
+        context.webPush.sendNotification(context, endpoint, keys, message)
+      );
     });
+  });
 }
 
 const sendMessage: SendMessageEndpoint = async (context, instaData) => {
-    const user = await context.session.getUser(context, instaData);
-    context.socket.assertSocket(instaData);
-    const data = validate(instaData.data, sendMessageJoiSchema);
-    const organization = await context.block.assertGetBlockById(
-        context,
-        data.orgId
-    );
+  const user = await context.session.getUser(context, instaData);
+  context.socket.assertSocket(instaData);
+  const data = validate(instaData.data, sendMessageJoiSchema);
+  const organization = await context.block.assertGetBlockById(
+    context,
+    data.orgId
+  );
+  canReadBlock({ user, block: organization });
+  let room = await context.chat.getRoomById(context, data.roomId);
+  assert(room, new RoomDoesNotExistError());
+  const chat = await context.chat.insertMessage(context, {
+    customId: getNewId(),
+    createdAt: getDate(),
+    sender: user.customId,
+    message: data.message,
+    roomId: room.customId,
+    orgId: organization.customId,
+  });
+  room = await context.chat.updateRoom(context, room.customId, {
+    lastChatCreatedAt: chat.createdAt,
+    members: room.members.map((member) => {
+      if (member.userId === user.customId) {
+        return {
+          ...member,
+          readCounter: getDate(),
+        };
+      }
 
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(organization),
-    //         resourceType: SystemResourceType.Chat,
-    //         action: SystemActionType.Create,
-    //         permissionResourceId: organization.permissionResourceId,
-    //     },
-    //     user
-    // );
-
-    canReadBlock({ user, block: organization });
-
-    // TODO: how can we eliminate OR make the room fetching faster?
-    let room: IRoom;
-
-    if (data.roomId) {
-        // TODO: maybe leave out the readCounters when getting the rooms
-        room = await context.chat.getRoomById(context, data.roomId);
-    } else if (data.recipientId) {
-        room = await context.chat.insertRoom(
-            context,
-            data.orgId,
-            user.customId,
-            null,
-            [data.recipientId]
-        );
-    } else {
-        throw new NoRoomOrRecipientProvidedError();
+      return member;
+    }),
+    updatedAt: getDate(),
+    updatedBy: user.customId,
+  });
+  const roomData = getPublicRoomData(room);
+  const chatData = getPublicChatData(chat);
+  chatData.localId = data.localId;
+  outgoingEventFn(
+    context,
+    SocketRoomNameHelpers.getChatRoomName(room.customId),
+    {
+      actionType: SystemActionType.Update,
+      resourceType: SystemResourceType.Room,
+      resource: roomData,
     }
-
-    if (!room) {
-        throw new RoomDoesNotExistError();
+  );
+  outgoingEventFn(
+    context,
+    SocketRoomNameHelpers.getChatRoomName(room.customId),
+    {
+      actionType: SystemActionType.Create,
+      resourceType: SystemResourceType.Chat,
+      resource: chatData,
     }
+  );
 
-    if (data.recipientId && !data.roomId) {
-        // It's a new room/chat
-        context.room.subscribeUser(context, room.name, user.customId);
-        context.room.subscribeUser(context, room.name, data.recipientId);
-        context.broadcastHelpers.broadcastNewRoom(context, instaData, room);
-    }
-
-    const chat = await context.chat.insertMessage(
-        context,
-        data.orgId,
-        user.customId,
-        room.customId,
-        data.message
-    );
-
-    const broadcastResultPromise = context.broadcastHelpers.broadcastNewMessage(
-        context,
-        instaData,
-        room,
-        chat
-    );
-
-    // TODO: implement a scheduler that can run a task after a task is completed
-
-    // TODO: our fire and forganizationets are running immediately
-    // go through them and update the ones you want to run
-    // after the main request is done
-    fireAndForgetFn(() =>
-        sendPushNotification(context, user, room, broadcastResultPromise)
-    );
-
-    if (data.roomId) {
-        const readCounter = getDateString();
-        await context.chat.updateMemberReadCounter(
-            context,
-            data.roomId,
-            user.customId
-        );
-
-        context.broadcastHelpers.broadcastRoomReadCounterUpdate(
-            context,
-            instaData,
-            user,
-            room.customId,
-            readCounter
-        );
-    }
-
-    return { chat: getPublicChatData(chat) };
+  // TODO: implement a scheduler that can run a task after a task is completed
+  // TODO: our fire and forget are running immediately
+  // go through them and update the ones you want to run
+  // after the main request is done
+  fireAndForgetFn(() => sendPushNotification(context, user, room));
+  return { chat: chatData };
 };
 
 export default sendMessage;

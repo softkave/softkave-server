@@ -2,38 +2,38 @@ import { IClient, IClientUserView } from "../../mongo/client";
 import { IPublicClient } from "./types";
 
 export function clientToClientUserView(client: IClient, userId: string) {
-    const findResult = findUserEntryInClient(client, userId);
+  const findResult = findUserEntryInClient(client, userId);
 
-    if (!findResult) {
-        throw new Error("Client is not attached to user");
-    }
+  if (!findResult) {
+    throw new Error("Client is not attached to user");
+  }
 
-    const view: IClientUserView = {
-        clientId: client.clientId,
-        createdAt: client.createdAt,
-        clientType: client.clientType,
-        isSubcribedToPushNotifications: !!(client.endpoint && client.keys),
-        ...findResult.entry,
-    };
+  const view: IClientUserView = {
+    clientId: client.clientId,
+    createdAt: client.createdAt,
+    clientType: client.clientType,
+    isSubcribedToPushNotifications: !!(client.endpoint && client.keys),
+    ...findResult.entry,
+  };
 
-    return view;
+  return view;
 }
 
 export const getPublicClientData = clientToClientUserView;
 
 export function getPublicClientArray(
-    clients: IClient[],
-    userId: string
+  clients: IClient[],
+  userId: string
 ): IPublicClient[] {
-    return clients.map((client) => clientToClientUserView(client, userId));
+  return clients.map((client) => clientToClientUserView(client, userId));
 }
 
 export function findUserEntryInClient(client: IClient, userId: string) {
-    const index = client.users.findIndex((data) => data.userId === userId);
+  const index = client.users.findIndex((data) => data.userId === userId);
 
-    if (index === -1) {
-        return null;
-    } else {
-        return { index, entry: client.users[index] };
-    }
+  if (index === -1) {
+    return null;
+  } else {
+    return { index, entry: client.users[index] };
+  }
 }

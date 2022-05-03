@@ -1,12 +1,18 @@
+import assert from "assert";
+import { Socket } from "socket.io";
 import { IClient } from "../../mongo/client";
 import { IToken } from "../../mongo/token";
 import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
+import { NoSocketConnectionError } from "../socket/errors";
 import { JWTEndpoint } from "../types";
 import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
-import { tryCatch, wrapFireAndThrowErrorAsync } from "../utils";
+import {
+    wrapFireAndThrowErrorAsync,
+    wrapFireAndThrowErrorRegular,
+} from "../utils";
 import { IBaseContext } from "./IBaseContext";
 
 export interface ISessionContext {
@@ -41,6 +47,8 @@ export interface ISessionContext {
         audience?: JWTEndpoint
     ) => Promise<boolean>;
     assertClient: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
+    assertSocket: (data: RequestData) => void;
+    assertGetSocket: (data: RequestData) => Socket;
 }
 
 export default class SessionContext implements ISessionContext {
@@ -220,6 +228,19 @@ export default class SessionContext implements ISessionContext {
     public assertClient = wrapFireAndThrowErrorAsync(
         async (ctx: IBaseContext, data: RequestData) => {
             return !!(await ctx.session.getClient(ctx, data));
+        }
+    );
+
+    public assertSocket = wrapFireAndThrowErrorRegular(
+        async (data: RequestData) => {
+            assert(data.socket, new NoSocketConnectionError());
+        }
+    );
+
+    public assertGetSocket = wrapFireAndThrowErrorRegular(
+        (data: RequestData) => {
+            this.assertSocket(data);
+            return data.socket;
         }
     );
 }

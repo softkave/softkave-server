@@ -3,6 +3,7 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { InvalidRequestError } from "../errors";
 import RequestData from "../RequestData";
+import { SocketOnlyEndpointError } from "../socket/errors";
 import { IBaseContext } from "./IBaseContext";
 
 export interface ISocketEntry {
@@ -51,17 +52,14 @@ export interface ISocketContext {
 export default class SocketContext implements ISocketContext {
     public assertSocket(data: RequestData) {
         if (!data.socket) {
-            throw new InvalidRequestError();
+            throw new SocketOnlyEndpointError();
         }
 
         return true;
     }
 
     public assertGetSocket(data: RequestData) {
-        if (!data.socket) {
-            throw new InvalidRequestError();
-        }
-
+        this.assertSocket(data);
         return data.socket;
     }
 
@@ -95,15 +93,6 @@ export default class SocketContext implements ISocketContext {
     ) {
         if (socketEntries[socketId]) {
             let entry = { ...socketEntries[socketId], ...update };
-
-            // console.log("update socket entry");
-            // console.log(
-            //     `${socketEntries[socketId].userId} -> old is inactive = ${socketEntries[socketId].isInactive}`
-            // );
-            // console.log(
-            //     `${entry.userId} -> new is inactive = ${entry.isInactive}`
-            // );
-
             socketEntries[socketId] = entry;
         }
     }
@@ -141,10 +130,6 @@ export default class SocketContext implements ISocketContext {
         }
 
         socketEntries[socket.id] = entry;
-
-        // console.log("insert socket entry");
-        // console.log(`${entry.userId} -> is inactive = ${entry.isInactive}`);
-
         const userEntries = userIdToEntriesMap[user.customId] || {};
         userEntries[socket.id] = true;
         userIdToEntriesMap[user.customId] = userEntries;

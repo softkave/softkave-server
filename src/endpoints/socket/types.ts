@@ -7,7 +7,6 @@ export interface IIncomingSocketEventPacket<T> {
     data?: T;
 }
 
-// tslint:disable-next-line: interface-name
 export interface SocketEventHandler<T = any, R = any> {
     (ctx: IBaseContext, data: RequestData<T>, fn?: any): Promise<R>;
 }

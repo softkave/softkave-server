@@ -6,7 +6,8 @@ import { getDate } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { SprintsNotSetupYetError, SprintWithNameExistsError } from "../errors";
 import { getPublicSprintData } from "../utils";
 import { AddSprintEndpoint } from "./types";
@@ -18,17 +19,6 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     const board = await context.block.getBlockById(context, data.boardId);
 
     assertBlock(board);
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(board),
-    //         resourceType: SystemResourceType.Sprint,
-    //         action: SystemActionType.Create,
-    //         permissionResourceId: board.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block: board });
 
     if (!board.sprintOptions) {
@@ -80,16 +70,16 @@ const addSprint: AddSprintEndpoint = async (context, instData) => {
     };
 
     await context.block.updateBlockById(context, board.customId, boardUpdates);
-
     const publicSprint = getPublicSprintData(sprint);
-
-    context.broadcastHelpers.broadcastNewSprint(
+    outgoingEventFn(
         context,
-        instData,
-        board,
-        publicSprint
+        SocketRoomNameHelpers.getBoardRoomName(board.customId),
+        {
+            actionType: SystemActionType.Create,
+            resourceType: SystemResourceType.Sprint,
+            resource: publicSprint,
+        }
     );
-
     return { sprint: publicSprint };
 };
 

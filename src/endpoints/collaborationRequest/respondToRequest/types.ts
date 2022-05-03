@@ -2,6 +2,7 @@ import { CollaborationRequestResponse } from "../../../mongo/collaboration-reque
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { IPublicOrganization } from "../../organization/types";
 import { Endpoint } from "../../types";
+import { IPublicCollaborationRequest } from "../types";
 
 export interface IRespondToCollaborationRequestParameters {
     requestId: string;
@@ -10,6 +11,7 @@ export interface IRespondToCollaborationRequestParameters {
 export interface IRespondToCollaborationRequestResult {
     organization?: IPublicOrganization;
     respondedAt: string;
+    request: IPublicCollaborationRequest;
 }
 
 export type RespondToCollaborationRequestEndpoint = Endpoint<

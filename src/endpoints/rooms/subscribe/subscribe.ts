@@ -2,54 +2,75 @@ import { SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
+import { checkBlockAccess } from "../../block/checkBlockAccess";
 import { RoomDoesNotExistError } from "../../chat/errors";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import { SubscribeEndpoint } from "./types";
 import { subscribeJoiSchema } from "./validation";
 
 const subscribe: SubscribeEndpoint = async (context, instData) => {
     const data = validate(instData.data, subscribeJoiSchema);
     const user = await context.session.getUser(context, instData);
-
-    context.socket.assertSocket(instData);
-
-    // TODO: how many rooms should we allow a user to subscribe to per time
-
-    const promises = data.items.map(async (dt) => {
-        switch (dt.type) {
-            case SystemResourceType.Organization:
-            case SystemResourceType.Board: {
-                const block = await context.block.getBlockById(
+    const socket = context.socket.assertGetSocket(instData);
+    const promises = data.rooms.map(async (item) => {
+        switch (item.type) {
+            case SystemResourceType.Organization: {
+                // TODO: can we batch fetch the resources, rather
+                // than querying one at a time?
+                // same for other room endpoints  that follow the same pattern.
+                const block = await checkBlockAccess(
                     context,
-                    dt.customId
+                    item.customId,
+                    user
                 );
 
-                assertBlock(block);
-                // await context.accessControl.assertPermission(
-                //     context,
-                //     {
-                //         organizationId: getBlockRootBlockId(block),
-                //         resourceType: getBlockAuditLogResourceType(block),
-                //         action: SystemActionType.Read,
-                //         permissionResourceId: block.permissionResourceId,
-                //     },
-                //     user
-                // );
+                const roomName = SocketRoomNameHelpers.getOrganizationRoomName(
+                    block.customId
+                );
+                context.socketRooms.addToRoom(roomName, socket.id);
+                return;
+            }
 
-                canReadBlock({ user, block });
+            case SystemResourceType.Board: {
+                const block = await checkBlockAccess(
+                    context,
+                    item.customId,
+                    user
+                );
 
-                const roomName = context.room.getBlockRoomName(
-                    block.type,
+                const baordRoomName = SocketRoomNameHelpers.getBoardRoomName(
                     block.customId
                 );
 
-                context.room.subscribe(instData, roomName);
-                break;
+                if (item.subRoom === SystemResourceType.Task) {
+                    const roomName =
+                        SocketRoomNameHelpers.getBoardTasksRoomName(
+                            block.customId
+                        );
+
+                    context.socketRooms.addToRoom(roomName, socket.id, {
+                        useSocketIdsFromRoom: baordRoomName,
+                    });
+                } else if (item.subRoom === SystemResourceType.Sprint) {
+                    const roomName =
+                        SocketRoomNameHelpers.getBoardSprintsRoomName(
+                            block.customId
+                        );
+
+                    context.socketRooms.addToRoom(roomName, socket.id, {
+                        useSocketIdsFromRoom: baordRoomName,
+                    });
+                } else {
+                    context.socketRooms.addToRoom(baordRoomName, socket.id);
+                }
+
+                return;
             }
 
             case SystemResourceType.Room: {
                 const room = await context.chat.getRoomById(
                     context,
-                    dt.customId
+                    item.customId
                 );
 
                 if (!room) {
@@ -62,39 +83,33 @@ const subscribe: SubscribeEndpoint = async (context, instData) => {
                 );
 
                 assertBlock(organization);
-                // await context.accessControl.assertPermission(
-                //     context,
-                //     {
-                //         organizationId: getBlockRootBlockId(organization),
-                //         resourceType: SystemResourceType.Chat,
-                //         action: SystemActionType.Read,
-                //         permissionResourceId: organization.permissionResourceId,
-                //     },
-                //     user
-                // );
-
                 canReadBlock({ user, block: organization });
-
                 const isUserInRoom = !!room.members.find(
                     (member) => member.userId === user.customId
                 );
 
-                if (!isUserInRoom) {
-                    await context.chat.addMemberToRoom(
-                        context,
-                        room.customId,
-                        user.customId
+                // if (!isUserInRoom) {
+                //     await context.chat.addMemberToRoom(
+                //         context,
+                //         room.customId,
+                //         user.customId
+                //     );
+                // }
+
+                if (isUserInRoom) {
+                    context.socketRooms.addToRoom(
+                        SocketRoomNameHelpers.getChatRoomName(room.customId),
+                        socket.id
                     );
                 }
 
-                context.room.subscribeUser(context, room.name, user.customId);
-                break;
+                return;
             }
         }
     });
 
     // TODO: can we return individual errors, not combined or the first to occur?
-    // same for unsubscribe
+    // same for other room endpoints
     await Promise.all(promises);
 };
 

@@ -1,5 +1,6 @@
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { Endpoint } from "../../types";
+import { IPublicRoomData } from "../types";
 
 export interface IUpdateRoomReadCounterParameters {
     orgId: string;
@@ -9,6 +10,7 @@ export interface IUpdateRoomReadCounterParameters {
 
 export interface IUpdateRoomReadCounterResult {
     readCounter: string;
+    room: IPublicRoomData;
 }
 
 export type UpdateRoomReadCounterEndpoint = Endpoint<

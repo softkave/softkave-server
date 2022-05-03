@@ -19,7 +19,6 @@ import makeSingletonFn from "../../utilities/createSingletonFunc";
 import { getSocketServer } from "../socket/server";
 import { getAccessControlContext } from "./AccessControlContext";
 import { getBlockContext, IBlockContext } from "./BlockContext";
-import { getBroadcastHelpers } from "./BroadcastHelpers";
 import { getBroadcastHistoryContext } from "./BroadcastHistoryContext";
 import { getChatContext } from "./ChatContext";
 import {
@@ -58,6 +57,8 @@ import { IDataProvider } from "./data-providers/DataProvider";
 import MongoDataProvider from "./data-providers/MongoDataProvider";
 import { throwEAVNotFoundError } from "../eav/utils";
 import { IBaseContext } from "./IBaseContext";
+import { ISocketMapContext, SocketMapContext } from "./SocketMapContext";
+import { ISocketRoomContext, SocketRoomContext } from "./SocketRoomContext";
 
 export interface IBaseContextDataProviders {
     customOption: IDataProvider<ICustomSelectionOption>;
@@ -104,23 +105,12 @@ export default class BaseContext implements IBaseContext {
         taskHistory: getTaskHistoryItemModel(),
     };
     public socketServerInstance: Server = getSocketServer();
-    public broadcastHelpers = getBroadcastHelpers();
     public appVariables = appVariables;
     public webPushInstance = webPush;
+    public socketMap: ISocketMapContext = new SocketMapContext();
+    public socketRooms: ISocketRoomContext = new SocketRoomContext();
 
     public data: IBaseContextDataProviders = {
-        // customOption: new MongoDataProvider<ICustomSelectionOption>(
-        //     getCustomSelectionOptionModel(),
-        //     throwCustomOptionNotFoundError
-        // ),
-        // customProperty: new MongoDataProvider<ICustomProperty>(
-        //     getCustomPropertyModel(),
-        //     throwCustomPropertyNotFoundError
-        // ),
-        // customValue: new MongoDataProvider<ICustomPropertyValue>(
-        //     getCustomPropertyValueModel(),
-        //     throwCustomValueNotFoundError
-        // ),
         customOption: new NotImplementedDataProvider<ICustomSelectionOption>(),
         customProperty: new NotImplementedDataProvider<ICustomProperty>(),
         customValue: new NotImplementedDataProvider<ICustomPropertyValue>(),

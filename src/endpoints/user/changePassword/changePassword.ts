@@ -16,7 +16,6 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
     let user = await context.session.getUser(context, instData);
     let client = await context.session.getClient(context, instData);
     const hash = await argon2.hash(newPassword);
-
     user = await context.user.updateUserById(context, user.customId, {
         hash,
         passwordLastChangedAt: getDateString(),
@@ -24,10 +23,8 @@ const changePassword: ChangePasswordEndpoint = async (context, instData) => {
 
     instData.user = user;
     context.socket.removeUserSocketEntries(context, user.customId);
-
     delete instData.tokenData;
     delete instData.incomingTokenData;
-
     fireAndForgetPromise(
         context.token.deleteTokensByUserId(context, user.customId)
     );

@@ -1,4 +1,9 @@
 import { Socket } from "socket.io";
+import addRoom from "../chat/addRoom/handler";
+import getOrganizationUnseenChatsCount from "../chat/getOrganizationUnseenChatsCount/handler";
+import getRoomChats from "../chat/getRoomChats/handler";
+import getRooms from "../chat/getRooms/handler";
+import getRoomsUnseenChatsCount from "../chat/getRoomsUnseenChatsCount/handler";
 import getUserRoomsAndChats from "../chat/getUserRoomsAndChats/getUserRoomsAndChats";
 import sendMessage from "../chat/sendMessage/sendMessage";
 import updateRoomReadCounter from "../chat/updateRoomReadCounter/updateRoomReadCounter";
@@ -12,52 +17,71 @@ import { IncomingSocketEvents } from "./incomingEventTypes";
 import { makeSocketHandler } from "./utils";
 
 export async function setupSocketEndpoints(ctx: IBaseContext, socket: Socket) {
-    socket.on(
-        IncomingSocketEvents.Auth,
-        makeSocketHandler(ctx, socket, authSocketHandler)
-    );
+  // TODO: move auth to on connection
+  socket.on(
+    IncomingSocketEvents.Auth,
+    makeSocketHandler(ctx, socket, authSocketHandler)
+  );
 
-    socket.on(
-        "disconnect",
-        makeSocketHandler(ctx, socket, disconnectSocketHandler, {
-            skipDataValidation: true,
-        })
-    );
+  socket.on(
+    IncomingSocketEvents.Disconnect,
+    makeSocketHandler(ctx, socket, disconnectSocketHandler, {
+      skipDataValidation: true,
+    })
+  );
 
-    socket.on(
-        IncomingSocketEvents.Subscribe,
-        makeSocketHandler(ctx, socket, subscribe)
-    );
+  socket.on(
+    IncomingSocketEvents.Subscribe,
+    makeSocketHandler(ctx, socket, subscribe)
+  );
 
-    socket.on(
-        IncomingSocketEvents.Unsubscribe,
-        makeSocketHandler(ctx, socket, unsubscribe)
-    );
+  socket.on(
+    IncomingSocketEvents.Unsubscribe,
+    makeSocketHandler(ctx, socket, unsubscribe)
+  );
 
-    // TODO: waiting to implement access control
+  socket.on(
+    IncomingSocketEvents.GetUserRoomsAndChats,
+    makeSocketHandler(ctx, socket, getUserRoomsAndChats)
+  );
 
-    // socket.on(
-    //     IncomingSocketEvents.FetchMissingBroadcasts,
-    //     makeSocketHandler(ctx, socket, fetchBroadcasts)
-    // );
+  socket.on(
+    IncomingSocketEvents.SendMessage,
+    makeSocketHandler(ctx, socket, sendMessage)
+  );
 
-    socket.on(
-        IncomingSocketEvents.GetUserRoomsAndChats,
-        makeSocketHandler(ctx, socket, getUserRoomsAndChats)
-    );
+  socket.on(
+    IncomingSocketEvents.AddRoom,
+    makeSocketHandler(ctx, socket, addRoom)
+  );
 
-    socket.on(
-        IncomingSocketEvents.SendMessage,
-        makeSocketHandler(ctx, socket, sendMessage)
-    );
+  socket.on(
+    IncomingSocketEvents.GetRooms,
+    makeSocketHandler(ctx, socket, getRooms)
+  );
 
-    socket.on(
-        IncomingSocketEvents.UpdateRoomReadCounter,
-        makeSocketHandler(ctx, socket, updateRoomReadCounter)
-    );
+  socket.on(
+    IncomingSocketEvents.GetRoomChats,
+    makeSocketHandler(ctx, socket, getRoomChats)
+  );
 
-    socket.on(
-        IncomingSocketEvents.UpdateSocketEntry,
-        makeSocketHandler(ctx, socket, updateSocketEntry)
-    );
+  socket.on(
+    IncomingSocketEvents.GetRoomsUnseenChatsCount,
+    makeSocketHandler(ctx, socket, getRoomsUnseenChatsCount)
+  );
+
+  socket.on(
+    IncomingSocketEvents.GetOrganizationUnseenChatsCount,
+    makeSocketHandler(ctx, socket, getOrganizationUnseenChatsCount)
+  );
+
+  socket.on(
+    IncomingSocketEvents.UpdateRoomReadCounter,
+    makeSocketHandler(ctx, socket, updateRoomReadCounter)
+  );
+
+  socket.on(
+    IncomingSocketEvents.UpdateSocketEntry,
+    makeSocketHandler(ctx, socket, updateSocketEntry)
+  );
 }

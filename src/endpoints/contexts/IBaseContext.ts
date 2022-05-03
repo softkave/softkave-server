@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import { IAppVariables } from "../../resources/appVariables";
 import { IAccessControlContext } from "./AccessControlContext";
 import { IBlockContext } from "./BlockContext";
-import { IBroadcastHelpers } from "./BroadcastHelpers";
 import { IBroadcastHistoryContext } from "./BroadcastHistoryContext";
 import { IChatContext } from "./ChatContext";
 import { ICollaborationRequestContext } from "./CollaborationRequestContext";
@@ -21,6 +20,8 @@ import webPush from "web-push";
 import { IWebPushContext } from "./WebPushContext";
 import { ITaskHistoryContext } from "./TaskHistoryContext";
 import { IBaseContextDataProviders } from "./BaseContext";
+import { ISocketMapContext } from "./SocketMapContext";
+import { ISocketRoomContext } from "./SocketRoomContext";
 
 export interface IBaseContext {
     block: IBlockContext;
@@ -40,8 +41,9 @@ export interface IBaseContext {
     token: ITokenContext;
     unseenChats: IUnseenChatsContext;
     taskHistory: ITaskHistoryContext;
+    socketMap: ISocketMapContext;
+    socketRooms: ISocketRoomContext;
     webPush: IWebPushContext;
-    broadcastHelpers: IBroadcastHelpers;
     appVariables: IAppVariables;
     socketServerInstance: Server;
     webPushInstance: typeof webPush;

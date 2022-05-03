@@ -1,8 +1,13 @@
+import { merge } from "lodash";
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { ISprint } from "../../../mongo/sprint";
-import { indexArray } from "../../../utilities/fns";
+import { getDate, indexArray } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import { IBoard } from "../../board/types";
+import { throwBoardNotFoundError } from "../../board/utils";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import canReadOrganization from "../../organization/canReadBlock";
+import outgoingEventFn from "../../socket/outgoingEventFn";
 import { fireAndForgetPromise } from "../../utils";
 import { ITask } from "../types";
 import {
@@ -98,6 +103,27 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         });
     }
 
+    if (newBoardId && task.parent !== newBoardId) {
+        const destBoard = await context.block.assertGetBlockById<IBoard>(
+            context,
+            newBoardId,
+            throwBoardNotFoundError
+        );
+
+        const status0 = destBoard.boardStatuses[0];
+        const parentChangeUpdates: Partial<ITask> = {
+            parent: destBoard.customId,
+            status: status0 ? status0.customId : null,
+            statusAssignedAt: status0 ? getDate() : null,
+            statusAssignedBy: status0 ? user.customId : null,
+            labels: [],
+            taskSprint: null,
+            taskResolution: null,
+        };
+
+        merge(update, parentChangeUpdates);
+    }
+
     const updatedTask = await context.block.updateBlockById<ITask>(
         context,
         data.taskId,
@@ -109,17 +135,18 @@ const updateTask: UpdateTaskEndpoint = async (context, instData) => {
         sendNewlyAssignedTaskEmail(context, instData, task, update, updatedTask)
     );
 
-    if (newBoardId && task.parent !== newBoardId) {
-        return await context.transferTask(context, {
-            ...instData,
-            data: {
-                boardId: newBoardId,
-                taskId: task.customId,
-            },
-        });
-    }
+    const taskData = getPublicTaskData(updatedTask);
+    outgoingEventFn(
+        context,
+        SocketRoomNameHelpers.getBoardRoomName(updatedTask.parent),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.Task,
+            resource: taskData,
+        }
+    );
 
-    return { task: getPublicTaskData(updatedTask) };
+    return { task: taskData };
 };
 
 export default updateTask;

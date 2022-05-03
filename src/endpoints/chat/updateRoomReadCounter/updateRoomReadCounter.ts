@@ -1,7 +1,11 @@
+import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { getDateString } from "../../../utilities/fns";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
+import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
+import outgoingEventFn from "../../socket/outgoingEventFn";
+import { getPublicRoomData } from "../utils";
 import { UpdateRoomReadCounterEndpoint } from "./type";
 import { updateRoomReadCounterJoiSchema } from "./validation";
 
@@ -10,26 +14,11 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
     instaData
 ) => {
     const user = await context.session.getUser(context, instaData);
-
     context.socket.assertSocket(instaData);
-
     const data = validate(instaData.data, updateRoomReadCounterJoiSchema);
     const organization = await context.block.getBlockById(context, data.orgId);
-
     assertBlock(organization);
-    // await context.accessControl.assertPermission(
-    //     context,
-    //     {
-    //         organizationId: getBlockRootBlockId(organization),
-    //         resourceType: SystemResourceType.Chat,
-    //         action: SystemActionType.Read,
-    //         permissionResourceId: organization.permissionResourceId,
-    //     },
-    //     user
-    // );
-
     canReadBlock({ user, block: organization });
-
     const currentRoomMemberData = await context.chat.getUserRoomReadCounter(
         context,
         user.customId,
@@ -47,23 +36,25 @@ const updateRoomReadCounter: UpdateRoomReadCounterEndpoint = async (
         : Date.now();
 
     const readCounter = getDateString(inputReadCounter);
-
-    await context.chat.updateMemberReadCounter(
+    const room = await context.chat.updateMemberReadCounter(
         context,
         data.roomId,
         user.customId,
         readCounter
     );
 
-    context.broadcastHelpers.broadcastRoomReadCounterUpdate(
+    const roomData = getPublicRoomData(room);
+    outgoingEventFn(
         context,
-        instaData,
-        user,
-        data.roomId,
-        readCounter
+        SocketRoomNameHelpers.getUserRoomName(user.customId),
+        {
+            actionType: SystemActionType.Update,
+            resourceType: SystemResourceType.Room,
+            resource: roomData,
+        }
     );
 
-    return { readCounter };
+    return { readCounter, room: roomData };
 };
 
 export default updateRoomReadCounter;

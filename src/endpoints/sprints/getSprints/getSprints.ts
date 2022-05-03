@@ -1,8 +1,7 @@
-import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { assertBlock } from "../../../mongo/block/utils";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
-import { getBlockRootBlockId } from "../../block/utils";
+
 import { getPublicSprintArray } from "../utils";
 import { GetSprintsEndpoint } from "./types";
 import { getSprintsJoiSchema } from "./validation";

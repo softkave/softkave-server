@@ -1,7 +1,6 @@
 import Joi from "joi";
 import { DefaultPermissionGroupNames } from "../../mongo/access-control/definitions";
 import { validationSchemas } from "../../utilities/validationUtils";
-import { blockConstants } from "../block/constants";
 import { accessControlConstants } from "./constants";
 
 const name = Joi.string()
@@ -32,7 +31,7 @@ const permissionGroupId = validationSchemas.uuid.allow(
 const userIds = Joi.array()
     .items(validationSchemas.uuid.required())
     .unique()
-    .max(blockConstants.maxCollaborators);
+    .max(1000); // TODO: define in a constants file
 
 const accessControlValidationSchemas = {
     name,
