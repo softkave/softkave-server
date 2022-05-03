@@ -123,7 +123,7 @@ async function getCollaborationRequestModels() {
 async function moveBlocks() {
   try {
     const { newBlockModel, oldBlockModel } = await getBlockModels();
-    const oldBlocks = await oldBlockModel.model.find({}).exec();
+    const oldBlocks = await oldBlockModel.model.find({}).lean().exec();
     const newBlocks: IBlock[] = oldBlocks.map((item) => {
       const block: IBlock = {
         ...item,
@@ -162,7 +162,7 @@ export async function script_MigrateToNewDataDefinitions() {
   logScriptStarted(script_MigrateToNewDataDefinitions);
 
   try {
-    await waitOnPromises([moveBlocks(), moveRequests()]);
+    await waitOnPromises([moveBlocks()]);
     logScriptSuccessful(script_MigrateToNewDataDefinitions);
   } catch (error) {
     logScriptFailed(script_MigrateToNewDataDefinitions, error);
