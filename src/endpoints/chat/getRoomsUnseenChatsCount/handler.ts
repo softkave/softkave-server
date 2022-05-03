@@ -15,9 +15,18 @@ const getRoomsUnseenChatsCount: GetRoomsUnseenChatsCountEndpoint = async (
   ).filter((room) => isUserPartOfRoom(room, user.customId));
   const counts = (
     await Promise.all(
-      rooms.map((room) =>
-        context.chat.getRoomChatsCount(context, room.customId)
-      )
+      rooms.map((room) => {
+        const memberData = room.members.find(
+          (member) => member.userId === user.customId
+        );
+        return memberData
+          ? context.chat.getRoomChatsCount(
+              context,
+              room.customId,
+              memberData.readCounter
+            )
+          : 0;
+      })
     )
   ).map((count, index) => ({ count, roomId: data.roomIds[index] }));
   return { counts };

@@ -6,4 +6,5 @@ export const sendMessageJoiSchema = Joi.object().keys({
   orgId: validationSchemas.uuid.required(),
   message: chatValidationSchemas.message.required(),
   roomId: validationSchemas.uuid.required(),
+  localId: validationSchemas.uuid,
 });

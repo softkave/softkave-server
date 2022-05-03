@@ -15,12 +15,14 @@ const publicRoomFields = getFields<IPublicRoomData>({
     userId: true,
     readCounter: getDateStringIfExists,
   },
-  updatedAt: getDateStringIfExists,
   updatedBy: true,
+  updatedAt: getDateStringIfExists,
+  lastChatCreatedAt: getDateStringIfExists,
 });
 
 const publicChatFields = getFields<IPublicChatData>({
   customId: true,
+  localId: true,
   orgId: true,
   message: true,
   sender: true,

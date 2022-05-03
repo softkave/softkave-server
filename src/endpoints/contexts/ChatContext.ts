@@ -5,7 +5,6 @@ import { getDate } from "../../utilities/fns";
 import getNewId from "../../utilities/getNewId";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./IBaseContext";
-import SocketRoomNameHelpers from "./SocketRoomNameHelpers";
 
 export interface IChatContext {
   getMessages: (ctx: IBaseContext, roomIds: string[]) => Promise<IChat[]>;
@@ -49,20 +48,8 @@ export interface IChatContext {
     roomId: string,
     data: Partial<IRoom>
   ) => Promise<IRoom>;
-  insertMessage: (
-    ctx: IBaseContext,
-    organizationId: string,
-    senderId: string,
-    roomId: string,
-    message: string
-  ) => Promise<IChat>;
-  insertRoom: (
-    ctx: IBaseContext,
-    organizationId: string,
-    userId: string,
-    name: string,
-    otherMembers?: string[]
-  ) => Promise<IRoom>;
+  insertMessage: (ctx: IBaseContext, chat: IChat) => Promise<IChat>;
+  insertRoom: (ctx: IBaseContext, room: IRoom) => Promise<IRoom>;
   getUserRoomReadCounter: (
     ctx: IBaseContext,
     userId: string,
@@ -194,56 +181,18 @@ export default class ChatContext implements IChatContext {
   );
 
   public insertRoom = wrapFireAndThrowErrorAsync(
-    async (
-      ctx: IBaseContext,
-      organizationId: string,
-      userId: string,
-      name: string | null,
-      otherMembers?: string[]
-    ) => {
-      const members: IRoomMemberReadCounter[] = [userId]
-        .concat(otherMembers)
-        .map((id) => ({ userId: id, readCounter: getDate() }));
-
-      return saveNewItemToDb(async () => {
-        const roomId = getNewId();
-        const roomName = name || SocketRoomNameHelpers.getChatRoomName(roomId);
-        const newRoom = new ctx.models.roomModel.model({
-          organizationId,
-          members,
-          customId: roomId,
-          name: roomName,
-          createdAt: getDate(),
-          createdBy: userId,
-        });
-
-        await newRoom.save();
-        return newRoom;
-      });
+    async (ctx: IBaseContext, room: IRoom) => {
+      const newRoom = new ctx.models.roomModel.model(room);
+      await newRoom.save();
+      return newRoom;
     }
   );
 
   public insertMessage = wrapFireAndThrowErrorAsync(
-    async (
-      ctx: IBaseContext,
-      organizationId: string,
-      senderId: string,
-      roomId: string,
-      message: string
-    ) => {
-      return saveNewItemToDb(async () => {
-        const newMessage = new ctx.models.chatModel.model({
-          customId: getNewId(),
-          organizationId,
-          message,
-          roomId,
-          sender: senderId,
-          createdAt: getDate(),
-        });
-
-        await newMessage.save();
-        return newMessage;
-      });
+    async (ctx: IBaseContext, chat: IChat) => {
+      const newMessage = new ctx.models.chatModel.model(chat);
+      await newMessage.save();
+      return newMessage;
     }
   );
 

@@ -6,6 +6,7 @@ export interface ISendMessageParameters {
   orgId: string;
   message: string;
   roomId: string;
+  localId?: string;
 }
 
 export interface ISendMessageEndpointResult {

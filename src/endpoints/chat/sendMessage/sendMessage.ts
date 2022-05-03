@@ -3,6 +3,7 @@ import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { IRoom } from "../../../mongo/room";
 import { IUser } from "../../../mongo/user";
 import { getDate } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import canReadBlock from "../../block/canReadBlock";
 import { IBaseContext } from "../../contexts/IBaseContext";
@@ -94,13 +95,14 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
   canReadBlock({ user, block: organization });
   let room = await context.chat.getRoomById(context, data.roomId);
   assert(room, new RoomDoesNotExistError());
-  const chat = await context.chat.insertMessage(
-    context,
-    data.orgId,
-    user.customId,
-    room.customId,
-    data.message
-  );
+  const chat = await context.chat.insertMessage(context, {
+    customId: getNewId(),
+    createdAt: getDate(),
+    sender: user.customId,
+    message: data.message,
+    roomId: room.customId,
+    orgId: organization.customId,
+  });
   room = await context.chat.updateRoom(context, room.customId, {
     lastChatCreatedAt: chat.createdAt,
     members: room.members.map((member) => {
@@ -118,6 +120,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
   });
   const roomData = getPublicRoomData(room);
   const chatData = getPublicChatData(chat);
+  chatData.localId = data.localId;
   outgoingEventFn(
     context,
     SocketRoomNameHelpers.getChatRoomName(room.customId),
@@ -142,7 +145,7 @@ const sendMessage: SendMessageEndpoint = async (context, instaData) => {
   // go through them and update the ones you want to run
   // after the main request is done
   fireAndForgetFn(() => sendPushNotification(context, user, room));
-  return { chat: getPublicChatData(chat) };
+  return { chat: chatData };
 };
 
 export default sendMessage;

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import addRoom from "../chat/addRoom/handler";
+import getOrganizationUnseenChatsCount from "../chat/getOrganizationUnseenChatsCount/handler";
 import getRoomChats from "../chat/getRoomChats/handler";
 import getRooms from "../chat/getRooms/handler";
 import getRoomsUnseenChatsCount from "../chat/getRoomsUnseenChatsCount/handler";
@@ -67,6 +68,11 @@ export async function setupSocketEndpoints(ctx: IBaseContext, socket: Socket) {
   socket.on(
     IncomingSocketEvents.GetRoomsUnseenChatsCount,
     makeSocketHandler(ctx, socket, getRoomsUnseenChatsCount)
+  );
+
+  socket.on(
+    IncomingSocketEvents.GetOrganizationUnseenChatsCount,
+    makeSocketHandler(ctx, socket, getOrganizationUnseenChatsCount)
   );
 
   socket.on(

@@ -1,4 +1,6 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
+import { getDate } from "../../../utilities/fns";
+import getNewId from "../../../utilities/getNewId";
 import { validate } from "../../../utilities/joiUtils";
 import { IBaseContext } from "../../contexts/IBaseContext";
 import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
@@ -24,13 +26,24 @@ const addRoom: AddRoomEndpoint = async (context, instData) => {
   );
 
   if (!room) {
-    room = await context.chat.insertRoom(
-      context,
-      data.orgId,
-      user.customId,
-      null,
-      [data.recipientId]
-    );
+    const roomId = getNewId();
+    room = await context.chat.insertRoom(context, {
+      customId: roomId,
+      orgId: data.orgId,
+      members: [
+        {
+          userId: user.customId,
+          readCounter: getDate(),
+        },
+        {
+          userId: data.recipientId,
+          readCounter: getDate(),
+        },
+      ],
+      createdAt: getDate(),
+      createdBy: user.customId,
+      name: SocketRoomNameHelpers.getChatRoomName(roomId),
+    });
     addUserToRoom(context, room.name, user.customId);
     addUserToRoom(context, room.name, data.recipientId);
     outgoingEventFn(

@@ -1,7 +1,7 @@
 import { IChat } from "../../../mongo/chat";
 import { IRoom, IRoomMemberReadCounter } from "../../../mongo/room";
 import makeSingletonFn from "../../../utilities/createSingletonFunc";
-import { getDate } from "../../../utilities/fns";
+import { getDate, methodNotImplemented } from "../../../utilities/fns";
 import getNewId from "../../../utilities/getNewId";
 import { IChatContext } from "../../contexts/ChatContext";
 import { IBaseContext } from "../../contexts/IBaseContext";
@@ -66,47 +66,13 @@ class TestChatContext implements IChatContext {
     }
   };
 
-  public insertRoom = async (
-    ctx: IBaseContext,
-    organizationId: string,
-    userId: string,
-    name: string | null,
-    initialMembers?: string[]
-  ) => {
-    const members: IRoomMemberReadCounter[] = [userId]
-      .concat(initialMembers)
-      .map((id) => ({ userId: id, readCounter: getDate() }));
-
-    const roomId = getNewId();
-    const roomName = name || ctx.room.getChatRoomName(roomId);
-    this.rooms.push({
-      orgId: organizationId,
-      members,
-      customId: roomId,
-      name: roomName,
-      createdAt: getDate(),
-      createdBy: userId,
-    });
-
+  public insertRoom = async (ctx: IBaseContext, room: IRoom) => {
+    this.rooms.push(room);
     return this.rooms[this.rooms.length - 1];
   };
 
-  public insertMessage = async (
-    ctx: IBaseContext,
-    organizationId: string,
-    senderId: string,
-    roomId: string,
-    message: string
-  ) => {
-    this.chats.push({
-      customId: getNewId(),
-      orgId: organizationId,
-      message,
-      roomId,
-      sender: senderId,
-      createdAt: getDate(),
-    });
-
+  public insertMessage = async (ctx: IBaseContext, chat: IChat) => {
+    this.chats.push(chat);
     return this.chats[this.chats.length - 1];
   };
 
@@ -127,6 +93,18 @@ class TestChatContext implements IChatContext {
       }
     }
   };
+
+  getRoomByRecipientId = async (
+    ctx: IBaseContext,
+    orgId: string,
+    recipientId: string
+  ) => methodNotImplemented();
+  getRoomChatsCount = (ctx: IBaseContext, roomId: string, fromDate?: Date) =>
+    methodNotImplemented();
+  getRoomsByIds = (ctx: IBaseContext, orgId: string, roomIds: string[]) =>
+    methodNotImplemented();
+  updateRoom = (ctx: IBaseContext, roomId: string, data: Partial<IRoom>) =>
+    methodNotImplemented();
 }
 
 export const getTestChatContext = makeSingletonFn(() => new TestChatContext());
