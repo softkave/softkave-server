@@ -132,7 +132,7 @@ connection.wait().then(async () => {
   await unseenChatsModel.waitTillReady();
 
   // scripts
-  // await script_MigrateToNewDataDefinitions();
+  await script_MigrateToNewDataDefinitions();
 
   httpServer.listen(port, () => {
     logger.info(appVariables.appName);
