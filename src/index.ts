@@ -29,7 +29,6 @@ import { getTokenModel } from "./mongo/token";
 import { getUnseenChatsModel } from "./mongo/unseen-chats";
 import { getUserModel } from "./mongo/user";
 import { appVariables } from "./resources/appVariables";
-import { script_MigrateToNewDataDefinitions } from "./scripts/migrateToNewDataDefinitions";
 import logger from "./utilities/logger";
 
 if (process.env.NODE_ENV === "production") {
@@ -132,7 +131,6 @@ connection.wait().then(async () => {
   await unseenChatsModel.waitTillReady();
 
   // scripts
-  await script_MigrateToNewDataDefinitions();
 
   httpServer.listen(port, () => {
     logger.info(appVariables.appName);
