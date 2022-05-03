@@ -7,12 +7,22 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch server dev", 
       "program": "${workspaceFolder}/src/index.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "envFile": "${workspaceFolder}/.env",
       "outputCapture": "std"
-    }
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "Launch server prod",
+        "program": "${workspaceFolder}/src/index.ts",
+        "preLaunchTask": "tsc: build - tsconfig.json",
+        "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+        "envFile": "${workspaceFolder}/.env.prod",
+        "outputCapture": "std"
+      }
   ]
 }
