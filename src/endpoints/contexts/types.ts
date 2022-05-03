@@ -18,25 +18,25 @@ import { IBaseTokenData } from "./TokenContext";
 import { ITaskHistoryItemModel } from "../../mongo/task-history";
 
 export interface IContextModels {
-    userModel: IUserModel;
-    blockModel: IBlockModel;
-    notificationModel: INotificationModel;
-    commentModel: ICommentModel;
-    sprintModel: ISprintModel;
-    chatModel: IChatModel;
-    roomModel: IRoomModel;
-    permissionGroup: IPermissionGroupModel;
-    permissions: IPermissionModel;
-    collaborationRequestModel: ICollaborationRequestModel;
-    notificationSubscriptionModel: INotificationSubscriptionModel;
-    userAssignedPermissionGroup: IUserAssignedPermissionGroupModel;
-    clientModel: IClientModel;
-    tokenModel: ITokenModel;
-    unseenChatsModel: IUnseenChatsModel;
-    taskHistory: ITaskHistoryItemModel;
+  userModel: IUserModel;
+  blockModel: IBlockModel;
+  notificationModel: INotificationModel;
+  commentModel: ICommentModel;
+  sprintModel: ISprintModel;
+  chatModel: IChatModel;
+  roomModel: IRoomModel;
+  permissionGroup: IPermissionGroupModel;
+  permissions: IPermissionModel;
+  collaborationRequestModel: ICollaborationRequestModel;
+  notificationSubscriptionModel: INotificationSubscriptionModel;
+  userAssignedPermissionGroup: IUserAssignedPermissionGroupModel;
+  clientModel: IClientModel;
+  tokenModel: ITokenModel;
+  unseenChatsModel: IUnseenChatsModel;
+  taskHistory: ITaskHistoryItemModel;
 }
 
 export interface IServerRequest extends Request {
-    // decoded JWT token using the expressJWT middleware
-    user?: IBaseTokenData;
+  // decoded JWT token using the expressJWT middleware
+  user?: IBaseTokenData;
 }
