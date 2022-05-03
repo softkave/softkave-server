@@ -1,2 +1,2 @@
 export * from "./definitions";
-export * from "./model";
+export * from "./UnseenChatsModel";

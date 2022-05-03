@@ -10,12 +10,12 @@ const modelName = "unseen-chat";
 const collectionName = "unseen-chats";
 
 export const getUnseenChatsModel = makeSingletonFn(
-    (conn: Connection = getDefaultConnection().getConnection()) => {
-        return new MongoModel<IUnseenChatsDocument>({
-            modelName,
-            collectionName,
-            rawSchema: unseenChatsMongoSchema,
-            connection: conn,
-        });
-    }
+  (conn: Connection = getDefaultConnection().getConnection()) => {
+    return new MongoModel<IUnseenChatsDocument>({
+      modelName,
+      collectionName,
+      rawSchema: unseenChatsMongoSchema,
+      connection: conn,
+    });
+  }
 );
