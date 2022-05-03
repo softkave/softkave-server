@@ -26,6 +26,7 @@ import {
 } from "../mongo/collaboration-request";
 import collaborationRequestSchema from "../mongo/collaboration-request/definitions";
 import { waitOnPromises } from "../utilities/waitOnPromises";
+import { formatWithOptions } from "util";
 
 /**
  * Block
@@ -141,7 +142,7 @@ async function moveBlocks() {
     await newBlockModel.model.insertMany(newBlocks);
     console.log(`Moved ${newBlocks.length} blocks`);
   } catch (error) {
-    console.error(error);
+    console.log(formatWithOptions({ depth: 20 }, error));
   }
 }
 
