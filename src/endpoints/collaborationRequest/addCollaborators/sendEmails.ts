@@ -34,11 +34,9 @@ export default async function sendEmails(
   const sendEmailPromises: IPromiseWithId[] = requests.map((request, index) => {
     const promise = context.sendCollaborationRequestEmail(context, {
       email: request.to.email,
-      senderName: user.name,
-      senderOrganization: organization.name,
-      title: request.title,
+      workspaceName: user.name,
       loginLink: context.appVariables.loginPath,
-      recipientIsUser: !!indexedExistingUsers[request.to.email],
+      isRecipientAUser: !!indexedExistingUsers[request.to.email],
       signupLink: context.appVariables.signupPath,
     });
 

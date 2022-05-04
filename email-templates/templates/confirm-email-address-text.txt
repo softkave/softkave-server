@@ -1,0 +1,6 @@
+
+  Softkave - Confirm Your Email Address
+  -
+  Hi John, visit the link below to verify your email address:
+  https://www.softkave.com/confirm-email-address 
+  
