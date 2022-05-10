@@ -39,6 +39,8 @@ const sprintSchema = `
     input UpdateSprintInput {
         name: String
         duration: String
+        startDate: String
+        endDate: String
     }
 
     type UpdateSprintResult {
