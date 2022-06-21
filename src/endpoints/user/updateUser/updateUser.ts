@@ -1,7 +1,7 @@
 import { SystemActionType, SystemResourceType } from "../../../models/system";
 import { validate } from "../../../utilities/joiUtils";
-import { clientToClientUserView } from "../../client/utils";
-import { getCollaboratorDataFromUser } from "../../collaborator/utils";
+import { clientToClientUserView } from "../../clients/utils";
+import { getCollaboratorDataFromUser } from "../../collaborators/utils";
 import SocketRoomNameHelpers from "../../contexts/SocketRoomNameHelpers";
 import outgoingEventFn from "../../socket/outgoingEventFn";
 import { EmailAddressNotAvailableError } from "../errors";

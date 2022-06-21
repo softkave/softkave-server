@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { validationSchemas } from "../../../utilities/validationUtils";
-import { collaborationRequestsConstants } from "../../collaborationRequest/constants";
+import { collaborationRequestsConstants } from "../../collaborationRequests/constants";
 import { accessControlConstants } from "../constants";
 import accessControlValidationSchemas from "../validation";
 

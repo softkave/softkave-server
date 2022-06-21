@@ -1,10 +1,10 @@
 import assert from "assert";
-import { makeAddCollaboratorContext } from "../../collaborationRequest/addCollaborators/context";
-import addCollaborators from "../../collaborationRequest/addCollaborators/handler";
+import { makeAddCollaboratorContext } from "../../collaborationRequests/addCollaborators/context";
+import addCollaborators from "../../collaborationRequests/addCollaborators/handler";
 import {
-    IAddCollaboratorsParameters,
-    INewCollaboratorInput,
-} from "../../collaborationRequest/addCollaborators/types";
+  IAddCollaboratorsParameters,
+  INewCollaboratorInput,
+} from "../../collaborationRequests/addCollaborators/types";
 import { IBaseContext } from "../../contexts/IBaseContext";
 import { IServerRequest } from "../../contexts/types";
 import RequestData from "../../RequestData";
@@ -12,35 +12,29 @@ import { chance } from "../data/data";
 import { assertResultOk } from "../utils";
 
 export async function setupTestCollaborationRequestWithEndpoint(
-    context: IBaseContext,
-    req: IServerRequest,
-    orgId: string,
-    input: Partial<INewCollaboratorInput>[] = [],
-    count = 2
+  context: IBaseContext,
+  req: IServerRequest,
+  orgId: string,
+  input: Partial<INewCollaboratorInput>[] = [],
+  count = 2
 ) {
-    input =
-        input.length < count
-            ? input.concat(Array(count - input.length))
-            : input;
+  input =
+    input.length < count ? input.concat(Array(count - input.length)) : input;
 
-    const result = await addCollaborators(
-        makeAddCollaboratorContext(context),
-        RequestData.fromExpressRequest<IAddCollaboratorsParameters>(
-            context,
-            req,
-            {
-                organizationId: orgId,
-                collaborators: input.map((item) => ({
-                    email: chance.email(),
-                    ...item,
-                })),
-            }
-        )
-    );
+  const result = await addCollaborators(
+    makeAddCollaboratorContext(context),
+    RequestData.fromExpressRequest<IAddCollaboratorsParameters>(context, req, {
+      organizationId: orgId,
+      collaborators: input.map((item) => ({
+        email: chance.email(),
+        ...item,
+      })),
+    })
+  );
 
-    assertResultOk(result);
-    assert.ok(result.requests);
-    return {
-        requests: result.requests,
-    };
+  assertResultOk(result);
+  assert.ok(result.requests);
+  return {
+    requests: result.requests,
+  };
 }

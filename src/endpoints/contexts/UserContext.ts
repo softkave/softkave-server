@@ -2,7 +2,7 @@ import { IUser } from "../../mongo/user";
 import makeSingletonFn from "../../utilities/createSingletonFunc";
 import getNewId from "../../utilities/getNewId";
 import { IUpdateItemById } from "../../utilities/types";
-import { ICollaborator } from "../collaborator/types";
+import { ICollaborator } from "../collaborators/types";
 import { UserDoesNotExistError } from "../user/errors";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./IBaseContext";

@@ -1,5 +1,5 @@
 import { buildSchema } from "graphql";
-import clientSchema from "./client/schema";
+import clientSchema from "./clients/schema";
 import EndpointsGraphQLController from "./EndpointsGraphQLController";
 import pushSubscriptionSchema from "./pushSubscription/schema";
 import endpointSchema from "./schema";

@@ -2,19 +2,21 @@ import * as Sentry from "@sentry/node";
 import bodyParser from "body-parser";
 import cors, { CorsOptions } from "cors";
 import express from "express";
-import { graphqlHTTP } from "express-graphql";
 import expressJwt from "express-jwt";
 import http from "http";
 import { Server } from "socket.io";
-import { indexSchema } from "./endpoints";
-import setupBoardsRESTEndpoints from "./endpoints/board/setupRESTEndpoints";
-import setupCollaborationRequestsRESTEndpoints from "./endpoints/collaborationRequest/setupRESTEndpoints";
-import setupCollaboratorsRESTEndpoints from "./endpoints/collaborator/setupRESTEndpoints";
+import setupBoardsRESTEndpoints from "./endpoints/boards/setupRESTEndpoints";
+import setupClientsRESTEndpoints from "./endpoints/clients/setupRESTEndpoints";
+import setupCollaborationRequestsRESTEndpoints from "./endpoints/collaborationRequests/setupRESTEndpoints";
+import setupCollaboratorsRESTEndpoints from "./endpoints/collaborators/setupRESTEndpoints";
 import { getBaseContext } from "./endpoints/contexts/BaseContext";
-import { getEndpointsGraphQLController } from "./endpoints/EndpointsGraphQLController";
-import setupOrganizationsRESTEndpoints from "./endpoints/organization/setupRESTEndpoints";
+import setupOrganizationsRESTEndpoints from "./endpoints/organizations/setupRESTEndpoints";
+import setupPushSubscriptionRESTEndpoints from "./endpoints/pushSubscription/setupRESTEndpoints";
 import { setSocketServer } from "./endpoints/socket/server";
-import setupTasksRESTEndpoints from "./endpoints/task/setupRESTEndpoints";
+import setupSprintsRESTEndpoints from "./endpoints/sprints/setupRESTEndpoints";
+import setupSystemRESTEndpoints from "./endpoints/system/setupRESTEndpoints";
+import setupTasksRESTEndpoints from "./endpoints/tasks/setupRESTEndpoints";
+import setupUserRESTEndpoints from "./endpoints/user/setupRESTEndpoints";
 import handleErrors from "./middlewares/handleErrors";
 import httpToHttps from "./middlewares/httpToHttps";
 import { getAuditLogModel } from "./mongo/audit-log";
@@ -101,20 +103,16 @@ app.use(
   })
 );
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    graphiql: false,
-    schema: indexSchema,
-    rootValue: getEndpointsGraphQLController(),
-  })
-);
-
+setupUserRESTEndpoints(getBaseContext(), app);
 setupBoardsRESTEndpoints(getBaseContext(), app);
 setupCollaborationRequestsRESTEndpoints(getBaseContext(), app);
 setupTasksRESTEndpoints(getBaseContext(), app);
 setupOrganizationsRESTEndpoints(getBaseContext(), app);
 setupCollaboratorsRESTEndpoints(getBaseContext(), app);
+setupClientsRESTEndpoints(getBaseContext(), app);
+setupPushSubscriptionRESTEndpoints(getBaseContext(), app);
+setupSprintsRESTEndpoints(getBaseContext(), app);
+setupSystemRESTEndpoints(getBaseContext(), app);
 app.use(handleErrors);
 
 connection.wait().then(async () => {
