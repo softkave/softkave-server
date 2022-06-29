@@ -1,4 +1,3 @@
-import { defaultTo } from "lodash";
 import { cast } from "../utilities/fns";
 import OperationError, {
   IStrippedOperationError,
@@ -22,13 +21,14 @@ export const wrapEndpointREST = <
     req: IServerRequest
   ): Promise<ReturnType<Endpoint<IBaseContext, Params, Result>>> => {
     try {
-      // When the context the endpoint uses differ from IBaseContext,
-      // make sure to privide yours cause it could cause unexpected behaviour
-      // during runtime
+      /**
+       * When the context the endpoint uses differ from IBaseContext,
+       * make sure to privide yours cause it could cause unexpected behaviour
+       * during runtime
+       */
+      const requestContext = context || cast<Context>(getBaseContext());
       return await endpoint(
-        // Casting here is not particularly okay, but okay if calling functions
-        // provide their context if different from IBaseContext
-        defaultTo(context, cast<Context>(getBaseContext())),
+        requestContext,
         RequestData.fromExpressRequest(context, req, data)
       );
     } catch (error) {

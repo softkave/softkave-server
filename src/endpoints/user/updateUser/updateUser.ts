@@ -13,6 +13,7 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
   const data = validate(instData.data, updateUserJoiSchema);
   const user = await context.session.getUser(context, instData);
   const incomingData = data.data;
+  let updateChangesEmail = false;
 
   if (
     incomingData.email &&
@@ -26,6 +27,8 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     if (userExists) {
       throw new EmailAddressNotAvailableError({ field: "email" });
     }
+
+    updateChangesEmail = true;
   }
 
   const updatedUser = await context.user.updateUserById(
@@ -33,6 +36,15 @@ const updateUser: UpdateUserEndpoint = async (context, instData) => {
     user.customId,
     incomingData
   );
+
+  // transfer collaboration requests to new email
+  if (updateChangesEmail) {
+    await context.collaborationRequest.changeRequestsRecipientEmail(
+      context,
+      user.email,
+      incomingData.email
+    );
+  }
 
   instData.user = updatedUser;
   const tokenData = await context.session.getTokenData(context, instData);

@@ -39,6 +39,7 @@ async function createRootBlock(context: IBaseContext, user: IUser) {
 const signup: SignupEndpoint = async (context, instData) => {
   const data = validate(instData.data.user, newUserInputSchema);
   const userExists = await context.user.userExists(context, data.email);
+  console.log(data.email);
 
   if (userExists) {
     throw new EmailAddressNotAvailableError({ field: "email" });

@@ -4,6 +4,7 @@ import getNewId from "../../utilities/getNewId";
 import { CollaborationRequestDoesNotExistError } from "../collaborationRequests/errors";
 import { saveNewItemToDb, wrapFireAndThrowErrorAsync } from "../utils";
 import { IBaseContext } from "./IBaseContext";
+import { getMongoFullTextRegex } from "./utils";
 
 export interface ICollaborationRequestContext {
   getCollaborationRequestById: (
@@ -36,6 +37,11 @@ export interface ICollaborationRequestContext {
     ctx: IBaseContext,
     collaborationRequests: ICollaborationRequest[]
   ) => Promise<ICollaborationRequest[]>;
+  changeRequestsRecipientEmail: (
+    ctx: IBaseContext,
+    fromEmail: string,
+    toEmail: string
+  ) => Promise<void>;
   getCollaborationRequestsByBlockId: (
     ctx: IBaseContext,
     blockId: string
@@ -108,11 +114,22 @@ export default class CollaborationRequestContext
       return ctx.models.collaborationRequestModel.model
         .find({
           "to.email": {
-            $in: emails.map((item) => new RegExp(`^${item}$`, "i")),
+            $in: emails.map(getMongoFullTextRegex),
           },
           "from.blockId": blockId,
         })
         .lean()
+        .exec();
+    }
+  );
+
+  public changeRequestsRecipientEmail = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, fromEmail: string, toEmail: string) => {
+      await ctx.models.collaborationRequestModel.model
+        .updateMany(
+          { "to.email": getMongoFullTextRegex(fromEmail) },
+          { $set: { "to.email": toEmail.toLowerCase() } }
+        )
         .exec();
     }
   );

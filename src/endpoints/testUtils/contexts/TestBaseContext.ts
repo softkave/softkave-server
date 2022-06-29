@@ -1,9 +1,33 @@
+import {
+  ICustomProperty,
+  ICustomPropertyValue,
+  ICustomSelectionOption,
+} from "../../../mongo/custom-property/definitions";
+import { IEntityAttrValue } from "../../../mongo/eav";
+import { IAppVariables } from "../../../resources/appVariables";
+import MemoryDataProvider from "../../contexts/data-providers/MemoryDataProvider";
+import { IBaseContext } from "../../contexts/IBaseContext";
+import {
+  ISocketMapContext,
+  SocketMapContext,
+} from "../../contexts/SocketMapContext";
+import {
+  ISocketRoomContext,
+  SocketRoomContext,
+} from "../../contexts/SocketRoomContext";
+import {
+  throwCustomOptionNotFoundError,
+  throwCustomPropertyNotFoundError,
+  throwCustomValueNotFoundError,
+} from "../../customProperty/utils";
+import { throwEAVNotFoundError } from "../../eav/utils";
 import { getTestAccessControlContext } from "./TestAccessControlContext";
 import { getTestAuditLogContext } from "./TestAuditLogContext";
 import { getTestBlockContext } from "./TestBlockContext";
 import { getTestBroadcastHistoryContext } from "./TestBroadcastHistoryContext";
 import { getTestChatContext } from "./TestChatContext";
 import { getTestClientContext } from "./TestClientContext";
+import { getTestCollaborationRequestContext } from "./TestCollaborationRequestContext";
 import { getTestCommentContext } from "./TestCommentContext";
 import { getTestNotificationContext } from "./TestNotificationContext";
 import { getTestRoomContext } from "./TestRoomContext";
@@ -17,30 +41,6 @@ import {
   getTestWebPushContext,
   ITestWebPushContext,
 } from "./TestWebPushContext";
-import { getTestCollaborationRequestContext } from "./TestCollaborationRequestContext";
-import { IBaseContext } from "../../contexts/IBaseContext";
-import {
-  ICustomSelectionOption,
-  ICustomProperty,
-  ICustomPropertyValue,
-} from "../../../mongo/custom-property/definitions";
-import { IEntityAttrValue } from "../../../mongo/eav";
-import MemoryDataProvider from "../../contexts/data-providers/MemoryDataProvider";
-import {
-  throwCustomOptionNotFoundError,
-  throwCustomPropertyNotFoundError,
-  throwCustomValueNotFoundError,
-} from "../../customProperty/utils";
-import { throwEAVNotFoundError } from "../../eav/utils";
-import { IAppVariables } from "../../../resources/appVariables";
-import {
-  ISocketMapContext,
-  SocketMapContext,
-} from "../../contexts/SocketMapContext";
-import {
-  ISocketRoomContext,
-  SocketRoomContext,
-} from "../../contexts/SocketRoomContext";
 
 export interface ITestBaseContext extends IBaseContext {
   socket: ITestSocketContext;
