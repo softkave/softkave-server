@@ -1,8 +1,8 @@
 import {
   BlockType,
-  IAssignee,
   IBlockAssignedLabel,
   ISubTask,
+  ITaskAssignee,
   ITaskSprint,
 } from "../../mongo/block";
 import { ConvertDatesToStrings } from "../../utilities/types";
@@ -36,7 +36,7 @@ export interface ITask {
   updatedBy?: string;
   parent: string;
   rootBlockId: string;
-  assignees: IAssignee[];
+  assignees: ITaskAssignee[];
   priority: string;
   subTasks: ISubTask[]; // should sub-tasks be their own blocks?
   status?: string;
@@ -75,7 +75,7 @@ export type IPublicTask = ConvertDatesToStrings<{
   updatedBy?: string;
   parent: string;
   rootBlockId: string;
-  assignees: IAssignee[];
+  assignees: ITaskAssignee[];
   priority: string;
   subTasks: ISubTask[]; // should sub-tasks be their own blocks?
   status?: string;

@@ -11,7 +11,8 @@
     "gen-secret-key": "node -e console.log(require('crypto').randomBytes(128).toString('hex'))",
     "gen-vapid-keys": "npx web-push generate-vapid-keys --json",
     "render-email-templates": "tsc --project email-templates/tsconfig.json && node email-templates/code/email-templates/index.js",
-    "dev-debug": "tsc && env-cmd -f \".env\" npm start"
+    "dev-debug": "tsc && env-cmd -f \".env\" npm start",
+    "prod-debug": "tsc && env-cmd -f \".env.prod\" npm start"
   },
   "engines": {
     "node": "16.x"

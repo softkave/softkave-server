@@ -149,6 +149,8 @@ export default function processUpdateTaskInput(
   });
 
   if (update.status && update.status !== task.status) {
+    update.statusAssignedAt = getDate();
+    update.statusAssignedBy = user.customId;
     const assignees = update.assignees || task.assignees || [];
 
     if (assignees.length === 0) {
@@ -181,6 +183,5 @@ export default function processUpdateTaskInput(
 
   update.updatedBy = user.customId;
   update.updatedAt = getDate();
-
   return update;
 }

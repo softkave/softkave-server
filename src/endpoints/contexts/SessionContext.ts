@@ -10,239 +10,202 @@ import { NoSocketConnectionError } from "../socket/errors";
 import { JWTEndpoint } from "../types";
 import { InvalidCredentialsError, LoginAgainError } from "../user/errors";
 import {
-    wrapFireAndThrowErrorAsync,
-    wrapFireAndThrowErrorRegular,
+  wrapFireAndThrowErrorAsync,
+  wrapFireAndThrowErrorRegular,
 } from "../utils";
 import { IBaseContext } from "./IBaseContext";
 
 export interface ISessionContext {
-    getTokenData: (
-        ctx: IBaseContext,
-        data: RequestData,
-        audience?: JWTEndpoint
-    ) => Promise<IToken>;
-    getClient: (ctx: IBaseContext, data: RequestData) => Promise<IClient>;
-    getUser: (
-        ctx: IBaseContext,
-        data: RequestData,
-        audience?: JWTEndpoint
-    ) => Promise<IUser>;
-    tryGetUser: (
-        ctx: IBaseContext,
-        data: RequestData,
-        audience?: JWTEndpoint
-    ) => Promise<IUser | null>;
-    tryGetTokenData: (
-        ctx: IBaseContext,
-        data: RequestData,
-        audience?: JWTEndpoint
-    ) => Promise<IToken | null>;
-    tryGetClient: (
-        ctx: IBaseContext,
-        data: RequestData
-    ) => Promise<IClient | null>;
-    assertUser: (
-        ctx: IBaseContext,
-        data: RequestData,
-        audience?: JWTEndpoint
-    ) => Promise<boolean>;
-    assertClient: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
-    assertSocket: (data: RequestData) => void;
-    assertGetSocket: (data: RequestData) => Socket;
+  getTokenData: (
+    ctx: IBaseContext,
+    data: RequestData,
+    audience?: JWTEndpoint
+  ) => Promise<IToken>;
+  getClient: (ctx: IBaseContext, data: RequestData) => Promise<IClient>;
+  getUser: (
+    ctx: IBaseContext,
+    data: RequestData,
+    audience?: JWTEndpoint
+  ) => Promise<IUser>;
+  tryGetUser: (
+    ctx: IBaseContext,
+    data: RequestData,
+    audience?: JWTEndpoint
+  ) => Promise<IUser | null>;
+  tryGetTokenData: (
+    ctx: IBaseContext,
+    data: RequestData,
+    audience?: JWTEndpoint
+  ) => Promise<IToken | null>;
+  tryGetClient: (
+    ctx: IBaseContext,
+    data: RequestData
+  ) => Promise<IClient | null>;
+  assertUser: (
+    ctx: IBaseContext,
+    data: RequestData,
+    audience?: JWTEndpoint
+  ) => Promise<boolean>;
+  assertClient: (ctx: IBaseContext, data: RequestData) => Promise<boolean>;
+  assertSocket: (data: RequestData) => void;
+  assertGetSocket: (data: RequestData) => Socket;
 }
 
 export default class SessionContext implements ISessionContext {
-    public tryGetTokenData = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            audience?: JWTEndpoint
-        ) => {
-            if (data.tokenData) {
-                return data.tokenData;
-            }
+  public tryGetTokenData = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData, audience?: JWTEndpoint) => {
+      if (data.tokenData) {
+        return data.tokenData;
+      }
 
-            const incomingTokenData = data.incomingTokenData;
+      const incomingTokenData = data.incomingTokenData;
 
-            if (!incomingTokenData) {
-                return null;
-            }
+      if (!incomingTokenData) {
+        return null;
+      }
 
-            const tokenData = await ctx.token.getTokenById(
-                ctx,
-                incomingTokenData.sub.id
-            );
+      const tokenData = await ctx.token.getTokenById(
+        ctx,
+        incomingTokenData.sub.id
+      );
 
-            if (!tokenData) {
-                return null;
-            }
+      if (!tokenData) {
+        return null;
+      }
 
-            if (audience) {
-                ctx.token.containsAudience(ctx, tokenData, audience);
-            }
+      if (audience) {
+        ctx.token.containsAudience(ctx, tokenData, audience);
+      }
 
-            data.tokenData = tokenData;
-            return tokenData;
-        }
-    );
+      data.tokenData = tokenData;
+      return tokenData;
+    }
+  );
 
-    public getTokenData = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            audience?: JWTEndpoint
-        ) => {
-            const tokenData = await ctx.session.tryGetTokenData(
-                ctx,
-                data,
-                audience
-            );
+  public getTokenData = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData, audience?: JWTEndpoint) => {
+      const tokenData = await ctx.session.tryGetTokenData(ctx, data, audience);
 
-            if (!tokenData) {
-                throw new InvalidRequestError();
-            }
+      if (!tokenData) {
+        throw new InvalidRequestError();
+      }
 
-            return tokenData;
-        }
-    );
+      return tokenData;
+    }
+  );
 
-    public tryGetClient = wrapFireAndThrowErrorAsync(
-        async (ctx: IBaseContext, data: RequestData) => {
-            if (data.client) {
-                return data.client;
-            }
+  public tryGetClient = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData) => {
+      if (data.client) {
+        return data.client;
+      }
 
-            const tokenData = await ctx.session.tryGetTokenData(ctx, data);
-            const clientId = data.clientId;
+      const tokenData = await ctx.session.tryGetTokenData(ctx, data);
+      const clientId = data.clientId;
 
-            if (!clientId) {
-                return null;
-            }
+      if (!clientId) {
+        return null;
+      }
 
-            if (tokenData && clientId !== tokenData.clientId) {
-                throw new InvalidCredentialsError();
-            }
+      checkTokenClientID(tokenData, clientId);
+      const client = await ctx.client.getClientById(ctx, clientId);
 
-            const client = await ctx.client.getClientById(ctx, clientId);
+      if (!client) {
+        return null;
+      }
 
-            if (!client) {
-                return null;
-            }
+      data.client = client;
+      return client;
+    }
+  );
 
-            data.client = client;
-            return client;
-        }
-    );
+  public getClient = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData) => {
+      if (data.client) {
+        return data.client;
+      }
 
-    public getClient = wrapFireAndThrowErrorAsync(
-        async (ctx: IBaseContext, data: RequestData) => {
-            if (data.client) {
-                return data.client;
-            }
+      const tokenData = await ctx.session.tryGetTokenData(ctx, data);
+      const clientId = data.clientId;
 
-            const tokenData = await ctx.session.tryGetTokenData(ctx, data);
-            const clientId = data.clientId;
+      if (!clientId) {
+        throw new LoginAgainError();
+      }
 
-            if (!clientId) {
-                throw new LoginAgainError();
-            }
+      checkTokenClientID(tokenData, clientId);
+      const client = await ctx.client.assertGetClientById(ctx, clientId);
+      data.client = client;
+      return client;
+    }
+  );
 
-            if (tokenData && clientId !== tokenData.clientId) {
-                throw new InvalidCredentialsError();
-            }
+  public tryGetUser = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData, audience?: JWTEndpoint) => {
+      if (data.user) {
+        return data.user;
+      }
 
-            const client = await ctx.client.assertGetClientById(ctx, clientId);
-            data.client = client;
-            return client;
-        }
-    );
+      const tokenData = await ctx.session.tryGetTokenData(ctx, data, audience);
 
-    public tryGetUser = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            audience?: JWTEndpoint
-        ) => {
-            if (data.user) {
-                return data.user;
-            }
+      if (!tokenData) {
+        return null;
+      }
 
-            const tokenData = await ctx.session.tryGetTokenData(
-                ctx,
-                data,
-                audience
-            );
+      const user = await ctx.user.getUserById(ctx, tokenData.userId);
 
-            if (!tokenData) {
-                return null;
-            }
+      if (!user) {
+        return null;
+      }
 
-            const user = await ctx.user.getUserById(ctx, tokenData.userId);
+      data.user = user;
+      return user;
+    }
+  );
 
-            if (!user) {
-                return null;
-            }
+  public getUser = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData, audience?: JWTEndpoint) => {
+      if (data.user) {
+        return data.user;
+      }
 
-            data.user = user;
-            return user;
-        }
-    );
+      const tokenData = await ctx.session.getTokenData(ctx, data, audience);
 
-    public getUser = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            audience?: JWTEndpoint
-        ) => {
-            if (data.user) {
-                return data.user;
-            }
+      // await ctx.session.getClient(ctx, data);
+      const user = await ctx.user.assertGetUserById(ctx, tokenData.userId);
 
-            const tokenData = await ctx.session.getTokenData(
-                ctx,
-                data,
-                audience
-            );
+      data.user = user;
+      return user;
+    }
+  );
 
-            // await ctx.session.getClient(ctx, data);
-            const user = await ctx.user.assertGetUserById(
-                ctx,
-                tokenData.userId
-            );
+  public assertUser = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData, audience?: JWTEndpoint) => {
+      return !!(await ctx.session.getUser(ctx, data, audience));
+    }
+  );
 
-            data.user = user;
-            return user;
-        }
-    );
+  public assertClient = wrapFireAndThrowErrorAsync(
+    async (ctx: IBaseContext, data: RequestData) => {
+      return !!(await ctx.session.getClient(ctx, data));
+    }
+  );
 
-    public assertUser = wrapFireAndThrowErrorAsync(
-        async (
-            ctx: IBaseContext,
-            data: RequestData,
-            audience?: JWTEndpoint
-        ) => {
-            return !!(await ctx.session.getUser(ctx, data, audience));
-        }
-    );
+  public assertSocket = wrapFireAndThrowErrorRegular(
+    async (data: RequestData) => {
+      assert(data.socket, new NoSocketConnectionError());
+    }
+  );
 
-    public assertClient = wrapFireAndThrowErrorAsync(
-        async (ctx: IBaseContext, data: RequestData) => {
-            return !!(await ctx.session.getClient(ctx, data));
-        }
-    );
-
-    public assertSocket = wrapFireAndThrowErrorRegular(
-        async (data: RequestData) => {
-            assert(data.socket, new NoSocketConnectionError());
-        }
-    );
-
-    public assertGetSocket = wrapFireAndThrowErrorRegular(
-        (data: RequestData) => {
-            this.assertSocket(data);
-            return data.socket;
-        }
-    );
+  public assertGetSocket = wrapFireAndThrowErrorRegular((data: RequestData) => {
+    this.assertSocket(data);
+    return data.socket;
+  });
 }
 
 export const getSessionContext = makeSingletonFn(() => new SessionContext());
+
+function checkTokenClientID(token: IToken | undefined, clientId: string) {
+  if (token?.clientId && token.clientId !== clientId) {
+    throw new InvalidCredentialsError();
+  }
+}
