@@ -1,0 +1,31 @@
+# Setup
+
+- Download and install the LTS version of Node.js from "https://nodejs.org/en/download/" if you don't already have it or you have a version lower than the version declared in the 'engines' field in the 'package.json' file. To check your Node version, run "node --version".
+- Run "npm i" in the "/softkave-server" root directory to install dependencies.
+- Create a '.env' file in the root directory and add the following:
+  - MONGODB_URI
+  - DB_NAME
+  - JWT_SECRET
+  - NODE_ENV="development"
+  - FEEDBACK_BOARD_ID
+  - FEEDBACK_USER_ID
+  - PORT
+  - VAPID_PUBLIC_KEY
+  - VAPID_PRIVATE_KEY
+  - CLIENT_DOMAIN
+- For MONGODB_URI and DB_NAME:
+  - Follow this manual "https://docs.mongodb.com/manual/installation/" to install MongoDb community edition if you don't already have it setup already.
+  - Follow this manual "https://docs.mongodb.com/mongodb-shell/install/" to install Mongosh.
+  - Connect to your instance of MongoDb using Mongosh. Running 'mongosh' on the terminal should do that if you followed the default install flow, both for MongoDb and Mongosh. Run 'db.getMongo()' and copy the string returned without the '&appName=mongosh+...' part.
+  - Open MongoDb Compass and paste the connection string in the connection box and connect. On connection, create a database with the name 'softkave-dev' or any name of your choice.
+  - Now, paste the connection string as the value of MONGODB_URI in your .env file, and add the name of the database you created to DB_NAME.
+- For JWT_SECRET:
+  - Run "npm run gen-secret-key" and paste the key generated as the value.
+- For FEEDBACK_BOARD_ID and FEEDBACK_USER_ID:
+  - These can only be set after you've run the server, but you can't leave them empty either cause the server won't run without them, LoL. Quite the conundrum, I know. For now, set them to 'empty!', that should be fine.
+  - After you've run the server and the frontend app, you can set your user ID (which you can find in the Db or in the Redux tab if you're using Redux on the browser, after you've created an account) as the FEEDBACK_USER_ID and you can create a board in any org and set the board ID (which you can find in the URL of the board when you open it) as the FEEDBACK_BOARD_ID.
+- For PORT:
+  - Any port number you want to run the server on.
+- For VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY:
+  - Run "npm run gen-vapid-keys", it should generate your vapid pubic key and private key. Copy the public for the public, and the private for the private respectively. They are used for the push notifcation service. More can be found here "https://blog.mozilla.org/services/2016/08/23/sending-vapid-identified-webpush-notifications-via-mozillas-push-service/".
+- For CLIENT_DOMAIN, use your local running Softkave client's domain. Mine is "localhost:3000".

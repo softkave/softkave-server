@@ -1,0 +1,13 @@
+MONGODB_URI = ""
+DB_NAME = "softkave-dev"
+JWT_SECRET = ""
+NODE_ENV = "development"
+FEEDBACK_BOARD_ID = ""
+FEEDBACK_USER_ID = ""
+PORT = 5000
+VAPID_PUBLIC_KEY = ""
+VAPID_PRIVATE_KEY = ""
+CLIENT_DOMAIN = "http://localhost:3000"
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""
+AWS_REGION = ""

@@ -1,0 +1,17 @@
+export enum IncomingSocketEvents {
+  Subscribe = 'subscribe',
+  Unsubscribe = 'unsubscribe',
+  Auth = 'auth',
+  FetchMissingBroadcasts = 'fetchMissingBroadcasts',
+  SendMessage = 'sendMessage',
+  AddRoom = 'addRoom',
+  GetRooms = 'getRooms',
+  GetRoomChats = 'getRoomChats',
+  GetUserRoomsAndChats = 'getUserRoomsAndChats',
+  GetRoomsUnseenChatsCount = 'getRoomsUnseenChatsCount',
+  GetOrganizationUnseenChatsCount = 'getOrganizationUnseenChatsCount',
+  UpdateRoomReadCounter = 'updateRoomReadCounter',
+  Connection = 'connection',
+  Disconnect = 'disconnect',
+  UpdateSocketEntry = 'updateSocketEntry',
+}
